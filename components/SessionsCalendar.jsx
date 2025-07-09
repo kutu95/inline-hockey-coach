@@ -1,0 +1,561 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { supabase } from '../src/lib/supabase'
+import { useAuth } from '../src/contexts/AuthContext'
+
+const SessionsCalendar = () => {
+  const [sessions, setSessions] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(null)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [editingSession, setEditingSession] = useState(null)
+  const { user } = useAuth()
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    start_time: '',
+    duration_minutes: '',
+    location: '',
+    notes: ''
+  })
+
+  useEffect(() => {
+    fetchSessions()
+  }, [])
+
+  const fetchSessions = async () => {
+    try {
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('coach_id', user.id)
+        .order('date', { ascending: true })
+        .order('start_time', { ascending: true })
+
+      if (error) throw error
+      setSessions(data || [])
+    } catch (err) {
+      setError('Failed to fetch sessions')
+      console.error('Error fetching sessions:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      date: '',
+      start_time: '',
+      duration_minutes: '',
+      location: '',
+      notes: ''
+    })
+    setEditingSession(null)
+    setShowAddForm(false)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!formData.title || !formData.date || !formData.start_time || !formData.duration_minutes || !formData.location) {
+      setError('Please fill in all required fields')
+      return
+    }
+
+    try {
+      // Prepare the data for submission
+      const sessionData = {
+        title: formData.title.trim(),
+        description: formData.description.trim() || null,
+        date: formData.date,
+        start_time: formData.start_time,
+        duration_minutes: parseInt(formData.duration_minutes),
+        location: formData.location.trim(),
+        notes: formData.notes.trim() || null
+      }
+
+      if (editingSession) {
+        const { error } = await supabase
+          .from('sessions')
+          .update(sessionData)
+          .eq('id', editingSession.id)
+          .eq('coach_id', user.id)
+
+        if (error) throw error
+      } else {
+        const { error } = await supabase
+          .from('sessions')
+          .insert({
+            ...sessionData,
+            coach_id: user.id
+          })
+
+        if (error) throw error
+      }
+
+      resetForm()
+      fetchSessions()
+    } catch (err) {
+      setError(editingSession ? 'Failed to update session' : 'Failed to add session')
+      console.error('Error saving session:', err)
+    }
+  }
+
+  const handleEdit = (session) => {
+    setEditingSession(session)
+    setFormData({
+      title: session.title || '',
+      description: session.description || '',
+      date: session.date || '',
+      start_time: session.start_time || '',
+      duration_minutes: session.duration_minutes || '',
+      location: session.location || '',
+      notes: session.notes || ''
+    })
+    setShowAddForm(true)
+  }
+
+  const handleDelete = async (sessionId) => {
+    if (!confirm('Are you sure you want to delete this session?')) return
+
+    try {
+      const { error } = await supabase
+        .from('sessions')
+        .delete()
+        .eq('id', sessionId)
+        .eq('coach_id', user.id)
+
+      if (error) throw error
+      
+      fetchSessions()
+    } catch (err) {
+      setError('Failed to delete session')
+      console.error('Error deleting session:', err)
+    }
+  }
+
+  const formatTime = (time) => {
+    return new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
+  const getEndTime = (startTime, durationMinutes) => {
+    const start = new Date(`2000-01-01T${startTime}`)
+    const end = new Date(start.getTime() + durationMinutes * 60000)
+    return end.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
+  // Calendar helpers
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  }
+
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+  }
+
+  const getPreviousMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
+  }
+
+  const getNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+  }
+
+  const getSessionsForDate = (date) => {
+    // Format date in local timezone to avoid UTC conversion issues
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const dateStr = `${year}-${month}-${day}`
+    return sessions.filter(session => session.date === dateStr)
+  }
+
+  const isToday = (date) => {
+    const today = new Date()
+    return date.toDateString() === today.toDateString()
+  }
+
+  const isSelected = (date) => {
+    return selectedDate && date.toDateString() === selectedDate.toDateString()
+  }
+
+  const handleDateClick = (date) => {
+    setSelectedDate(date)
+    // Format date in local timezone to avoid UTC conversion issues
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const dateStr = `${year}-${month}-${day}`
+    setFormData(prev => ({
+      ...prev,
+      date: dateStr
+    }))
+  }
+
+  const renderCalendar = () => {
+    const daysInMonth = getDaysInMonth(currentDate)
+    const firstDayOfMonth = getFirstDayOfMonth(currentDate)
+    const days = []
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push(<div key={`empty-${i}`} className="h-32 bg-gray-50"></div>)
+    }
+
+    // Add cells for each day of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
+      const sessionsForDay = getSessionsForDate(date)
+      
+      days.push(
+        <div
+          key={day}
+          className={`h-32 border border-gray-200 p-2 cursor-pointer hover:bg-gray-50 transition-colors ${
+            isToday(date) ? 'bg-blue-50 border-blue-300' : ''
+          } ${isSelected(date) ? 'bg-indigo-50 border-indigo-300' : ''}`}
+          onClick={() => handleDateClick(date)}
+        >
+          <div className="text-sm font-medium text-gray-900 mb-1">{day}</div>
+          <div className="space-y-1">
+            {sessionsForDay.slice(0, 2).map((session) => (
+              <div
+                key={session.id}
+                className="text-xs bg-indigo-100 text-indigo-800 px-1 py-0.5 rounded truncate"
+                title={`${session.title} - ${formatTime(session.start_time)}`}
+              >
+                {session.title}
+              </div>
+            ))}
+            {sessionsForDay.length > 2 && (
+              <div className="text-xs text-gray-500">
+                +{sessionsForDay.length - 2} more
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    return days
+  }
+
+  const getSelectedDateSessions = () => {
+    if (!selectedDate) return []
+    // Format date in local timezone to avoid UTC conversion issues
+    const year = selectedDate.getFullYear()
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0')
+    const day = String(selectedDate.getDate()).padStart(2, '0')
+    const dateStr = `${year}-${month}-${day}`
+    return sessions.filter(session => session.date === dateStr)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Link
+                    to="/dashboard"
+                    className="text-gray-600 hover:text-gray-800 font-medium"
+                  >
+                    ← Back to Dashboard
+                  </Link>
+                  <h1 className="text-3xl font-bold text-gray-900">Sessions Calendar</h1>
+                </div>
+                <div className="flex space-x-3">
+                  <Link
+                    to="/sessions"
+                    className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    List View
+                  </Link>
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Session
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div className="px-6 py-4">
+                <div className="rounded-md bg-red-50 p-4">
+                  <div className="text-sm text-red-700">{error}</div>
+                </div>
+              </div>
+            )}
+
+            <div className="px-6 py-4">
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between mb-6">
+                <button
+                  onClick={getPreviousMonth}
+                  className="p-2 hover:bg-gray-100 rounded-md"
+                >
+                  ← Previous
+                </button>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </h2>
+                <button
+                  onClick={getNextMonth}
+                  className="p-2 hover:bg-gray-100 rounded-md"
+                >
+                  Next →
+                </button>
+              </div>
+
+              {/* Calendar Grid */}
+              <div className="mb-6">
+                <div className="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200 rounded-lg overflow-hidden">
+                  {/* Day headers */}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="bg-gray-100 p-2 text-center text-sm font-medium text-gray-700">
+                      {day}
+                    </div>
+                  ))}
+                  
+                  {/* Calendar days */}
+                  {renderCalendar()}
+                </div>
+              </div>
+
+              {/* Selected Date Sessions */}
+              {selectedDate && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Sessions for {selectedDate.toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </h3>
+                  {getSelectedDateSessions().length === 0 ? (
+                    <p className="text-gray-500">No sessions scheduled for this date</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {getSelectedDateSessions().map((session) => (
+                        <div key={session.id} className="bg-gray-50 rounded-lg p-4">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-900">{session.title}</h4>
+                              <div className="text-sm text-gray-600 mt-1">
+                                <div>Time: {formatTime(session.start_time)} - {getEndTime(session.start_time, session.duration_minutes)}</div>
+                                <div>Location: {session.location}</div>
+                                <div>Duration: {session.duration_minutes} minutes</div>
+                                {session.description && (
+                                  <div className="mt-2">Description: {session.description}</div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex space-x-2 ml-4">
+                              <Link
+                                to={`/sessions/${session.id}/attendance`}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              >
+                                Take Attendance
+                              </Link>
+                              <button
+                                onClick={() => handleEdit(session)}
+                                className="text-green-600 hover:text-green-800 text-sm font-medium"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(session.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Add/Edit Form */}
+              {showAddForm && (
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    {editingSession ? 'Edit Session' : 'Add New Session'}
+                  </h3>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                          Session Title *
+                        </label>
+                        <input
+                          type="text"
+                          id="title"
+                          name="title"
+                          required
+                          value={formData.title}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="e.g., U16 Practice"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                          Location *
+                        </label>
+                        <input
+                          type="text"
+                          id="location"
+                          name="location"
+                          required
+                          value={formData.location}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="e.g., Main Arena"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                          Date *
+                        </label>
+                        <input
+                          type="date"
+                          id="date"
+                          name="date"
+                          required
+                          value={formData.date}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="start_time" className="block text-sm font-medium text-gray-700 mb-2">
+                          Start Time *
+                        </label>
+                        <input
+                          type="time"
+                          id="start_time"
+                          name="start_time"
+                          required
+                          value={formData.start_time}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="duration_minutes" className="block text-sm font-medium text-gray-700 mb-2">
+                          Duration (minutes) *
+                        </label>
+                        <input
+                          type="number"
+                          id="duration_minutes"
+                          name="duration_minutes"
+                          required
+                          min="15"
+                          max="480"
+                          value={formData.duration_minutes}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="60"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        id="description"
+                        name="description"
+                        rows="3"
+                        value={formData.description}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Session details, focus areas, etc."
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+                        Session Notes
+                      </label>
+                      <textarea
+                        id="notes"
+                        name="notes"
+                        rows="3"
+                        value={formData.notes}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Notes about this session (optional)"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-3">
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        {editingSession ? 'Update Session' : 'Add Session'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default SessionsCalendar 
