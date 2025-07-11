@@ -25,6 +25,18 @@ export const AuthProvider = ({ children }) => {
     
     try {
       console.log('Fetching roles for user:', userId)
+      
+      // First check if the user_roles table exists
+      const { data: tableCheck, error: tableError } = await supabase
+        .from('user_roles')
+        .select('id')
+        .limit(1)
+      
+      if (tableError) {
+        console.log('user_roles table does not exist or no access:', tableError.message)
+        return []
+      }
+      
       const { data, error } = await supabase
         .from('user_roles')
         .select(`
