@@ -11,10 +11,76 @@ const ViewSquad = () => {
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [signedUrls, setSignedUrls] = useState({})
+  const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
 
   useEffect(() => {
     fetchSquadAndPlayers()
   }, [id])
+
+  // Function to get signed URL for club logos
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('club-logos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Get signed URLs for all club logos and player photos
+  useEffect(() => {
+    const getSignedUrls = async () => {
+      const clubUrls = {}
+      const photoUrls = {}
+      
+      for (const player of players) {
+        if (player.clubs?.logo_url) {
+          clubUrls[player.clubs.id] = await getSignedUrl(player.clubs.logo_url)
+        }
+        if (player.photo_url) {
+          photoUrls[player.id] = await getSignedUrlForPlayerPhoto(player.photo_url)
+        }
+      }
+      
+      setSignedUrls(clubUrls)
+      setPlayerPhotoUrls(photoUrls)
+    }
+    
+    if (players.length > 0) {
+      getSignedUrls()
+    }
+  }, [players])
 
   const fetchSquadAndPlayers = async () => {
     try {
@@ -85,6 +151,21 @@ const ViewSquad = () => {
     }
   }
 
+  // Calculate average age of squad members
+  const calculateAverageAge = () => {
+    const playersWithAge = players.filter(player => player.birthdate)
+    
+    if (playersWithAge.length === 0) {
+      return null
+    }
+    
+    const totalAge = playersWithAge.reduce((sum, player) => {
+      return sum + calculateAge(player.birthdate)
+    }, 0)
+    
+    return Math.round(totalAge / playersWithAge.length)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -134,9 +215,16 @@ const ViewSquad = () => {
                     <h1 className="text-3xl font-bold text-gray-900">
                       {squad.name}
                     </h1>
-                    <p className="text-gray-600 mt-1">
-                      {players.length} player{players.length !== 1 ? 's' : ''} in squad
-                    </p>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <p className="text-gray-600">
+                        {players.length} player{players.length !== 1 ? 's' : ''} in squad
+                      </p>
+                      {calculateAverageAge() && (
+                        <p className="text-gray-600">
+                          Average age: {calculateAverageAge()} years old
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -165,7 +253,7 @@ const ViewSquad = () => {
                           <div className="flex items-center space-x-4">
                             {player.photo_url ? (
                               <img
-                                src={player.photo_url}
+                                src={playerPhotoUrls[player.id] || player.photo_url}
                                 alt={`${player.first_name} ${player.last_name}`}
                                 className="w-12 h-12 object-cover rounded-full border border-gray-300"
                               />
@@ -207,7 +295,7 @@ const ViewSquad = () => {
                                 <div className="flex items-center space-x-2">
                                   {player.clubs?.logo_url ? (
                                     <img
-                                      src={player.clubs.logo_url}
+                                      src={signedUrls[player.clubs.id] || player.clubs.logo_url}
                                       alt={`${player.clubs.name} logo`}
                                       className="w-5 h-5 object-contain"
                                     />

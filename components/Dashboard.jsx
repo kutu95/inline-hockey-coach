@@ -18,9 +18,16 @@ const Dashboard = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex items-center justify-between mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Inline Hockey Coach Dashboard
-              </h1>
+              <div className="flex items-center space-x-4">
+                <img 
+                  src="/logo-192x192.png" 
+                  alt="Inline Hockey Coach Logo" 
+                  className="h-12 w-12 object-contain"
+                />
+                <h1 className="text-3xl font-bold text-gray-900">
+                  WA Inline Hockey Coaching Dashboard
+                </h1>
+              </div>
               <button
                 onClick={handleSignOut}
                 className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"

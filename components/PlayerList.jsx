@@ -10,6 +10,9 @@ const PlayerList = () => {
   const [error, setError] = useState('')
   const [sortField, setSortField] = useState('created_at')
   const [sortDirection, setSortDirection] = useState('desc')
+  // State for signed URLs
+  const [signedUrls, setSignedUrls] = useState({})
+  const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
   const { user } = useAuth()
 
 
@@ -17,6 +20,70 @@ const PlayerList = () => {
   useEffect(() => {
     fetchPlayers()
   }, [sortField, sortDirection])
+
+  // Function to get signed URL for club logos
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('club-logos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Get signed URLs for all club logos and player photos
+  useEffect(() => {
+    const getSignedUrls = async () => {
+      const clubUrls = {}
+      const photoUrls = {}
+      
+      for (const player of players) {
+        if (player.clubs?.logo_url) {
+          clubUrls[player.clubs.id] = await getSignedUrl(player.clubs.logo_url)
+        }
+        if (player.photo_url) {
+          photoUrls[player.id] = await getSignedUrlForPlayerPhoto(player.photo_url)
+        }
+      }
+      
+      setSignedUrls(clubUrls)
+      setPlayerPhotoUrls(photoUrls)
+    }
+    
+    if (players.length > 0) {
+      getSignedUrls()
+    }
+  }, [players])
 
   const fetchPlayers = async () => {
     try {
@@ -183,7 +250,7 @@ const PlayerList = () => {
                           <div className="flex items-center space-x-4">
                             {player.photo_url ? (
                               <img
-                                src={player.photo_url}
+                                src={playerPhotoUrls[player.id] || player.photo_url}
                                 alt={`${player.first_name} ${player.last_name}`}
                                 className="w-12 h-12 object-cover rounded-full border border-gray-300"
                               />
@@ -225,7 +292,7 @@ const PlayerList = () => {
                                 <div className="flex items-center space-x-2">
                                   {player.clubs?.logo_url ? (
                                     <img
-                                      src={player.clubs.logo_url}
+                                      src={signedUrls[player.clubs.id] || player.clubs.logo_url}
                                       alt={`${player.clubs.name} logo`}
                                       className="w-5 h-5 object-contain"
                                     />
@@ -238,14 +305,21 @@ const PlayerList = () => {
                                   <div className="flex items-center space-x-2">
                                     <span className="text-xs text-gray-500">Squads:</span>
                                     <div className="flex flex-wrap gap-1">
-                                      {player.player_squads.map((ps, index) => (
-                                        <span
-                                          key={ps.squads.id}
-                                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                                        >
-                                          {ps.squads.name}
-                                        </span>
-                                      ))}
+                                      {player.player_squads.map((ps, index) => {
+                                        const is2024Squad = ps.squads.name.includes('2024')
+                                        return (
+                                          <span
+                                            key={ps.squads.id}
+                                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                              is2024Squad 
+                                                ? 'bg-yellow-100 text-yellow-800' 
+                                                : 'bg-blue-100 text-blue-800'
+                                            }`}
+                                          >
+                                            {ps.squads.name}
+                                          </span>
+                                        )
+                                      })}
                                     </div>
                                   </div>
                                 )}

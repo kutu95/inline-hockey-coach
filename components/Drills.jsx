@@ -26,9 +26,53 @@ const Drills = () => {
     'shooting', 'passing', 'puck handling', 'agility', 'goalie'
   ]
 
+  // State for image upload
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
+  const [imageUrls, setImageUrls] = useState({})
+
   useEffect(() => {
     fetchDrills()
   }, [])
+
+  // Function to get signed URL for drill images
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('drill-images')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Get signed URLs for all drill images
+  useEffect(() => {
+    const getSignedUrls = async () => {
+      const urls = {}
+      
+      for (const drill of drills) {
+        if (drill.image_url) {
+          urls[drill.id] = await getSignedUrl(drill.image_url)
+        }
+      }
+      
+      setImageUrls(urls)
+    }
+    
+    if (drills.length > 0) {
+      getSignedUrls()
+    }
+  }, [drills])
 
   const fetchDrills = async () => {
     try {
@@ -75,6 +119,8 @@ const Drills = () => {
       max_players: '',
       features: []
     })
+    setImageFile(null)
+    setImagePreview('')
     setEditingDrill(null)
     setShowAddForm(false)
   }
@@ -93,13 +139,23 @@ const Drills = () => {
     }
 
     try {
+      // Upload image if selected
+      let imageUrl = null
+      if (imageFile) {
+        imageUrl = await uploadImage()
+      } else if (editingDrill && editingDrill.image_url) {
+        // Keep existing image if no new image is selected
+        imageUrl = editingDrill.image_url
+      }
+
       const drillData = {
         title: formData.title.trim(),
         short_description: formData.short_description.trim() || null,
         description: formData.description.trim() || null,
         min_players: parseInt(formData.min_players),
         max_players: formData.max_players ? parseInt(formData.max_players) : null,
-        features: formData.features
+        features: formData.features,
+        image_url: imageUrl
       }
 
       if (editingDrill) {
@@ -139,6 +195,11 @@ const Drills = () => {
       max_players: drill.max_players || '',
       features: drill.features || []
     })
+    setImageFile(null)
+    setImagePreview('')
+    if (drill.image_url) {
+      setImagePreview(imageUrls[drill.id] || drill.image_url)
+    }
     setShowAddForm(true)
   }
 
@@ -173,6 +234,60 @@ const Drills = () => {
       return `${min}-${max} players`
     }
     return `${min}+ players`
+  }
+
+  // Image upload functions
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select an image file')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image must be less than 5MB')
+        return
+      }
+
+      setImageFile(file)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target.result)
+      }
+      reader.readAsDataURL(file)
+      setError('')
+    }
+  }
+
+  const uploadImage = async () => {
+    if (!imageFile) return null
+
+    try {
+      const fileExt = imageFile.name.split('.').pop()
+      const fileName = `${Date.now()}.${fileExt}`
+      const filePath = `${user.id}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('drill-images')
+        .upload(filePath, imageFile)
+
+      if (uploadError) throw uploadError
+
+      // Get signed URL instead of public URL
+      const { data: { signedUrl } } = await supabase.storage
+        .from('drill-images')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365) // 1 year expiry
+
+      return signedUrl
+    } catch (err) {
+      console.error('Error uploading image:', err)
+      throw new Error('Failed to upload image')
+    }
   }
 
   if (loading) {
@@ -305,6 +420,29 @@ const Drills = () => {
                     </div>
 
                     <div>
+                      <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+                        Drill Image
+                      </label>
+                      <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      {imagePreview && (
+                        <div className="mt-2">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-md border border-gray-300"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Drill Features
                       </label>
@@ -366,6 +504,16 @@ const Drills = () => {
                             
                             {drill.short_description && (
                               <p className="text-gray-600 mb-3">{drill.short_description}</p>
+                            )}
+                            
+                            {drill.image_url && (
+                              <div className="mb-3">
+                                <img
+                                  src={imageUrls[drill.id] || drill.image_url}
+                                  alt={`${drill.title} drill`}
+                                  className="w-32 h-32 object-cover rounded-md border border-gray-300"
+                                />
+                              </div>
                             )}
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">

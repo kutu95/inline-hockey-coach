@@ -155,16 +155,57 @@ const Clubs = () => {
 
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage
+      // Get signed URL instead of public URL
+      const { data: { signedUrl } } = await supabase.storage
         .from('club-logos')
-        .getPublicUrl(filePath)
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365) // 1 year expiry
 
-      return publicUrl
+      return signedUrl
     } catch (err) {
       console.error('Error uploading logo:', err)
       throw new Error('Failed to upload logo')
     }
   }
+
+  // Function to get signed URL for displaying images
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('club-logos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // State for signed URLs
+  const [signedUrls, setSignedUrls] = useState({})
+
+  // Get signed URLs for all clubs with logos
+  useEffect(() => {
+    const getSignedUrls = async () => {
+      const urls = {}
+      for (const club of clubs) {
+        if (club.logo_url) {
+          urls[club.id] = await getSignedUrl(club.logo_url)
+        }
+      }
+      setSignedUrls(urls)
+    }
+    
+    if (clubs.length > 0) {
+      getSignedUrls()
+    }
+  }, [clubs])
 
   const handleCancel = () => {
     setFormData({ name: '' })
@@ -243,7 +284,7 @@ const Clubs = () => {
                         <div className="mb-4">
                           <p className="text-sm text-gray-600 mb-2">Current logo:</p>
                           <img
-                            src={currentLogoUrl}
+                            src={signedUrls[editingClub?.id] || currentLogoUrl}
                             alt="Current club logo"
                             className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
                           />
@@ -311,7 +352,7 @@ const Clubs = () => {
                       <div className="flex items-center space-x-4">
                         {club.logo_url ? (
                           <img
-                            src={club.logo_url}
+                            src={signedUrls[club.id] || club.logo_url}
                             alt={`${club.name} logo`}
                             className="w-16 h-16 object-contain border border-gray-300 rounded-lg bg-white"
                           />

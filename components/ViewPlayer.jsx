@@ -12,12 +12,70 @@ const ViewPlayer = () => {
   const [player, setPlayer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
-
+  const [signedUrl, setSignedUrl] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
 
   useEffect(() => {
     fetchPlayer()
   }, [id])
+
+  // Function to get signed URL for club logo
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('club-logos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Function to get signed URL for player photo
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Get signed URLs for club logo and player photo when player data changes
+  useEffect(() => {
+    const getSignedUrlsForPlayer = async () => {
+      if (player?.clubs?.logo_url) {
+        const signedUrl = await getSignedUrl(player.clubs.logo_url)
+        setSignedUrl(signedUrl)
+      }
+      if (player?.photo_url) {
+        const photoUrl = await getSignedUrlForPlayerPhoto(player.photo_url)
+        setPlayerPhotoUrl(photoUrl)
+      }
+    }
+    
+    if (player) {
+      getSignedUrlsForPlayer()
+    }
+  }, [player])
 
   const fetchPlayer = async () => {
     try {
@@ -157,7 +215,7 @@ const ViewPlayer = () => {
                   {player.photo_url && (
                     <div className="mb-4">
                       <img
-                        src={player.photo_url}
+                        src={playerPhotoUrl || player.photo_url}
                         alt={`${player.first_name} ${player.last_name}`}
                         className="w-48 h-48 object-cover rounded-lg border border-gray-300"
                       />
@@ -210,25 +268,30 @@ const ViewPlayer = () => {
                       <div className="flex items-center space-x-2">
                         {player.clubs?.logo_url ? (
                           <img
-                            src={player.clubs.logo_url}
+                            src={signedUrl || player.clubs.logo_url}
                             alt={`${player.clubs.name} logo`}
-                            className="w-8 h-8 object-contain"
+                            className="w-6 h-6 object-contain"
                           />
-                        ) : null}
+                        ) : (
+                          <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-gray-500 text-xs">🏒</span>
+                          </div>
+                        )}
                         <span className="font-medium">{player.clubs?.name || 'No club assigned'}</span>
                       </div>
                     </div>
                     {player.player_squads && player.player_squads.length > 0 && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Current Squads:</span>
-                        <div className="flex flex-wrap gap-1">
+                        <div className="flex flex-wrap gap-2">
                           {player.player_squads.map((ps, index) => (
-                            <span
+                            <div
                               key={ps.squads.id}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                              className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
                             >
-                              {ps.squads.name}
-                            </span>
+                              <span className="text-blue-600">🏆</span>
+                              <span>{ps.squads.name}</span>
+                            </div>
                           ))}
                         </div>
                       </div>

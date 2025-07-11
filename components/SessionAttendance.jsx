@@ -13,11 +13,51 @@ const SessionAttendance = () => {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
   const { user } = useAuth()
 
   useEffect(() => {
     fetchSessionAndPlayers()
   }, [sessionId])
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Get signed URLs for all player photos
+  useEffect(() => {
+    const getSignedUrls = async () => {
+      const photoUrls = {}
+      
+      for (const player of players) {
+        if (player.photo_url) {
+          photoUrls[player.id] = await getSignedUrlForPlayerPhoto(player.photo_url)
+        }
+      }
+      
+      setPlayerPhotoUrls(photoUrls)
+    }
+    
+    if (players.length > 0) {
+      getSignedUrls()
+    }
+  }, [players])
 
   const fetchSessionAndPlayers = async () => {
     try {
@@ -321,9 +361,9 @@ const SessionAttendance = () => {
                           />
                           <label htmlFor={`attended-${player.id}`} className="flex-1">
                             <div className="flex items-center space-x-3">
-                              {player.photo_url && (
+                              {playerPhotoUrls[player.id] && (
                                 <img
-                                  src={player.photo_url}
+                                  src={playerPhotoUrls[player.id]}
                                   alt={`${player.first_name} ${player.last_name}`}
                                   className="h-8 w-8 rounded-full object-cover"
                                 />

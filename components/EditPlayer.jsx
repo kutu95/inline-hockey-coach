@@ -149,11 +149,12 @@ const EditPlayer = () => {
 
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage
+      // Get signed URL instead of public URL
+      const { data: { signedUrl } } = await supabase.storage
         .from('player-photos')
-        .getPublicUrl(filePath)
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365) // 1 year expiry
 
-      return publicUrl
+      return signedUrl
     } catch (err) {
       console.error('Error uploading photo:', err)
       throw new Error('Failed to upload photo')
