@@ -13,13 +13,58 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
+  const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // Function to fetch user roles
+  const fetchUserRoles = async (userId) => {
+    if (!userId) return []
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('get_user_roles', { user_uuid: userId })
+      
+      if (error) {
+        console.error('Error fetching user roles:', error)
+        return []
+      }
+      
+      return data ? data.map(row => row.role_name) : []
+    } catch (err) {
+      console.error('Error fetching user roles:', err)
+      return []
+    }
+  }
+
+  // Function to check if user has a specific role
+  const hasRole = (roleName) => {
+    return userRoles.includes(roleName)
+  }
+
+  // Function to check if user has any of the specified roles
+  const hasAnyRole = (roleNames) => {
+    return roleNames.some(roleName => userRoles.includes(roleName))
+  }
+
+  // Function to check if user has all of the specified roles
+  const hasAllRoles = (roleNames) => {
+    return roleNames.every(roleName => userRoles.includes(roleName))
+  }
 
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      
+      if (currentUser) {
+        const roles = await fetchUserRoles(currentUser.id)
+        setUserRoles(roles)
+      } else {
+        setUserRoles([])
+      }
+      
       setLoading(false)
     }
 
@@ -28,7 +73,16 @@ export const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+        
+        if (currentUser) {
+          const roles = await fetchUserRoles(currentUser.id)
+          setUserRoles(roles)
+        } else {
+          setUserRoles([])
+        }
+        
         setLoading(false)
       }
     )
@@ -64,13 +118,26 @@ export const AuthProvider = ({ children }) => {
     return { data, error }
   }
 
+  // Function to refresh user roles (useful after role changes)
+  const refreshUserRoles = async () => {
+    if (user) {
+      const roles = await fetchUserRoles(user.id)
+      setUserRoles(roles)
+    }
+  }
+
   const value = {
     user,
+    userRoles,
     loading,
     signUp,
     signIn,
     signOut,
     resetPassword,
+    hasRole,
+    hasAnyRole,
+    hasAllRoles,
+    refreshUserRoles,
   }
 
   return (

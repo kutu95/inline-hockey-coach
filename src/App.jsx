@@ -13,6 +13,8 @@ import Sessions from '../components/Sessions'
 import SessionsCalendar from '../components/SessionsCalendar'
 import SessionAttendance from '../components/SessionAttendance'
 import Drills from '../components/Drills'
+import UserAdmin from '../components/UserAdmin'
+import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import './App.css'
 
 // Protected Route Component
@@ -67,92 +69,104 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Admin-only routes */}
+            <Route 
+              path="/admin/users" 
+              element={
+                <RoleProtectedRoute requiredRoles={['admin']}>
+                  <UserAdmin />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Coach and Admin routes */}
             <Route 
               path="/players" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <PlayerList />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/players/add" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <AddPlayer />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/players/:id" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <ViewPlayer />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/players/:id/edit" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <EditPlayer />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/clubs" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <Clubs />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/squads" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <Squads />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/squads/:id" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <ViewSquad />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/sessions" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <Sessions />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/sessions/calendar" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <SessionsCalendar />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/sessions/:sessionId/attendance" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <SessionAttendance />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route 
               path="/drills" 
               element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <Drills />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } 
             />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
