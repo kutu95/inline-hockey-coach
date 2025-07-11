@@ -16,20 +16,34 @@ export const AuthProvider = ({ children }) => {
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
 
-  // Function to fetch user roles
+  // Function to fetch user roles using direct query
   const fetchUserRoles = async (userId) => {
-    if (!userId) return []
+    if (!userId) {
+      console.log('No user ID provided, returning empty roles')
+      return []
+    }
     
     try {
+      console.log('Fetching roles for user:', userId)
       const { data, error } = await supabase
-        .rpc('get_user_roles', { user_uuid: userId })
+        .from('user_roles')
+        .select(`
+          role_id,
+          roles (
+            name,
+            description
+          )
+        `)
+        .eq('user_id', userId)
       
       if (error) {
         console.error('Error fetching user roles:', error)
         return []
       }
       
-      return data ? data.map(row => row.role_name) : []
+      const roles = data ? data.map(row => row.roles?.name).filter(Boolean) : []
+      console.log('Fetched roles:', roles)
+      return roles
     } catch (err) {
       console.error('Error fetching user roles:', err)
       return []
@@ -52,20 +66,33 @@ export const AuthProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    console.log('AuthProvider: Starting initialization')
+    
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      
-      if (currentUser) {
-        const roles = await fetchUserRoles(currentUser.id)
-        setUserRoles(roles)
-      } else {
+      try {
+        console.log('AuthProvider: Getting session')
+        const { data: { session } } = await supabase.auth.getSession()
+        const currentUser = session?.user ?? null
+        console.log('AuthProvider: Current user:', currentUser?.email)
+        setUser(currentUser)
+        
+        if (currentUser) {
+          console.log('AuthProvider: Fetching roles for current user')
+          const roles = await fetchUserRoles(currentUser.id)
+          setUserRoles(roles)
+        } else {
+          console.log('AuthProvider: No current user, setting empty roles')
+          setUserRoles([])
+        }
+      } catch (error) {
+        console.error('Error getting session:', error)
+        setUser(null)
         setUserRoles([])
+      } finally {
+        console.log('AuthProvider: Setting loading to false')
+        setLoading(false)
       }
-      
-      setLoading(false)
     }
 
     getSession()
@@ -73,17 +100,28 @@ export const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        const currentUser = session?.user ?? null
-        setUser(currentUser)
-        
-        if (currentUser) {
-          const roles = await fetchUserRoles(currentUser.id)
-          setUserRoles(roles)
-        } else {
+        console.log('AuthProvider: Auth state change:', event)
+        try {
+          const currentUser = session?.user ?? null
+          console.log('AuthProvider: New user:', currentUser?.email)
+          setUser(currentUser)
+          
+          if (currentUser) {
+            console.log('AuthProvider: Fetching roles for new user')
+            const roles = await fetchUserRoles(currentUser.id)
+            setUserRoles(roles)
+          } else {
+            console.log('AuthProvider: No new user, setting empty roles')
+            setUserRoles([])
+          }
+        } catch (error) {
+          console.error('Error in auth state change:', error)
+          setUser(null)
           setUserRoles([])
+        } finally {
+          console.log('AuthProvider: Setting loading to false after auth change')
+          setLoading(false)
         }
-        
-        setLoading(false)
       }
     )
 
@@ -139,6 +177,8 @@ export const AuthProvider = ({ children }) => {
     hasAllRoles,
     refreshUserRoles,
   }
+
+  console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading)
 
   return (
     <AuthContext.Provider value={value}>
