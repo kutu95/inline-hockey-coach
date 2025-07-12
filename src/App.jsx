@@ -9,6 +9,7 @@ import AddPlayer from '../components/AddPlayer'
 import ViewPlayer from '../components/ViewPlayer'
 import EditPlayer from '../components/EditPlayer'
 import Clubs from '../components/Clubs'
+import ViewClub from '../components/ViewClub'
 import Squads from '../components/Squads'
 import ViewSquad from '../components/ViewSquad'
 import Sessions from '../components/Sessions'
@@ -19,6 +20,8 @@ import Drills from '../components/Drills'
 import UserAdmin from '../components/UserAdmin'
 import Organisations from '../components/Organisations'
 import OrganizationDetail from '../components/OrganizationDetail'
+import Locations from '../components/Locations'
+import AdminPanel from '../components/AdminPanel'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import './App.css'
 
@@ -171,10 +174,42 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/clubs/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <ViewClub />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/attendance" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin']}>
                   <OrganizationAttendance />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/attendance" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <SessionAttendance />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/locations" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Locations />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/admin" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <AdminPanel />
                 </RoleProtectedRoute>
               } 
             />
@@ -227,6 +262,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <Clubs />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/clubs/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <ViewClub />
                 </RoleProtectedRoute>
               } 
             />

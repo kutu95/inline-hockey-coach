@@ -6,10 +6,13 @@ import OrganizationHeader from './OrganizationHeader'
 
 const Sessions = () => {
   const [sessions, setSessions] = useState([])
+  const [squads, setSquads] = useState([])
+  const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingSession, setEditingSession] = useState(null)
+  const [selectedSquads, setSelectedSquads] = useState([])
   const { user } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
@@ -20,12 +23,14 @@ const Sessions = () => {
     date: '',
     start_time: '',
     duration_minutes: '',
-    location: '',
+    location_id: '',
     notes: ''
   })
 
   useEffect(() => {
     fetchSessions()
+    fetchSquads()
+    fetchLocations()
   }, [])
 
   const fetchSessions = async () => {
@@ -33,7 +38,20 @@ const Sessions = () => {
       setLoading(true)
       let query = supabase
         .from('sessions')
-        .select('*')
+        .select(`
+          *,
+          session_squads (
+            squad_id,
+            squads (
+              id,
+              name
+            )
+          ),
+          locations (
+            id,
+            name
+          )
+        `)
         .order('date', { ascending: true })
         .order('start_time', { ascending: true })
 
@@ -57,12 +75,89 @@ const Sessions = () => {
     }
   }
 
+  const fetchSquads = async () => {
+    try {
+      let query = supabase
+        .from('squads')
+        .select('*')
+        .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setSquads(data || [])
+    } catch (err) {
+      console.error('Error fetching squads:', err)
+    }
+  }
+
+  const fetchLocations = async () => {
+    try {
+      let query = supabase
+        .from('locations')
+        .select('*')
+        .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // For single tenant, we'll need to handle this differently
+        // since locations are organization-scoped
+        console.log('No organization context for locations')
+        setLocations([])
+        return
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setLocations(data || [])
+    } catch (err) {
+      console.error('Error fetching locations:', err)
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
+  }
+
+  const handleSquadToggle = (squadId) => {
+    setSelectedSquads(prev => {
+      if (prev.includes(squadId)) {
+        return prev.filter(id => id !== squadId)
+      } else {
+        return [...prev, squadId]
+      }
+    })
+  }
+
+  const fetchSessionSquads = async (sessionId) => {
+    try {
+      const { data, error } = await supabase
+        .from('session_squads')
+        .select('squad_id')
+        .eq('session_id', sessionId)
+
+      if (error) throw error
+      
+      const squadIds = data.map(item => item.squad_id)
+      setSelectedSquads(squadIds)
+    } catch (err) {
+      console.error('Error fetching session squads:', err)
+    }
   }
 
   const resetForm = () => {
@@ -72,9 +167,10 @@ const Sessions = () => {
       date: '',
       start_time: '',
       duration_minutes: '',
-      location: '',
+      location_id: '',
       notes: ''
     })
+    setSelectedSquads([])
     setEditingSession(null)
     setShowAddForm(false)
   }
@@ -82,7 +178,7 @@ const Sessions = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!formData.title || !formData.date || !formData.start_time || !formData.duration_minutes || !formData.location) {
+    if (!formData.title || !formData.date || !formData.start_time || !formData.duration_minutes || !formData.location_id) {
       setError('Please fill in all required fields')
       return
     }
@@ -95,11 +191,21 @@ const Sessions = () => {
         date: formData.date,
         start_time: formData.start_time,
         duration_minutes: parseInt(formData.duration_minutes),
-        location: formData.location.trim(),
+        location_id: formData.location_id,
         notes: formData.notes.trim() || null
       }
-      console.log('Submitting sessionData:', sessionData)
-      console.log('User ID (coach_id):', user.id)
+
+      // Remove any undefined or null values and system fields to avoid trigger issues
+      Object.keys(sessionData).forEach(key => {
+        if (sessionData[key] === undefined || sessionData[key] === null) {
+          delete sessionData[key]
+        }
+      })
+      
+      // Remove system fields that shouldn't be updated manually
+      delete sessionData.updated_at
+      delete sessionData.created_at
+      let sessionId
 
       if (editingSession) {
         // Update existing session
@@ -122,6 +228,8 @@ const Sessions = () => {
           console.error('Supabase update error:', error)
           throw error
         }
+
+        sessionId = editingSession.id
       } else {
         // Add new session
         const insertData = {
@@ -136,13 +244,43 @@ const Sessions = () => {
           insertData.coach_id = user.id
         }
 
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('sessions')
           .insert(insertData)
+          .select('id')
+          .single()
 
         if (error) {
           console.error('Supabase insert error:', error)
           throw error
+        }
+
+        sessionId = data.id
+      }
+
+      // Handle squad assignments
+      if (sessionId) {
+        // First, remove all existing squad assignments for this session
+        await supabase
+          .from('session_squads')
+          .delete()
+          .eq('session_id', sessionId)
+
+        // Then, add new squad assignments
+        if (selectedSquads.length > 0) {
+          const squadAssignments = selectedSquads.map(squadId => ({
+            session_id: sessionId,
+            squad_id: squadId
+          }))
+
+          const { error: squadError } = await supabase
+            .from('session_squads')
+            .insert(squadAssignments)
+
+          if (squadError) {
+            console.error('Error saving squad assignments:', squadError)
+            throw squadError
+          }
         }
       }
 
@@ -154,7 +292,7 @@ const Sessions = () => {
     }
   }
 
-  const handleEdit = (session) => {
+  const handleEdit = async (session) => {
     setEditingSession(session)
     setFormData({
       title: session.title || '',
@@ -162,9 +300,13 @@ const Sessions = () => {
       date: session.date || '',
       start_time: session.start_time || '',
       duration_minutes: session.duration_minutes || '',
-      location: session.location || '',
+      location_id: session.location_id || '',
       notes: session.notes || ''
     })
+    
+    // Fetch existing squad assignments for this session
+    await fetchSessionSquads(session.id)
+    
     setShowAddForm(true)
   }
 
@@ -304,19 +446,33 @@ const Sessions = () => {
                       </div>
 
                       <div>
-                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="location_id" className="block text-sm font-medium text-gray-700 mb-2">
                           Location *
                         </label>
-                        <input
-                          type="text"
-                          id="location"
-                          name="location"
-                          required
-                          value={formData.location}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="e.g., Main Arena"
-                        />
+                        {locations.length === 0 ? (
+                          <div className="text-sm text-gray-500">
+                            No locations available. 
+                            <Link to={`/organisations/${orgId}/locations`} className="text-indigo-600 hover:text-indigo-800 ml-1">
+                              Create locations first
+                            </Link>
+                          </div>
+                        ) : (
+                          <select
+                            id="location_id"
+                            name="location_id"
+                            required
+                            value={formData.location_id}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          >
+                            <option value="">Select a location</option>
+                            {locations.map((location) => (
+                              <option key={location.id} value={location.id}>
+                                {location.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </div>
 
                       <div>
@@ -398,6 +554,29 @@ const Sessions = () => {
                       />
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Invited Squads
+                      </label>
+                      {squads.length === 0 ? (
+                        <p className="text-sm text-gray-500">No squads available. Create squads first to assign them to sessions.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {squads.map((squad) => (
+                            <label key={squad.id} className="flex items-center space-x-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedSquads.includes(squad.id)}
+                                onChange={() => handleSquadToggle(squad.id)}
+                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                              />
+                              <span className="text-sm text-gray-900">{squad.name}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex justify-end space-x-3">
                       <button
                         type="button"
@@ -442,7 +621,7 @@ const Sessions = () => {
                                 <span className="font-medium">Time:</span> {formatTime(session.start_time)} - {getEndTime(session.start_time, session.duration_minutes)}
                               </div>
                               <div>
-                                <span className="font-medium">Location:</span> {session.location}
+                                <span className="font-medium">Location:</span> {session.locations?.name || 'No location assigned'}
                               </div>
                               <div>
                                 <span className="font-medium">Duration:</span> {session.duration_minutes} minutes
@@ -452,12 +631,23 @@ const Sessions = () => {
                                   <span className="font-medium">Description:</span> {session.description}
                                 </div>
                               )}
+                              {session.session_squads && session.session_squads.length > 0 && (
+                                <div className="md:col-span-2">
+                                  <span className="font-medium">Invited Squads:</span>{' '}
+                                  {session.session_squads.map((assignment, index) => (
+                                    <span key={assignment.squad_id}>
+                                      {assignment.squads?.name}
+                                      {index < session.session_squads.length - 1 ? ', ' : ''}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                           
                           <div className="flex space-x-2 ml-4">
                             <Link
-                              to={`/sessions/${session.id}/attendance`}
+                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
                               className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                             >
                               Take Attendance

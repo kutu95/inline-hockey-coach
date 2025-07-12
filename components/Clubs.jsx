@@ -423,6 +423,12 @@ const Clubs = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2">
+                        <Link
+                          to={orgId ? `/organisations/${orgId}/clubs/${club.id}` : `/clubs/${club.id}`}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          View Details
+                        </Link>
                         <button
                           onClick={() => handleEdit(club)}
                           className="text-green-600 hover:text-green-800 text-sm font-medium"

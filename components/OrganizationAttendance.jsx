@@ -147,7 +147,7 @@ const OrganizationAttendance = () => {
                         )}
                         <div className="mt-3 flex justify-end">
                           <Link
-                            to={`/sessions/${session.id}/attendance`}
+                            to={`/organisations/${orgId}/sessions/${session.id}/attendance`}
                             className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                           >
                             View Details →

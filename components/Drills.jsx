@@ -20,22 +20,31 @@ const Drills = () => {
     description: '',
     min_players: 1,
     max_players: '',
-    features: []
+    features: [],
+    is_public: false
   })
 
   const availableFeatures = [
-    'fitness', 'fun', 'fore-checking', 'back-checking', 'Offensive cycling', 
-    'defense', 'face-offs', 'power plays', 'penalty kills', 'break outs', 
-    'shooting', 'passing', 'puck handling', 'agility', 'goalie'
+    'agility', 'back-checking', 'break outs', 'defense', 'face-offs', 
+    'fitness', 'fore-checking', 'fun', 'goalie', 'Offensive cycling', 
+    'passing', 'penalty kills', 'power plays', 'puck handling', 'shooting', 
+    'Warm down', 'Warm up'
   ]
 
   // State for image upload
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
   const [imageUrls, setImageUrls] = useState({})
+  const [organizations, setOrganizations] = useState({})
+  const [showFilters, setShowFilters] = useState(false)
+  const [filters, setFilters] = useState({
+    playerCount: '',
+    selectedFeatures: [] // Default to no features selected
+  })
 
   useEffect(() => {
     fetchDrills()
+    fetchOrganizations()
   }, [])
 
   // Function to get signed URL for drill images
@@ -89,8 +98,8 @@ const Drills = () => {
       if (orgId) {
         query = query.eq('organization_id', orgId)
       } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
+        // Otherwise, filter by created_by (single tenant)
+        query = query.eq('created_by', user.id)
       }
 
       const { data, error } = await query
@@ -102,6 +111,25 @@ const Drills = () => {
       console.error('Error fetching drills:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchOrganizations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('id, name')
+
+      if (error) throw error
+      
+      // Create a map of organization id to name
+      const orgMap = {}
+      data?.forEach(org => {
+        orgMap[org.id] = org.name
+      })
+      setOrganizations(orgMap)
+    } catch (err) {
+      console.error('Error fetching organizations:', err)
     }
   }
 
@@ -122,6 +150,43 @@ const Drills = () => {
     }))
   }
 
+  const handleFilterFeatureChange = (feature) => {
+    setFilters(prev => ({
+      ...prev,
+      selectedFeatures: prev.selectedFeatures.includes(feature)
+        ? prev.selectedFeatures.filter(f => f !== feature)
+        : [...prev.selectedFeatures, feature]
+    }))
+  }
+
+  const handlePlayerCountChange = (e) => {
+    setFilters(prev => ({
+      ...prev,
+      playerCount: e.target.value
+    }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      playerCount: '',
+      selectedFeatures: [] // Reset to no features selected
+    })
+  }
+
+  const selectAllFeatures = () => {
+    setFilters(prev => ({
+      ...prev,
+      selectedFeatures: [...availableFeatures]
+    }))
+  }
+
+  const deselectAllFeatures = () => {
+    setFilters(prev => ({
+      ...prev,
+      selectedFeatures: []
+    }))
+  }
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -129,7 +194,8 @@ const Drills = () => {
       description: '',
       min_players: 1,
       max_players: '',
-      features: []
+      features: [],
+      is_public: false
     })
     setImageFile(null)
     setImagePreview('')
@@ -167,7 +233,8 @@ const Drills = () => {
         min_players: parseInt(formData.min_players),
         max_players: formData.max_players ? parseInt(formData.max_players) : null,
         features: formData.features,
-        image_url: imageUrl
+        image_url: imageUrl,
+        is_public: formData.is_public
       }
 
       if (editingDrill) {
@@ -180,8 +247,8 @@ const Drills = () => {
         if (orgId) {
           query = query.eq('organization_id', orgId)
         } else {
-          // Otherwise, ensure the drill belongs to the coach
-          query = query.eq('coach_id', user.id)
+          // Otherwise, ensure the drill belongs to the user who created it
+          query = query.eq('created_by', user.id)
         }
 
         const { error } = await query
@@ -195,10 +262,9 @@ const Drills = () => {
         // If we're in an organization context, set organization_id
         if (orgId) {
           insertData.organization_id = orgId
-        } else {
-          // Otherwise, set coach_id (single tenant)
-          insertData.coach_id = user.id
         }
+        // Always set created_by to track who created the drill
+        insertData.created_by = user.id
 
         const { error } = await supabase
           .from('drills')
@@ -223,7 +289,8 @@ const Drills = () => {
       description: drill.description || '',
       min_players: drill.min_players || 1,
       max_players: drill.max_players || '',
-      features: drill.features || []
+      features: drill.features || [],
+      is_public: drill.is_public || false
     })
     setImageFile(null)
     setImagePreview('')
@@ -246,8 +313,8 @@ const Drills = () => {
       if (orgId) {
         query = query.eq('organization_id', orgId)
       } else {
-        // Otherwise, ensure the drill belongs to the coach
-        query = query.eq('coach_id', user.id)
+        // Otherwise, ensure the drill belongs to the user who created it
+        query = query.eq('created_by', user.id)
       }
 
       const { error } = await query
@@ -273,6 +340,50 @@ const Drills = () => {
       return `${min}-${max} players`
     }
     return `${min}+ players`
+  }
+
+  const getVisibilityText = (drill) => {
+    if (drill.is_public) {
+      return 'Public'
+    } else {
+      const orgName = organizations[drill.organization_id] || 'Unknown Organization'
+      return `${orgName} only`
+    }
+  }
+
+  const filterDrills = (drills) => {
+    return drills.filter(drill => {
+      // Filter by player count
+      if (filters.playerCount) {
+        const playerCount = parseInt(filters.playerCount)
+        const minPlayers = drill.min_players || 1 // Default to 1 if no minimum
+        const maxPlayers = drill.max_players // Can be null for unlimited
+        
+        // Check if player count is within range
+        if (playerCount < minPlayers) {
+          return false
+        }
+        
+        // If there's a maximum, check it
+        if (maxPlayers && playerCount > maxPlayers) {
+          return false
+        }
+      }
+
+      // Filter by features
+      if (filters.selectedFeatures.length > 0) {
+        const drillFeatures = drill.features || []
+        const hasAllSelectedFeatures = filters.selectedFeatures.every(feature => 
+          drillFeatures.includes(feature)
+        )
+        if (!hasAllSelectedFeatures) {
+          return false
+        }
+      }
+      // If no features are selected, don't filter on features (show all drills)
+
+      return true
+    })
   }
 
   // Image upload functions
@@ -383,6 +494,97 @@ const Drills = () => {
                 </div>
               </div>
             )}
+
+            {/* Filter Panel */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                >
+                  {showFilters ? 'Hide Filters' : 'Show Filters'}
+                </button>
+              </div>
+              
+              {showFilters && (
+                <div className="space-y-4">
+                  {/* Player Count Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Number of Players
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={filters.playerCount}
+                      onChange={handlePlayerCountChange}
+                      placeholder="Enter number of players"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Only show drills that can accommodate this number of players
+                    </p>
+                  </div>
+
+                  {/* Features Filter */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Drill Features (must have ALL selected)
+                      </label>
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={selectAllFeatures}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                        >
+                          Select All
+                        </button>
+                        <button
+                          type="button"
+                          onClick={deselectAllFeatures}
+                          className="text-xs text-gray-600 hover:text-gray-800 font-medium"
+                        >
+                          Deselect All
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                      {availableFeatures.map(feature => (
+                        <label key={feature} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={filters.selectedFeatures.includes(feature)}
+                            onChange={() => handleFilterFeatureChange(feature)}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700 capitalize">
+                            {feature.replace('-', ' ')}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {filters.selectedFeatures.length === 0 
+                        ? 'No features selected - showing all drills' 
+                        : `${filters.selectedFeatures.length} of ${availableFeatures.length} features selected`
+                      }
+                    </p>
+                  </div>
+
+                  {/* Clear Filters Button */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={clearFilters}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="px-6 py-4">
               {/* Add/Edit Form */}
@@ -516,6 +718,43 @@ const Drills = () => {
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Visibility
+                      </label>
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="is_public"
+                            value="false"
+                            checked={!formData.is_public}
+                            onChange={() => setFormData(prev => ({ ...prev, is_public: false }))}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Private (Organization only)
+                          </span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="is_public"
+                            value="true"
+                            checked={formData.is_public}
+                            onChange={() => setFormData(prev => ({ ...prev, is_public: true }))}
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                          />
+                          <span className="text-sm text-gray-700">
+                            Public (Visible to all organizations)
+                          </span>
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Public drills can be viewed by users from other organizations
+                      </p>
+                    </div>
+
                     <div className="flex justify-end space-x-3">
                       <button
                         type="button"
@@ -536,74 +775,96 @@ const Drills = () => {
               )}
 
               {/* Drills List */}
-              {drills.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-500 text-lg mb-4">No drills created yet</div>
-                  <p className="text-gray-400">Create your first drill to get started</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {drills.map((drill) => (
-                    <div key={drill.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-xl font-semibold text-gray-900">{drill.title}</h3>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {formatPlayerCount(drill.min_players, drill.max_players)}
-                              </span>
-                            </div>
-                            
-                            {drill.short_description && (
-                              <p className="text-gray-600 mb-3">{drill.short_description}</p>
-                            )}
-                            
-                            {drill.image_url && (
-                              <div className="mb-3">
-                                <img
-                                  src={imageUrls[drill.id] || drill.image_url}
-                                  alt={`${drill.title} drill`}
-                                  className="w-32 h-32 object-cover rounded-md border border-gray-300"
-                                />
+              {(() => {
+                const filteredDrills = filterDrills(drills)
+                return filteredDrills.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-gray-500 text-lg mb-4">
+                      {drills.length === 0 ? 'No drills created yet' : 'No drills match your filters'}
+                    </div>
+                    <p className="text-gray-400">
+                      {drills.length === 0 ? 'Create your first drill to get started' : 'Try adjusting your filters'}
+                    </p>
+                                    </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredDrills.map((drill) => (
+                      <div key={drill.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <div className="p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <h3 className="text-xl font-semibold text-gray-900">{drill.title}</h3>
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  {formatPlayerCount(drill.min_players, drill.max_players)}
+                                </span>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  drill.is_public 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {getVisibilityText(drill)}
+                                </span>
                               </div>
-                            )}
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                              <div>
-                                <span className="font-medium">Features:</span> {formatFeatures(drill.features)}
-                              </div>
-                              {drill.description && (
-                                <div className="md:col-span-2">
-                                  <span className="font-medium">Description:</span>
-                                  <div className="mt-1 text-gray-600 whitespace-pre-wrap">
-                                    {drill.description}
-                                  </div>
+                              
+                              {drill.short_description && (
+                                <p className="text-gray-600 mb-3">{drill.short_description}</p>
+                              )}
+                              
+                              {drill.image_url && (
+                                <div className="mb-3">
+                                  <img
+                                    src={imageUrls[drill.id] || drill.image_url}
+                                    alt={`${drill.title} drill`}
+                                    className="w-32 h-32 object-cover rounded-md border border-gray-300"
+                                  />
                                 </div>
                               )}
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                                <div>
+                                  <span className="font-medium">Features:</span> {formatFeatures(drill.features)}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Visibility:</span> {getVisibilityText(drill)}
+                                </div>
+                                {drill.created_by && (
+                                  <div>
+                                    <span className="font-medium">Created by:</span> {drill.created_by === user.id ? 'You' : 'Another user'}
+                                  </div>
+                                )}
+                                {drill.description && (
+                                  <div className="md:col-span-2">
+                                    <span className="font-medium">Description:</span>
+                                    <div className="mt-1 text-gray-600 whitespace-pre-wrap">
+                                      {drill.description}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex space-x-2 ml-4">
-                            <button
-                              onClick={() => handleEdit(drill)}
-                              className="text-green-600 hover:text-green-800 text-sm font-medium"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(drill.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium"
-                            >
-                              Delete
-                            </button>
+                            
+                            <div className="flex space-x-2 ml-4">
+                              <button
+                                onClick={() => handleEdit(drill)}
+                                className="text-green-600 hover:text-green-800 text-sm font-medium"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(drill.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )
+              })()}
             </div>
           </div>
         </div>

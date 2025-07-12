@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const SessionAttendance = () => {
-  const { sessionId } = useParams()
+  const { sessionId, orgId } = useParams()
   const [session, setSession] = useState(null)
   const [players, setPlayers] = useState([])
   const [attendance, setAttendance] = useState({})
@@ -63,27 +64,73 @@ const SessionAttendance = () => {
     try {
       setLoading(true)
       
-      // Fetch session details
-      const { data: sessionData, error: sessionError } = await supabase
+      // Fetch session details with squad assignments
+      let sessionQuery = supabase
         .from('sessions')
-        .select('*')
+        .select(`
+          *,
+          session_squads (
+            squad_id,
+            squads (
+              id,
+              name
+            )
+          )
+        `)
         .eq('id', sessionId)
-        .eq('coach_id', user.id)
-        .single()
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        sessionQuery = sessionQuery.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        sessionQuery = sessionQuery.eq('coach_id', user.id)
+      }
+
+      const { data: sessionData, error: sessionError } = await sessionQuery.single()
 
       if (sessionError) throw sessionError
       setSession(sessionData)
       setSessionNotes(sessionData.notes || '')
 
-      // Fetch all players for this coach
-      const { data: playersData, error: playersError } = await supabase
+      // Fetch players based on invited squads
+      let playersQuery = supabase
         .from('players')
-        .select('*')
-        .eq('coach_id', user.id)
+        .select(`
+          *,
+          player_squads (
+            squad_id
+          )
+        `)
         .order('first_name', { ascending: true })
 
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        playersQuery = playersQuery.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        playersQuery = playersQuery.eq('coach_id', user.id)
+      }
+
+      const { data: playersData, error: playersError } = await playersQuery
+
       if (playersError) throw playersError
-      setPlayers(playersData || [])
+
+      // Filter players to only include those in invited squads
+      let invitedPlayers = playersData || []
+      
+      if (sessionData.session_squads && sessionData.session_squads.length > 0) {
+        const invitedSquadIds = sessionData.session_squads.map(assignment => assignment.squad_id)
+        
+        invitedPlayers = playersData.filter(player => {
+          // Check if player is in any of the invited squads
+          return player.player_squads && player.player_squads.some(playerSquad => 
+            invitedSquadIds.includes(playerSquad.squad_id)
+          )
+        })
+      }
+
+      setPlayers(invitedPlayers)
 
       // Fetch existing attendance records
       const { data: attendanceData, error: attendanceError } = await supabase
@@ -161,11 +208,20 @@ const SessionAttendance = () => {
       setSuccess('')
 
       // Update session notes
-      const { error: sessionError } = await supabase
+      let sessionUpdateQuery = supabase
         .from('sessions')
         .update({ notes: sessionNotes })
         .eq('id', sessionId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the session belongs to the organization
+      if (orgId) {
+        sessionUpdateQuery = sessionUpdateQuery.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the session belongs to the coach
+        sessionUpdateQuery = sessionUpdateQuery.eq('coach_id', user.id)
+      }
+
+      const { error: sessionError } = await sessionUpdateQuery
 
       if (sessionError) throw sessionError
 
@@ -237,7 +293,7 @@ const SessionAttendance = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Session Not Found</h2>
                 <p className="text-gray-600 mb-4">The session you're looking for doesn't exist or you don't have permission to view it.</p>
                 <Link
-                  to="/sessions"
+                  to={orgId ? `/organisations/${orgId}/sessions` : "/sessions"}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
                   Back to Sessions
@@ -252,6 +308,7 @@ const SessionAttendance = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {orgId && <OrganizationHeader orgId={orgId} />}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
@@ -259,7 +316,7 @@ const SessionAttendance = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/sessions"
+                    to={orgId ? `/organisations/${orgId}/sessions` : "/sessions"}
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
                     ← Back to Sessions
