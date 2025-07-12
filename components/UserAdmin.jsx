@@ -21,36 +21,66 @@ const UserAdmin = () => {
     try {
       setLoading(true)
       
-      // Fetch all users
-      const { data: usersData, error: usersError } = await supabase
-        .from('auth.users')
-        .select('id, email, created_at')
-        .order('created_at', { ascending: false })
+      // Fetch all roles using database function
+      const { data: rolesData, error: rolesError } = await supabase.rpc('get_all_roles')
 
-      if (usersError) throw usersError
+      if (rolesError) {
+        console.error('Error fetching roles:', rolesError)
+        throw rolesError
+      }
 
-      // Fetch all roles
-      const { data: rolesData, error: rolesError } = await supabase
-        .from('roles')
-        .select('*')
-        .order('name')
+      // Get all user roles using database function
+      const { data: userRolesData, error: userRolesError } = await supabase.rpc('get_all_user_roles')
 
-      if (rolesError) throw rolesError
+      if (userRolesError) {
+        console.error('Error fetching user roles:', userRolesError)
+        // If we can't access user_roles, just show the current user
+        setUsers([user].filter(Boolean))
+        setRoles(rolesData || [])
+        setLoading(false)
+        return
+      }
 
-      // Fetch user roles for each user
-      const userRolesData = {}
-      for (const user of usersData || []) {
-        const { data: userRoleData, error: userRoleError } = await supabase
-          .rpc('get_user_roles', { user_uuid: user.id })
-        
-        if (!userRoleError && userRoleData) {
-          userRolesData[user.id] = userRoleData.map(row => row.role_name)
+      // Create a map of users and their roles
+      const userMap = new Map()
+      const userRolesMap = {}
+
+      // Add current user to the list
+      if (user) {
+        userMap.set(user.id, {
+          id: user.id,
+          email: user.email,
+          created_at: user.created_at
+        })
+      }
+
+      // Process user roles data
+      if (userRolesData) {
+        for (const userRole of userRolesData) {
+          const userId = userRole.user_id
+          const roleName = userRole.role_name
+
+          // Add user to map if not already present
+          if (!userMap.has(userId)) {
+            // We don't have full user info, so create a minimal user object
+            userMap.set(userId, {
+              id: userId,
+              email: `User ${userId.slice(0, 8)}...`,
+              created_at: new Date().toISOString()
+            })
+          }
+
+          // Add role to user's roles
+          if (!userRolesMap[userId]) {
+            userRolesMap[userId] = []
+          }
+          userRolesMap[userId].push(roleName)
         }
       }
 
-      setUsers(usersData || [])
+      setUsers(Array.from(userMap.values()))
       setRoles(rolesData || [])
-      setUserRoles(userRolesData)
+      setUserRoles(userRolesMap)
     } catch (err) {
       setError('Failed to fetch data')
       console.error('Error fetching data:', err)
@@ -65,31 +95,30 @@ const UserAdmin = () => {
       setError('')
       setSuccess('')
 
-      const role = roles.find(r => r.name === roleName)
-      if (!role) {
-        setError('Role not found')
-        return
-      }
-
       if (checked) {
-        // Add role
-        const { error } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: userId,
-            role_id: role.id
-          })
+        // Add role using database function
+        const { data, error } = await supabase.rpc('assign_role_to_user', {
+          target_user_id: userId,
+          role_name: roleName
+        })
 
         if (error) throw error
+        if (!data) {
+          setError('Role not found or assignment failed')
+          return
+        }
       } else {
-        // Remove role
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId)
-          .eq('role_id', role.id)
+        // Remove role using database function
+        const { data, error } = await supabase.rpc('remove_role_from_user', {
+          target_user_id: userId,
+          role_name: roleName
+        })
 
         if (error) throw error
+        if (!data) {
+          setError('Role removal failed')
+          return
+        }
       }
 
       // Update local state

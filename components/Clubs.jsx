@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
+import OrganizationHeader from './OrganizationHeader'
 
 const Clubs = () => {
   const [clubs, setClubs] = useState([])
@@ -15,6 +16,8 @@ const Clubs = () => {
   const [logoPreview, setLogoPreview] = useState(null)
   const [currentLogoUrl, setCurrentLogoUrl] = useState('')
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
   useEffect(() => {
     fetchClubs()
@@ -23,11 +26,20 @@ const Clubs = () => {
   const fetchClubs = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('clubs')
         .select('*')
-        .eq('coach_id', user.id)
         .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setClubs(data || [])
@@ -50,27 +62,46 @@ const Clubs = () => {
         logoUrl = await uploadLogo()
       }
 
+      const clubData = {
+        name: formData.name,
+        logo_url: logoUrl
+      }
+
       if (editingClub) {
         // Update existing club
-        const { error } = await supabase
+        let query = supabase
           .from('clubs')
-          .update({ 
-            name: formData.name,
-            logo_url: logoUrl
-          })
+          .update(clubData)
           .eq('id', editingClub.id)
-          .eq('coach_id', user.id)
+
+        // If we're in an organization context, ensure the club belongs to the organization
+        if (orgId) {
+          query = query.eq('organization_id', orgId)
+        } else {
+          // Otherwise, ensure the club belongs to the coach
+          query = query.eq('coach_id', user.id)
+        }
+
+        const { error } = await query
 
         if (error) throw error
       } else {
         // Add new club
+        const insertData = {
+          ...clubData
+        }
+
+        // If we're in an organization context, set organization_id
+        if (orgId) {
+          insertData.organization_id = orgId
+        } else {
+          // Otherwise, set coach_id (single tenant)
+          insertData.coach_id = user.id
+        }
+
         const { error } = await supabase
           .from('clubs')
-          .insert([{ 
-            name: formData.name, 
-            coach_id: user.id,
-            logo_url: logoUrl
-          }])
+          .insert([insertData])
 
         if (error) throw error
       }
@@ -99,11 +130,20 @@ const Clubs = () => {
     if (!confirm('Are you sure you want to delete this club? Players in this club will have their club set to none.')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('clubs')
         .delete()
         .eq('id', clubId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the club belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the club belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -230,23 +270,37 @@ const Clubs = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
+              {orgId ? (
+                <OrganizationHeader title="Clubs" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Clubs</h1>
+                  </div>
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
-                    ← Back to Dashboard
-                  </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Clubs</h1>
+                    Add Club
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                >
-                  Add Club
-                </button>
-              </div>
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Club
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && (

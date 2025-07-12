@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const Sessions = () => {
   const [sessions, setSessions] = useState([])
@@ -10,6 +11,8 @@ const Sessions = () => {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingSession, setEditingSession] = useState(null)
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
   const [formData, setFormData] = useState({
     title: '',
@@ -28,12 +31,21 @@ const Sessions = () => {
   const fetchSessions = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('sessions')
         .select('*')
-        .eq('coach_id', user.id)
         .order('date', { ascending: true })
         .order('start_time', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setSessions(data || [])
@@ -91,11 +103,20 @@ const Sessions = () => {
 
       if (editingSession) {
         // Update existing session
-        const { error } = await supabase
+        let query = supabase
           .from('sessions')
           .update(sessionData)
           .eq('id', editingSession.id)
-          .eq('coach_id', user.id)
+
+        // If we're in an organization context, ensure the session belongs to the organization
+        if (orgId) {
+          query = query.eq('organization_id', orgId)
+        } else {
+          // Otherwise, ensure the session belongs to the coach
+          query = query.eq('coach_id', user.id)
+        }
+
+        const { error } = await query
 
         if (error) {
           console.error('Supabase update error:', error)
@@ -103,12 +124,21 @@ const Sessions = () => {
         }
       } else {
         // Add new session
+        const insertData = {
+          ...sessionData
+        }
+
+        // If we're in an organization context, set organization_id
+        if (orgId) {
+          insertData.organization_id = orgId
+        } else {
+          // Otherwise, set coach_id (single tenant)
+          insertData.coach_id = user.id
+        }
+
         const { error } = await supabase
           .from('sessions')
-          .insert({
-            ...sessionData,
-            coach_id: user.id
-          })
+          .insert(insertData)
 
         if (error) {
           console.error('Supabase insert error:', error)
@@ -142,11 +172,20 @@ const Sessions = () => {
     if (!confirm('Are you sure you want to delete this session?')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('sessions')
         .delete()
         .eq('id', sessionId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the session belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the session belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -198,23 +237,19 @@ const Sessions = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    ← Back to Dashboard
-                  </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Practice Sessions</h1>
-                </div>
-                <div className="flex space-x-3">
-                  <Link
-                    to="/sessions/calendar"
-                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Calendar View
-                  </Link>
+              {orgId ? (
+                <OrganizationHeader title="Sessions" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Sessions</h1>
+                  </div>
                   <button
                     onClick={() => setShowAddForm(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
@@ -222,7 +257,17 @@ const Sessions = () => {
                     Add Session
                   </button>
                 </div>
-              </div>
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Session
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && (

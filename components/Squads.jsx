@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const Squads = () => {
   const [squads, setSquads] = useState([])
@@ -10,6 +11,8 @@ const Squads = () => {
   const [newSquadName, setNewSquadName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
   useEffect(() => {
     fetchSquads()
@@ -18,11 +21,20 @@ const Squads = () => {
   const fetchSquads = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('squads')
         .select('*')
-        .eq('coach_id', user.id)
         .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setSquads(data || [])
@@ -40,12 +52,21 @@ const Squads = () => {
 
     try {
       setIsAdding(true)
+      const squadData = {
+        name: newSquadName.trim()
+      }
+
+      // If we're in an organization context, set organization_id
+      if (orgId) {
+        squadData.organization_id = orgId
+      } else {
+        // Otherwise, set coach_id (single tenant)
+        squadData.coach_id = user.id
+      }
+
       const { error } = await supabase
         .from('squads')
-        .insert({
-          name: newSquadName.trim(),
-          coach_id: user.id
-        })
+        .insert(squadData)
 
       if (error) throw error
       
@@ -63,11 +84,20 @@ const Squads = () => {
     if (!confirm('Are you sure you want to delete this squad? This will remove all player assignments to this squad.')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('squads')
         .delete()
         .eq('id', squadId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the squad belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the squad belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -82,11 +112,20 @@ const Squads = () => {
     if (!newName.trim()) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('squads')
         .update({ name: newName.trim() })
         .eq('id', squadId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the squad belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the squad belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -111,17 +150,21 @@ const Squads = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    ← Back to Dashboard
-                  </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Squads</h1>
+              {orgId ? (
+                <OrganizationHeader title="Squads" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Squads</h1>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {error && (

@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Login from '../components/Login'
+import AcceptInvitation from '../components/AcceptInvitation'
 import Dashboard from '../components/Dashboard'
 import PlayerList from '../components/PlayerList'
+import PlayerProfile from '../components/PlayerProfile'
 import AddPlayer from '../components/AddPlayer'
 import ViewPlayer from '../components/ViewPlayer'
 import EditPlayer from '../components/EditPlayer'
@@ -12,8 +14,11 @@ import ViewSquad from '../components/ViewSquad'
 import Sessions from '../components/Sessions'
 import SessionsCalendar from '../components/SessionsCalendar'
 import SessionAttendance from '../components/SessionAttendance'
+import OrganizationAttendance from '../components/OrganizationAttendance'
 import Drills from '../components/Drills'
 import UserAdmin from '../components/UserAdmin'
+import Organisations from '../components/Organisations'
+import OrganizationDetail from '../components/OrganizationDetail'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import './App.css'
 
@@ -62,11 +67,115 @@ function App() {
               } 
             />
             <Route 
+              path="/accept-invitation" 
+              element={<AcceptInvitation />} 
+            />
+            <Route 
               path="/dashboard" 
               element={
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/player-profile" 
+              element={
+                <RoleProtectedRoute requiredRoles={['player']}>
+                  <PlayerProfile />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Superadmin-only routes */}
+            <Route 
+              path="/organisations" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Organisations />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <OrganizationDetail />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Organization-scoped routes */}
+            <Route 
+              path="/organisations/:orgId/players" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <PlayerList />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/players/add" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <AddPlayer />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/players/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <ViewPlayer />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/players/:id/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <EditPlayer />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/squads" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Squads />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/sessions" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Sessions />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/drills" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Drills />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/clubs" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Clubs />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/attendance" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <OrganizationAttendance />
+                </RoleProtectedRoute>
               } 
             />
             

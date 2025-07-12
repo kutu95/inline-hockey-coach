@@ -1,0 +1,166 @@
+# Deploy Edge Function for Server-Side Email Sending
+
+## Option 1: Deploy via Supabase Dashboard (Recommended)
+
+1. Go to your Supabase project dashboard: https://supabase.com/dashboard/project/iktybklkggzmcynibhbl
+2. Navigate to **Edge Functions** in the left sidebar
+3. Click **Create a new function**
+4. Name it: `send-invitation-email`
+5. Copy the code from `supabase/functions/send-invitation-email/index.ts` into the editor
+6. Click **Deploy**
+
+## Option 2: Install Docker and Deploy via CLI
+
+1. Install Docker Desktop: https://docs.docker.com/desktop/
+2. Start Docker Desktop
+3. Run the deployment command:
+   ```bash
+   supabase functions deploy send-invitation-email
+   ```
+
+## Option 3: Manual Deployment via Dashboard
+
+1. Go to your Supabase project dashboard
+2. Navigate to **Edge Functions**
+3. Create a new function with this code:
+
+```typescript
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    const { email, token, playerName, invitedBy } = await req.json()
+
+    if (!email || !token || !playerName || !invitedBy) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+    if (!RESEND_API_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'Resend API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const SITE_URL = Deno.env.get('SITE_URL') || 'http://localhost:5173'
+    const invitationUrl = `${SITE_URL}/accept-invitation?token=${token}`
+    
+    const emailContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>You've been invited to join Inline Hockey Coach</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #4f46e5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+          .button { display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎯 Inline Hockey Coach</h1>
+          </div>
+          <div class="content">
+            <h2>You've been invited!</h2>
+            <p>Hello!</p>
+            <p>You've been invited by <strong>${invitedBy}</strong> to join the Inline Hockey Coach platform.</p>
+            <p>As a player, you'll be able to:</p>
+            <ul>
+              <li>View your player profile and details</li>
+              <li>See your club and squad information</li>
+              <li>Check session schedules and attendance</li>
+              <li>Access training materials and drills</li>
+            </ul>
+            <p>To get started, click the button below to set up your account:</p>
+            <div style="text-align: center;">
+              <a href="${invitationUrl}" class="button">Accept Invitation</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">
+              This invitation will expire in 7 days. If you have any questions, please contact your coach.
+            </p>
+          </div>
+          <div class="footer">
+            <p>This is an automated message from Inline Hockey Coach</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Inline Hockey Coach <noreply@inlinehockeycoach.com>',
+        to: [email],
+        subject: 'You\'ve been invited to join Inline Hockey Coach',
+        html: emailContent,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      return new Response(
+        JSON.stringify({ error: `Failed to send email: ${error.message}` }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const result = await response.json()
+    return new Response(
+      JSON.stringify({ success: true, data: result }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+})
+```
+
+## Set Environment Variables
+
+After deploying the function, set the environment variables in your Supabase project:
+
+1. Go to your Supabase project dashboard
+2. Navigate to **Settings** > **Edge Functions**
+3. Add these secrets:
+   - `RESEND_API_KEY`: Your Resend API key
+   - `SITE_URL`: Your site URL (e.g., `https://yourdomain.com` or `http://localhost:5173` for development)
+
+## Test the Function
+
+Once deployed, you can test the function by sending an invitation to a player. The function will be called automatically when you click "Send Invitation" on a player's page.
+
+## Troubleshooting
+
+- If emails aren't sending, check the Edge Function logs in the Supabase dashboard
+- Make sure your Resend API key is valid and has the correct permissions
+- Verify that the `SITE_URL` environment variable is set correctly
+- Check that the function is deployed and active in the Edge Functions section 

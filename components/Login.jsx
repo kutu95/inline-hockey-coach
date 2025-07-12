@@ -2,16 +2,14 @@ import { useState } from 'react'
 import { useAuth } from '../src/contexts/AuthContext'
 
 const Login = () => {
-  const [isSignUp, setIsSignUp] = useState(false)
   const [isResetPassword, setIsResetPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  const { signIn, signUp, resetPassword } = useAuth()
+  const { signIn, resetPassword } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,17 +24,6 @@ const Login = () => {
           setError(error.message)
         } else {
           setMessage('Password reset email sent! Check your inbox.')
-        }
-      } else if (isSignUp) {
-        if (password !== confirmPassword) {
-          setError('Passwords do not match')
-          return
-        }
-        const { error } = await signUp(email, password)
-        if (error) {
-          setError(error.message)
-        } else {
-          setMessage('Check your email for the confirmation link!')
         }
       } else {
         const { error } = await signIn(email, password)
@@ -54,10 +41,8 @@ const Login = () => {
   const resetForm = () => {
     setEmail('')
     setPassword('')
-    setConfirmPassword('')
     setError('')
     setMessage('')
-    setIsSignUp(false)
     setIsResetPassword(false)
   }
 
@@ -66,14 +51,12 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isResetPassword ? 'Reset Password' : isSignUp ? 'Create Account' : 'Sign In'}
+            {isResetPassword ? 'Reset Password' : 'Sign In'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             {isResetPassword 
               ? 'Enter your email to receive a password reset link'
-              : isSignUp 
-                ? 'Create your inline hockey coach account'
-                : 'Sign in to your account'
+              : 'Sign in to your account'
             }
           </p>
         </div>
@@ -98,43 +81,22 @@ const Login = () => {
             </div>
             
             {!isResetPassword && (
-              <>
-                <div>
-                  <label htmlFor="password" className="sr-only">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete={isSignUp ? "new-password" : "current-password"}
-                    required
-                    className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm ${!isSignUp ? 'rounded-b-md' : ''}`}
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                
-                {isSignUp && (
-                  <div>
-                    <label htmlFor="confirmPassword" className="sr-only">
-                      Confirm Password
-                    </label>
-                    <input
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder="Confirm Password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-                )}
-              </>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             )}
           </div>
 
@@ -166,9 +128,7 @@ const Login = () => {
                 ? 'Processing...' 
                 : isResetPassword 
                   ? 'Send Reset Link' 
-                  : isSignUp 
-                    ? 'Create Account' 
-                    : 'Sign In'
+                  : 'Sign In'
               }
             </button>
           </div>
@@ -195,22 +155,10 @@ const Login = () => {
                 >
                   Back to sign in
                 </button>
-              ) : isSignUp ? (
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(false)}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Already have an account?
-                </button>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsSignUp(true)}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Need an account?
-                </button>
+                <div className="text-center text-gray-600">
+                  <p>Need an account? Contact your coach for an invitation.</p>
+                </div>
               )}
             </div>
           </div>

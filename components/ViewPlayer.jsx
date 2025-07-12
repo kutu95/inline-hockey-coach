@@ -4,9 +4,11 @@ import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { formatAccreditations, getAccreditationBadges, calculateAge, formatBirthdate } from '../src/utils/formatters'
 import SquadAssignment from './SquadAssignment'
+import { sendInvitationEmail } from '../src/lib/email'
+import OrganizationHeader from './OrganizationHeader'
 
 const ViewPlayer = () => {
-  const { id } = useParams()
+  const { id, orgId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const [player, setPlayer] = useState(null)
@@ -14,6 +16,7 @@ const ViewPlayer = () => {
   const [error, setError] = useState('')
   const [signedUrl, setSignedUrl] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const [sendingInvitation, setSendingInvitation] = useState(false)
 
   useEffect(() => {
     fetchPlayer()
@@ -80,13 +83,18 @@ const ViewPlayer = () => {
   const fetchPlayer = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      
+      // Check if user is a player viewing their own profile
+      const isPlayerViewingSelf = user && await checkIfPlayerViewingSelf()
+      
+      let query = supabase
         .from('players')
         .select(`
           *,
           clubs:club_id (
             id,
-            name
+            name,
+            logo_url
           ),
           player_squads (
             squads (
@@ -96,8 +104,16 @@ const ViewPlayer = () => {
           )
         `)
         .eq('id', id)
-        .eq('coach_id', user.id)
-        .single()
+      
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else if (!isPlayerViewingSelf) {
+        // Otherwise, if player is not viewing their own profile, filter by coach_id
+        query = query.eq('coach_id', user.id)
+      }
+      
+      const { data, error } = await query.single()
 
       if (error) throw error
       setPlayer(data)
@@ -109,22 +125,104 @@ const ViewPlayer = () => {
     }
   }
 
+  const checkIfPlayerViewingSelf = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id')
+        .eq('id', id)
+        .eq('coach_id', user.id)
+        .single()
+      
+      return !error && data
+    } catch (err) {
+      return false
+    }
+  }
+
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this player?')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('players')
         .delete()
         .eq('id', id)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the player belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the player belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
-      navigate('/players')
+      navigate(orgId ? `/organisations/${orgId}/players` : '/players')
     } catch (err) {
       setError('Failed to delete player')
       console.error('Error deleting player:', err)
+    }
+  }
+
+  const handleSendInvitation = async () => {
+    if (!player.email) {
+      setError('Player must have an email address to send an invitation')
+      return
+    }
+
+    setSendingInvitation(true)
+    setError('')
+
+    try {
+      // Generate invitation token
+      const { data: tokenData } = await supabase.rpc('generate_invitation_token')
+      const token = tokenData || crypto.randomUUID()
+
+      // Create invitation record
+      const { error: invitationError } = await supabase
+        .from('invitations')
+        .insert({
+          email: player.email,
+          token: token,
+          player_id: player.id,
+          invited_by: user.id,
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+        })
+
+      if (invitationError) throw invitationError
+
+      // Send invitation email
+      try {
+        const result = await sendInvitationEmail(
+          player.email,
+          token,
+          `${player.first_name} ${player.last_name}`,
+          user.email
+        )
+        setError('') // Clear any previous errors
+        
+        if (result.manual) {
+          // Manual invitation link was shown
+          alert('Invitation created! Please copy the link that was shown and send it to the player manually.')
+        } else {
+          // Email was sent successfully
+          alert('Invitation sent successfully! Check the player\'s email for the invitation link.')
+        }
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError)
+        // Fallback: Show the invitation link in the browser
+        const invitationUrl = `${window.location.origin}/accept-invitation?token=${token}`
+        alert(`Invitation created! Email sending failed, but you can share this link with the player:\n\n${invitationUrl}`)
+      }
+    } catch (err) {
+      setError('Failed to send invitation: ' + err.message)
+      console.error('Error sending invitation:', err)
+    } finally {
+      setSendingInvitation(false)
     }
   }
 
@@ -165,27 +263,40 @@ const ViewPlayer = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    ← Back to Dashboard
-                  </Link>
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                      {player.first_name} {player.last_name}
-                    </h1>
-                    <p className="text-gray-600 mt-1">
-                      {player.jersey_number ? `#${player.jersey_number} • ` : ''}{formatAccreditations(player.accreditations)}
-                    </p>
+              {orgId ? (
+                <OrganizationHeader title="Player Details" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/players"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Players
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Player Details</h1>
+                  </div>
+                  <div className="flex space-x-3">
+                    <Link
+                      to={`/players/${id}/edit`}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Edit Player
+                    </Link>
+                    <button
+                      onClick={handleDelete}
+                      className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Delete Player
+                    </button>
                   </div>
                 </div>
-                <div className="flex space-x-3">
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end space-x-3">
                   <Link
-                    to={`/players/${id}/edit`}
-                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    to={`/organisations/${orgId}/players/${id}/edit`}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Edit Player
                   </Link>
@@ -196,7 +307,7 @@ const ViewPlayer = () => {
                     Delete Player
                   </button>
                 </div>
-              </div>
+              )}
             </div>
 
             {error && (
@@ -313,6 +424,20 @@ const ViewPlayer = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Email:</span>
                         <span className="font-medium">{player.email}</span>
+                      </div>
+                    )}
+                    {player.email && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Account Status:</span>
+                        <span className={`font-medium ${player.user_id ? 'text-green-600' : 'text-orange-600'}`}>
+                          {player.user_id ? 'Invited ✓' : 'Not Invited'}
+                        </span>
+                      </div>
+                    )}
+                    {player.skate_australia_number && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Skate Australia Number:</span>
+                        <span className="font-medium">{player.skate_australia_number}</span>
                       </div>
                     )}
                   </div>

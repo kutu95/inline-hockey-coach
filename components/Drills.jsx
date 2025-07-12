@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const Drills = () => {
   const [drills, setDrills] = useState([])
@@ -10,6 +11,8 @@ const Drills = () => {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingDrill, setEditingDrill] = useState(null)
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
   const [formData, setFormData] = useState({
     title: '',
@@ -77,11 +80,20 @@ const Drills = () => {
   const fetchDrills = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('drills')
         .select('*')
-        .eq('coach_id', user.id)
         .order('title', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setDrills(data || [])
@@ -159,20 +171,38 @@ const Drills = () => {
       }
 
       if (editingDrill) {
-        const { error } = await supabase
+        let query = supabase
           .from('drills')
           .update(drillData)
           .eq('id', editingDrill.id)
-          .eq('coach_id', user.id)
+
+        // If we're in an organization context, ensure the drill belongs to the organization
+        if (orgId) {
+          query = query.eq('organization_id', orgId)
+        } else {
+          // Otherwise, ensure the drill belongs to the coach
+          query = query.eq('coach_id', user.id)
+        }
+
+        const { error } = await query
 
         if (error) throw error
       } else {
+        const insertData = {
+          ...drillData
+        }
+
+        // If we're in an organization context, set organization_id
+        if (orgId) {
+          insertData.organization_id = orgId
+        } else {
+          // Otherwise, set coach_id (single tenant)
+          insertData.coach_id = user.id
+        }
+
         const { error } = await supabase
           .from('drills')
-          .insert({
-            ...drillData,
-            coach_id: user.id
-          })
+          .insert(insertData)
 
         if (error) throw error
       }
@@ -207,11 +237,20 @@ const Drills = () => {
     if (!confirm('Are you sure you want to delete this drill?')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('drills')
         .delete()
         .eq('id', drillId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the drill belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the drill belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -304,23 +343,37 @@ const Drills = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
+              {orgId ? (
+                <OrganizationHeader title="Drills" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
+                  </div>
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
-                    ← Back to Dashboard
-                  </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
+                    Add Drill
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                >
-                  Add Drill
-                </button>
-              </div>
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Drill
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && (

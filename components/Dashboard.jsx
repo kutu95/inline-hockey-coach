@@ -12,6 +12,8 @@ const Dashboard = () => {
     }
   }
 
+
+
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case 'admin':
@@ -38,7 +40,7 @@ const Dashboard = () => {
                   className="h-12 w-12 object-contain"
                 />
                 <h1 className="text-3xl font-bold text-gray-900">
-                  WA Inline Hockey Coaching Dashboard
+                  Backcheck Dashboard
                 </h1>
               </div>
               <button
@@ -72,6 +74,21 @@ const Dashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Superadmin-only section */}
+              {hasRole('superadmin') && (
+                <Link
+                  to="/organisations"
+                  className="bg-purple-50 border border-purple-200 rounded-lg p-4 hover:bg-purple-100 transition-colors duration-200"
+                >
+                  <h3 className="text-lg font-semibold text-purple-900 mb-2">
+                    Organisations
+                  </h3>
+                  <p className="text-purple-700">
+                    Manage hockey organisations and multi-tenant access
+                  </p>
+                </Link>
+              )}
+
               {/* Admin-only section */}
               {hasRole('admin') && (
                 <Link
@@ -155,6 +172,18 @@ const Dashboard = () => {
               {/* Player access */}
               {hasRole('player') && (
                 <>
+                  <Link
+                    to="/player-profile"
+                    className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200"
+                  >
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                      My Profile
+                    </h3>
+                    <p className="text-blue-700">
+                      View and update your player information
+                    </p>
+                  </Link>
+                  
                   <Link
                     to="/sessions"
                     className="bg-purple-50 border border-purple-200 rounded-lg p-4 hover:bg-purple-100 transition-colors duration-200"

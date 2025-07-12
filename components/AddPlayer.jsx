@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import { sendInvitationEmail } from '../src/lib/email'
 
 const AddPlayer = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [clubs, setClubs] = useState([])
   const [loadingClubs, setLoadingClubs] = useState(true)
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
+  const [sendInvitation, setSendInvitation] = useState(false)
+  const [sendingInvitation, setSendingInvitation] = useState(false)
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -23,6 +27,7 @@ const AddPlayer = () => {
     club_id: '',
     phone: '',
     email: '',
+    skate_australia_number: '',
     emergency_contact: '',
     emergency_phone: '',
     notes: ''
@@ -126,10 +131,18 @@ const AddPlayer = () => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess('')
 
     // Validate accreditations
     if (formData.accreditations.length === 0) {
       setError('Please select at least one accreditation')
+      setLoading(false)
+      return
+    }
+
+    // Validate email if sending invitation
+    if (sendInvitation && !formData.email) {
+      setError('Email is required to send an invitation')
       setLoading(false)
       return
     }
@@ -140,7 +153,8 @@ const AddPlayer = () => {
         photoUrl = await uploadPhoto()
       }
 
-      const { error } = await supabase
+      // Insert player
+      const { data: playerData, error } = await supabase
         .from('players')
         .insert([
           {
@@ -153,10 +167,55 @@ const AddPlayer = () => {
             photo_url: photoUrl
           }
         ])
+        .select()
+        .single()
 
       if (error) throw error
 
-      navigate('/players')
+      // Send invitation if requested
+      if (sendInvitation && formData.email) {
+        setSendingInvitation(true)
+        try {
+          // Generate invitation token
+          const { data: tokenData } = await supabase.rpc('generate_invitation_token')
+          const token = tokenData || crypto.randomUUID()
+
+          // Create invitation record
+          const { error: invitationError } = await supabase
+            .from('invitations')
+            .insert({
+              email: formData.email,
+              token: token,
+              player_id: playerData.id,
+              invited_by: user.id,
+              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+            })
+
+          if (invitationError) throw invitationError
+
+          // Send invitation email
+          await sendInvitationEmail(
+            formData.email,
+            token,
+            `${formData.first_name} ${formData.last_name}`,
+            user.email
+          )
+
+          setSuccess('Player added successfully and invitation sent!')
+        } catch (invitationErr) {
+          console.error('Error sending invitation:', invitationErr)
+          setError('Player added but failed to send invitation. Please try again.')
+        } finally {
+          setSendingInvitation(false)
+        }
+      } else {
+        setSuccess('Player added successfully!')
+      }
+
+      // Navigate after a short delay to show success message
+      setTimeout(() => {
+        navigate('/players')
+      }, 2000)
     } catch (err) {
       setError(err.message || 'Failed to add player')
       console.error('Error adding player:', err)
@@ -194,6 +253,14 @@ const AddPlayer = () => {
               <div className="px-6 py-4">
                 <div className="rounded-md bg-red-50 p-4">
                   <div className="text-sm text-red-700">{error}</div>
+                </div>
+              </div>
+            )}
+
+            {success && (
+              <div className="px-6 py-4">
+                <div className="rounded-md bg-green-50 p-4">
+                  <div className="text-sm text-green-700">{success}</div>
                 </div>
               </div>
             )}
@@ -395,6 +462,24 @@ const AddPlayer = () => {
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="skate_australia_number" className="block text-sm font-medium text-gray-700 mb-2">
+                    Skate Australia Number
+                  </label>
+                  <input
+                    type="text"
+                    id="skate_australia_number"
+                    name="skate_australia_number"
+                    value={formData.skate_australia_number}
+                    onChange={handleChange}
+                    placeholder="Optional - max 6 digits"
+                    maxLength="6"
+                    pattern="[0-9]*"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Optional: Enter the player's Skate Australia registration number (max 6 digits)</p>
+                </div>
+
                 {/* Emergency Contact */}
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-medium text-gray-900 mb-4 mt-6">Emergency Contact</h3>
@@ -443,6 +528,44 @@ const AddPlayer = () => {
                     placeholder="Any additional notes about the player..."
                   />
                 </div>
+
+                {/* Invitation Section */}
+                <div className="md:col-span-2">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 mt-6">Account Invitation</h3>
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-blue-800">Send Account Invitation</h4>
+                        <p className="text-sm text-blue-700 mt-1">
+                          Check this box to send an invitation email to the player. They will be able to set up their own account and access the platform.
+                        </p>
+                        <div className="mt-3">
+                          <label className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={sendInvitation}
+                              onChange={(e) => setSendInvitation(e.target.checked)}
+                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                            />
+                            <span className="ml-2 text-sm text-blue-800">
+                              Send invitation email to {formData.email || 'player'}
+                            </span>
+                          </label>
+                        </div>
+                        {sendInvitation && !formData.email && (
+                          <p className="text-sm text-red-600 mt-2">
+                            Please enter an email address above to send an invitation.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-end space-x-4 mt-8">
@@ -455,10 +578,10 @@ const AddPlayer = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (sendInvitation && sendingInvitation)}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Adding...' : 'Add Player'}
+                  {loading ? 'Adding...' : sendingInvitation ? 'Sending Invitation...' : 'Add Player'}
                 </button>
               </div>
             </form>

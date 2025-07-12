@@ -26,35 +26,36 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Fetching roles for user:', userId)
       
-      // First check if the user_roles table exists
-      const { data: tableCheck, error: tableError } = await supabase
-        .from('user_roles')
-        .select('id')
-        .limit(1)
+      // Try server-side function first
+      const { data: serverData, error: serverError } = await supabase.rpc('get_user_roles', {
+        user_uuid: userId
+      })
       
-      if (tableError) {
-        console.log('user_roles table does not exist or no access:', tableError.message)
-        return []
+      if (!serverError && serverData) {
+        console.log('Fetched roles from server function:', serverData)
+        // Extract role_name from the objects returned by the server function
+        const roles = serverData.map(row => row.role_name).filter(Boolean)
+        return roles
       }
       
+      // Fallback to client-side query if server function doesn't exist
+      console.log('Server function not available, using client-side query')
       const { data, error } = await supabase
         .from('user_roles')
         .select(`
-          role_id,
           roles (
-            name,
-            description
+            name
           )
         `)
         .eq('user_id', userId)
       
       if (error) {
-        console.error('Error fetching user roles:', error)
+        console.log('Error with client-side query:', error.message)
         return []
       }
       
       const roles = data ? data.map(row => row.roles?.name).filter(Boolean) : []
-      console.log('Fetched roles:', roles)
+      console.log('Fetched roles from client query:', roles)
       return roles
     } catch (err) {
       console.error('Error fetching user roles:', err)
@@ -107,7 +108,17 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
+    // Add timeout to prevent infinite hanging
+    const timeoutId = setTimeout(() => {
+      console.log('AuthProvider: Timeout reached, forcing loading to false')
+      setLoading(false)
+    }, 10000) // 10 seconds
+
     getSession()
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -137,16 +148,12 @@ export const AuthProvider = ({ children }) => {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
-  const signUp = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-    return { data, error }
-  }
+  // Note: signUp is removed as we now use invitation-based registration
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -180,7 +187,6 @@ export const AuthProvider = ({ children }) => {
     user,
     userRoles,
     loading,
-    signUp,
     signIn,
     signOut,
     resetPassword,

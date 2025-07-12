@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { formatAccreditations, getAccreditationBadges, calculateAge, formatBirthdate } from '../src/utils/formatters'
+import OrganizationHeader from './OrganizationHeader'
 
 const PlayerList = () => {
   const [players, setPlayers] = useState([])
@@ -14,7 +15,8 @@ const PlayerList = () => {
   const [signedUrls, setSignedUrls] = useState({})
   const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
   const { user } = useAuth()
-
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
 
   useEffect(() => {
@@ -88,13 +90,14 @@ const PlayerList = () => {
   const fetchPlayers = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('players')
         .select(`
           *,
           clubs:club_id (
             id,
-            name
+            name,
+            logo_url
           ),
           player_squads (
             squads (
@@ -103,8 +106,17 @@ const PlayerList = () => {
             )
           )
         `)
-        .eq('coach_id', user.id)
         .order(sortField, { ascending: sortDirection === 'asc' })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setPlayers(data || [])
@@ -120,11 +132,20 @@ const PlayerList = () => {
     if (!confirm('Are you sure you want to delete this player?')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('players')
         .delete()
         .eq('id', playerId)
-        .eq('coach_id', user.id)
+
+      // If we're in an organization context, ensure the player belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the player belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -166,23 +187,37 @@ const PlayerList = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              {orgId ? (
+                <OrganizationHeader title="Players" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Players</h1>
+                  </div>
                   <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
+                    to="/players/add"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
-                    ← Back to Dashboard
+                    Add Player
                   </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Players</h1>
                 </div>
-                <Link
-                  to="/players/add"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                >
-                  Add Player
-                </Link>
-              </div>
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end">
+                  <Link
+                    to={`/organisations/${orgId}/players/add`}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Player
+                  </Link>
+                </div>
+              )}
             </div>
 
             {error && (
@@ -235,7 +270,7 @@ const PlayerList = () => {
                 <div className="text-center py-12">
                   <div className="text-gray-500 text-lg mb-4">No players found</div>
                   <Link
-                    to="/players/add"
+                    to={orgId ? `/organisations/${orgId}/players/add` : "/players/add"}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Your First Player
@@ -324,17 +359,31 @@ const PlayerList = () => {
                                   </div>
                                 )}
                               </div>
+                              {/* Contact Information */}
+                              {(player.phone || player.email || player.skate_australia_number) && (
+                                <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                  {player.phone && (
+                                    <span>📞 {player.phone}</span>
+                                  )}
+                                  {player.email && (
+                                    <span>📧 {player.email}</span>
+                                  )}
+                                  {player.skate_australia_number && (
+                                    <span>🏒 SA: {player.skate_australia_number}</span>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="flex space-x-2">
                             <Link
-                              to={`/players/${player.id}`}
+                              to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                             >
                               View
                             </Link>
                             <Link
-                              to={`/players/${player.id}/edit`}
+                              to={orgId ? `/organisations/${orgId}/players/${player.id}/edit` : `/players/${player.id}/edit`}
                               className="text-green-600 hover:text-green-800 text-sm font-medium"
                             >
                               Edit

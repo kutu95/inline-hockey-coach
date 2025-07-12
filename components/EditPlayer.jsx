@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const EditPlayer = () => {
-  const { id } = useParams()
+  const { id, orgId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -26,6 +27,7 @@ const EditPlayer = () => {
     club_id: '',
     phone: '',
     email: '',
+    skate_australia_number: '',
     emergency_contact: '',
     emergency_phone: '',
     notes: ''
@@ -41,11 +43,20 @@ const EditPlayer = () => {
   const fetchClubs = async () => {
     try {
       setLoadingClubs(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('clubs')
         .select('id, name')
-        .eq('coach_id', user.id)
         .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setClubs(data || [])
@@ -59,12 +70,20 @@ const EditPlayer = () => {
   const fetchPlayer = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('players')
         .select('*')
         .eq('id', id)
-        .eq('coach_id', user.id)
-        .single()
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query.single()
 
       if (error) throw error
       
@@ -78,6 +97,7 @@ const EditPlayer = () => {
         club_id: data.club_id || '',
         phone: data.phone || '',
         email: data.email || '',
+        skate_australia_number: data.skate_australia_number || '',
         emergency_contact: data.emergency_contact || '',
         emergency_phone: data.emergency_phone || '',
         notes: data.notes || ''
@@ -172,23 +192,32 @@ const EditPlayer = () => {
         photoUrl = await uploadPhoto()
       }
 
-              const { error } = await supabase
-          .from('players')
-          .update({
-            ...formData,
-            birthdate: formData.birthdate || null,
-            jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
-            hand: formData.hand || null,
-            club_id: formData.club_id || null,
-            photo_url: photoUrl,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', id)
-          .eq('coach_id', user.id)
+      let query = supabase
+        .from('players')
+        .update({
+          ...formData,
+          birthdate: formData.birthdate || null,
+          jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
+          hand: formData.hand || null,
+          club_id: formData.club_id || null,
+          photo_url: photoUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+
+      // If we're in an organization context, ensure the player belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the player belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
 
-      navigate(`/players/${id}`)
+      navigate(orgId ? `/organisations/${orgId}/players/${id}` : `/players/${id}`)
     } catch (err) {
       setError('Failed to update player')
       console.error('Error updating player:', err)
@@ -211,23 +240,21 @@ const EditPlayer = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    ← Back to Dashboard
-                  </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Edit Player</h1>
+              {orgId ? (
+                <OrganizationHeader title="Edit Player" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to={`/players/${id}`}
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Player
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Edit Player</h1>
+                  </div>
                 </div>
-                <button
-                  onClick={() => navigate(`/players/${id}`)}
-                  className="text-gray-600 hover:text-gray-800 font-medium"
-                >
-                  ← Back to Player
-                </button>
-              </div>
+              )}
             </div>
 
             {error && (
@@ -445,6 +472,24 @@ const EditPlayer = () => {
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="skate_australia_number" className="block text-sm font-medium text-gray-700 mb-2">
+                    Skate Australia Number
+                  </label>
+                  <input
+                    type="text"
+                    id="skate_australia_number"
+                    name="skate_australia_number"
+                    value={formData.skate_australia_number}
+                    onChange={handleChange}
+                    placeholder="Optional - max 6 digits"
+                    maxLength="6"
+                    pattern="[0-9]*"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Optional: Enter the player's Skate Australia registration number (max 6 digits)</p>
+                </div>
+
                 {/* Emergency Contact */}
                 <div className="md:col-span-2">
                   <h3 className="text-lg font-medium text-gray-900 mb-4 mt-6">Emergency Contact</h3>
@@ -498,7 +543,7 @@ const EditPlayer = () => {
               <div className="flex justify-end space-x-4 mt-8">
                 <button
                   type="button"
-                  onClick={() => navigate(`/players/${id}`)}
+                  onClick={() => navigate(orgId ? `/organisations/${orgId}/players/${id}` : `/players/${id}`)}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   Cancel
