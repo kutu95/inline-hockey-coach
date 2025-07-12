@@ -39,10 +39,66 @@ const Clubs = () => {
         query = query.eq('coach_id', user.id)
       }
 
-      const { data, error } = await query
+      const { data: clubsData, error } = await query
 
       if (error) throw error
-      setClubs(data || [])
+
+      // Fetch player statistics for each club
+      const clubsWithStats = await Promise.all(
+        clubsData.map(async (club) => {
+          let playersQuery = supabase
+            .from('players')
+            .select('accreditations')
+            .eq('club_id', club.id)
+
+          // If we're in an organization context, filter by organization_id
+          if (orgId) {
+            playersQuery = playersQuery.eq('organization_id', orgId)
+          } else {
+            // Otherwise, filter by coach_id (single tenant)
+            playersQuery = playersQuery.eq('coach_id', user.id)
+          }
+
+          const { data: players, error: playersError } = await playersQuery
+
+          if (playersError) {
+            console.error('Error fetching players for club:', club.id, playersError)
+            return {
+              ...club,
+              totalMembers: 0,
+              totalPlayers: 0,
+              totalCoaches: 0,
+              totalReferees: 0,
+              totalGoalies: 0
+            }
+          }
+
+          const totalMembers = players.length
+          const totalPlayers = players.filter(p => 
+            p.accreditations && (p.accreditations.includes('skater') || p.accreditations.includes('goalie'))
+          ).length
+          const totalCoaches = players.filter(p => 
+            p.accreditations && p.accreditations.includes('coach')
+          ).length
+          const totalReferees = players.filter(p => 
+            p.accreditations && p.accreditations.includes('referee')
+          ).length
+          const totalGoalies = players.filter(p => 
+            p.accreditations && p.accreditations.includes('goalie')
+          ).length
+
+          return {
+            ...club,
+            totalMembers,
+            totalPlayers,
+            totalCoaches,
+            totalReferees,
+            totalGoalies
+          }
+        })
+      )
+
+      setClubs(clubsWithStats || [])
     } catch (err) {
       setError('Failed to fetch clubs')
       console.error('Error fetching clubs:', err)
@@ -419,7 +475,38 @@ const Clubs = () => {
                         )}
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900">{club.name}</h3>
-                          <p className="text-sm text-gray-500">Created {new Date(club.created_at).toLocaleDateString()}</p>
+                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-600">
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                              </svg>
+                              {club.totalMembers} members
+                            </span>
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                              {club.totalPlayers} players
+                            </span>
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                              </svg>
+                              {club.totalCoaches} coaches
+                            </span>
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                              </svg>
+                              {club.totalGoalies} goalies
+                            </span>
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {club.totalReferees} referees
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex space-x-2">

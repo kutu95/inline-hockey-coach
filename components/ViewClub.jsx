@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../src/lib/supabase';
 import { useAuth } from '../src/contexts/AuthContext';
 import OrganizationHeader from './OrganizationHeader';
+import { getAccreditationBadges, calculateAge } from '../src/utils/formatters';
 
 const ViewClub = () => {
   const params = useParams();
@@ -51,6 +52,13 @@ const ViewClub = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper functions to count players by accreditation
+  const countPlayersByAccreditation = (accreditation) => {
+    return players.filter(player => 
+      player.accreditations && player.accreditations.includes(accreditation)
+    ).length;
   };
 
   if (loading) {
@@ -157,7 +165,7 @@ const ViewClub = () => {
         </div>
 
         {/* Club Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -177,24 +185,6 @@ const ViewClub = () => {
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold text-gray-900">Active Players</h3>
-                <p className="text-2xl font-bold text-green-600">
-                  {players.filter(p => p.status === 'active').length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                   <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -204,7 +194,43 @@ const ViewClub = () => {
               <div className="ml-4">
                 <h3 className="text-lg font-semibold text-gray-900">Coaches</h3>
                 <p className="text-2xl font-bold text-purple-600">
-                  {players.filter(p => p.role === 'coach').length}
+                  {countPlayersByAccreditation('coach')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white shadow rounded-lg p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Referees</h3>
+                <p className="text-2xl font-bold text-orange-600">
+                  {countPlayersByAccreditation('referee')}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white shadow rounded-lg p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-semibold text-gray-900">Goalies</h3>
+                <p className="text-2xl font-bold text-green-600">
+                  {countPlayersByAccreditation('goalie')}
                 </p>
               </div>
             </div>
@@ -214,7 +240,18 @@ const ViewClub = () => {
         {/* Players List */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Club Members</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Club Members</h2>
+              <Link
+                to={orgId ? `/organisations/${orgId}/players/add?club_id=${clubId}` : `/players/add?club_id=${clubId}`}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Player
+              </Link>
+            </div>
           </div>
           
           {players.length === 0 ? (
@@ -227,48 +264,65 @@ const ViewClub = () => {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {players.map((player) => (
-                <div key={player.id} className="p-6 flex items-center justify-between hover:bg-gray-50">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-gray-600">
-                          {player.first_name?.[0]}{player.last_name?.[0]}
-                        </span>
+              {players.map((player) => {
+                const accreditationBadges = getAccreditationBadges(player.accreditations);
+                return (
+                  <div key={player.id} className="p-6 flex items-center justify-between hover:bg-gray-50">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-medium text-gray-600">
+                            {player.first_name?.[0]}{player.last_name?.[0]}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900">
+                          {player.first_name} {player.last_name}
+                        </h3>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          {player.email && (
+                            <span>{player.email}</span>
+                          )}
+                          {player.phone && (
+                            <span>{player.phone}</span>
+                          )}
+                          {player.birthdate && (
+                            <span>{calculateAge(player.birthdate)} years old</span>
+                          )}
+                        </div>
+                        {accreditationBadges.length > 0 && (
+                          <div className="flex items-center space-x-2 mt-2">
+                            {accreditationBadges.map((badge, index) => (
+                              <span
+                                key={index}
+                                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badge.color}`}
+                              >
+                                {badge.text}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {player.first_name} {player.last_name}
-                      </h3>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span className="capitalize">{player.role || 'player'}</span>
-                        {player.email && (
-                          <span>{player.email}</span>
-                        )}
-                        {player.phone && (
-                          <span>{player.phone}</span>
-                        )}
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        player.status === 'active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {player.status || 'active'}
+                      </span>
+                      <Link
+                        to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      >
+                        View Profile
+                      </Link>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      player.status === 'active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {player.status || 'active'}
-                    </span>
-                    <Link
-                      to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                    >
-                      View Profile
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

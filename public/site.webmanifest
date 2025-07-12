@@ -1,7 +1,7 @@
 {
-  "name": "Inline Hockey Coach",
-  "short_name": "Hockey Coach",
-  "description": "Manage your inline hockey team, players, sessions, and drills",
+  "name": "Backcheck",
+  "short_name": "Backcheck",
+  "description": "Manage your inline hockey club, players, sessions, and drills with Backcheck.",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",

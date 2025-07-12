@@ -35,9 +35,9 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
                 <img 
-                  src="/logo-192x192.png" 
-                  alt="Inline Hockey Coach Logo" 
-                  className="h-12 w-12 object-contain"
+                  src="/Backcheck_large.png" 
+                  alt="Backcheck Logo" 
+                  className="h-16 w-auto object-contain"
                 />
                 <h1 className="text-3xl font-bold text-gray-900">
                   Backcheck Dashboard

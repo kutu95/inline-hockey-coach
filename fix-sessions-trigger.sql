@@ -1,40 +1,41 @@
--- Fix the sessions table trigger issue
--- This script will either add the missing updated_at column or fix the trigger
+-- Fix sessions table triggers for updated_at field
+-- This script ensures the sessions table has proper triggers
 
--- First, let's check if the updated_at column exists
+-- First, check if the updated_at column exists
 DO $$
 BEGIN
-    -- Check if updated_at column exists
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_name = 'sessions' AND column_name = 'updated_at'
     ) THEN
-        -- Add the updated_at column if it doesn't exist
         ALTER TABLE sessions ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
-        RAISE NOTICE 'Added updated_at column to sessions table';
-    ELSE
-        RAISE NOTICE 'updated_at column already exists in sessions table';
     END IF;
 END $$;
 
--- Update the trigger function to handle the case where updated_at might not exist
-CREATE OR REPLACE FUNCTION update_updated_at_column()
+-- Drop existing trigger if it exists
+DROP TRIGGER IF EXISTS update_sessions_updated_at ON sessions;
+
+-- Create the trigger function if it doesn't exist
+CREATE OR REPLACE FUNCTION update_sessions_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Only update updated_at if the column exists
-    IF EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = TG_TABLE_NAME AND column_name = 'updated_at'
-    ) THEN
-        NEW.updated_at = NOW();
-    END IF;
+    NEW.updated_at = NOW();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Drop and recreate the trigger
-DROP TRIGGER IF EXISTS update_sessions_updated_at ON sessions;
-CREATE TRIGGER update_sessions_updated_at 
-    BEFORE UPDATE ON sessions 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column(); 
+-- Create the trigger
+CREATE TRIGGER update_sessions_updated_at
+    BEFORE UPDATE ON sessions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_sessions_updated_at();
+
+-- Verify the trigger exists
+SELECT 
+    trigger_name, 
+    event_manipulation, 
+    action_timing, 
+    action_statement
+FROM information_schema.triggers 
+WHERE event_object_table = 'sessions' 
+AND trigger_name = 'update_sessions_updated_at'; 

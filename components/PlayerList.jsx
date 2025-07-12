@@ -7,6 +7,7 @@ import OrganizationHeader from './OrganizationHeader'
 
 const PlayerList = () => {
   const [players, setPlayers] = useState([])
+  const [filteredPlayers, setFilteredPlayers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [sortField, setSortField] = useState('created_at')
@@ -14,6 +15,15 @@ const PlayerList = () => {
   // State for signed URLs
   const [signedUrls, setSignedUrls] = useState({})
   const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
+  // Filter states
+  const [filters, setFilters] = useState({
+    minAge: '',
+    maxAge: '',
+    accreditations: [],
+    division: '',
+    hand: ''
+  })
+  const [showFilters, setShowFilters] = useState(false)
   const { user } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
@@ -128,6 +138,67 @@ const PlayerList = () => {
     }
   }
 
+  // Apply filters to players
+  useEffect(() => {
+    let filtered = [...players]
+
+    // Filter by age
+    if (filters.minAge) {
+      const minAge = parseInt(filters.minAge)
+      filtered = filtered.filter(player => {
+        if (!player.birthdate) return false
+        const age = calculateAge(player.birthdate)
+        return age >= minAge
+      })
+    }
+
+    if (filters.maxAge) {
+      const maxAge = parseInt(filters.maxAge)
+      filtered = filtered.filter(player => {
+        if (!player.birthdate) return false
+        const age = calculateAge(player.birthdate)
+        return age <= maxAge
+      })
+    }
+
+    // Filter by accreditations
+    if (filters.accreditations.length > 0) {
+      filtered = filtered.filter(player => {
+        if (!player.accreditations || player.accreditations.length === 0) return false
+        return filters.accreditations.some(acc => player.accreditations.includes(acc))
+      })
+    }
+
+    // Filter by hand
+    if (filters.hand) {
+      filtered = filtered.filter(player => player.hand === filters.hand)
+    }
+
+    // Filter by division
+    if (filters.division) {
+      const currentYear = new Date().getFullYear()
+      filtered = filtered.filter(player => {
+        if (!player.birthdate) return false
+        const age = calculateAge(player.birthdate)
+        
+        switch (filters.division) {
+          case 'Seniors':
+            return age >= 17
+          case 'Masters':
+            return age >= 35
+          case 'Veterans':
+            return age >= 45
+          case 'Supavets':
+            return age >= 50
+          default:
+            return true
+        }
+      })
+    }
+
+    setFilteredPlayers(filtered)
+  }, [players, filters])
+
   const handleDelete = async (playerId) => {
     if (!confirm('Are you sure you want to delete this player?')) return
 
@@ -172,6 +243,35 @@ const PlayerList = () => {
     }
     return sortDirection === 'asc' ? '↑' : '↓'
   }
+
+  // Filter handlers
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }))
+  }
+
+  const handleAccreditationToggle = (accreditation) => {
+    setFilters(prev => ({
+      ...prev,
+      accreditations: prev.accreditations.includes(accreditation)
+        ? prev.accreditations.filter(acc => acc !== accreditation)
+        : [...prev.accreditations, accreditation]
+    }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      minAge: '',
+      maxAge: '',
+      accreditations: [],
+      division: '',
+      hand: ''
+    })
+  }
+
+  const availableAccreditations = ['skater', 'goalie', 'coach', 'referee']
 
   if (loading) {
     return (
@@ -228,8 +328,105 @@ const PlayerList = () => {
               </div>
             )}
 
+            {/* Filter Panel */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                  </svg>
+                  <span>Filters {showFilters ? '▼' : '▶'}</span>
+                </button>
+                {(filters.minAge || filters.maxAge || filters.accreditations.length > 0 || filters.division || filters.hand) && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+
+              {showFilters && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Age Filters */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Age Range</label>
+                    <div className="flex space-x-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minAge}
+                        onChange={(e) => handleFilterChange('minAge', e.target.value)}
+                        className="w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                      <span className="text-gray-500 self-center">to</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxAge}
+                        onChange={(e) => handleFilterChange('maxAge', e.target.value)}
+                        className="w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Division Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Division</label>
+                    <select
+                      value={filters.division}
+                      onChange={(e) => handleFilterChange('division', e.target.value)}
+                      className="w-full px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option value="">All Divisions</option>
+                      <option value="Seniors">Seniors (17+)</option>
+                      <option value="Masters">Masters (35+)</option>
+                      <option value="Veterans">Veterans (45+)</option>
+                      <option value="Supavets">Supavets (50+)</option>
+                    </select>
+                  </div>
+
+                  {/* Hand Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Dominant Hand</label>
+                    <select
+                      value={filters.hand}
+                      onChange={(e) => handleFilterChange('hand', e.target.value)}
+                      className="w-full px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option value="">All Hands</option>
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                    </select>
+                  </div>
+
+                  {/* Accreditations Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Accreditations</label>
+                    <div className="space-y-1">
+                      {availableAccreditations.map(accreditation => (
+                        <label key={accreditation} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.accreditations.includes(accreditation)}
+                            onChange={() => handleAccreditationToggle(accreditation)}
+                            className="mr-2 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span className="text-sm text-gray-700 capitalize">{accreditation}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="px-6 py-4">
-              {players.length > 0 && (
+              {filteredPlayers.length > 0 && (
                 <div className="mb-4 flex items-center space-x-4">
                   <span className="text-sm font-medium text-gray-700">Sort by:</span>
                   <div className="flex space-x-2">
@@ -266,7 +463,7 @@ const PlayerList = () => {
                   </div>
                 </div>
               )}
-              {players.length === 0 ? (
+              {filteredPlayers.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-gray-500 text-lg mb-4">No players found</div>
                   <Link
@@ -278,7 +475,7 @@ const PlayerList = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {players.map((player) => (
+                  {filteredPlayers.map((player) => (
                     <div key={player.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-4">
                         <div className="flex items-center justify-between">

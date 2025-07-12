@@ -434,6 +434,17 @@ const ViewPlayer = () => {
                         </span>
                       </div>
                     )}
+                    {player.email && !player.user_id && (
+                      <div className="mt-4">
+                        <button
+                          onClick={handleSendInvitation}
+                          disabled={sendingInvitation}
+                          className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                        >
+                          {sendingInvitation ? 'Sending Invitation...' : 'Send Account Invitation'}
+                        </button>
+                      </div>
+                    )}
                     {player.skate_australia_number && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Skate Australia Number:</span>

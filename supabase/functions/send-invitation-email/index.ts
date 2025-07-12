@@ -12,6 +12,7 @@ serve(async (req) => {
   }
 
   try {
+    // Allow anonymous access - no authentication required
     const { email, token, playerName, invitedBy } = await req.json()
 
     if (!email || !token || !playerName || !invitedBy) {

@@ -21,7 +21,8 @@ const Drills = () => {
     min_players: 1,
     max_players: '',
     features: [],
-    is_public: false
+    is_public: false,
+    level: 'beginner'
   })
 
   const availableFeatures = [
@@ -195,7 +196,8 @@ const Drills = () => {
       min_players: 1,
       max_players: '',
       features: [],
-      is_public: false
+      is_public: false,
+      level: 'beginner'
     })
     setImageFile(null)
     setImagePreview('')
@@ -234,7 +236,8 @@ const Drills = () => {
         max_players: formData.max_players ? parseInt(formData.max_players) : null,
         features: formData.features,
         image_url: imageUrl,
-        is_public: formData.is_public
+        is_public: formData.is_public,
+        level: formData.level
       }
 
       if (editingDrill) {
@@ -290,7 +293,8 @@ const Drills = () => {
       min_players: drill.min_players || 1,
       max_players: drill.max_players || '',
       features: drill.features || [],
-      is_public: drill.is_public || false
+      is_public: drill.is_public || false,
+      level: drill.level || 'beginner'
     })
     setImageFile(null)
     setImagePreview('')
@@ -657,6 +661,23 @@ const Drills = () => {
                           placeholder="Leave empty for unlimited"
                         />
                       </div>
+
+                      <div>
+                        <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-2">
+                          Difficulty Level
+                        </label>
+                        <select
+                          id="level"
+                          name="level"
+                          value={formData.level}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="beginner">Beginner</option>
+                          <option value="intermediate">Intermediate</option>
+                          <option value="advanced">Advanced</option>
+                        </select>
+                      </div>
                     </div>
 
                     <div>
@@ -785,7 +806,7 @@ const Drills = () => {
                     <p className="text-gray-400">
                       {drills.length === 0 ? 'Create your first drill to get started' : 'Try adjusting your filters'}
                     </p>
-                                    </div>
+                  </div>
                 ) : (
                   <div className="space-y-4">
                     {filteredDrills.map((drill) => (
@@ -798,13 +819,22 @@ const Drills = () => {
                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                   {formatPlayerCount(drill.min_players, drill.max_players)}
                                 </span>
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  drill.is_public 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-gray-100 text-gray-800'
-                                }`}>
-                                  {getVisibilityText(drill)}
-                                </span>
+                                                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                drill.is_public 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {getVisibilityText(drill)}
+                              </span>
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                drill.level === 'beginner' 
+                                  ? 'bg-green-100 text-green-800'
+                                  : drill.level === 'intermediate'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {drill.level ? drill.level.charAt(0).toUpperCase() + drill.level.slice(1) : 'Beginner'}
+                              </span>
                               </div>
                               
                               {drill.short_description && (
@@ -826,7 +856,7 @@ const Drills = () => {
                                   <span className="font-medium">Features:</span> {formatFeatures(drill.features)}
                                 </div>
                                 <div>
-                                  <span className="font-medium">Visibility:</span> {getVisibilityText(drill)}
+                                  <span className="font-medium">Level:</span> {drill.level ? drill.level.charAt(0).toUpperCase() + drill.level.slice(1) : 'Beginner'}
                                 </div>
                                 {drill.created_by && (
                                   <div>

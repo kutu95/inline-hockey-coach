@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/send-invitation.js": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "RESEND_API_KEY": "@resend_api_key"
+  }
+} 

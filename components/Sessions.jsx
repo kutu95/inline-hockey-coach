@@ -202,16 +202,23 @@ const Sessions = () => {
         }
       })
       
-      // Remove system fields that shouldn't be updated manually
+      // Temporarily exclude system fields until database is fixed
       delete sessionData.updated_at
       delete sessionData.created_at
       let sessionId
 
       if (editingSession) {
-        // Update existing session
+        // Update existing session - use a different approach to avoid trigger issues
+        const updateData = { ...sessionData }
+        
+        // Remove any fields that might cause issues
+        delete updateData.id
+        delete updateData.created_at
+        delete updateData.updated_at
+        
         let query = supabase
           .from('sessions')
-          .update(sessionData)
+          .update(updateData)
           .eq('id', editingSession.id)
 
         // If we're in an organization context, ensure the session belongs to the organization

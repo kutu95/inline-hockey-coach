@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { sendInvitationEmail } from '../src/lib/email'
@@ -7,6 +7,10 @@ import { sendInvitationEmail } from '../src/lib/email'
 const AddPlayer = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search))
+  const clubId = searchParams.get('club_id') // Get club_id from query parameter
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -24,7 +28,7 @@ const AddPlayer = () => {
     accreditations: [],
     jersey_number: '',
     hand: '',
-    club_id: '',
+    club_id: clubId || '', // Pre-fill with club_id if provided
     phone: '',
     email: '',
     skate_australia_number: '',
@@ -42,11 +46,20 @@ const AddPlayer = () => {
   const fetchClubs = async () => {
     try {
       setLoadingClubs(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('clubs')
         .select('id, name')
-        .eq('coach_id', user.id)
         .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setClubs(data || [])
@@ -153,20 +166,29 @@ const AddPlayer = () => {
         photoUrl = await uploadPhoto()
       }
 
+      // Prepare player data
+      const playerDataToInsert = {
+        ...formData,
+        birthdate: formData.birthdate || null,
+        jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
+        hand: formData.hand || null,
+        club_id: formData.club_id || null,
+        photo_url: photoUrl
+      }
+
+      // If we're in an organization context, set organization_id
+      if (orgId) {
+        playerDataToInsert.organization_id = orgId
+        // Don't set coach_id in organization context
+      } else {
+        // Otherwise, set coach_id (single tenant)
+        playerDataToInsert.coach_id = user.id
+      }
+
       // Insert player
       const { data: playerData, error } = await supabase
         .from('players')
-        .insert([
-          {
-            ...formData,
-            birthdate: formData.birthdate || null,
-            coach_id: user.id,
-            jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
-            hand: formData.hand || null,
-            club_id: formData.club_id || null,
-            photo_url: photoUrl
-          }
-        ])
+        .insert([playerDataToInsert])
         .select()
         .single()
 
@@ -214,7 +236,18 @@ const AddPlayer = () => {
 
       // Navigate after a short delay to show success message
       setTimeout(() => {
-        navigate('/players')
+        if (clubId) {
+          // If we came from a club page, redirect back to that club
+          if (orgId) {
+            navigate(`/organisations/${orgId}/clubs/${clubId}`)
+          } else {
+            navigate(`/clubs/${clubId}`)
+          }
+        } else if (orgId) {
+          navigate(`/organisations/${orgId}/players`)
+        } else {
+          navigate('/players')
+        }
       }, 2000)
     } catch (err) {
       setError(err.message || 'Failed to add player')
@@ -233,7 +266,7 @@ const AddPlayer = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/dashboard"
+                    to={orgId ? `/organisations/${orgId}` : '/dashboard'}
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
                     ← Back to Dashboard
@@ -241,10 +274,21 @@ const AddPlayer = () => {
                   <h1 className="text-3xl font-bold text-gray-900">Add Player</h1>
                 </div>
                 <button
-                  onClick={() => navigate('/players')}
+                  onClick={() => {
+                    if (clubId) {
+                      // If we came from a club page, go back to that club
+                      if (orgId) {
+                        navigate(`/organisations/${orgId}/clubs/${clubId}`)
+                      } else {
+                        navigate(`/clubs/${clubId}`)
+                      }
+                    } else {
+                      navigate(orgId ? `/organisations/${orgId}/players` : '/players')
+                    }
+                  }}
                   className="text-gray-600 hover:text-gray-800 font-medium"
                 >
-                  ← Back to Players
+                  ← Back to {clubId ? 'Club' : 'Players'}
                 </button>
               </div>
             </div>
@@ -569,13 +613,13 @@ const AddPlayer = () => {
               </div>
 
               <div className="flex justify-end space-x-4 mt-8">
-                <button
-                  type="button"
-                  onClick={() => navigate('/players')}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  Cancel
-                </button>
+                                  <button
+                    type="button"
+                    onClick={() => navigate(orgId ? `/organisations/${orgId}/players` : '/players')}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    Cancel
+                  </button>
                 <button
                   type="submit"
                   disabled={loading || (sendInvitation && sendingInvitation)}

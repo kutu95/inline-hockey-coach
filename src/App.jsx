@@ -22,6 +22,7 @@ import Organisations from '../components/Organisations'
 import OrganizationDetail from '../components/OrganizationDetail'
 import Locations from '../components/Locations'
 import AdminPanel from '../components/AdminPanel'
+import Reports from '../components/Reports'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import './App.css'
 
@@ -210,6 +211,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin']}>
                   <AdminPanel />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/reports" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <Reports />
                 </RoleProtectedRoute>
               } 
             />
