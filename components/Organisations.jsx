@@ -403,30 +403,34 @@ const Organisations = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {organisations.map((org) => (
                       <tr key={org.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            {org.logo_url && (
-                              <img
-                                src={org.logo_url}
-                                alt={`${org.name} logo`}
-                                className="w-8 h-8 object-contain mr-3"
-                                onError={(e) => {
-                                  e.target.style.display = 'none'
-                                }}
-                              />
-                            )}
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{org.name}</div>
+                        <td className="px-6 py-4 whitespace-nowrap" colSpan={3} style={{ padding: 0 }}>
+                          <Link
+                            to={`/organisations/${org.id}`}
+                            className="flex items-center w-full h-full group hover:bg-indigo-50 transition rounded"
+                            style={{ display: 'block', width: '100%', height: '100%', textDecoration: 'none' }}
+                          >
+                            <div className="flex items-center px-6 py-4 w-full">
+                              {org.logo_url && (
+                                <img
+                                  src={org.logo_url}
+                                  alt={`${org.name} logo`}
+                                  className="w-8 h-8 object-contain mr-3"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                  }}
+                                />
+                              )}
+                              <div>
+                                <div className="text-sm font-medium text-gray-900 group-hover:text-indigo-700">{org.name}</div>
+                                <div className="text-sm text-gray-500 max-w-xs truncate group-hover:text-indigo-700">
+                                  {org.description || 'No description'}
+                                </div>
+                                <div className="text-xs text-gray-400 group-hover:text-indigo-700">
+                                  {new Date(org.created_at).toLocaleDateString()}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-500 max-w-xs truncate">
-                            {org.description || 'No description'}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(org.created_at).toLocaleDateString()}
+                          </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <Link
