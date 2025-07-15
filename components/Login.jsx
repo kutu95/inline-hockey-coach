@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 
 const Login = () => {
@@ -11,6 +12,15 @@ const Login = () => {
 
   const { signIn, resetPassword } = useAuth()
 
+  // Debug logging for production troubleshooting
+  console.log('Login component - Environment check:')
+  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL)
+  console.log('VITE_SUPABASE_ANON_KEY exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY)
+  console.log('VITE_SUPABASE_ANON_KEY length:', import.meta.env.VITE_SUPABASE_ANON_KEY?.length)
+  console.log('Supabase client URL:', supabase.supabaseUrl)
+  console.log('Supabase client anon key exists:', !!supabase.supabaseKey)
+  console.log('Supabase client anon key length:', supabase.supabaseKey?.length)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -19,19 +29,27 @@ const Login = () => {
 
     try {
       if (isResetPassword) {
+        console.log('Attempting password reset for:', email)
         const { error } = await resetPassword(email)
         if (error) {
+          console.error('Password reset error:', error)
           setError(error.message)
         } else {
+          console.log('Password reset email sent successfully')
           setMessage('Password reset email sent! Check your inbox.')
         }
       } else {
+        console.log('Attempting to sign in with:', { email, password: '***' })
         const { error } = await signIn(email, password)
         if (error) {
+          console.error('Sign in error:', error)
           setError(error.message)
+        } else {
+          console.log('Sign in successful')
         }
       }
     } catch (err) {
+      console.error('Unexpected error during authentication:', err)
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
