@@ -127,23 +127,42 @@ export const AuthProvider = ({ children }) => {
     return () => {
       clearTimeout(timeoutId)
     }
+  }, [])
 
+  // Separate useEffect for auth state changes
+  useEffect(() => {
+    console.log('AuthProvider: Setting up auth state change listener')
+    
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('AuthProvider: Auth state change event:', event, 'session:', !!session)
+        console.log('AuthProvider: Auth state change event:', event, 'session:', !!session, 'current user:', user?.email)
+        
+        // Don't process if this is the initial setup and we already have a user
+        if (event === 'INITIAL_SESSION' && user) {
+          console.log('AuthProvider: Skipping INITIAL_SESSION as user already exists')
+          return
+        }
+        
         try {
           const currentUser = session?.user ?? null
           console.log('AuthProvider: New user:', currentUser?.email)
-          setUser(currentUser)
           
-          if (currentUser) {
-            console.log('AuthProvider: Fetching roles for new user')
-            const roles = await fetchUserRoles(currentUser.id)
-            setUserRoles(roles)
+          // Only update if the user has actually changed
+          if (currentUser?.id !== user?.id) {
+            console.log('AuthProvider: User changed, updating state')
+            setUser(currentUser)
+            
+            if (currentUser) {
+              console.log('AuthProvider: Fetching roles for new user')
+              const roles = await fetchUserRoles(currentUser.id)
+              setUserRoles(roles)
+            } else {
+              console.log('AuthProvider: No new user, setting empty roles')
+              setUserRoles([])
+            }
           } else {
-            console.log('AuthProvider: No new user, setting empty roles')
-            setUserRoles([])
+            console.log('AuthProvider: User unchanged, skipping update')
           }
         } catch (error) {
           console.error('Error in auth state change:', error)
@@ -157,9 +176,10 @@ export const AuthProvider = ({ children }) => {
     )
 
     return () => {
+      console.log('AuthProvider: Cleaning up auth state change listener')
       subscription.unsubscribe()
     }
-  }, [])
+  }, [user?.id]) // Add user.id as dependency to prevent unnecessary re-subscriptions
 
   // Note: signUp is removed as we now use invitation-based registration
 
@@ -173,6 +193,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     console.log('AuthContext: signOut called')
+    console.log('AuthContext: signOut call stack:', new Error().stack)
     try {
       // First, clear the local state immediately
       setUser(null)
