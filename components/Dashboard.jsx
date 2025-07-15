@@ -11,11 +11,15 @@ const Dashboard = () => {
       const { error } = await signOut()
       if (error) {
         console.error('Sign out error:', error)
+        // Even if there's an error, the local state should be cleared
+        // and the user should be redirected to login
       } else {
         console.log('Sign out successful')
       }
     } catch (error) {
       console.error('Error signing out:', error)
+      // Even if there's an error, the local state should be cleared
+      // and the user should be redirected to login
     }
   }
 

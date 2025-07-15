@@ -85,7 +85,15 @@ export const AuthProvider = ({ children }) => {
     const getSession = async () => {
       try {
         console.log('AuthProvider: Getting session')
-        const { data: { session } } = await supabase.auth.getSession()
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Error getting session:', error)
+          setUser(null)
+          setUserRoles([])
+          return
+        }
+        
         const currentUser = session?.user ?? null
         console.log('AuthProvider: Current user:', currentUser?.email)
         setUser(currentUser)
@@ -165,9 +173,25 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     console.log('AuthContext: signOut called')
-    const { error } = await supabase.auth.signOut()
-    console.log('AuthContext: signOut result - error:', error)
-    return { error }
+    try {
+      // First, clear the local state immediately
+      setUser(null)
+      setUserRoles([])
+      
+      // Then attempt to sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+      console.log('AuthContext: signOut result - error:', error)
+      
+      // Even if there's an error, we've already cleared the local state
+      // so the user will be redirected to login
+      return { error }
+    } catch (err) {
+      console.log('AuthContext: signOut caught error:', err)
+      // Even if there's an error, clear the local state
+      setUser(null)
+      setUserRoles([])
+      return { error: err }
+    }
   }
 
   const resetPassword = async (email) => {
