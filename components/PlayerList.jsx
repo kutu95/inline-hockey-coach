@@ -24,6 +24,8 @@ const PlayerList = () => {
     hand: ''
   })
   const [showFilters, setShowFilters] = useState(false)
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('')
   const { user } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
@@ -142,6 +144,20 @@ const PlayerList = () => {
   useEffect(() => {
     let filtered = [...players]
 
+    // Filter by search term (first name and last name)
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase().trim()
+      filtered = filtered.filter(player => {
+        const firstName = (player.first_name || '').toLowerCase()
+        const lastName = (player.last_name || '').toLowerCase()
+        const fullName = `${firstName} ${lastName}`.trim()
+        
+        return firstName.includes(searchLower) || 
+               lastName.includes(searchLower) || 
+               fullName.includes(searchLower)
+      })
+    }
+
     // Filter by age
     if (filters.minAge) {
       const minAge = parseInt(filters.minAge)
@@ -197,7 +213,7 @@ const PlayerList = () => {
     }
 
     setFilteredPlayers(filtered)
-  }, [players, filters])
+  }, [players, filters, searchTerm])
 
   const handleDelete = async (playerId) => {
     if (!confirm('Are you sure you want to delete this player?')) return
@@ -269,6 +285,7 @@ const PlayerList = () => {
       division: '',
       hand: ''
     })
+    setSearchTerm('')
   }
 
   const availableAccreditations = ['skater', 'goalie', 'coach', 'referee']
@@ -328,6 +345,30 @@ const PlayerList = () => {
               </div>
             )}
 
+            {/* Search Bar */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="max-w-md">
+                <label htmlFor="player-search" className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Players
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="player-search"
+                    placeholder="Search by first name or surname..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-3 py-2 pl-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Filter Panel */}
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between mb-4">
@@ -340,7 +381,7 @@ const PlayerList = () => {
                   </svg>
                   <span>Filters {showFilters ? '▼' : '▶'}</span>
                 </button>
-                {(filters.minAge || filters.maxAge || filters.accreditations.length > 0 || filters.division || filters.hand) && (
+                {(searchTerm || filters.minAge || filters.maxAge || filters.accreditations.length > 0 || filters.division || filters.hand) && (
                   <button
                     onClick={clearFilters}
                     className="text-sm text-red-600 hover:text-red-800"

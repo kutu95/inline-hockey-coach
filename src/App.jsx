@@ -151,6 +151,14 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/squads/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <ViewSquad />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/sessions" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin']}>

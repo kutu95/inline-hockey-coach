@@ -5,7 +5,7 @@ import { useAuth } from '../src/contexts/AuthContext'
 import { formatAccreditations, getAccreditationBadges, calculateAge } from '../src/utils/formatters'
 
 const ViewSquad = () => {
-  const { id } = useParams()
+  const { id, orgId } = useParams()
   const { user } = useAuth()
   const [squad, setSquad] = useState(null)
   const [players, setPlayers] = useState([])
@@ -87,12 +87,20 @@ const ViewSquad = () => {
       setLoading(true)
       
       // Fetch squad details
-      const { data: squadData, error: squadError } = await supabase
+      let squadQuery = supabase
         .from('squads')
         .select('*')
         .eq('id', id)
-        .eq('coach_id', user.id)
-        .single()
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        squadQuery = squadQuery.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        squadQuery = squadQuery.eq('coach_id', user.id)
+      }
+
+      const { data: squadData, error: squadError } = await squadQuery.single()
 
       if (squadError) throw squadError
       setSquad(squadData)
@@ -184,7 +192,7 @@ const ViewSquad = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Squad Not Found</h2>
                 <p className="text-gray-600 mb-6">The squad you're looking for doesn't exist or you don't have permission to view it.</p>
                 <Link
-                  to="/squads"
+                  to={orgId ? `/organisations/${orgId}/squads` : "/squads"}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
                   Back to Squads
@@ -206,7 +214,7 @@ const ViewSquad = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/squads"
+                    to={orgId ? `/organisations/${orgId}/squads` : "/squads"}
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
                     ← Back to Squads
@@ -309,7 +317,7 @@ const ViewSquad = () => {
                           </div>
                           <div className="flex space-x-2">
                             <Link
-                              to={`/players/${player.id}`}
+                              to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                             >
                               View

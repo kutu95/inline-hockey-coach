@@ -209,6 +209,7 @@ const Squads = () => {
                     <SquadItem
                       key={squad.id}
                       squad={squad}
+                      orgId={orgId}
                       onDelete={handleDeleteSquad}
                       onEdit={handleEditSquad}
                     />
@@ -223,7 +224,7 @@ const Squads = () => {
   )
 }
 
-const SquadItem = ({ squad, onDelete, onEdit }) => {
+const SquadItem = ({ squad, orgId, onDelete, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(squad.name)
 
@@ -267,13 +268,18 @@ const SquadItem = ({ squad, onDelete, onEdit }) => {
                 </button>
               </div>
             ) : (
-              <h3 className="text-lg font-semibold text-gray-900">{squad.name}</h3>
+              <Link
+                to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
+                className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-150"
+              >
+                {squad.name}
+              </Link>
             )}
           </div>
           {!isEditing && (
             <div className="flex space-x-2">
               <Link
-                to={`/squads/${squad.id}`}
+                to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
                 className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
               >
                 View Players
