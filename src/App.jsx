@@ -63,14 +63,10 @@ const PublicRoute = ({ children }) => {
     return <RoleBasedRedirect />
   }
   
-  // If user exists but roles are still loading, show loading
+  // If user exists but has no roles, redirect to dashboard as fallback
   if (user && userRoles.length === 0) {
-    console.log('PublicRoute: User exists but roles not loaded yet, showing spinner')
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-      </div>
-    )
+    console.log('PublicRoute: User exists but has no roles, redirecting to dashboard')
+    return <Navigate to="/dashboard" replace />
   }
   
   // If no user, show the login page

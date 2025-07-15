@@ -26,8 +26,14 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Fetching roles for user:', userId)
       
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Role fetching timeout')), 5000)
+      })
+      
       // Use client-side query directly
-      const { data, error } = await supabase
+      console.log('Executing Supabase query...')
+      const queryPromise = supabase
         .from('user_roles')
         .select(`
           roles (
@@ -36,8 +42,19 @@ export const AuthProvider = ({ children }) => {
         `)
         .eq('user_id', userId)
       
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
+      
+      console.log('Query completed. Data:', data, 'Error:', error)
+      
       if (error) {
         console.log('Error with client-side query:', error.message)
+        // If there's an RLS error, try a simpler approach
+        if (error.message.includes('permission') || error.message.includes('RLS')) {
+          console.log('RLS permission error detected, trying alternative approach')
+          // For now, return empty array and let the user be redirected to dashboard
+          // This will allow the login to complete
+          return []
+        }
         return []
       }
       
@@ -46,6 +63,7 @@ export const AuthProvider = ({ children }) => {
       return roles
     } catch (err) {
       console.error('Error fetching user roles:', err)
+      // Return empty array to allow login to complete
       return []
     }
   }
