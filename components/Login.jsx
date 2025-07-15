@@ -12,14 +12,7 @@ const Login = () => {
 
   const { signIn, resetPassword } = useAuth()
 
-  // Debug logging for production troubleshooting
-  console.log('Login component - Environment check:')
-  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL)
-  console.log('VITE_SUPABASE_ANON_KEY exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY)
-  console.log('VITE_SUPABASE_ANON_KEY length:', import.meta.env.VITE_SUPABASE_ANON_KEY?.length)
-  console.log('Supabase client URL:', supabase.supabaseUrl)
-  console.log('Supabase client anon key exists:', !!supabase.supabaseKey)
-  console.log('Supabase client anon key length:', supabase.supabaseKey?.length)
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()

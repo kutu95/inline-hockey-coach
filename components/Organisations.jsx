@@ -11,7 +11,15 @@ const Organisations = () => {
   const [editingOrg, setEditingOrg] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [logoPreview, setLogoPreview] = useState(null)
-  const { hasRole, userRoles } = useAuth()
+  const { hasRole, userRoles, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
 
   const [formData, setFormData] = useState({
     name: '',
@@ -258,12 +266,20 @@ const Organisations = () => {
                     <p className="text-gray-600 mt-1">Manage hockey organisations</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setShowCreateForm(true)}
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                >
-                  Add Organisation
-                </button>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setShowCreateForm(true)}
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Organisation
+                  </button>
+                  <button
+                    onClick={handleSignOut}
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               </div>
             </div>
 

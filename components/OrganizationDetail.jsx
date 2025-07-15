@@ -10,7 +10,15 @@ const OrganisationDetail = () => {
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { hasRole } = useAuth()
+  const { hasRole, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
 
   useEffect(() => {
     console.log('OrganizationDetail: orgId =', orgId)
@@ -136,12 +144,12 @@ const OrganisationDetail = () => {
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                                  <Link
-                  to="/organisations"
-                  className="text-gray-600 hover:text-gray-800 font-medium"
-                >
-                  ← Back to Organisations
-                </Link>
+                  <Link
+                    to="/organisations"
+                    className="text-gray-600 hover:text-gray-800 font-medium"
+                  >
+                    ← Back to Organisations
+                  </Link>
                   <div className="flex items-center">
                     {organisation.logo_url && (
                       <img
@@ -161,8 +169,16 @@ const OrganisationDetail = () => {
                     </div>
                   </div>
                 </div>
-                <div className="text-sm text-gray-500">
-                  Created {new Date(organisation.created_at).toLocaleDateString()}
+                <div className="flex items-center space-x-3">
+                  <div className="text-sm text-gray-500">
+                    Created {new Date(organisation.created_at).toLocaleDateString()}
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Sign Out
+                  </button>
                 </div>
               </div>
             </div>

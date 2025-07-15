@@ -24,6 +24,7 @@ import Locations from '../components/Locations'
 import AdminPanel from '../components/AdminPanel'
 import Reports from '../components/Reports'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
+import RoleBasedRedirect from '../components/RoleBasedRedirect'
 import './App.css'
 
 // Protected Route Component
@@ -41,7 +42,7 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" replace />
 }
 
-// Public Route Component (redirects to dashboard if already logged in)
+// Public Route Component (redirects based on user role if already logged in)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth()
   
@@ -53,7 +54,7 @@ const PublicRoute = ({ children }) => {
     )
   }
   
-  return user ? <Navigate to="/dashboard" replace /> : children
+  return user ? <RoleBasedRedirect /> : children
 }
 
 function App() {
@@ -338,7 +339,7 @@ function App() {
                 </RoleProtectedRoute>
               } 
             />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<RoleBasedRedirect />} />
           </Routes>
         </div>
       </Router>
