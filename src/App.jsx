@@ -44,9 +44,12 @@ const ProtectedRoute = ({ children }) => {
 
 // Public Route Component (redirects based on user role if already logged in)
 const PublicRoute = ({ children }) => {
-  const { user, loading } = useAuth()
+  const { user, userRoles, loading } = useAuth()
+  
+  console.log('PublicRoute: user:', !!user, 'userRoles:', userRoles, 'loading:', loading)
   
   if (loading) {
+    console.log('PublicRoute: Still loading, showing spinner')
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -54,7 +57,25 @@ const PublicRoute = ({ children }) => {
     )
   }
   
-  return user ? <RoleBasedRedirect /> : children
+  // If user exists and roles are loaded, redirect based on role
+  if (user && userRoles.length > 0) {
+    console.log('PublicRoute: User exists and roles loaded, redirecting')
+    return <RoleBasedRedirect />
+  }
+  
+  // If user exists but roles are still loading, show loading
+  if (user && userRoles.length === 0) {
+    console.log('PublicRoute: User exists but roles not loaded yet, showing spinner')
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+  
+  // If no user, show the login page
+  console.log('PublicRoute: No user, showing login page')
+  return children
 }
 
 function App() {
