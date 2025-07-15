@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('AuthProvider: Auth state change:', event)
+        console.log('AuthProvider: Auth state change event:', event, 'session:', !!session)
         try {
           const currentUser = session?.user ?? null
           console.log('AuthProvider: New user:', currentUser?.email)
@@ -164,7 +164,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signOut = async () => {
+    console.log('AuthContext: signOut called')
     const { error } = await supabase.auth.signOut()
+    console.log('AuthContext: signOut result - error:', error)
     return { error }
   }
 

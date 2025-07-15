@@ -5,8 +5,15 @@ const Dashboard = () => {
   const { user, signOut, userRoles, hasRole } = useAuth()
 
   const handleSignOut = async () => {
+    console.log('Sign out button clicked')
     try {
-      await signOut()
+      console.log('Calling signOut function...')
+      const { error } = await signOut()
+      if (error) {
+        console.error('Sign out error:', error)
+      } else {
+        console.log('Sign out successful')
+      }
     } catch (error) {
       console.error('Error signing out:', error)
     }
