@@ -26,20 +26,7 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('Fetching roles for user:', userId)
       
-      // Try server-side function first
-      const { data: serverData, error: serverError } = await supabase.rpc('get_user_roles', {
-        user_uuid: userId
-      })
-      
-      if (!serverError && serverData) {
-        console.log('Fetched roles from server function:', serverData)
-        // Extract role_name from the objects returned by the server function
-        const roles = serverData.map(row => row.role_name).filter(Boolean)
-        return roles
-      }
-      
-      // Fallback to client-side query if server function doesn't exist
-      console.log('Server function not available, using client-side query')
+      // Use client-side query directly
       const { data, error } = await supabase
         .from('user_roles')
         .select(`
@@ -138,31 +125,19 @@ export const AuthProvider = ({ children }) => {
       async (event, session) => {
         console.log('AuthProvider: Auth state change event:', event, 'session:', !!session, 'current user:', user?.email)
         
-        // Don't process if this is the initial setup and we already have a user
-        if (event === 'INITIAL_SESSION' && user) {
-          console.log('AuthProvider: Skipping INITIAL_SESSION as user already exists')
-          return
-        }
-        
         try {
           const currentUser = session?.user ?? null
           console.log('AuthProvider: New user:', currentUser?.email)
           
-          // Only update if the user has actually changed
-          if (currentUser?.id !== user?.id) {
-            console.log('AuthProvider: User changed, updating state')
-            setUser(currentUser)
-            
-            if (currentUser) {
-              console.log('AuthProvider: Fetching roles for new user')
-              const roles = await fetchUserRoles(currentUser.id)
-              setUserRoles(roles)
-            } else {
-              console.log('AuthProvider: No new user, setting empty roles')
-              setUserRoles([])
-            }
+          setUser(currentUser)
+          
+          if (currentUser) {
+            console.log('AuthProvider: Fetching roles for new user')
+            const roles = await fetchUserRoles(currentUser.id)
+            setUserRoles(roles)
           } else {
-            console.log('AuthProvider: User unchanged, skipping update')
+            console.log('AuthProvider: No new user, setting empty roles')
+            setUserRoles([])
           }
         } catch (error) {
           console.error('Error in auth state change:', error)
@@ -179,7 +154,7 @@ export const AuthProvider = ({ children }) => {
       console.log('AuthProvider: Cleaning up auth state change listener')
       subscription.unsubscribe()
     }
-  }, [user?.id]) // Add user.id as dependency to prevent unnecessary re-subscriptions
+  }, []) // Remove the dependency to prevent circular issues
 
   // Note: signUp is removed as we now use invitation-based registration
 
@@ -193,7 +168,6 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     console.log('AuthContext: signOut called')
-    console.log('AuthContext: signOut call stack:', new Error().stack)
     try {
       // First, clear the local state immediately
       setUser(null)
