@@ -31,8 +31,25 @@ export const AuthProvider = ({ children }) => {
         setTimeout(() => reject(new Error('Role fetching timeout')), 5000)
       })
       
-      // Use client-side query directly
-      console.log('Executing Supabase query...')
+      // Try server-side function first (this should bypass RLS)
+      console.log('Trying server function first...')
+      const serverPromise = supabase.rpc('get_user_roles', {
+        user_uuid: userId
+      })
+      
+      const { data: serverData, error: serverError } = await Promise.race([serverPromise, timeoutPromise])
+      
+      if (!serverError && serverData) {
+        console.log('Fetched roles from server function:', serverData)
+        // Server function returns TEXT array directly
+        const roles = Array.isArray(serverData) ? serverData : []
+        console.log('Processed roles from server function:', roles)
+        return roles
+      }
+      
+      console.log('Server function failed or not available, trying client query...')
+      
+      // Fallback to client-side query
       const queryPromise = supabase
         .from('user_roles')
         .select(`
