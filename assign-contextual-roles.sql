@@ -11,8 +11,7 @@ BEGIN
     SELECT id INTO user_uuid FROM auth.users WHERE email = 'john@streamtime.com.au';
     
     -- Get the organization where the user should have access
-    -- (You'll need to replace this with the actual organization ID)
-    SELECT id INTO org_uuid FROM organizations WHERE name = 'Your Organization Name' LIMIT 1;
+    SELECT id INTO org_uuid FROM organizations WHERE name = 'WAILH' LIMIT 1;
     
     -- Check if we found the user and organization
     IF user_uuid IS NULL THEN
