@@ -47,7 +47,7 @@ const ViewPlayer = () => {
     }
     
     // Check if user is viewing their own profile
-    if (player.coach_id === user.id) {
+    if (player.email === user.email) {
       return { status: 'Your Profile', color: 'text-purple-600' }
     }
     
@@ -146,8 +146,9 @@ const ViewPlayer = () => {
       if (orgId) {
         query = query.eq('organization_id', orgId)
       } else if (!isPlayerViewingSelf && !isSuperadmin) {
-        // Otherwise, if player is not viewing their own profile and not superadmin, filter by coach_id
-        query = query.eq('coach_id', user.id)
+        // Otherwise, if player is not viewing their own profile and not superadmin, 
+        // we need to check organization access through RLS policies
+        // No additional filtering needed here as RLS will handle it
       }
       // If superadmin, no additional filtering needed - they can see all players for debugging
       
@@ -165,11 +166,12 @@ const ViewPlayer = () => {
 
   const checkIfPlayerViewingSelf = async () => {
     try {
+      // Check if the player's email matches the current user's email
       const { data, error } = await supabase
         .from('players')
-        .select('id')
+        .select('id, email')
         .eq('id', id)
-        .eq('coach_id', user.id)
+        .eq('email', user.email)
         .single()
       
       return !error && data

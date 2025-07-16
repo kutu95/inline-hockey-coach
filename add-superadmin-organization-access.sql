@@ -60,7 +60,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP POLICY IF EXISTS "Users can view their own players" ON players;
 CREATE POLICY "Users can view their own players" ON players
   FOR SELECT USING (
-    auth.uid() = coach_id OR 
     has_organization_read_access(organization_id)
   );
 
@@ -68,7 +67,6 @@ CREATE POLICY "Users can view their own players" ON players
 DROP POLICY IF EXISTS "Users can view their own clubs" ON clubs;
 CREATE POLICY "Users can view their own clubs" ON clubs
   FOR SELECT USING (
-    auth.uid() = coach_id OR 
     has_organization_read_access(organization_id)
   );
 
@@ -76,7 +74,6 @@ CREATE POLICY "Users can view their own clubs" ON clubs
 DROP POLICY IF EXISTS "Users can view their own squads" ON squads;
 CREATE POLICY "Users can view their own squads" ON squads
   FOR SELECT USING (
-    auth.uid() = coach_id OR 
     has_organization_read_access(organization_id)
   );
 
@@ -84,7 +81,6 @@ CREATE POLICY "Users can view their own squads" ON squads
 DROP POLICY IF EXISTS "Users can view their own sessions" ON sessions;
 CREATE POLICY "Users can view their own sessions" ON sessions
   FOR SELECT USING (
-    auth.uid() = coach_id OR 
     has_organization_read_access(organization_id)
   );
 
