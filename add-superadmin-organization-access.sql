@@ -19,8 +19,9 @@ RETURNS UUID AS $$
 BEGIN
   RETURN (
     SELECT organization_id 
-    FROM users 
-    WHERE id = user_uuid
+    FROM players 
+    WHERE email = (SELECT email FROM auth.users WHERE id = user_uuid)
+    LIMIT 1
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

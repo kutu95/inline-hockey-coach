@@ -23,19 +23,21 @@ BEGIN
         RAISE EXCEPTION 'Organization not found. Please update the organization name in this script.';
     END IF;
     
-    -- Update the user's organization
-    UPDATE users SET organization_id = org_uuid WHERE id = user_uuid;
+    -- Link the user to the organization by updating their player record
+    UPDATE players 
+    SET organization_id = org_uuid
+    WHERE email = 'john@streamtime.com.au';
     
     RAISE NOTICE 'Assigned user % to organization %', user_uuid, org_uuid;
 END $$;
 
 -- Show the user's organization after assignment
 SELECT 
-    u.email,
+    p.email,
     o.name as organization_name
-FROM auth.users u
-LEFT JOIN organizations o ON u.organization_id = o.id
-WHERE u.email = 'john@streamtime.com.au';
+FROM players p
+LEFT JOIN organizations o ON p.organization_id = o.id
+WHERE p.email = 'john@streamtime.com.au';
 
 -- Also show superadmin role
 SELECT 
