@@ -18,11 +18,21 @@ const ViewPlayer = () => {
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const [sendingInvitation, setSendingInvitation] = useState(false)
   const [isSuperadmin, setIsSuperadmin] = useState(false)
+  const [playerRoles, setPlayerRoles] = useState([])
 
   useEffect(() => {
     checkSuperadminStatus()
     fetchPlayer()
   }, [id])
+
+  // Fetch player roles when player data changes
+  useEffect(() => {
+    if (player?.user_id) {
+      fetchPlayerRoles()
+    } else {
+      setPlayerRoles([])
+    }
+  }, [player?.user_id])
 
   const checkSuperadminStatus = async () => {
     try {
@@ -35,28 +45,39 @@ const ViewPlayer = () => {
     }
   }
 
+  const fetchPlayerRoles = async () => {
+    if (!player?.user_id) return
+    
+    try {
+      const { data, error } = await supabase.rpc('get_user_roles_safe', { 
+        user_uuid: player.user_id 
+      })
+      
+      if (!error && data) {
+        setPlayerRoles(Array.isArray(data) ? data : [])
+      } else {
+        console.warn('Error fetching player roles:', error)
+        setPlayerRoles([])
+      }
+    } catch (err) {
+      console.error('Error fetching player roles:', err)
+      setPlayerRoles([])
+    }
+  }
+
   const getInvitationStatus = () => {
-    if (player.user_id) {
-      return { status: 'Invited ✓', color: 'text-green-600' }
+    if (!player.user_id) {
+      return { status: 'No Account', color: 'text-red-600' }
     }
     
-    // Check if user has explicit organization access
-    if (orgId) {
-      // In organization context, check if user has admin access
-      return { status: 'Admin Access', color: 'text-blue-600' }
+    // Check if player has roles
+    if (playerRoles.length > 0) {
+      const roleNames = playerRoles.join(', ')
+      return { status: `Account exists (${roleNames})`, color: 'text-green-600' }
     }
     
-    // Check if user is viewing their own profile
-    if (player.email === user.email) {
-      return { status: 'Your Profile', color: 'text-purple-600' }
-    }
-    
-    // Superadmin viewing other profiles for debugging
-    if (isSuperadmin) {
-      return { status: 'Superadmin Access (Debug)', color: 'text-orange-600' }
-    }
-    
-    return { status: 'Not Invited', color: 'text-orange-600' }
+    // Player has account but no roles
+    return { status: 'Account exists', color: 'text-blue-600' }
   }
 
   // Function to get signed URL for club logo
@@ -121,9 +142,6 @@ const ViewPlayer = () => {
     try {
       setLoading(true)
       
-      // Check if user is a player viewing their own profile
-      const isPlayerViewingSelf = user && await checkIfPlayerViewingSelf()
-      
       let query = supabase
         .from('players')
         .select(`
@@ -145,12 +163,8 @@ const ViewPlayer = () => {
       // If we're in an organization context, filter by organization_id
       if (orgId) {
         query = query.eq('organization_id', orgId)
-      } else if (!isPlayerViewingSelf && !isSuperadmin) {
-        // Otherwise, if player is not viewing their own profile and not superadmin, 
-        // we need to check organization access through RLS policies
-        // No additional filtering needed here as RLS will handle it
       }
-      // If superadmin, no additional filtering needed - they can see all players for debugging
+      // RLS policies will handle access control for other cases
       
       const { data, error } = await query.single()
 
@@ -164,21 +178,7 @@ const ViewPlayer = () => {
     }
   }
 
-  const checkIfPlayerViewingSelf = async () => {
-    try {
-      // Check if the player's email matches the current user's email
-      const { data, error } = await supabase
-        .from('players')
-        .select('id, email')
-        .eq('id', id)
-        .eq('email', user.email)
-        .single()
-      
-      return !error && data
-    } catch (err) {
-      return false
-    }
-  }
+
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this player?')) return
@@ -474,23 +474,25 @@ const ViewPlayer = () => {
                         </span>
                       </div>
                     )}
-                    {player.email && !player.user_id && !isSuperadmin && (
+                    {player.email && !player.user_id && (
                       <div className="mt-4">
                         <button
                           onClick={handleSendInvitation}
-                          disabled={sendingInvitation}
+                          disabled={sendingInvitation || !player.email}
                           className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                         >
                           {sendingInvitation ? 'Sending Invitation...' : 'Send Account Invitation'}
                         </button>
                       </div>
                     )}
-                    {player.email && !player.user_id && isSuperadmin && (
+                    {player.email && player.user_id && (hasRole('admin') || hasRole('superadmin')) && (
                       <div className="mt-4">
-                        <div className="text-sm text-gray-600 bg-orange-50 p-3 rounded-md border border-orange-200">
-                          <p className="font-medium text-orange-800">Superadmin Debug Access</p>
-                          <p className="text-orange-700">You can view this profile for debugging purposes, but you don't have admin rights to this organization.</p>
-                        </div>
+                        <Link
+                          to={`/user-role-management/${player.user_id}`}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out inline-block text-center"
+                        >
+                          Manage User Roles
+                        </Link>
                       </div>
                     )}
                     {player.skate_australia_number && (

@@ -25,6 +25,7 @@ import AdminPanel from '../components/AdminPanel'
 import Reports from '../components/Reports'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import RoleBasedRedirect from '../components/RoleBasedRedirect'
+import UserRoleManagement from '../components/UserRoleManagement'
 import './App.css'
 
 // Protected Route Component
@@ -255,6 +256,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['admin']}>
                   <UserAdmin />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/user-role-management/:userId" 
+              element={
+                <RoleProtectedRoute requiredRoles={['admin', 'superadmin']}>
+                  <UserRoleManagement />
                 </RoleProtectedRoute>
               } 
             />

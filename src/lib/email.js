@@ -1,6 +1,6 @@
 // Email service using Vercel serverless functions
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:5173'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5173'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
 export const sendInvitationEmail = async (email, invitationToken, playerName, invitedBy) => {
   try {
