@@ -35,6 +35,30 @@ const ViewPlayer = () => {
     }
   }
 
+  const getInvitationStatus = () => {
+    if (player.user_id) {
+      return { status: 'Invited ✓', color: 'text-green-600' }
+    }
+    
+    // Check if user has explicit organization access
+    if (orgId) {
+      // In organization context, check if user has admin access
+      return { status: 'Admin Access', color: 'text-blue-600' }
+    }
+    
+    // Check if user is viewing their own profile
+    if (player.coach_id === user.id) {
+      return { status: 'Your Profile', color: 'text-purple-600' }
+    }
+    
+    // Superadmin viewing other profiles for debugging
+    if (isSuperadmin) {
+      return { status: 'Superadmin Access (Debug)', color: 'text-orange-600' }
+    }
+    
+    return { status: 'Not Invited', color: 'text-orange-600' }
+  }
+
   // Function to get signed URL for club logo
   const getSignedUrl = async (url) => {
     if (!url) return null
@@ -125,7 +149,7 @@ const ViewPlayer = () => {
         // Otherwise, if player is not viewing their own profile and not superadmin, filter by coach_id
         query = query.eq('coach_id', user.id)
       }
-      // If superadmin, no additional filtering needed - they can see all players
+      // If superadmin, no additional filtering needed - they can see all players for debugging
       
       const { data, error } = await query.single()
 
@@ -443,8 +467,8 @@ const ViewPlayer = () => {
                     {player.email && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Account Status:</span>
-                        <span className={`font-medium ${player.user_id ? 'text-green-600' : 'text-orange-600'}`}>
-                          {player.user_id ? 'Invited ✓' : (isSuperadmin ? 'Superadmin Access' : 'Not Invited')}
+                        <span className={`font-medium ${getInvitationStatus().color}`}>
+                          {getInvitationStatus().status}
                         </span>
                       </div>
                     )}
@@ -461,8 +485,9 @@ const ViewPlayer = () => {
                     )}
                     {player.email && !player.user_id && isSuperadmin && (
                       <div className="mt-4">
-                        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
-                          <p>As a superadmin, you have automatic access to all organizations and don't need an invitation.</p>
+                        <div className="text-sm text-gray-600 bg-orange-50 p-3 rounded-md border border-orange-200">
+                          <p className="font-medium text-orange-800">Superadmin Debug Access</p>
+                          <p className="text-orange-700">You can view this profile for debugging purposes, but you don't have admin rights to this organization.</p>
                         </div>
                       </div>
                     )}
