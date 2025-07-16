@@ -48,10 +48,10 @@ const Dashboard = () => {
                 <img 
                   src="/Backcheck_large.png" 
                   alt="Backcheck Logo" 
-                  className="h-16 w-auto object-contain"
+                  className="h-24 w-auto object-contain"
                 />
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Backcheck Dashboard
+                  Dashboard
                 </h1>
               </div>
               <button

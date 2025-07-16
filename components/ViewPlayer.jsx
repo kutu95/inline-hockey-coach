@@ -10,17 +10,30 @@ import OrganizationHeader from './OrganizationHeader'
 const ViewPlayer = () => {
   const { id, orgId } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
   const [player, setPlayer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [signedUrl, setSignedUrl] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const [sendingInvitation, setSendingInvitation] = useState(false)
+  const [isSuperadmin, setIsSuperadmin] = useState(false)
 
   useEffect(() => {
+    checkSuperadminStatus()
     fetchPlayer()
   }, [id])
+
+  const checkSuperadminStatus = async () => {
+    try {
+      const { data, error } = await supabase.rpc('is_superadmin', { user_uuid: user.id })
+      if (!error && data) {
+        setIsSuperadmin(true)
+      }
+    } catch (err) {
+      console.error('Error checking superadmin status:', err)
+    }
+  }
 
   // Function to get signed URL for club logo
   const getSignedUrl = async (url) => {
@@ -108,10 +121,11 @@ const ViewPlayer = () => {
       // If we're in an organization context, filter by organization_id
       if (orgId) {
         query = query.eq('organization_id', orgId)
-      } else if (!isPlayerViewingSelf) {
-        // Otherwise, if player is not viewing their own profile, filter by coach_id
+      } else if (!isPlayerViewingSelf && !isSuperadmin) {
+        // Otherwise, if player is not viewing their own profile and not superadmin, filter by coach_id
         query = query.eq('coach_id', user.id)
       }
+      // If superadmin, no additional filtering needed - they can see all players
       
       const { data, error } = await query.single()
 
@@ -430,11 +444,11 @@ const ViewPlayer = () => {
                       <div className="flex justify-between">
                         <span className="text-gray-600">Account Status:</span>
                         <span className={`font-medium ${player.user_id ? 'text-green-600' : 'text-orange-600'}`}>
-                          {player.user_id ? 'Invited ✓' : 'Not Invited'}
+                          {player.user_id ? 'Invited ✓' : (isSuperadmin ? 'Superadmin Access' : 'Not Invited')}
                         </span>
                       </div>
                     )}
-                    {player.email && !player.user_id && (
+                    {player.email && !player.user_id && !isSuperadmin && (
                       <div className="mt-4">
                         <button
                           onClick={handleSendInvitation}
@@ -443,6 +457,13 @@ const ViewPlayer = () => {
                         >
                           {sendingInvitation ? 'Sending Invitation...' : 'Send Account Invitation'}
                         </button>
+                      </div>
+                    )}
+                    {player.email && !player.user_id && isSuperadmin && (
+                      <div className="mt-4">
+                        <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-md">
+                          <p>As a superadmin, you have automatic access to all organizations and don't need an invitation.</p>
+                        </div>
                       </div>
                     )}
                     {player.skate_australia_number && (
