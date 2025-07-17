@@ -284,7 +284,7 @@ const ViewPlayer = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Player Not Found</h2>
                 <p className="text-gray-600 mb-6">The player you're looking for doesn't exist or you don't have permission to view it.</p>
                 <Link
-                  to="/players"
+                  to={orgId ? `/organisations/${orgId}/players` : "/players"}
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
                   Back to Players
@@ -309,7 +309,7 @@ const ViewPlayer = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Link
-                      to="/players"
+                      to={orgId ? `/organisations/${orgId}/players` : "/players"}
                       className="text-gray-600 hover:text-gray-800 font-medium"
                     >
                       ← Back to Players
@@ -570,7 +570,7 @@ const ViewPlayer = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex justify-between">
                   <Link
-                    to="/players"
+                    to={orgId ? `/organisations/${orgId}/players` : "/players"}
                     className="text-indigo-600 hover:text-indigo-800 font-medium"
                   >
                     ← Back to Players

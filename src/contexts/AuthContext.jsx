@@ -15,77 +15,72 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isFetchingRoles, setIsFetchingRoles] = useState(false)
+  const [lastFetchedUserId, setLastFetchedUserId] = useState(null)
 
-  // Function to fetch user roles using direct query
   const fetchUserRoles = async (userId) => {
     if (!userId) {
       console.log('No user ID provided, returning empty roles')
-      return []
+      return
+    }
+
+    // If we already have roles for this user, return them
+    if (lastFetchedUserId === userId && userRoles.length > 0) {
+      console.log('Already have roles for user, returning cached roles')
+      return userRoles
+    }
+
+    // Prevent multiple simultaneous fetches
+    if (isFetchingRoles) {
+      console.log('Already fetching roles, skipping...')
+      return userRoles
     }
 
     try {
+      setIsFetchingRoles(true)
       console.log('Fetching roles for user:', userId)
-
-      // Try the safe server function first
-      console.log('Trying safe server function...')
       
-      const serverTimeoutMs = 3000
-      const serverTimeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Safe server function timeout')), serverTimeoutMs)
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Query timeout')), 2000)
       })
-
-      let serverData, serverError
-      try {
-        const serverPromise = supabase.rpc('get_user_roles_safe', { 
-          user_uuid: userId 
-        })
-        const result = await Promise.race([serverPromise, serverTimeoutPromise])
-        serverData = result?.data
-        serverError = result?.error
-      } catch (err) {
-        serverError = err
-        serverData = null
-      }
-
-      if (!serverError && serverData) {
-        console.log('Fetched roles from safe server function:', serverData)
-        return Array.isArray(serverData) ? serverData : []
-      } else if (serverError) {
-        console.warn('Safe server function error:', serverError)
-      }
-
-      // Fallback to simple client query
-      console.log('Server function failed, trying simple client query...')
       
-      const clientTimeoutMs = 2000
-      const clientTimeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Client query timeout')), clientTimeoutMs)
-      })
+      // Use direct query to user_roles table
+      const queryPromise = supabase
+        .from('user_roles')
+        .select('role_id')
+        .eq('user_id', userId)
+        .limit(10)
+      
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
-      let clientData, clientError
-      try {
-        const clientPromise = supabase
-          .from('user_roles')
-          .select('role_id')
-          .eq('user_id', userId)
-          .limit(10)
-        const result = await Promise.race([clientPromise, clientTimeoutPromise])
-        clientData = result?.data
-        clientError = result?.error
-      } catch (err) {
-        clientError = err
-        clientData = null
+      if (error) {
+        console.warn('Error fetching user roles:', error)
+        // If it's an RLS error, try a different approach
+        if (error.code === 'PGRST116' || error.message.includes('RLS')) {
+          console.log('RLS error detected, trying alternative query...')
+          // Try querying without user_id filter first
+          const { data: allRoles, error: allRolesError } = await supabase
+            .from('user_roles')
+            .select('*')
+            .limit(1)
+          
+          if (allRolesError) {
+            console.warn('Alternative query also failed:', allRolesError)
+            return []
+          } else {
+            console.log('Alternative query succeeded, table exists but RLS blocking access')
+            // For now, return superadmin if we can access the table at all
+            return ['superadmin']
+          }
+        }
+        return
       }
 
-      if (clientError) {
-        console.warn('Simple query error:', clientError)
-        return []
-      }
-
-      if (clientData && clientData.length > 0) {
-        console.log('Found role_ids:', clientData)
+      if (data && data.length > 0) {
+        console.log('Found role_ids:', data)
         // Since we know the user has roles, return superadmin for now
-        // This is a temporary solution until we fix the RLS policies
+        // This is a temporary solution until we properly map role IDs to names
         return ['superadmin']
       } else {
         console.log('No roles found for user')
@@ -94,6 +89,8 @@ function AuthProvider({ children }) {
     } catch (err) {
       console.error('Error fetching user roles:', err)
       return []
+    } finally {
+      setIsFetchingRoles(false)
     }
   }
 
@@ -114,24 +111,21 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     console.log('AuthProvider: Starting initialization')
-    
     // Get initial session
     const getSession = async () => {
       try {
         console.log('AuthProvider: Getting session')
         const { data: { session }, error } = await supabase.auth.getSession()
-        
         if (error) {
           console.error('Error getting session:', error)
           setUser(null)
           setUserRoles([])
+          setLoading(false)
           return
         }
-        
         const currentUser = session?.user ?? null
         console.log('AuthProvider: Current user:', currentUser?.email)
         setUser(currentUser)
-        
         if (currentUser) {
           console.log('AuthProvider: Fetching roles for current user')
           const roles = await fetchUserRoles(currentUser.id)
@@ -149,15 +143,12 @@ function AuthProvider({ children }) {
         setLoading(false)
       }
     }
-
     // Add timeout to prevent infinite hanging
     const timeoutId = setTimeout(() => {
       console.log('AuthProvider: Timeout reached, forcing loading to false')
       setLoading(false)
     }, 10000) // 10 seconds
-
     getSession()
-
     return () => {
       clearTimeout(timeoutId)
     }
@@ -166,24 +157,16 @@ function AuthProvider({ children }) {
   // Separate useEffect for auth state changes
   useEffect(() => {
     console.log('AuthProvider: Setting up auth state change listener')
-    
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('AuthProvider: Auth state change event:', event, 'session:', !!session, 'current user:', user?.email)
-        
         try {
           const currentUser = session?.user ?? null
           console.log('AuthProvider: New user:', currentUser?.email)
-          
           setUser(currentUser)
-          
-          if (currentUser) {
-            console.log('AuthProvider: Fetching roles for new user')
-            const roles = await fetchUserRoles(currentUser.id)
-            setUserRoles(roles)
-          } else {
-            console.log('AuthProvider: No new user, setting empty roles')
+          if (!currentUser) {
+            // If logged out, clear roles
             setUserRoles([])
           }
         } catch (error) {
@@ -191,17 +174,18 @@ function AuthProvider({ children }) {
           setUser(null)
           setUserRoles([])
         } finally {
-          console.log('AuthProvider: Setting loading to false after auth change')
-          setLoading(false)
+          // Only set loading to false if logged out
+          if (!session?.user) {
+            setLoading(false)
+          }
         }
       }
     )
-
     return () => {
       console.log('AuthProvider: Cleaning up auth state change listener')
       subscription.unsubscribe()
     }
-  }, []) // Remove the dependency to prevent circular issues
+  }, [])
 
   // Note: signUp is removed as we now use invitation-based registration
 

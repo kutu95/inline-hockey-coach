@@ -49,11 +49,11 @@ const OrganisationDetail = () => {
 
       // Fetch statistics - remove the role filter from players query
       const [
-        { count: playersCount },
-        { count: squadsCount },
-        { count: sessionsCount },
-        { count: drillsCount },
-        { count: clubsCount }
+        playersResult,
+        squadsResult,
+        sessionsResult,
+        drillsResult,
+        clubsResult
       ] = await Promise.all([
         supabase.from('players').select('*', { count: 'exact', head: true }).eq('organization_id', orgId),
         supabase.from('squads').select('*', { count: 'exact', head: true }).eq('organization_id', orgId),
@@ -61,6 +61,13 @@ const OrganisationDetail = () => {
         supabase.from('drills').select('*', { count: 'exact', head: true }).eq('organization_id', orgId),
         supabase.from('clubs').select('*', { count: 'exact', head: true }).eq('organization_id', orgId)
       ])
+
+      // Extract counts from results
+      const playersCount = playersResult.count || 0
+      const squadsCount = squadsResult.count || 0
+      const sessionsCount = sessionsResult.count || 0
+      const drillsCount = drillsResult.count || 0
+      const clubsCount = clubsResult.count || 0
 
       // For now, set coaches to 0 since we need to implement proper role checking
       // TODO: Implement proper coach counting through user_roles table
