@@ -28,16 +28,29 @@ const UserRoleManagement = () => {
     try {
       setLoading(true)
       
-      // Get user details from auth.users
-      const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(userId)
+      // Since we can't use auth.admin.getUserById, we'll get user info from the players table
+      // and construct a basic user object
+      const { data: playerData, error: playerError } = await supabase
+        .from('players')
+        .select('email, user_id, created_at')
+        .eq('user_id', userId)
+        .single()
       
-      if (authError) {
-        console.error('Error fetching auth user:', authError)
+      if (playerError) {
+        console.error('Error fetching player data:', playerError)
         setError('User not found')
         return
       }
       
-      setTargetUser(authUser.user)
+      // Create a basic user object with available data
+      const userInfo = {
+        id: userId,
+        email: playerData.email,
+        created_at: playerData.created_at,
+        last_sign_in_at: null // We don't have this info without admin access
+      }
+      
+      setTargetUser(userInfo)
       
       // Get user roles
       const { data: roles, error: rolesError } = await supabase.rpc('get_user_roles_safe', {
