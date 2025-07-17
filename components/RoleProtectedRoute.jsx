@@ -2,9 +2,10 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
 
 const RoleProtectedRoute = ({ children, requiredRoles = [], requireAll = false }) => {
-  const { user, loading, hasRole, hasAnyRole, hasAllRoles } = useAuth()
+  const { user, loading, userRoles, hasRole, hasAnyRole, hasAllRoles } = useAuth()
   
-  if (loading) {
+  // Wait for both authentication and roles to be loaded
+  if (loading || (user && userRoles.length === 0 && requiredRoles.length > 0)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>

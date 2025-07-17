@@ -41,22 +41,22 @@ export default async function handler(req, res) {
     
     try {
       console.log('Attempting to send email via Resend with config:', {
-        from: 'Inline Hockey Coach <noreply@landlife.au>',
+        from: 'Backcheck <noreply@landlife.au>',
         to: email,
-        subject: 'You\'ve been invited to join Inline Hockey Coach'
+        subject: "You've been invited to join Backcheck"
       })
 
       const emailResult = await resend.emails.send({
-        from: 'Inline Hockey Coach <noreply@landlife.au>',
+        from: 'Backcheck <noreply@landlife.au>',
         to: email,
-        subject: 'You\'ve been invited to join Inline Hockey Coach',
+        subject: "You've been invited to join Backcheck",
         html: `
           <!DOCTYPE html>
           <html>
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>You've been invited to join Inline Hockey Coach</title>
+            <title>You've been invited to join Backcheck</title>
             <style>
               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
               .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -64,17 +64,19 @@ export default async function handler(req, res) {
               .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
               .button { display: inline-block; background: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
               .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+              .logo { max-width: 200px; height: auto; margin-bottom: 10px; }
             </style>
           </head>
           <body>
             <div class="container">
               <div class="header">
-                <h1>🎯 Inline Hockey Coach</h1>
+                <img src="https://www.backcheck.au/Backcheck_large.png" alt="Backcheck Logo" class="logo" />
+                <h1>Backcheck</h1>
               </div>
               <div class="content">
                 <h2>You've been invited!</h2>
                 <p>Hello!</p>
-                <p>You've been invited by <strong>${invitedBy}</strong> to join the Inline Hockey Coach platform.</p>
+                <p>You've been invited by <strong>${invitedBy}</strong> to join the Backcheck platform.</p>
                 <p>As a player, you'll be able to:</p>
                 <ul>
                   <li>View your player profile and details</li>
@@ -91,7 +93,7 @@ export default async function handler(req, res) {
                 </p>
               </div>
               <div class="footer">
-                <p>This is an automated message from Inline Hockey Coach</p>
+                <p>This is an automated message from Backcheck</p>
               </div>
             </div>
           </body>

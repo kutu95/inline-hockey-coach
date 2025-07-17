@@ -15,13 +15,23 @@ const AcceptInvitation = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [settingPassword, setSettingPassword] = useState(false)
 
-  const token = searchParams.get('token')
+  // Robust token extraction
+  let token = searchParams.get('token')
+  if (token) {
+    // Remove common trailing punctuation or whitespace (e.g., from mobile clients)
+    token = token.replace(/[\s\.,;:!?]+$/, '')
+  }
 
   useEffect(() => {
+    // Debugging for mobile issues
+    console.log('AcceptInvitation: Token from URL params:', token)
+    console.log('AcceptInvitation: Full URL:', window.location.href)
+    console.log('AcceptInvitation: Search params:', window.location.search)
+
     if (token) {
       validateInvitation()
     } else {
-      setError('Invalid invitation link')
+      setError('Invalid invitation link - no token found')
       setLoading(false)
     }
   }, [token])
@@ -190,8 +200,9 @@ const AcceptInvitation = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
+          <img src="/Backcheck_large.png" alt="Backcheck Logo" className="mx-auto h-20 w-auto mb-4" />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Welcome to Inline Hockey Coach
+            Welcome to Backcheck
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Set up your account to get started

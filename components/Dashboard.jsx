@@ -2,7 +2,7 @@ import { useAuth } from '../src/contexts/AuthContext'
 import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
-  const { user, signOut, userRoles, hasRole } = useAuth()
+  const { user, signOut, userRoles, hasRole, loading } = useAuth()
 
   const handleSignOut = async () => {
     console.log('Sign out button clicked')
@@ -23,7 +23,14 @@ const Dashboard = () => {
     }
   }
 
-
+  // Show loading spinner while auth context is loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
 
   const getRoleBadgeColor = (role) => {
     switch (role) {
@@ -221,8 +228,8 @@ const Dashboard = () => {
                 </>
               )}
 
-              {/* No roles assigned */}
-              {userRoles.length === 0 && (
+              {/* No roles assigned - only show after loading is complete */}
+              {!loading && userRoles.length === 0 && (
                 <div className="col-span-full bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <h3 className="text-lg font-semibold text-yellow-900 mb-2">
                     No Roles Assigned
