@@ -101,8 +101,8 @@ const UserRoleManagement = () => {
       if (userRoles.includes(roleName)) {
         // Remove role
         const { error } = await supabase.rpc('remove_user_role', {
-          user_uuid: userId,
-          role_name: roleName
+          role_name: roleName,
+          user_uuid: userId
         })
         
         if (error) throw error
@@ -111,8 +111,8 @@ const UserRoleManagement = () => {
       } else {
         // Add role
         const { error } = await supabase.rpc('assign_user_role', {
-          user_uuid: userId,
-          role_name: roleName
+          role_name: roleName,
+          user_uuid: userId
         })
         
         if (error) throw error

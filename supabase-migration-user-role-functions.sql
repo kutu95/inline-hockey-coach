@@ -36,7 +36,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to assign a role to a user (admin only)
-CREATE OR REPLACE FUNCTION assign_user_role(user_uuid UUID, role_name TEXT)
+CREATE OR REPLACE FUNCTION assign_user_role(role_name TEXT, user_uuid UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
     role_id UUID;
@@ -77,7 +77,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to remove a role from a user (admin only)
-CREATE OR REPLACE FUNCTION remove_user_role(user_uuid UUID, role_name TEXT)
+CREATE OR REPLACE FUNCTION remove_user_role(role_name TEXT, user_uuid UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
     role_id UUID;
@@ -124,6 +124,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Grant execute permissions on the functions
 GRANT EXECUTE ON FUNCTION get_user_roles_safe(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION assign_user_role(UUID, TEXT) TO authenticated;
-GRANT EXECUTE ON FUNCTION remove_user_role(UUID, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION assign_user_role(TEXT, UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION remove_user_role(TEXT, UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION is_superadmin(UUID) TO authenticated; 
