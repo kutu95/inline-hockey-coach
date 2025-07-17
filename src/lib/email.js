@@ -1,6 +1,12 @@
 // Email service using Vercel serverless functions
 const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:5173'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+
+// In production, API routes are served from the same domain as the frontend
+// In development, we use the Express server on port 3001
+const isDevelopment = import.meta.env.DEV
+const API_BASE_URL = isDevelopment
+  ? (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001')
+  : (import.meta.env.VITE_SITE_URL || window.location.origin)
 
 export const sendInvitationEmail = async (email, invitationToken, playerName, invitedBy) => {
   try {
