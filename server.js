@@ -63,20 +63,16 @@ app.post('/api/send-invitation', async (req, res) => {
     console.log('Invitation URL generated:', invitationUrl)
     
     try {
-      // For testing: Send to verified email address, but include intended recipient info
-      const verifiedEmail = 'john@streamtime.com.au' // Your verified email
-      const isTestMode = email !== verifiedEmail
-      
       console.log('Attempting to send email via Resend with config:', {
         from: 'Inline Hockey Coach <noreply@landlife.au>',
-        to: isTestMode ? verifiedEmail : email,
-        subject: isTestMode ? `TEST: Invitation for ${email} - Inline Hockey Coach` : 'You\'ve been invited to join Inline Hockey Coach'
+        to: email,
+        subject: 'You\'ve been invited to join Inline Hockey Coach'
       })
 
       const emailResult = await resend.emails.send({
         from: 'Inline Hockey Coach <noreply@landlife.au>',
-        to: isTestMode ? verifiedEmail : email,
-        subject: isTestMode ? `TEST: Invitation for ${email} - Inline Hockey Coach` : 'You\'ve been invited to join Inline Hockey Coach',
+        to: email,
+        subject: 'You\'ve been invited to join Inline Hockey Coach',
         html: `
           <!DOCTYPE html>
           <html>
@@ -99,16 +95,8 @@ app.post('/api/send-invitation', async (req, res) => {
                 <h1>🎯 Inline Hockey Coach</h1>
               </div>
               <div class="content">
-                ${isTestMode ? `
-                  <div style="background: #fef3c7; border: 1px solid #f59e0b; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-                    <strong>🧪 TEST MODE</strong><br>
-                    This email was sent to you (${verifiedEmail}) for testing purposes.<br>
-                    <strong>Intended recipient:</strong> ${email}<br>
-                    <strong>Player:</strong> ${playerName}
-                  </div>
-                ` : ''}
                 <h2>You've been invited!</h2>
-                <p>Hello${isTestMode ? ` (${email})` : ''}!</p>
+                <p>Hello!</p>
                 <p>You've been invited by <strong>${invitedBy}</strong> to join the Inline Hockey Coach platform.</p>
                 <p>As a player, you'll be able to:</p>
                 <ul>
