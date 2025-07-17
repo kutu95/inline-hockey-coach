@@ -99,10 +99,14 @@ const AcceptInvitation = () => {
     }
 
     try {
-      // Create user account
+      // Create user account with email confirmation disabled
+      // Since the invitation was already sent to their verified email, no need for additional confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: player.email,
         password: password,
+        options: {
+          emailConfirm: false // Disable email confirmation for invited users
+        }
       })
 
       if (authError) {
