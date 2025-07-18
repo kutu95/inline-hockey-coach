@@ -16,6 +16,8 @@ import Sessions from '../components/Sessions'
 import SessionsCalendar from '../components/SessionsCalendar'
 import SessionAttendance from '../components/SessionAttendance'
 import OrganizationAttendance from '../components/OrganizationAttendance'
+import SessionPlanner from '../components/SessionPlanner'
+import SessionPDFExport from '../components/SessionPDFExport'
 import Drills from '../components/Drills'
 import EditDrill from '../components/EditDrill'
 import AddDrill from '../components/AddDrill'
@@ -244,6 +246,22 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/sessions/:sessionId/planner" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionPlanner />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/pdf" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionPDFExport />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/locations" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin']}>
@@ -372,6 +390,22 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <SessionAttendance />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId/planner" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionPlanner />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId/pdf" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionPDFExport />
                 </RoleProtectedRoute>
               } 
             />

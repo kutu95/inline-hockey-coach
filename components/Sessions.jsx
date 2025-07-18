@@ -654,10 +654,22 @@ const Sessions = () => {
                           
                           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
                             <Link
+                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}
+                              className="text-purple-600 hover:text-purple-800 text-sm font-medium text-center sm:text-left"
+                            >
+                              Plan Session
+                            </Link>
+                            <Link
                               to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
                               className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
                             >
                               Take Attendance
+                            </Link>
+                            <Link
+                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}/pdf` : `/sessions/${session.id}/pdf`}
+                              className="text-orange-600 hover:text-orange-800 text-sm font-medium text-center sm:text-left"
+                            >
+                              Export PDF
                             </Link>
                             <button
                               onClick={() => handleEdit(session)}
