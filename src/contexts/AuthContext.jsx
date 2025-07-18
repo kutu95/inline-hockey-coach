@@ -44,22 +44,55 @@ function AuthProvider({ children }) {
       console.log('=== FETCHING USER ROLES ===')
       console.log('Fetching roles for user:', userId)
       
-      // Skip the complex RPC function and use a simple direct query
+      // Use a simple, reliable query with better error handling
       console.log('Using simple direct query for user roles...')
+      
+      // First, try to get the user's roles directly
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select(`
-          role_id,
           roles (
             name
           )
         `)
         .eq('user_id', userId)
       
+      console.log('Query result:', { roleData, roleError })
+      
       if (roleError) {
-        console.warn('Direct query failed:', roleError)
-        return []
-      } else if (roleData && roleData.length > 0) {
+        console.error('Direct query failed:', roleError)
+        // Try a fallback approach - get all roles and check if user has any
+        console.log('Trying fallback approach...')
+        const { data: allRoles, error: allRolesError } = await supabase
+          .from('roles')
+          .select('id, name')
+        
+        if (allRolesError) {
+          console.error('Fallback query also failed:', allRolesError)
+          return []
+        }
+        
+        // Check if user has any of these roles
+        const { data: userRoleIds, error: userRoleIdsError } = await supabase
+          .from('user_roles')
+          .select('role_id')
+          .eq('user_id', userId)
+        
+        if (userRoleIdsError) {
+          console.error('User role IDs query failed:', userRoleIdsError)
+          return []
+        }
+        
+        const userRoleIdsSet = new Set(userRoleIds.map(r => r.role_id))
+        const userRoleNames = allRoles
+          .filter(role => userRoleIdsSet.has(role.id))
+          .map(role => role.name)
+        
+        console.log('Fallback roles found:', userRoleNames)
+        return userRoleNames
+      }
+      
+      if (roleData && roleData.length > 0) {
         console.log('Found roles via direct query:', roleData)
         const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
         console.log('Extracted role names:', roleNames)
@@ -113,6 +146,7 @@ function AuthProvider({ children }) {
         if (currentUser) {
           console.log('AuthProvider: Fetching roles for current user')
           const roles = await fetchUserRoles(currentUser.id)
+          console.log('AuthProvider: Roles fetched:', roles)
           setUserRoles(roles)
         } else {
           console.log('AuthProvider: No current user, setting empty roles')
@@ -131,7 +165,7 @@ function AuthProvider({ children }) {
     const timeoutId = setTimeout(() => {
       console.log('AuthProvider: Timeout reached, forcing loading to false')
       setLoading(false)
-    }, 10000) // 10 seconds
+    }, 15000) // Increased to 15 seconds
     getSession()
     return () => {
       clearTimeout(timeoutId)
