@@ -156,6 +156,13 @@ function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('AuthProvider: Auth state change event:', event, 'session:', !!session, 'current user:', user?.email)
+        
+        // Skip if this is just a token refresh and we already have the user
+        if (event === 'TOKEN_REFRESHED' && user && session?.user?.id === user.id) {
+          console.log('AuthProvider: Token refreshed, skipping re-fetch')
+          return
+        }
+        
         try {
           const currentUser = session?.user ?? null
           console.log('AuthProvider: New user:', currentUser?.email)
@@ -164,10 +171,14 @@ function AuthProvider({ children }) {
             // If logged out, clear roles
             setUserRoles([])
           } else {
-            // If logged in, fetch roles
-            console.log('AuthProvider: Fetching roles for new user')
-            const roles = await fetchUserRoles(currentUser.id)
-            setUserRoles(roles)
+            // Only fetch roles if we don't already have them for this user
+            if (lastFetchedUserId !== currentUser.id || userRoles.length === 0) {
+              console.log('AuthProvider: Fetching roles for new user')
+              const roles = await fetchUserRoles(currentUser.id)
+              setUserRoles(roles)
+            } else {
+              console.log('AuthProvider: Already have roles for this user, skipping fetch')
+            }
           }
         } catch (error) {
           console.error('Error in auth state change:', error)
@@ -185,7 +196,28 @@ function AuthProvider({ children }) {
       console.log('AuthProvider: Cleaning up auth state change listener')
       subscription.unsubscribe()
     }
-  }, [])
+  }, [user, userRoles, lastFetchedUserId])
+
+  // Handle page visibility changes (tab focus/blur)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('AuthProvider: Page became visible, checking if we need to refresh auth')
+        // Only refresh if we don't have a user or roles
+        if (!user || userRoles.length === 0) {
+          console.log('AuthProvider: No user or roles, refreshing session')
+          supabase.auth.getSession()
+        } else {
+          console.log('AuthProvider: User and roles already loaded, skipping refresh')
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [user, userRoles])
 
   // Note: signUp is removed as we now use invitation-based registration
 
