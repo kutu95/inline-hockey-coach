@@ -26,7 +26,8 @@ const Organisations = () => {
     description: '',
     logo_url: '',
     facebook_url: '',
-    instagram_url: ''
+    instagram_url: '',
+    website_url: ''
   })
 
   const fetchOrganisations = async () => {
@@ -103,7 +104,8 @@ const Organisations = () => {
         description: '',
         logo_url: '',
         facebook_url: '',
-        instagram_url: ''
+        instagram_url: '',
+        website_url: ''
       })
       setShowCreateForm(false)
       console.log('About to fetch organisations after update...')
@@ -186,7 +188,8 @@ const Organisations = () => {
       description: org.description || '',
       logo_url: org.logo_url || '',
       facebook_url: org.facebook_url || '',
-      instagram_url: org.instagram_url || ''
+      instagram_url: org.instagram_url || '',
+      website_url: org.website_url || ''
     })
     setLogoPreview(org.logo_url || null)
     setShowCreateForm(true)
@@ -218,7 +221,8 @@ const Organisations = () => {
       description: '',
       logo_url: '',
       facebook_url: '',
-      instagram_url: ''
+      instagram_url: '',
+      website_url: ''
     })
     setLogoPreview(null)
   }
@@ -404,6 +408,17 @@ const Organisations = () => {
                         onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
                         className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="https://instagram.com/yourprofile"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Website URL</label>
+                      <input
+                        type="url"
+                        value={formData.website_url}
+                        onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://yourwebsite.com"
                       />
                     </div>
                   </div>

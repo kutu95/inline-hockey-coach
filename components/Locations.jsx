@@ -13,7 +13,8 @@ const Locations = () => {
   const [editingLocation, setEditingLocation] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
+    website_url: ''
   });
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const Locations = () => {
         if (error) throw error;
       }
 
-      setFormData({ name: '', description: '' });
+      setFormData({ name: '', description: '', website_url: '' });
       setEditingLocation(null);
       setShowAddForm(false);
       fetchLocations();
@@ -76,7 +77,8 @@ const Locations = () => {
     setEditingLocation(location);
     setFormData({
       name: location.name,
-      description: location.description || ''
+      description: location.description || '',
+      website_url: location.website_url || ''
     });
     setShowAddForm(true);
   };
@@ -99,7 +101,7 @@ const Locations = () => {
   };
 
   const handleCancel = () => {
-    setFormData({ name: '', description: '' });
+    setFormData({ name: '', description: '', website_url: '' });
     setEditingLocation(null);
     setShowAddForm(false);
   };
@@ -178,6 +180,18 @@ const Locations = () => {
                     placeholder="Enter location description"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Website URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.website_url}
+                    onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                 <button
@@ -213,15 +227,28 @@ const Locations = () => {
               {locations.map((location) => (
                 <div key={location.id} className="p-6 hover:bg-gray-50">
                   <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium text-gray-900">{location.name}</h3>
-                      {location.description && (
-                        <p className="text-gray-600 mt-1">{location.description}</p>
-                      )}
-                      <p className="text-sm text-gray-500 mt-2">
-                        Created: {new Date(location.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
+                                      <div className="flex-1">
+                    <h3 className="text-lg font-medium text-gray-900">{location.name}</h3>
+                    {location.description && (
+                      <p className="text-gray-600 mt-1">{location.description}</p>
+                    )}
+                    {location.website_url && (
+                      <a
+                        href={location.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm mt-1"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                        Website
+                      </a>
+                    )}
+                    <p className="text-sm text-gray-500 mt-2">
+                      Created: {new Date(location.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(location)}

@@ -13,7 +13,8 @@ const Clubs = () => {
   const [formData, setFormData] = useState({ 
     name: '',
     facebook_url: '',
-    instagram_url: ''
+    instagram_url: '',
+    website_url: ''
   })
   const [saving, setSaving] = useState(false)
   const [logoFile, setLogoFile] = useState(null)
@@ -126,7 +127,8 @@ const Clubs = () => {
         name: formData.name,
         logo_url: logoUrl,
         facebook_url: formData.facebook_url || null,
-        instagram_url: formData.instagram_url || null
+        instagram_url: formData.instagram_url || null,
+        website_url: formData.website_url || null
       }
 
       if (editingClub) {
@@ -172,7 +174,8 @@ const Clubs = () => {
       setFormData({ 
         name: '',
         facebook_url: '',
-        instagram_url: ''
+        instagram_url: '',
+        website_url: ''
       })
       setEditingClub(null)
       setShowAddForm(false)
@@ -190,7 +193,8 @@ const Clubs = () => {
     setFormData({ 
       name: club.name,
       facebook_url: club.facebook_url || '',
-      instagram_url: club.instagram_url || ''
+      instagram_url: club.instagram_url || '',
+      website_url: club.website_url || ''
     })
     setCurrentLogoUrl(club.logo_url || '')
     setShowAddForm(true)
@@ -321,7 +325,8 @@ const Clubs = () => {
     setFormData({ 
       name: '',
       facebook_url: '',
-      instagram_url: ''
+      instagram_url: '',
+      website_url: ''
     })
     setEditingClub(null)
     setShowAddForm(false)
@@ -471,6 +476,20 @@ const Clubs = () => {
                         onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="https://instagram.com/yourprofile"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                        Website URL
+                      </label>
+                      <input
+                        type="url"
+                        id="websiteUrl"
+                        value={formData.website_url}
+                        onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://yourwebsite.com"
                       />
                     </div>
                   </div>
