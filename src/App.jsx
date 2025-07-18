@@ -17,6 +17,8 @@ import SessionsCalendar from '../components/SessionsCalendar'
 import SessionAttendance from '../components/SessionAttendance'
 import OrganizationAttendance from '../components/OrganizationAttendance'
 import Drills from '../components/Drills'
+import EditDrill from '../components/EditDrill'
+import AddDrill from '../components/AddDrill'
 import UserAdmin from '../components/UserAdmin'
 import Organisations from '../components/Organisations'
 import OrganizationDetail from '../components/OrganizationDetail'
@@ -194,6 +196,22 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/drills/add" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <AddDrill />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/drills/:drillId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <EditDrill />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/clubs" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
@@ -362,6 +380,22 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <Drills />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/drills/add" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <AddDrill />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/drills/:drillId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <EditDrill />
                 </RoleProtectedRoute>
               } 
             />

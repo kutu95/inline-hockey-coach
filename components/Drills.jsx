@@ -8,22 +8,9 @@ const Drills = () => {
   const [drills, setDrills] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [editingDrill, setEditingDrill] = useState(null)
   const { user } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
-
-  const [formData, setFormData] = useState({
-    title: '',
-    short_description: '',
-    description: '',
-    min_players: 1,
-    max_players: '',
-    features: [],
-    is_public: false,
-    level: 'beginner'
-  })
 
   const availableFeatures = [
     'agility', 'back-checking', 'break outs', 'defense', 'face-offs', 
@@ -32,9 +19,6 @@ const Drills = () => {
     'Warm down', 'Warm up'
   ]
 
-  // State for image upload
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
   const [imageUrls, setImageUrls] = useState({})
   const [organizations, setOrganizations] = useState({})
   const [showFilters, setShowFilters] = useState(false)
@@ -135,22 +119,7 @@ const Drills = () => {
     }
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
 
-  const handleFeatureChange = (feature) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.includes(feature)
-        ? prev.features.filter(f => f !== feature)
-        : [...prev.features, feature]
-    }))
-  }
 
   const handleFilterFeatureChange = (feature) => {
     setFilters(prev => ({
@@ -197,120 +166,20 @@ const Drills = () => {
     }))
   }
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      short_description: '',
-      description: '',
-      min_players: 1,
-      max_players: '',
-      features: [],
-      is_public: false,
-      level: 'beginner'
-    })
-    setImageFile(null)
-    setImagePreview('')
-    setEditingDrill(null)
-    setShowAddForm(false)
-  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (!formData.title || !formData.min_players) {
-      setError('Please fill in all required fields')
-      return
-    }
-
-    if (formData.max_players && parseInt(formData.max_players) < parseInt(formData.min_players)) {
-      setError('Maximum players must be greater than or equal to minimum players')
-      return
-    }
-
-    try {
-      // Upload image if selected
-      let imageUrl = null
-      if (imageFile) {
-        imageUrl = await uploadImage()
-      } else if (editingDrill && editingDrill.image_url) {
-        // Keep existing image if no new image is selected
-        imageUrl = editingDrill.image_url
-      }
-
-      const drillData = {
-        title: formData.title.trim(),
-        short_description: formData.short_description.trim() || null,
-        description: formData.description.trim() || null,
-        min_players: parseInt(formData.min_players),
-        max_players: formData.max_players ? parseInt(formData.max_players) : null,
-        features: formData.features,
-        image_url: imageUrl,
-        is_public: formData.is_public,
-        level: formData.level
-      }
-
-      if (editingDrill) {
-        let query = supabase
-          .from('drills')
-          .update(drillData)
-          .eq('id', editingDrill.id)
-
-        // If we're in an organization context, ensure the drill belongs to the organization
-        if (orgId) {
-          query = query.eq('organization_id', orgId)
-        } else {
-          // Otherwise, ensure the drill belongs to the user who created it
-          query = query.eq('created_by', user.id)
-        }
-
-        const { error } = await query
-
-        if (error) throw error
-      } else {
-        const insertData = {
-          ...drillData
-        }
-
-        // If we're in an organization context, set organization_id
-        if (orgId) {
-          insertData.organization_id = orgId
-        }
-        // Always set created_by to track who created the drill
-        insertData.created_by = user.id
-
-        const { error } = await supabase
-          .from('drills')
-          .insert(insertData)
-
-        if (error) throw error
-      }
-
-      resetForm()
-      fetchDrills()
-    } catch (err) {
-      setError(editingDrill ? 'Failed to update drill' : 'Failed to add drill')
-      console.error('Error saving drill:', err)
-    }
-  }
 
   const handleEdit = (drill) => {
-    setEditingDrill(drill)
-    setFormData({
-      title: drill.title || '',
-      short_description: drill.short_description || '',
-      description: drill.description || '',
-      min_players: drill.min_players || 1,
-      max_players: drill.max_players || '',
-      features: drill.features || [],
-      is_public: drill.is_public || false,
-      level: drill.level || 'beginner'
-    })
-    setImageFile(null)
-    setImagePreview('')
-    if (drill.image_url) {
-      setImagePreview(imageUrls[drill.id] || drill.image_url)
+    // Open edit form in a new window
+    const editUrl = orgId 
+      ? `/organisations/${orgId}/drills/${drill.id}/edit`
+      : `/drills/${drill.id}/edit`
+    
+    const editWindow = window.open(editUrl, 'editDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
+    
+    // Focus the new window
+    if (editWindow) {
+      editWindow.focus()
     }
-    setShowAddForm(true)
   }
 
   const handleDelete = async (drillId) => {
@@ -411,59 +280,7 @@ const Drills = () => {
     })
   }
 
-  // Image upload functions
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Please select an image file')
-        return
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Image must be less than 5MB')
-        return
-      }
 
-      setImageFile(file)
-      
-      // Create preview
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target.result)
-      }
-      reader.readAsDataURL(file)
-      setError('')
-    }
-  }
-
-  const uploadImage = async () => {
-    if (!imageFile) return null
-
-    try {
-      const fileExt = imageFile.name.split('.').pop()
-      const fileName = `${Date.now()}.${fileExt}`
-      const filePath = `${user.id}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('drill-images')
-        .upload(filePath, imageFile)
-
-      if (uploadError) throw uploadError
-
-      // Get signed URL instead of public URL
-      const { data: { signedUrl } } = await supabase.storage
-        .from('drill-images')
-        .createSignedUrl(filePath, 60 * 60 * 24 * 365) // 1 year expiry
-
-      return signedUrl
-    } catch (err) {
-      console.error('Error uploading image:', err)
-      throw new Error('Failed to upload image')
-    }
-  }
 
   if (loading) {
     return (
@@ -482,28 +299,40 @@ const Drills = () => {
               {orgId ? (
                 <OrganizationHeader title="Drills" />
               ) : (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <Link
-                      to="/dashboard"
-                      className="text-gray-600 hover:text-gray-800 font-medium"
+                                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        to="/dashboard"
+                        className="text-gray-600 hover:text-gray-800 font-medium"
+                      >
+                        ← Back to Dashboard
+                      </Link>
+                      <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const addUrl = `/drills/add`
+                        const addWindow = window.open(addUrl, 'addDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
+                        if (addWindow) {
+                          addWindow.focus()
+                        }
+                      }}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
-                      ← Back to Dashboard
-                    </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
+                      Add Drill
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Drill
-                  </button>
-                </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end">
                   <button
-                    onClick={() => setShowAddForm(true)}
+                    onClick={() => {
+                      const addUrl = `/organisations/${orgId}/drills/add`
+                      const addWindow = window.open(addUrl, 'addDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
+                      if (addWindow) {
+                        addWindow.focus()
+                      }
+                    }}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Drill
@@ -631,210 +460,6 @@ const Drills = () => {
             </div>
 
             <div className="px-6 py-4">
-              {/* Add/Edit Form */}
-              {showAddForm && (
-                <div className="mb-6 bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    {editingDrill ? 'Edit Drill' : 'Add New Drill'}
-                  </h3>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                          Drill Title *
-                        </label>
-                        <input
-                          type="text"
-                          id="title"
-                          name="title"
-                          required
-                          value={formData.title}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="e.g., 3-on-3 Forechecking"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="short_description" className="block text-sm font-medium text-gray-700 mb-2">
-                          Short Description
-                        </label>
-                        <input
-                          type="text"
-                          id="short_description"
-                          name="short_description"
-                          value={formData.short_description}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="Brief description of the drill"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="min_players" className="block text-sm font-medium text-gray-700 mb-2">
-                          Minimum Players *
-                        </label>
-                        <input
-                          type="number"
-                          id="min_players"
-                          name="min_players"
-                          required
-                          min="1"
-                          value={formData.min_players}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="max_players" className="block text-sm font-medium text-gray-700 mb-2">
-                          Maximum Players
-                        </label>
-                        <input
-                          type="number"
-                          id="max_players"
-                          name="max_players"
-                          min="1"
-                          value={formData.max_players}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="Leave empty for unlimited"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-2">
-                          Difficulty Level
-                        </label>
-                        <select
-                          id="level"
-                          name="level"
-                          value={formData.level}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        >
-                          <option value="beginner">Beginner</option>
-                          <option value="intermediate">Intermediate</option>
-                          <option value="advanced">Advanced</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                        Detailed Description
-                      </label>
-                      <textarea
-                        id="description"
-                        name="description"
-                        rows="6"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Detailed instructions, setup, and execution of the drill..."
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-                        Drill Image
-                      </label>
-                      <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                      {imagePreview && (
-                        <div className="mt-2">
-                          <img
-                            src={imagePreview}
-                            alt="Preview"
-                            className="w-32 h-32 object-cover rounded-md border border-gray-300"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Drill Features
-                      </label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                        {availableFeatures.map(feature => (
-                          <label key={feature} className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={formData.features.includes(feature)}
-                              onChange={() => handleFeatureChange(feature)}
-                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            />
-                            <span className="text-sm text-gray-700 capitalize">
-                              {feature.replace('-', ' ')}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Visibility
-                      </label>
-                      <div className="flex items-center space-x-4">
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name="is_public"
-                            value="false"
-                            checked={!formData.is_public}
-                            onChange={() => setFormData(prev => ({ ...prev, is_public: false }))}
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                          />
-                          <span className="text-sm text-gray-700">
-                            Private (Organization only)
-                          </span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name="is_public"
-                            value="true"
-                            checked={formData.is_public}
-                            onChange={() => setFormData(prev => ({ ...prev, is_public: true }))}
-                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                          />
-                          <span className="text-sm text-gray-700">
-                            Public (Visible to all organizations)
-                          </span>
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Public drills can be viewed by users from other organizations
-                      </p>
-                    </div>
-
-                    <div className="flex justify-end space-x-3">
-                      <button
-                        type="button"
-                        onClick={resetForm}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      >
-                        {editingDrill ? 'Update Drill' : 'Add Drill'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
               {/* Drills List */}
               {(() => {
                 const filteredDrills = filterDrills(drills)
