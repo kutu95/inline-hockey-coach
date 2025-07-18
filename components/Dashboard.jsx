@@ -7,7 +7,6 @@ const Dashboard = () => {
   const { user, signOut, userRoles, hasRole, loading } = useAuth()
   const [userOrganization, setUserOrganization] = useState(null)
   const [loadingOrg, setLoadingOrg] = useState(false)
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -64,19 +63,14 @@ const Dashboard = () => {
       setLoadingOrg(false)
     }
   }
-
   const handleSignOut = async () => {
     try {
       const { error } = await signOut()
       if (error) {
         console.error('Sign out error:', error)
-        // Even if there's an error, the local state should be cleared
-        // and the user should be redirected to login
       }
     } catch (error) {
       console.error('Error signing out:', error)
-      // Even if there's an error, the local state should be cleared
-      // and the user should be redirected to login
     }
   }
 
@@ -139,69 +133,34 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Admin Organization Link */}
+            {/* Simple Admin Section */}
             {hasRole('admin') && (
               <div className="mb-6">
-                {loadingOrg ? (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="animate-pulse flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-blue-200 rounded"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-blue-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-blue-200 rounded w-1/2"></div>
-                      </div>
+                <Link
+                  to="/organisations"
+                  className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200 block"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="text-blue-600">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-blue-900">
+                        Manage Organizations
+                      </h3>
+                      <p className="text-blue-700">
+                        Access and manage your organization's data
+                      </p>
+                    </div>
+                    <div className="text-blue-600">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
                   </div>
-                ) : userOrganization ? (
-                  <Link
-                    to={`/organisations/${userOrganization.id}`}
-                    className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200 block"
-                  >
-                    <div className="flex items-center space-x-4">
-                      {userOrganization.logo_url && (
-                        <img
-                          src={userOrganization.logo_url}
-                          alt={`${userOrganization.name} logo`}
-                          className="w-12 h-12 object-contain"
-                          onError={(e) => {
-                            e.target.style.display = 'none'
-                          }}
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-blue-900">
-                          {userOrganization.name}
-                        </h3>
-                        <p className="text-blue-700">
-                          Manage your organization's players, coaches, and activities
-                        </p>
-                      </div>
-                      <div className="text-blue-600">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                  </Link>
-                ) : (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="text-yellow-600">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-yellow-900">
-                          Organization Not Found
-                        </h3>
-                        <p className="text-yellow-700">
-                          Unable to load your organization information
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </Link>
               </div>
             )}
             

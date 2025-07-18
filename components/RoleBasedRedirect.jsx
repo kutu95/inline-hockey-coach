@@ -33,7 +33,7 @@ const RoleBasedRedirect = () => {
     }
 
     fetchUserOrganization()
-  }, [user, userRoles, fetchingOrg])
+  }, [user, userRoles]) // Remove fetchingOrg from dependencies to prevent infinite loops
 
   // Show loading while determining user roles or fetching organization
   if (loading || ((userRoles.includes('admin') || userRoles.includes('coach') || userRoles.includes('player')) && fetchingOrg)) {

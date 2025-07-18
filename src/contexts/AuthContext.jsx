@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-const AuthContext = createContext({})
+const AuthContext = createContext(null)
 
-function useAuth() {
+// Move useAuth outside the component to avoid Fast Refresh issues
+export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
@@ -11,7 +12,7 @@ function useAuth() {
   return context
 }
 
-function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -203,6 +204,4 @@ function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
-}
-
-export { useAuth, AuthProvider } 
+} 
