@@ -10,7 +10,11 @@ const Clubs = () => {
   const [error, setError] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingClub, setEditingClub] = useState(null)
-  const [formData, setFormData] = useState({ name: '' })
+  const [formData, setFormData] = useState({ 
+    name: '',
+    facebook_url: '',
+    instagram_url: ''
+  })
   const [saving, setSaving] = useState(false)
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
@@ -120,7 +124,9 @@ const Clubs = () => {
 
       const clubData = {
         name: formData.name,
-        logo_url: logoUrl
+        logo_url: logoUrl,
+        facebook_url: formData.facebook_url || null,
+        instagram_url: formData.instagram_url || null
       }
 
       if (editingClub) {
@@ -163,7 +169,11 @@ const Clubs = () => {
       }
 
       // Reset form and refresh
-      setFormData({ name: '' })
+      setFormData({ 
+        name: '',
+        facebook_url: '',
+        instagram_url: ''
+      })
       setEditingClub(null)
       setShowAddForm(false)
       fetchClubs()
@@ -177,7 +187,11 @@ const Clubs = () => {
 
   const handleEdit = (club) => {
     setEditingClub(club)
-    setFormData({ name: club.name })
+    setFormData({ 
+      name: club.name,
+      facebook_url: club.facebook_url || '',
+      instagram_url: club.instagram_url || ''
+    })
     setCurrentLogoUrl(club.logo_url || '')
     setShowAddForm(true)
   }
@@ -304,7 +318,11 @@ const Clubs = () => {
   }, [clubs])
 
   const handleCancel = () => {
-    setFormData({ name: '' })
+    setFormData({ 
+      name: '',
+      facebook_url: '',
+      instagram_url: ''
+    })
     setEditingClub(null)
     setShowAddForm(false)
     setLogoFile(null)
@@ -383,7 +401,7 @@ const Clubs = () => {
                         id="clubName"
                         required
                         value={formData.name}
-                        onChange={(e) => setFormData({ name: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Enter club name"
                       />
@@ -426,6 +444,34 @@ const Clubs = () => {
                           Accepted formats: JPG, PNG, GIF. Maximum size: 5MB
                         </p>
                       </div>
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="facebookUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                        Facebook URL
+                      </label>
+                      <input
+                        type="url"
+                        id="facebookUrl"
+                        value={formData.facebook_url}
+                        onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://facebook.com/yourpage"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="instagramUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                        Instagram URL
+                      </label>
+                      <input
+                        type="url"
+                        id="instagramUrl"
+                        value={formData.instagram_url}
+                        onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://instagram.com/yourprofile"
+                      />
                     </div>
                   </div>
                   

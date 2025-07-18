@@ -24,7 +24,9 @@ const Organisations = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    logo_url: ''
+    logo_url: '',
+    facebook_url: '',
+    instagram_url: ''
   })
 
   const fetchOrganisations = async () => {
@@ -99,7 +101,9 @@ const Organisations = () => {
       setFormData({
         name: '',
         description: '',
-        logo_url: ''
+        logo_url: '',
+        facebook_url: '',
+        instagram_url: ''
       })
       setShowCreateForm(false)
       console.log('About to fetch organisations after update...')
@@ -180,7 +184,9 @@ const Organisations = () => {
     setFormData({
       name: org.name,
       description: org.description || '',
-      logo_url: org.logo_url || ''
+      logo_url: org.logo_url || '',
+      facebook_url: org.facebook_url || '',
+      instagram_url: org.instagram_url || ''
     })
     setLogoPreview(org.logo_url || null)
     setShowCreateForm(true)
@@ -210,7 +216,9 @@ const Organisations = () => {
     setFormData({
       name: '',
       description: '',
-      logo_url: ''
+      logo_url: '',
+      facebook_url: '',
+      instagram_url: ''
     })
     setLogoPreview(null)
   }
@@ -374,6 +382,28 @@ const Organisations = () => {
                         rows={3}
                         className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="Enter organisation description..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Facebook URL</label>
+                      <input
+                        type="url"
+                        value={formData.facebook_url}
+                        onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://facebook.com/yourpage"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Instagram URL</label>
+                      <input
+                        type="url"
+                        value={formData.instagram_url}
+                        onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="https://instagram.com/yourprofile"
                       />
                     </div>
                   </div>
