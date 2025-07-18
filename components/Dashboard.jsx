@@ -10,7 +10,7 @@ const Dashboard = () => {
 
 
   
-  if (loading || (user && userRoles.length === 0 && !loading)) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -23,14 +23,14 @@ const Dashboard = () => {
 
   // Fetch user's organization if they're an admin
   useEffect(() => {
-    if (userRoles.includes('admin') && !loadingOrg && !userOrganization) {
+    if (userRoles.includes('admin') && !userOrganization) {
       fetchUserOrganization()
     }
-  }, [userRoles, loadingOrg, userOrganization])
+  }, [userRoles, userOrganization])
 
   const fetchUserOrganization = async () => {
     // Prevent duplicate calls
-    if (loadingOrg || userOrganization) {
+    if (userOrganization) {
       return
     }
     

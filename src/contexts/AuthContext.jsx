@@ -37,35 +37,18 @@ function AuthProvider({ children }) {
       setIsFetchingRoles(true)
       setLastFetchedUserId(userId)
       
-      // Ultra-fast, simple query - just get role names directly
-      const startTime = Date.now()
-      
-      // Add a very short timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Query timeout')), 1000) // 1 second max
+      // Use the reliable RPC function that works consistently across the app
+      const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
+        user_uuid: userId
       })
       
-      const queryPromise = supabase
-        .from('user_roles')
-        .select('roles(name)')
-        .eq('user_id', userId)
-      
-      const { data: roleData, error: roleError } = await Promise.race([queryPromise, timeoutPromise])
-      
-      const endTime = Date.now()
-      console.log(`User roles query took ${endTime - startTime}ms`)
-      
-      if (roleError) {
-        console.error('User roles query failed:', roleError)
+      if (error) {
+        console.error('Error fetching user roles:', error)
         return []
       }
       
-      if (roleData && roleData.length > 0) {
-        const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
-        return roleNames
-      } else {
-        return []
-      }
+      // Ensure we return an array of role names
+      return Array.isArray(roleNames) ? roleNames : []
     } catch (err) {
       console.error('Error fetching user roles:', err)
       return []
