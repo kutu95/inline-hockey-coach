@@ -178,7 +178,7 @@ const OrganisationDetail = () => {
                       <img
                         src={organisation.logo_url}
                         alt={`${organisation.name} logo`}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-contain mr-3 sm:mr-4"
+                        className="w-20 h-20 sm:w-24 sm:h-24 object-contain mr-3 sm:mr-4"
                         onError={(e) => {
                           e.target.style.display = 'none'
                         }}
