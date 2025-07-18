@@ -19,34 +19,25 @@ function AuthProvider({ children }) {
   const [lastFetchedUserId, setLastFetchedUserId] = useState(null)
 
   const fetchUserRoles = async (userId) => {
-    console.log('🔥🔥🔥 NEW CODE IS RUNNING - fetchUserRoles called 🔥🔥🔥')
-    
     if (!userId) {
-      console.log('No user ID provided, returning empty roles')
       return []
     }
 
     // If we already have roles for this user, return them
     if (lastFetchedUserId === userId && userRoles.length > 0) {
-      console.log('Already have roles for user, returning cached roles')
       return userRoles
     }
 
     // Prevent multiple simultaneous fetches
     if (isFetchingRoles) {
-      console.log('Already fetching roles, skipping...')
       return userRoles
     }
 
     try {
       setIsFetchingRoles(true)
       setLastFetchedUserId(userId)
-      console.log('=== FETCHING USER ROLES ===')
-      console.log('Fetching roles for user:', userId)
       
       // Ultra-fast, simple query - just get role names directly
-      console.log('Using ultra-fast direct query...')
-      
       const startTime = Date.now()
       
       // Add a very short timeout to prevent hanging
@@ -62,20 +53,17 @@ function AuthProvider({ children }) {
       const { data: roleData, error: roleError } = await Promise.race([queryPromise, timeoutPromise])
       
       const endTime = Date.now()
-      console.log(`Query took ${endTime - startTime}ms`)
-      console.log('Query result:', { roleData, roleError })
+      console.log(`User roles query took ${endTime - startTime}ms`)
       
       if (roleError) {
-        console.error('Query failed:', roleError)
+        console.error('User roles query failed:', roleError)
         return []
       }
       
       if (roleData && roleData.length > 0) {
         const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
-        console.log('Roles found:', roleNames)
         return roleNames
       } else {
-        console.log('No roles found for user')
         return []
       }
     } catch (err) {
@@ -83,13 +71,11 @@ function AuthProvider({ children }) {
       return []
     } finally {
       setIsFetchingRoles(false)
-      console.log('=== END FETCHING USER ROLES ===')
     }
   }
 
   // Function to check if user has a specific role
   const hasRole = (roleName) => {
-    console.log('hasRole called with:', roleName, 'userRoles:', userRoles, 'result:', userRoles.includes(roleName))
     return userRoles.includes(roleName)
   }
 
@@ -104,11 +90,9 @@ function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    console.log('AuthProvider: Starting initialization')
     // Get initial session
     const getSession = async () => {
       try {
-        console.log('AuthProvider: Getting session')
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
           console.error('Error getting session:', error)
@@ -118,15 +102,11 @@ function AuthProvider({ children }) {
           return
         }
         const currentUser = session?.user ?? null
-        console.log('AuthProvider: Current user:', currentUser?.email)
         setUser(currentUser)
         if (currentUser) {
-          console.log('AuthProvider: Fetching roles for current user')
           const roles = await fetchUserRoles(currentUser.id)
-          console.log('AuthProvider: Roles fetched:', roles)
           setUserRoles(roles)
         } else {
-          console.log('AuthProvider: No current user, setting empty roles')
           setUserRoles([])
         }
       } catch (error) {
@@ -134,13 +114,12 @@ function AuthProvider({ children }) {
         setUser(null)
         setUserRoles([])
       } finally {
-        console.log('AuthProvider: Setting loading to false')
         setLoading(false)
       }
     }
     // Add timeout to prevent infinite hanging
     const timeoutId = setTimeout(() => {
-      console.log('AuthProvider: Timeout reached, forcing loading to false')
+      console.warn('AuthProvider: Timeout reached, forcing loading to false')
       setLoading(false)
     }, 3000) // 3 seconds max
     getSession()
@@ -151,21 +130,16 @@ function AuthProvider({ children }) {
 
   // Separate useEffect for auth state changes
   useEffect(() => {
-    console.log('AuthProvider: Setting up auth state change listener')
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('AuthProvider: Auth state change event:', event, 'session:', !!session, 'current user:', user?.email)
-        
         // Skip if this is just a token refresh and we already have the user
         if (event === 'TOKEN_REFRESHED' && user && session?.user?.id === user.id) {
-          console.log('AuthProvider: Token refreshed, skipping re-fetch')
           return
         }
         
         try {
           const currentUser = session?.user ?? null
-          console.log('AuthProvider: New user:', currentUser?.email)
           setUser(currentUser)
           if (!currentUser) {
             // If logged out, clear roles
@@ -173,11 +147,8 @@ function AuthProvider({ children }) {
           } else {
             // Only fetch roles if we don't already have them for this user
             if (lastFetchedUserId !== currentUser.id || userRoles.length === 0) {
-              console.log('AuthProvider: Fetching roles for new user')
               const roles = await fetchUserRoles(currentUser.id)
               setUserRoles(roles)
-            } else {
-              console.log('AuthProvider: Already have roles for this user, skipping fetch')
             }
           }
         } catch (error) {
@@ -193,7 +164,6 @@ function AuthProvider({ children }) {
       }
     )
     return () => {
-      console.log('AuthProvider: Cleaning up auth state change listener')
       subscription.unsubscribe()
     }
   }, [user, userRoles, lastFetchedUserId])
@@ -202,13 +172,9 @@ function AuthProvider({ children }) {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log('AuthProvider: Page became visible, checking if we need to refresh auth')
         // Only refresh if we don't have a user or roles
         if (!user || userRoles.length === 0) {
-          console.log('AuthProvider: No user or roles, refreshing session')
           supabase.auth.getSession()
-        } else {
-          console.log('AuthProvider: User and roles already loaded, skipping refresh')
         }
       }
     }
@@ -280,7 +246,10 @@ function AuthProvider({ children }) {
     refreshUserRoles,
   }
 
-  console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading, 'isFetchingRoles:', isFetchingRoles)
+  // Only log in development and only when there are issues
+  if (process.env.NODE_ENV === 'development' && (loading || isFetchingRoles)) {
+    console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading, 'isFetchingRoles:', isFetchingRoles)
+  }
 
   return (
     <AuthContext.Provider value={value}>
