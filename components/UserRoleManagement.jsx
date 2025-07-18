@@ -202,7 +202,7 @@ const UserRoleManagement = () => {
                   to="/dashboard"
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
-                  Back to Dashboard
+                  Back to Player
                 </Link>
               </div>
             </div>
@@ -224,7 +224,7 @@ const UserRoleManagement = () => {
                     to="/dashboard"
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
-                    ← Back to Dashboard
+                    ← Back to Player
                   </Link>
                   <h1 className="text-3xl font-bold text-gray-900">Manage User Roles</h1>
                 </div>
