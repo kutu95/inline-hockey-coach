@@ -46,82 +46,32 @@ function AuthProvider({ children }) {
       
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Query timeout')), 10000) // Increased to 10 seconds
+        setTimeout(() => reject(new Error('Query timeout')), 3000) // 3 seconds should be plenty for a simple query
       })
       
-      // Retry mechanism
-      let lastError = null
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          console.log(`Attempt ${attempt}: Trying RPC function get_user_roles_safe...`)
-          const queryPromise = supabase.rpc('get_user_roles_safe', {
-            user_uuid: userId
-          })
-          
-          const { data, error } = await Promise.race([queryPromise, timeoutPromise])
-
-                    console.log(`Attempt ${attempt} RPC response:`, { data, error })
-
-          if (error) {
-            console.warn(`Attempt ${attempt} RPC error:`, error)
-            lastError = error
-            
-            // If this is the last attempt, try direct query as fallback
-            if (attempt === 3) {
-              if (error.code === 'PGRST116' || error.message.includes('RLS')) {
-                console.log('RPC error detected, trying direct query...')
-                const { data: roleData, error: roleError } = await supabase
-                  .from('user_roles')
-                  .select(`
-                    role_id,
-                    roles (
-                      name
-                    )
-                  `)
-                  .eq('user_id', userId)
-                
-                if (roleError) {
-                  console.warn('Direct query also failed:', roleError)
-                  return []
-                } else if (roleData && roleData.length > 0) {
-                  console.log('Found roles via direct query:', roleData)
-                  const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
-                  console.log('Extracted role names:', roleNames)
-                  return roleNames
-                }
-              }
-              return []
-            }
-            
-            // Wait before retrying (exponential backoff)
-            if (attempt < 3) {
-              const delay = Math.pow(2, attempt) * 1000 // 2s, 4s
-              console.log(`Waiting ${delay}ms before retry...`)
-              await new Promise(resolve => setTimeout(resolve, delay))
-            }
-            continue
-          }
-
-          if (data && Array.isArray(data)) {
-            console.log('Found roles via RPC:', data)
-            return data
-          } else {
-            console.log('No roles found for user or invalid data format:', data)
-            return []
-          }
-        } catch (attemptError) {
-          console.error(`Attempt ${attempt} failed:`, attemptError)
-          lastError = attemptError
-          
-          if (attempt === 3) {
-            throw attemptError
-          }
-          
-          // Wait before retrying
-          const delay = Math.pow(2, attempt) * 1000
-          console.log(`Waiting ${delay}ms before retry...`)
-          await new Promise(resolve => setTimeout(resolve, delay))
-        }
+            // Skip the complex RPC function and use a simple direct query
+      console.log('Using simple direct query for user roles...')
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select(`
+          role_id,
+          roles (
+            name
+          )
+        `)
+        .eq('user_id', userId)
+      
+      if (roleError) {
+        console.warn('Direct query failed:', roleError)
+        return []
+      } else if (roleData && roleData.length > 0) {
+        console.log('Found roles via direct query:', roleData)
+        const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
+        console.log('Extracted role names:', roleNames)
+        return roleNames
+      } else {
+        console.log('No roles found for user')
+        return []
       }
     } catch (err) {
       console.error('Error fetching user roles:', err)
