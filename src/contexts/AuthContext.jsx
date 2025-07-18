@@ -176,6 +176,11 @@ function AuthProvider({ children }) {
           if (!currentUser) {
             // If logged out, clear roles
             setUserRoles([])
+          } else {
+            // If logged in, fetch roles
+            console.log('AuthProvider: Fetching roles for new user')
+            const roles = await fetchUserRoles(currentUser.id)
+            setUserRoles(roles)
           }
         } catch (error) {
           console.error('Error in auth state change:', error)
