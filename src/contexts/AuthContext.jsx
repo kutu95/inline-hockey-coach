@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [roleCache, setRoleCache] = useState(new Map())
   const [fetchingRoles, setFetchingRoles] = useState(false)
+  const previousUserRef = useRef(null)
 
   const fetchUserRoles = async (userId) => {
     if (!userId) {
@@ -112,6 +113,7 @@ export function AuthProvider({ children }) {
 
         const currentUser = session?.user ?? null
         setUser(currentUser)
+        previousUserRef.current = currentUser
         
         if (currentUser) {
           try {
@@ -150,11 +152,12 @@ export function AuthProvider({ children }) {
         if (!mounted) return
         
         const currentUser = session?.user ?? null
-        const previousUser = user
+        const previousUser = previousUserRef.current
         
         // Only fetch roles if the user actually changed
         if (currentUser?.id !== previousUser?.id) {
           setUser(currentUser)
+          previousUserRef.current = currentUser
           
           if (!currentUser) {
             setUserRoles([])
@@ -177,18 +180,20 @@ export function AuthProvider({ children }) {
         // For token refresh events (TOKEN_REFRESHED), just update the user object without refetching roles
         else if (event === 'TOKEN_REFRESHED' && currentUser) {
           setUser(currentUser)
+          previousUserRef.current = currentUser
         }
       }
     )
 
     // Handle page visibility changes to prevent unnecessary auth re-initialization
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && user) {
+      if (document.visibilityState === 'visible' && previousUserRef.current) {
         // Page became visible, but don't re-fetch roles unless necessary
         // Just ensure the user object is up to date
         supabase.auth.getSession().then(({ data: { session } }) => {
-          if (mounted && session?.user && session.user.id === user.id) {
+          if (mounted && session?.user && session.user.id === previousUserRef.current?.id) {
             setUser(session.user)
+            previousUserRef.current = session.user
           }
         })
       }
@@ -201,7 +206,7 @@ export function AuthProvider({ children }) {
       subscription.unsubscribe()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [user]) // Add user to dependencies to track changes
+  }, []) // Add user to dependencies to track changes
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
