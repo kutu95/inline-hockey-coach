@@ -852,29 +852,31 @@ const Drills = () => {
                     {filteredDrills.map((drill) => (
                       <div key={drill.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                         <div className="p-6">
-                          <div className="flex items-start justify-between">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                             <div className="flex-1">
-                              <div className="flex items-center space-x-3 mb-2">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-2">
                                 <h3 className="text-xl font-semibold text-gray-900">{drill.title}</h3>
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  {formatPlayerCount(drill.min_players, drill.max_players)}
-                                </span>
-                                                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                drill.is_public 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}>
-                                {getVisibilityText(drill)}
-                              </span>
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                drill.level === 'beginner' 
-                                  ? 'bg-green-100 text-green-800'
-                                  : drill.level === 'intermediate'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {drill.level ? drill.level.charAt(0).toUpperCase() + drill.level.slice(1) : 'Beginner'}
-                              </span>
+                                <div className="flex flex-wrap gap-2">
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {formatPlayerCount(drill.min_players, drill.max_players)}
+                                  </span>
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                    drill.is_public 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {getVisibilityText(drill)}
+                                  </span>
+                                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                    drill.level === 'beginner' 
+                                      ? 'bg-green-100 text-green-800'
+                                      : drill.level === 'intermediate'
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {drill.level ? drill.level.charAt(0).toUpperCase() + drill.level.slice(1) : 'Beginner'}
+                                  </span>
+                                </div>
                               </div>
                               
                               {drill.short_description && (
@@ -914,16 +916,16 @@ const Drills = () => {
                               </div>
                             </div>
                             
-                            <div className="flex space-x-2 ml-4">
+                            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
                               <button
                                 onClick={() => handleEdit(drill)}
-                                className="text-green-600 hover:text-green-800 text-sm font-medium"
+                                className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
                               >
                                 Edit
                               </button>
                               <button
                                 onClick={() => handleDelete(drill.id)}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
                               >
                                 Delete
                               </button>

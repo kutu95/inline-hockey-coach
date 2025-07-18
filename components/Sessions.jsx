@@ -614,11 +614,11 @@ const Sessions = () => {
                   {sessions.map((session) => (
                     <div key={session.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-6">
-                        <div className="flex items-start justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                           <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-2">
                               <h3 className="text-xl font-semibold text-gray-900">{session.title}</h3>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start sm:self-auto">
                                 {formatDate(session.date)}
                               </span>
                             </div>
@@ -652,22 +652,22 @@ const Sessions = () => {
                             </div>
                           </div>
                           
-                          <div className="flex space-x-2 ml-4">
+                          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
                             <Link
                               to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
                             >
                               Take Attendance
                             </Link>
                             <button
                               onClick={() => handleEdit(session)}
-                              className="text-green-600 hover:text-green-800 text-sm font-medium"
+                              className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(session.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
                             >
                               Delete
                             </button>

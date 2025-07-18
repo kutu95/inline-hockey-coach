@@ -329,19 +329,19 @@ const Clubs = () => {
               {orgId ? (
                 <OrganizationHeader title="Clubs" />
               ) : (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                     <Link
                       to="/dashboard"
-                      className="text-gray-600 hover:text-gray-800 font-medium"
+                      className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                     >
                       ← Back to Dashboard
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Clubs</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Clubs</h1>
                   </div>
                   <button
                     onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Club
                   </button>
@@ -373,7 +373,7 @@ const Clubs = () => {
                   {editingClub ? 'Edit Club' : 'Add New Club'}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-2">
                         Club Name *
@@ -400,7 +400,7 @@ const Clubs = () => {
                             <img
                               src={signedUrls[editingClub?.id] || currentLogoUrl}
                               alt="Current club logo"
-                              className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
+                              className="w-20 h-20 sm:w-24 sm:h-24 object-contain border border-gray-300 rounded-lg"
                             />
                           </div>
                         )}
@@ -418,7 +418,7 @@ const Clubs = () => {
                             <img
                               src={logoPreview}
                               alt="Logo preview"
-                              className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
+                              className="w-20 h-20 sm:w-24 sm:h-24 object-contain border border-gray-300 rounded-lg"
                             />
                           </div>
                         )}
@@ -451,11 +451,11 @@ const Clubs = () => {
 
             <div className="px-6 py-4">
               {clubs.length === 0 ? (
-                <div className="text-center py-12">
+                <div className="text-center py-12 px-4">
                   <div className="text-gray-500 text-lg mb-4">No clubs found</div>
                   <button
                     onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Your First Club
                   </button>
@@ -463,7 +463,7 @@ const Clubs = () => {
               ) : (
                 <div className="space-y-4">
                   {clubs.map((club) => (
-                    <div key={club.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div key={club.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg space-y-4 sm:space-y-0">
                       <div className="flex items-center space-x-4">
                         {club.logo_url ? (
                           <img
@@ -478,35 +478,35 @@ const Clubs = () => {
                             </span>
                           </div>
                         )}
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-semibold text-gray-900">{club.name}</h3>
-                          <div className="flex items-center space-x-4 mt-2 text-xs text-gray-600">
+                          <div className="grid grid-cols-2 sm:flex sm:items-center sm:space-x-4 mt-2 text-xs text-gray-600 gap-2 sm:gap-0">
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                               </svg>
                               {club.totalMembers} members
                             </span>
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                               </svg>
                               {club.totalPlayers} players
                             </span>
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                               </svg>
                               {club.totalCoaches} coaches
                             </span>
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                               </svg>
                               {club.totalGoalies} goalies
                             </span>
                             <span className="flex items-center">
-                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                               {club.totalReferees} referees
@@ -514,22 +514,22 @@ const Clubs = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                         <Link
                           to={orgId ? `/organisations/${orgId}/clubs/${club.id}` : `/clubs/${club.id}`}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
                         >
                           View Details
                         </Link>
                         <button
                           onClick={() => handleEdit(club)}
-                          className="text-green-600 hover:text-green-800 text-sm font-medium"
+                          className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(club.id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
                         >
                           Delete
                         </button>
