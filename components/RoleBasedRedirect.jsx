@@ -7,29 +7,65 @@ const RoleBasedRedirect = () => {
   const { user, userRoles, loading } = useAuth()
   const [userOrganization, setUserOrganization] = useState(null)
   const [fetchingOrg, setFetchingOrg] = useState(false)
+  const [fallbackOrg, setFallbackOrg] = useState(null)
 
-  console.log('RoleBasedRedirect: user:', !!user, 'userRoles:', userRoles, 'loading:', loading)
+  console.log('RoleBasedRedirect: user:', !!user, 'userRoles:', userRoles, 'loading:', loading, 'userOrganization:', userOrganization, 'fetchingOrg:', fetchingOrg)
 
   // Fetch user's organization if they have any role (admin, coach, player)
   useEffect(() => {
     const fetchUserOrganization = async () => {
+      console.log('RoleBasedRedirect: useEffect triggered - user:', !!user, 'userRoles:', userRoles, 'fetchingOrg:', fetchingOrg)
+      
       if (user && (userRoles.includes('admin') || userRoles.includes('coach') || userRoles.includes('player')) && !fetchingOrg) {
         try {
           setFetchingOrg(true)
+          console.log('RoleBasedRedirect: Fetching organization for user:', user.id)
+          
           const { data: orgId, error } = await supabase.rpc('get_user_organization', {
             user_uuid: user.id
           })
 
+          console.log('RoleBasedRedirect: RPC result - orgId:', orgId, 'error:', error)
+
           if (error) {
             console.error('Error fetching user organization:', error)
+            // Try to get fallback organization
+            const { data: fallbackData } = await supabase
+              .from('organizations')
+              .select('id')
+              .limit(1)
+              .single()
+            
+            if (fallbackData) {
+              console.log('RoleBasedRedirect: Using fallback organization:', fallbackData.id)
+              setFallbackOrg(fallbackData.id)
+            }
           } else {
+            console.log('RoleBasedRedirect: Found user organization:', orgId)
             setUserOrganization(orgId)
           }
         } catch (err) {
           console.error('Error fetching user organization:', err)
+          // Try to get fallback organization
+          try {
+            const { data: fallbackData } = await supabase
+              .from('organizations')
+              .select('id')
+              .limit(1)
+              .single()
+            
+            if (fallbackData) {
+              console.log('RoleBasedRedirect: Using fallback organization after error:', fallbackData.id)
+              setFallbackOrg(fallbackData.id)
+            }
+          } catch (fallbackErr) {
+            console.error('Error fetching fallback organization:', fallbackErr)
+          }
         } finally {
           setFetchingOrg(false)
         }
+      } else {
+        console.log('RoleBasedRedirect: Not fetching organization - conditions not met')
       }
     }
 
@@ -60,6 +96,9 @@ const RoleBasedRedirect = () => {
     if (userOrganization) {
       console.log('RoleBasedRedirect: User is admin/coach/player, redirecting to their organization:', userOrganization)
       return <Navigate to={`/organisations/${userOrganization}`} replace />
+    } else if (fallbackOrg) {
+      console.log('RoleBasedRedirect: User is admin/coach/player, redirecting to fallback organization:', fallbackOrg)
+      return <Navigate to={`/organisations/${fallbackOrg}`} replace />
     } else {
       console.log('RoleBasedRedirect: User is admin/coach/player but no organization found, redirecting to dashboard')
       return <Navigate to="/dashboard" replace />

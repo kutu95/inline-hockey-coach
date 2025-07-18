@@ -1,40 +1,53 @@
 import { useAuth } from '../src/contexts/AuthContext'
-import { Link, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 
 const Dashboard = () => {
-  const { user, signOut, userRoles, hasRole, loading } = useAuth()
+  const { user, signOut, userRoles, hasRole } = useAuth()
   const [userOrganization, setUserOrganization] = useState(null)
-  const [fetchingOrg, setFetchingOrg] = useState(false)
-  const [shouldRedirect, setShouldRedirect] = useState(false)
+  const [loadingOrg, setLoadingOrg] = useState(false)
 
-  // Check if admin should be redirected to their organization
+  // Fetch user's organization if they're an admin
   useEffect(() => {
-    const checkAdminRedirect = async () => {
-      if (user && hasRole('admin') && !fetchingOrg && !shouldRedirect) {
-        try {
-          setFetchingOrg(true)
-          const { data: orgId, error } = await supabase.rpc('get_user_organization', {
-            user_uuid: user.id
-          })
-
-          if (error) {
-            console.error('Error fetching user organization:', error)
-          } else if (orgId) {
-            setUserOrganization(orgId)
-            setShouldRedirect(true)
-          }
-        } catch (err) {
-          console.error('Error fetching user organization:', err)
-        } finally {
-          setFetchingOrg(false)
-        }
-      }
+    if (hasRole('admin')) {
+      fetchUserOrganization()
     }
+  }, [hasRole])
 
-    checkAdminRedirect()
-  }, [user, userRoles, hasRole, fetchingOrg, shouldRedirect])
+  const fetchUserOrganization = async () => {
+    try {
+      setLoadingOrg(true)
+      const { data: orgId, error } = await supabase.rpc('get_user_organization', {
+        user_uuid: user.id
+      })
+      
+      if (error) {
+        console.error('Error fetching user organization:', error)
+        return
+      }
+      
+      if (orgId) {
+        // Fetch organization details
+        const { data: orgData, error: orgError } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('id', orgId)
+          .single()
+        
+        if (orgError) {
+          console.error('Error fetching organization details:', orgError)
+          return
+        }
+        
+        setUserOrganization(orgData)
+      }
+    } catch (err) {
+      console.error('Error in fetchUserOrganization:', err)
+    } finally {
+      setLoadingOrg(false)
+    }
+  }
 
   const handleSignOut = async () => {
     console.log('Sign out button clicked')
@@ -53,20 +66,6 @@ const Dashboard = () => {
       // Even if there's an error, the local state should be cleared
       // and the user should be redirected to login
     }
-  }
-
-  // Show loading spinner while auth context is loading or fetching organization
-  if (loading || fetchingOrg) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 border-b-2 border-indigo-600"></div>
-      </div>
-    )
-  }
-
-  // Redirect admin to their organization page
-  if (shouldRedirect && userOrganization) {
-    return <Navigate to={`/organisations/${userOrganization}`} replace />
   }
 
   const getRoleBadgeColor = (role) => {
@@ -127,6 +126,72 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
+
+            {/* Admin Organization Link */}
+            {hasRole('admin') && (
+              <div className="mb-6">
+                {loadingOrg ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="animate-pulse flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-blue-200 rounded"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-blue-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-blue-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : userOrganization ? (
+                  <Link
+                    to={`/organisations/${userOrganization.id}`}
+                    className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200 block"
+                  >
+                    <div className="flex items-center space-x-4">
+                      {userOrganization.logo_url && (
+                        <img
+                          src={userOrganization.logo_url}
+                          alt={`${userOrganization.name} logo`}
+                          className="w-12 h-12 object-contain"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                          }}
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-blue-900">
+                          {userOrganization.name}
+                        </h3>
+                        <p className="text-blue-700">
+                          Manage your organization's players, coaches, and activities
+                        </p>
+                      </div>
+                      <div className="text-blue-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-yellow-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-yellow-900">
+                          Organization Not Found
+                        </h3>
+                        <p className="text-yellow-700">
+                          Unable to load your organization information
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Superadmin-only section */}
@@ -203,7 +268,19 @@ const Dashboard = () => {
                       Drills
                     </h3>
                     <p className="text-indigo-700">
-                      Create and manage practice drills
+                      Create and manage training drills
+                    </p>
+                  </Link>
+                  
+                  <Link
+                    to="/reports"
+                    className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 hover:bg-yellow-100 transition-colors duration-200"
+                  >
+                    <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+                      Reports
+                    </h3>
+                    <p className="text-yellow-700">
+                      View and generate reports
                     </p>
                   </Link>
                 </>
@@ -214,12 +291,12 @@ const Dashboard = () => {
                 <>
                   <Link
                     to="/player-profile"
-                    className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200"
+                    className="bg-green-50 border border-green-200 rounded-lg p-4 hover:bg-green-100 transition-colors duration-200"
                   >
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                    <h3 className="text-lg font-semibold text-green-900 mb-2">
                       My Profile
                     </h3>
-                    <p className="text-blue-700">
+                    <p className="text-green-700">
                       View and update your player information
                     </p>
                   </Link>
@@ -232,7 +309,7 @@ const Dashboard = () => {
                       Sessions
                     </h3>
                     <p className="text-purple-700">
-                      View scheduled practice sessions
+                      View upcoming practice sessions
                     </p>
                   </Link>
                   
@@ -244,22 +321,10 @@ const Dashboard = () => {
                       Drills
                     </h3>
                     <p className="text-indigo-700">
-                      View practice drills and exercises
+                      Access training drills and resources
                     </p>
                   </Link>
                 </>
-              )}
-
-              {/* No roles assigned - only show after loading is complete */}
-              {!loading && userRoles.length === 0 && (
-                <div className="col-span-full bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-yellow-900 mb-2">
-                    No Roles Assigned
-                  </h3>
-                  <p className="text-yellow-700">
-                    Your account has not been assigned any roles yet. Please contact an administrator to get access to the system features.
-                  </p>
-                </div>
               )}
             </div>
           </div>

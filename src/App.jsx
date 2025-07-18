@@ -64,8 +64,8 @@ const PublicRoute = ({ children }) => {
     return <RoleBasedRedirect />
   }
   
-  // If user exists but has no roles, redirect to dashboard as fallback
-  if (user && userRoles.length === 0) {
+  // If user exists but has no roles and we're not loading, redirect to dashboard as fallback
+  if (user && userRoles.length === 0 && !loading) {
     console.log('PublicRoute: User exists but has no roles, redirecting to dashboard')
     return <Navigate to="/dashboard" replace />
   }
