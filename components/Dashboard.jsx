@@ -4,9 +4,18 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 
 const Dashboard = () => {
-  const { user, signOut, userRoles, hasRole } = useAuth()
+  const { user, signOut, userRoles, hasRole, loading } = useAuth()
   const [userOrganization, setUserOrganization] = useState(null)
   const [loadingOrg, setLoadingOrg] = useState(false)
+
+  // Show loading state while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
 
   // Fetch user's organization if they're an admin
   useEffect(() => {
