@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-const AuthContext = createContext({})
+const AuthContext = createContext(null)
 
-function useAuth() {
+// Move useAuth outside the component to avoid Fast Refresh issues
+export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
@@ -11,49 +12,46 @@ function useAuth() {
   return context
 }
 
-function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
-  const [isFetchingRoles, setIsFetchingRoles] = useState(false)
-  const [lastFetchedUserId, setLastFetchedUserId] = useState(null)
 
   const fetchUserRoles = async (userId) => {
     if (!userId) {
       return []
     }
 
-    // If we already have roles for this user, return them
-    if (lastFetchedUserId === userId && userRoles.length > 0) {
-      return userRoles
-    }
-
-    // Prevent multiple simultaneous fetches
-    if (isFetchingRoles) {
-      return userRoles
-    }
-
     try {
-      setIsFetchingRoles(true)
-      setLastFetchedUserId(userId)
-      
-      // Use the reliable RPC function that works consistently across the app
+      // Try RPC function first
       const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
         user_uuid: userId
       })
       
-      if (error) {
-        console.error('Error fetching user roles:', error)
+      if (!error && Array.isArray(roleNames)) {
+        return roleNames
+      }
+      
+      // Fallback: direct query if RPC fails
+      const { data, error: directError } = await supabase
+        .from('user_roles')
+        .select(`
+          roles (
+            name
+          )
+        `)
+        .eq('user_id', userId)
+      
+      if (directError) {
+        console.error('Direct query error:', directError)
         return []
       }
       
-      // Ensure we return an array of role names
-      return Array.isArray(roleNames) ? roleNames : []
+      const roles = data?.map(item => item.roles?.name).filter(Boolean) || []
+      return roles
     } catch (err) {
       console.error('Error fetching user roles:', err)
       return []
-    } finally {
-      setIsFetchingRoles(false)
     }
   }
 
@@ -92,23 +90,16 @@ function AuthProvider({ children }) {
         } else {
           setUserRoles([])
         }
+        setLoading(false)
       } catch (error) {
         console.error('Error getting session:', error)
         setUser(null)
         setUserRoles([])
-      } finally {
         setLoading(false)
       }
     }
-    // Add timeout to prevent infinite hanging
-    const timeoutId = setTimeout(() => {
-      console.warn('AuthProvider: Timeout reached, forcing loading to false')
-      setLoading(false)
-    }, 3000) // 3 seconds max
+    
     getSession()
-    return () => {
-      clearTimeout(timeoutId)
-    }
   }, [])
 
   // Separate useEffect for auth state changes
@@ -116,59 +107,33 @@ function AuthProvider({ children }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // Skip if this is just a token refresh and we already have the user
-        if (event === 'TOKEN_REFRESHED' && user && session?.user?.id === user.id) {
-          return
-        }
-        
         try {
           const currentUser = session?.user ?? null
           setUser(currentUser)
+          
           if (!currentUser) {
             // If logged out, clear roles
             setUserRoles([])
+            setLoading(false)
           } else {
-            // Only fetch roles if we don't already have them for this user
-            if (lastFetchedUserId !== currentUser.id || userRoles.length === 0) {
-              const roles = await fetchUserRoles(currentUser.id)
-              setUserRoles(roles)
-            }
+            // Always fetch roles for new sign-ins
+            const roles = await fetchUserRoles(currentUser.id)
+            setUserRoles(roles)
+            setLoading(false)
           }
         } catch (error) {
           console.error('Error in auth state change:', error)
           setUser(null)
           setUserRoles([])
-        } finally {
-          // Only set loading to false if logged out
-          if (!session?.user) {
-            setLoading(false)
-          }
+          setLoading(false)
         }
       }
     )
+    
     return () => {
       subscription.unsubscribe()
     }
-  }, []) // Remove dependencies to prevent re-subscription
-
-  // Handle page visibility changes (tab focus/blur)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        // Only refresh if we don't have a user or roles
-        if (!user || userRoles.length === 0) {
-          supabase.auth.getSession()
-        }
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, []) // Remove dependencies to prevent re-subscription
-
-  // Note: signUp is removed as we now use invitation-based registration
+  }, [])
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -226,13 +191,9 @@ function AuthProvider({ children }) {
     refreshUserRoles,
   }
 
-
-
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
-}
-
-export { useAuth, AuthProvider } 
+} 
