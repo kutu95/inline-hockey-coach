@@ -18,6 +18,7 @@ import SessionAttendance from '../components/SessionAttendance'
 import OrganizationAttendance from '../components/OrganizationAttendance'
 import SessionPlanner from '../components/SessionPlanner'
 import SessionPDFExport from '../components/SessionPDFExport'
+import ViewSession from '../components/ViewSession'
 import Drills from '../components/Drills'
 import EditDrill from '../components/EditDrill'
 import AddDrill from '../components/AddDrill'
@@ -246,6 +247,14 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/sessions/:sessionId" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
+                  <ViewSession />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/sessions/:sessionId/planner" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
@@ -390,6 +399,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <SessionAttendance />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
+                  <ViewSession />
                 </RoleProtectedRoute>
               } 
             />

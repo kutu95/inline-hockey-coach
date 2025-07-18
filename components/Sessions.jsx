@@ -654,6 +654,12 @@ const Sessions = () => {
                           
                           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
                             <Link
+                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}` : `/sessions/${session.id}`}
+                              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium text-center sm:text-left"
+                            >
+                              View Session
+                            </Link>
+                            <Link
                               to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}
                               className="text-purple-600 hover:text-purple-800 text-sm font-medium text-center sm:text-left"
                             >
