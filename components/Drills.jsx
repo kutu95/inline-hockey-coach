@@ -8,7 +8,7 @@ const Drills = () => {
   const [drills, setDrills] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
@@ -294,23 +294,23 @@ const Drills = () => {
               {orgId ? (
                 <OrganizationHeader title="Drills" />
               ) : (
-                                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <Link
-                        to="/dashboard"
-                        className="text-gray-600 hover:text-gray-800 font-medium"
-                      >
-                        ← Back to Dashboard
-                      </Link>
-                      <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
-                    </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                  <div className="flex items-center space-x-4">
                     <Link
-                      to="/drills/add"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
                     >
-                      Add Drill
+                      ← Back to Dashboard
                     </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
                   </div>
+                  <Link
+                    to="/drills/add"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Add Drill
+                  </Link>
+                </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end">
@@ -524,20 +524,22 @@ const Drills = () => {
                               </div>
                             </div>
                             
-                            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
-                              <button
-                                onClick={() => handleEdit(drill)}
-                                className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(drill.id)}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
-                              >
-                                Delete
-                              </button>
-                            </div>
+                            {(hasRole('admin') || hasRole('superadmin') || hasRole('coach')) && (
+                              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
+                                <button
+                                  onClick={() => handleEdit(drill)}
+                                  className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(drill.id)}
+                                  className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
