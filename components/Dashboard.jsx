@@ -8,8 +8,7 @@ const Dashboard = () => {
   const [userOrganization, setUserOrganization] = useState(null)
   const [loadingOrg, setLoadingOrg] = useState(false)
 
-  // Show loading state while auth is initializing or roles are being fetched
-  console.log('Dashboard: loading =', loading, 'userRoles =', userRoles, 'user =', !!user)
+
   
   if (loading || (user && userRoles.length === 0 && !loading)) {
     return (
@@ -24,12 +23,17 @@ const Dashboard = () => {
 
   // Fetch user's organization if they're an admin
   useEffect(() => {
-    if (hasRole('admin')) {
+    if (userRoles.includes('admin') && !loadingOrg && !userOrganization) {
       fetchUserOrganization()
     }
-  }, [hasRole])
+  }, [userRoles, loadingOrg, userOrganization])
 
   const fetchUserOrganization = async () => {
+    // Prevent duplicate calls
+    if (loadingOrg || userOrganization) {
+      return
+    }
+    
     try {
       setLoadingOrg(true)
       const { data: orgId, error } = await supabase.rpc('get_user_organization', {
@@ -64,16 +68,12 @@ const Dashboard = () => {
   }
 
   const handleSignOut = async () => {
-    console.log('Sign out button clicked')
     try {
-      console.log('Calling signOut function...')
       const { error } = await signOut()
       if (error) {
         console.error('Sign out error:', error)
         // Even if there's an error, the local state should be cleared
         // and the user should be redirected to login
-      } else {
-        console.log('Sign out successful')
       }
     } catch (error) {
       console.error('Error signing out:', error)

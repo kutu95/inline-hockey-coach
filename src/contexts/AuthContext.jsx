@@ -166,7 +166,7 @@ function AuthProvider({ children }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [user, userRoles, lastFetchedUserId])
+  }, []) // Remove dependencies to prevent re-subscription
 
   // Handle page visibility changes (tab focus/blur)
   useEffect(() => {
@@ -183,7 +183,7 @@ function AuthProvider({ children }) {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [user, userRoles])
+  }, []) // Remove dependencies to prevent re-subscription
 
   // Note: signUp is removed as we now use invitation-based registration
 
@@ -196,7 +196,6 @@ function AuthProvider({ children }) {
   }
 
   const signOut = async () => {
-    console.log('AuthContext: signOut called')
     try {
       // First, clear the local state immediately
       setUser(null)
@@ -204,13 +203,11 @@ function AuthProvider({ children }) {
       
       // Then attempt to sign out from Supabase
       const { error } = await supabase.auth.signOut()
-      console.log('AuthContext: signOut result - error:', error)
       
       // Even if there's an error, we've already cleared the local state
       // so the user will be redirected to login
       return { error }
     } catch (err) {
-      console.log('AuthContext: signOut caught error:', err)
       // Even if there's an error, clear the local state
       setUser(null)
       setUserRoles([])
@@ -246,10 +243,7 @@ function AuthProvider({ children }) {
     refreshUserRoles,
   }
 
-  // Only log in development and only when there are issues
-  if (process.env.NODE_ENV === 'development' && (loading || isFetchingRoles)) {
-    console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading, 'isFetchingRoles:', isFetchingRoles)
-  }
+
 
   return (
     <AuthContext.Provider value={value}>
