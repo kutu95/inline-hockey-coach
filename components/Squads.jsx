@@ -24,6 +24,7 @@ const Squads = () => {
       let query = supabase
         .from('squads')
         .select('*')
+        .order('is_active', { ascending: false }) // Active squads first
         .order('name', { ascending: true })
 
       // If we're in an organization context, filter by organization_id
@@ -136,6 +137,32 @@ const Squads = () => {
     }
   }
 
+  const handleToggleActiveStatus = async (squadId, currentStatus) => {
+    try {
+      let query = supabase
+        .from('squads')
+        .update({ is_active: !currentStatus })
+        .eq('id', squadId)
+
+      // If we're in an organization context, ensure the squad belongs to the organization
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, ensure the squad belongs to the coach
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
+
+      if (error) throw error
+      
+      fetchSquads()
+    } catch (err) {
+      setError('Failed to update squad status')
+      console.error('Error updating squad status:', err)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -212,6 +239,7 @@ const Squads = () => {
                       orgId={orgId}
                       onDelete={handleDeleteSquad}
                       onEdit={handleEditSquad}
+                      onToggleActive={handleToggleActiveStatus}
                     />
                   ))}
                 </div>
@@ -224,7 +252,7 @@ const Squads = () => {
   )
 }
 
-const SquadItem = ({ squad, orgId, onDelete, onEdit }) => {
+const SquadItem = ({ squad, orgId, onDelete, onEdit, onToggleActive }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(squad.name)
 
@@ -241,43 +269,67 @@ const SquadItem = ({ squad, orgId, onDelete, onEdit }) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className={`bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${
+      squad.is_active ? 'border-gray-200' : 'border-gray-300 bg-gray-50'
+    }`}>
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            {isEditing ? (
-              <div className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="flex-1 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  autoFocus
-                />
-                <button
-                  onClick={handleSave}
-                  className="text-green-600 hover:text-green-800 text-sm font-medium"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="text-gray-600 hover:text-gray-800 text-sm font-medium"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <Link
-                to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
-                className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-150"
-              >
-                {squad.name}
-              </Link>
-            )}
+            <div className="flex items-center space-x-2">
+              {isEditing ? (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="flex-1 px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSave}
+                    className="text-green-600 hover:text-green-800 text-sm font-medium"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="text-gray-600 hover:text-gray-800 text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
+                    className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-150"
+                  >
+                    {squad.name}
+                  </Link>
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    squad.is_active 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {squad.is_active ? 'Active' : 'Inactive'}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           {!isEditing && (
             <div className="flex space-x-2">
+              <button
+                onClick={() => onToggleActive(squad.id, squad.is_active)}
+                className={`text-sm font-medium ${
+                  squad.is_active 
+                    ? 'text-orange-600 hover:text-orange-800' 
+                    : 'text-green-600 hover:text-green-800'
+                }`}
+                title={squad.is_active ? 'Deactivate Squad' : 'Activate Squad'}
+              >
+                {squad.is_active ? 'Deactivate' : 'Activate'}
+              </button>
               <Link
                 to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
                 className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"

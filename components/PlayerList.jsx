@@ -223,7 +223,8 @@ const PlayerList = () => {
           player_squads (
             squads (
               id,
-              name
+              name,
+              is_active
             )
           )
         `)
@@ -754,22 +755,32 @@ const PlayerList = () => {
                                     </span>
                                   </div>
                                 </Link>
-                                {/* Squads remain unchanged */}
+                                {/* Squads with active/inactive status */}
                                 {player.player_squads && player.player_squads.length > 0 && (
                                   <div className="flex items-center space-x-2">
                                     <span className="text-xs text-gray-500">Squads:</span>
                                     <div className="flex flex-wrap gap-1">
                                       {player.player_squads.map((ps, index) => {
+                                        const isActive = ps.squads.is_active
                                         const is2024Squad = ps.squads.name.includes('2024')
+                                        
+                                        // Determine badge styling based on active status and 2024 squad
+                                        let badgeClass = ''
+                                        if (!isActive) {
+                                          badgeClass = 'bg-gray-100 text-gray-600'
+                                        } else if (is2024Squad) {
+                                          badgeClass = 'bg-yellow-100 text-yellow-800'
+                                        } else {
+                                          badgeClass = 'bg-blue-100 text-blue-800'
+                                        }
+                                        
                                         return (
                                           <span
                                             key={ps.squads.id}
-                                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                              is2024Squad 
-                                                ? 'bg-yellow-100 text-yellow-800' 
-                                                : 'bg-blue-100 text-blue-800'
-                                            }`}
+                                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badgeClass}`}
+                                            title={!isActive ? 'Inactive Squad' : ''}
                                           >
+                                            {!isActive && <span className="mr-1">⏸️</span>}
                                             {ps.squads.name}
                                           </span>
                                         )
