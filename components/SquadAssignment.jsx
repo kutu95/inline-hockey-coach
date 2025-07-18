@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 
-const SquadAssignment = ({ playerId, onUpdate }) => {
+const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
   const [squads, setSquads] = useState([])
   const [playerSquads, setPlayerSquads] = useState([])
   const [loading, setLoading] = useState(true)
@@ -16,12 +16,21 @@ const SquadAssignment = ({ playerId, onUpdate }) => {
 
   const fetchSquads = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('squads')
         .select('*')
-        .eq('coach_id', user.id)
-
+        .order('is_active', { ascending: false }) // Active squads first
         .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId && orgId !== 'undefined') {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setSquads(data || [])
@@ -39,7 +48,8 @@ const SquadAssignment = ({ playerId, onUpdate }) => {
           squad_id,
           squads (
             id,
-            name
+            name,
+            is_active
           )
         `)
         .eq('player_id', playerId)
@@ -102,21 +112,56 @@ const SquadAssignment = ({ playerId, onUpdate }) => {
       {squads.length === 0 ? (
         <p className="text-sm text-gray-500">No squads available. Create squads first.</p>
       ) : (
-        <div className="space-y-2">
-          {squads.map((squad) => {
-            const isAssigned = playerSquads.some(ps => ps.squad_id === squad.id)
-            return (
-              <label key={squad.id} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={isAssigned}
-                  onChange={() => handleToggleSquad(squad.id)}
-                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span className="text-sm text-gray-700">{squad.name}</span>
-              </label>
-            )
-          })}
+        <div className="space-y-4">
+          {/* Active Squads */}
+          {squads.filter(squad => squad.is_active).length > 0 && (
+            <div>
+              <h5 className="text-xs font-medium text-green-700 mb-2">Active Squads</h5>
+              <div className="space-y-2">
+                {squads
+                  .filter(squad => squad.is_active)
+                  .map((squad) => {
+                    const isAssigned = playerSquads.some(ps => ps.squad_id === squad.id)
+                    return (
+                      <label key={squad.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={isAssigned}
+                          onChange={() => handleToggleSquad(squad.id)}
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                        <span className="text-sm text-gray-700">{squad.name}</span>
+                      </label>
+                    )
+                  })}
+              </div>
+            </div>
+          )}
+          
+          {/* Inactive Squads */}
+          {squads.filter(squad => !squad.is_active).length > 0 && (
+            <div>
+              <h5 className="text-xs font-medium text-gray-500 mb-2">Inactive Squads</h5>
+              <div className="space-y-2">
+                {squads
+                  .filter(squad => !squad.is_active)
+                  .map((squad) => {
+                    const isAssigned = playerSquads.some(ps => ps.squad_id === squad.id)
+                    return (
+                      <label key={squad.id} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={isAssigned}
+                          onChange={() => handleToggleSquad(squad.id)}
+                          className="rounded border-gray-300 text-gray-500 focus:ring-gray-500"
+                        />
+                        <span className="text-sm text-gray-500">{squad.name}</span>
+                      </label>
+                    )
+                  })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

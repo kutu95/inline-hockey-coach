@@ -154,7 +154,8 @@ const ViewPlayer = () => {
           player_squads (
             squads (
               id,
-              name
+              name,
+              is_active
             )
           )
         `)
@@ -432,19 +433,46 @@ const ViewPlayer = () => {
                       </div>
                     </div>
                     {player.player_squads && player.player_squads.length > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Current Squads:</span>
-                        <div className="flex flex-wrap gap-2">
-                          {player.player_squads.map((ps, index) => (
-                            <div
-                              key={ps.squads.id}
-                              className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                            >
-                              <span className="text-blue-600">🏆</span>
-                              <span>{ps.squads.name}</span>
+                      <div className="space-y-2">
+                        {/* Active Squads */}
+                        {player.player_squads.filter(ps => ps.squads.is_active).length > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Active Squads:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {player.player_squads
+                                .filter(ps => ps.squads.is_active)
+                                .map((ps, index) => (
+                                  <div
+                                    key={ps.squads.id}
+                                    className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                                  >
+                                    <span className="text-green-600">🏆</span>
+                                    <span>{ps.squads.name}</span>
+                                  </div>
+                                ))}
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        )}
+                        
+                        {/* Inactive Squads */}
+                        {player.player_squads.filter(ps => !ps.squads.is_active).length > 0 && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Inactive Squads:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {player.player_squads
+                                .filter(ps => !ps.squads.is_active)
+                                .map((ps, index) => (
+                                  <div
+                                    key={ps.squads.id}
+                                    className="inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+                                  >
+                                    <span className="text-gray-500">⏸️</span>
+                                    <span>{ps.squads.name}</span>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -510,6 +538,7 @@ const ViewPlayer = () => {
                     <SquadAssignment 
                       playerId={player.id} 
                       onUpdate={fetchPlayer}
+                      orgId={orgId}
                     />
                   </div>
                 </div>
