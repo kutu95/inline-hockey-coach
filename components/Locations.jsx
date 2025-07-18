@@ -4,7 +4,7 @@ import { supabase } from '../src/lib/supabase';
 import OrganizationHeader from './OrganizationHeader';
 
 const Locations = () => {
-  const { organizationId } = useParams();
+  const { orgId } = useParams();
   const navigate = useNavigate();
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ const Locations = () => {
 
   useEffect(() => {
     fetchLocations();
-  }, [organizationId]);
+  }, [orgId]);
 
   const fetchLocations = async () => {
     try {
@@ -27,7 +27,7 @@ const Locations = () => {
       const { data, error } = await supabase
         .from('locations')
         .select('*')
-        .eq('organization_id', organizationId)
+        .eq('organization_id', orgId)
         .order('name');
 
       if (error) throw error;
@@ -45,7 +45,7 @@ const Locations = () => {
     try {
       const locationData = {
         ...formData,
-        organization_id: organizationId
+        organization_id: orgId
       };
 
       if (editingLocation) {
@@ -109,7 +109,7 @@ const Locations = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <OrganizationHeader organizationId={organizationId} />
+        <OrganizationHeader organizationId={orgId} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
@@ -126,7 +126,7 @@ const Locations = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <OrganizationHeader organizationId={organizationId} />
+      <OrganizationHeader organizationId={orgId} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
