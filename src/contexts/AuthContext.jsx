@@ -44,12 +44,7 @@ function AuthProvider({ children }) {
       console.log('=== FETCHING USER ROLES ===')
       console.log('Fetching roles for user:', userId)
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Query timeout')), 3000) // 3 seconds should be plenty for a simple query
-      })
-      
-            // Skip the complex RPC function and use a simple direct query
+      // Skip the complex RPC function and use a simple direct query
       console.log('Using simple direct query for user roles...')
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
