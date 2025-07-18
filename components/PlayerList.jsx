@@ -654,12 +654,12 @@ const PlayerList = () => {
                   {filteredPlayers.map((player) => (
                     <div key={player.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-3 sm:space-y-0">
+                          <div className="flex items-start space-x-4 flex-1 min-w-0">
                             {/* Image as link */}
                             <Link
                               to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                              className="hover:opacity-80 transition-opacity"
+                              className="hover:opacity-80 transition-opacity flex-shrink-0"
                             >
                               {player.photo_url ? (
                                 <img
@@ -683,8 +683,8 @@ const PlayerList = () => {
                                 </div>
                               )}
                             </Link>
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                                 {/* Name as link */}
                                 <Link
                                   to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
@@ -712,7 +712,7 @@ const PlayerList = () => {
                                   </Link>
                                 )}
                               </div>
-                              <div className="flex items-center space-x-4 mt-1">
+                              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
                                 {/* Accreditations as link */}
                                 <Link
                                   to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
@@ -780,7 +780,7 @@ const PlayerList = () => {
                               </div>
                               {/* Contact Information remains unchanged */}
                               {(player.phone || player.email || player.skate_australia_number) && (
-                                <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs text-gray-500">
                                   {player.phone && (
                                     <span>📞 {player.phone}</span>
                                   )}
@@ -794,7 +794,7 @@ const PlayerList = () => {
                               )}
                             </div>
                           </div>
-                          <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+                          <div className="flex flex-row sm:flex-col space-x-2 sm:space-x-0 sm:space-y-1 flex-shrink-0">
                             <Link
                               to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
