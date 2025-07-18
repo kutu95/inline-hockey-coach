@@ -21,20 +21,21 @@ const ViewSquad = () => {
   // Function to get signed URL for club logos
   const getSignedUrl = async (url) => {
     if (!url) return null
-    
     try {
       // Extract file path from the URL
       const urlParts = url.split('/')
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
-      
-      const { data: { signedUrl } } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from('club-logos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
-      
-      return signedUrl
+      if (error || !data || !data.signedUrl) {
+        console.error('Error getting signed URL:', error || 'No data or signedUrl')
+        return null
+      }
+      return data.signedUrl
     } catch (err) {
       console.error('Error getting signed URL:', err)
-      return url // Fallback to original URL
+      return null
     }
   }
 
@@ -258,7 +259,10 @@ const ViewSquad = () => {
                     <div key={player.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-4">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
+                          <Link
+                            to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
+                            className="flex items-center space-x-4 flex-1 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors duration-200"
+                          >
                             {player.photo_url ? (
                               <img
                                 src={playerPhotoUrls[player.id] || player.photo_url}
@@ -314,8 +318,8 @@ const ViewSquad = () => {
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex space-x-2">
+                          </Link>
+                          <div className="flex space-x-2 ml-4">
                             <Link
                               to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
