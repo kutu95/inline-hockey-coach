@@ -18,14 +18,14 @@ const Dashboard = () => {
     )
   }
 
-  // Fetch user's organization if they're an admin
+  // Fetch user's accessible organizations
   useEffect(() => {
     if (userRoles.includes('admin') && !userOrganization && !loadingOrg) {
-      fetchUserOrganization()
+      fetchUserOrganizations()
     }
   }, [userRoles])
 
-  const fetchUserOrganization = async () => {
+  const fetchUserOrganizations = async () => {
     // Prevent duplicate calls
     if (userOrganization) {
       return
@@ -33,6 +33,8 @@ const Dashboard = () => {
     
     try {
       setLoadingOrg(true)
+      
+      // For admin users, get their organization
       const { data: orgId, error } = await supabase.rpc('get_user_organization', {
         user_uuid: user.id
       })
@@ -58,7 +60,7 @@ const Dashboard = () => {
         setUserOrganization(orgData)
       }
     } catch (err) {
-      console.error('Error in fetchUserOrganization:', err)
+      console.error('Error in fetchUserOrganizations:', err)
     } finally {
       setLoadingOrg(false)
     }
@@ -133,34 +135,71 @@ const Dashboard = () => {
               )}
             </div>
 
-            {/* Simple Admin Section */}
+            {/* Admin Organization Section */}
             {hasRole('admin') && (
               <div className="mb-6">
-                <Link
-                  to="/organisations"
-                  className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200 block"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="text-blue-600">
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-blue-900">
-                        Manage Organizations
-                      </h3>
-                      <p className="text-blue-700">
-                        Access and manage your organization's data
-                      </p>
-                    </div>
-                    <div className="text-blue-600">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                {loadingOrg ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-blue-900">Loading organization...</h3>
+                      </div>
                     </div>
                   </div>
-                </Link>
+                ) : userOrganization ? (
+                  <Link
+                    to={`/organisations/${userOrganization.id}`}
+                    className="bg-blue-50 border border-blue-200 rounded-lg p-4 hover:bg-blue-100 transition-colors duration-200 block"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="text-blue-600">
+                        {userOrganization.logo_url ? (
+                          <img 
+                            src={userOrganization.logo_url} 
+                            alt={`${userOrganization.name} logo`}
+                            className="w-8 h-8 object-contain rounded"
+                          />
+                        ) : (
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-blue-900">
+                          {userOrganization.name}
+                        </h3>
+                        <p className="text-blue-700">
+                          Access and manage your organization's data
+                        </p>
+                      </div>
+                      <div className="text-blue-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-blue-600">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-blue-900">
+                          No Organization Found
+                        </h3>
+                        <p className="text-blue-700">
+                          Please contact your administrator to set up your organization access
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             
