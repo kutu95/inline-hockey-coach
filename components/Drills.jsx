@@ -169,17 +169,12 @@ const Drills = () => {
 
 
   const handleEdit = (drill) => {
-    // Open edit form in a new window
+    // Navigate to edit form
     const editUrl = orgId 
       ? `/organisations/${orgId}/drills/${drill.id}/edit`
       : `/drills/${drill.id}/edit`
     
-    const editWindow = window.open(editUrl, 'editDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
-    
-    // Focus the new window
-    if (editWindow) {
-      editWindow.focus()
-    }
+    window.location.href = editUrl
   }
 
   const handleDelete = async (drillId) => {
@@ -309,34 +304,22 @@ const Drills = () => {
                       </Link>
                       <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
                     </div>
-                    <button
-                      onClick={() => {
-                        const addUrl = `/drills/add`
-                        const addWindow = window.open(addUrl, 'addDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
-                        if (addWindow) {
-                          addWindow.focus()
-                        }
-                      }}
+                    <Link
+                      to="/drills/add"
                       className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
                       Add Drill
-                    </button>
+                    </Link>
                   </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => {
-                      const addUrl = `/organisations/${orgId}/drills/add`
-                      const addWindow = window.open(addUrl, 'addDrill', 'width=1200,height=800,scrollbars=yes,resizable=yes')
-                      if (addWindow) {
-                        addWindow.focus()
-                      }
-                    }}
+                  <Link
+                    to={`/organisations/${orgId}/drills/add`}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Drill
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
