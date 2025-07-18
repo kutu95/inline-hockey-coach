@@ -16,41 +16,79 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
+  const [roleCache, setRoleCache] = useState(new Map())
 
   const fetchUserRoles = async (userId) => {
     if (!userId) {
       return []
     }
 
+    console.log('Fetching roles for user:', userId)
+
+    // Check cache first
+    if (roleCache.has(userId)) {
+      console.log('Using cached roles for user:', userId)
+      return roleCache.get(userId)
+    }
+
     try {
-      // Try direct query first
-      const { data: directRoles, error: directError } = await supabase
-        .from('user_roles')
-        .select(`
-          roles (
-            name
-          )
-        `)
-        .eq('user_id', userId)
-      
-      if (!directError && directRoles) {
-        const roles = directRoles.map(ur => ur.roles?.name).filter(Boolean)
-        return roles
-      }
-      
-      // Fallback to RPC
-      const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
-        user_uuid: userId
+      // Add timeout to prevent hanging (increased to 10 seconds)
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Role fetch timeout')), 10000)
       })
-      
-      if (error) {
-        console.error('Error fetching user roles:', error)
-        return []
+
+      const fetchPromise = async () => {
+        try {
+          // Use RPC function directly since direct query has RLS issues
+          const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
+            user_uuid: userId
+          })
+          
+          if (error) {
+            console.error('Error fetching user roles via RPC:', error)
+            // Fallback to direct query
+            console.log('Trying fallback direct query...')
+            const { data: fallbackData, error: fallbackError } = await supabase
+              .from('user_roles')
+              .select(`
+                roles (
+                  name
+                )
+              `)
+              .eq('user_id', userId)
+            
+            if (fallbackError) {
+              console.error('Fallback query also failed:', fallbackError)
+              return []
+            }
+            
+            const fallbackRoles = fallbackData
+              ?.map(item => item.roles?.name)
+              .filter(Boolean) || []
+            
+            console.log('Fallback roles:', fallbackRoles)
+            return fallbackRoles
+          }
+          
+          return Array.isArray(roleNames) ? roleNames : []
+        } catch (err) {
+          console.error('Exception in fetchPromise:', err)
+          return []
+        }
       }
+
+      const roles = await Promise.race([fetchPromise(), timeoutPromise])
       
-      return Array.isArray(roleNames) ? roleNames : []
+      console.log('Successfully fetched roles for user:', userId, 'Roles:', roles)
+      
+      // Cache the result
+      setRoleCache(prev => new Map(prev).set(userId, roles))
+      
+      return roles
     } catch (err) {
       console.error('Error fetching user roles:', err)
+      // Cache empty array to prevent repeated timeouts
+      setRoleCache(prev => new Map(prev).set(userId, []))
       return []
     }
   }
@@ -92,9 +130,16 @@ export function AuthProvider({ children }) {
         setUser(currentUser)
         
         if (currentUser) {
-          const roles = await fetchUserRoles(currentUser.id)
-          if (mounted) {
-            setUserRoles(roles)
+          try {
+            const roles = await fetchUserRoles(currentUser.id)
+            if (mounted) {
+              setUserRoles(roles)
+            }
+          } catch (err) {
+            console.error('Failed to fetch roles, using empty array:', err)
+            if (mounted) {
+              setUserRoles([])
+            }
           }
         } else {
           if (mounted) {
@@ -127,10 +172,20 @@ export function AuthProvider({ children }) {
           
           if (!currentUser) {
             setUserRoles([])
+            setLoading(false)
           } else {
-            const roles = await fetchUserRoles(currentUser.id)
-            if (mounted) {
-              setUserRoles(roles)
+            try {
+              const roles = await fetchUserRoles(currentUser.id)
+              if (mounted) {
+                setUserRoles(roles)
+                setLoading(false)
+              }
+            } catch (err) {
+              console.error('Failed to fetch roles in auth state change, using empty array:', err)
+              if (mounted) {
+                setUserRoles([])
+                setLoading(false)
+              }
             }
           }
         } catch (error) {
@@ -138,6 +193,7 @@ export function AuthProvider({ children }) {
           if (mounted) {
             setUser(null)
             setUserRoles([])
+            setLoading(false)
           }
         }
       }
