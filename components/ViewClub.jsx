@@ -130,8 +130,8 @@ const ViewClub = () => {
         {/* Header */}
         <div className="bg-white shadow rounded-lg mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                 <Link
                   to={orgId ? `/organisations/${orgId}/clubs` : '/clubs'}
                   className="text-gray-600 hover:text-gray-800 font-medium"
@@ -143,16 +143,16 @@ const ViewClub = () => {
                     <img
                       src={club.logo_url}
                       alt={`${club.name} logo`}
-                      className="w-12 h-12 object-contain mr-4"
+                      className="w-10 h-10 sm:w-12 sm:h-12 object-contain mr-3 sm:mr-4"
                       onError={(e) => {
                         e.target.style.display = 'none';
                       }}
                     />
                   )}
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{club.name}</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{club.name}</h1>
                     {club.description && (
-                      <p className="text-gray-600 mt-1">{club.description}</p>
+                      <p className="text-gray-600 mt-1 text-sm sm:text-base">{club.description}</p>
                     )}
                   </div>
                 </div>

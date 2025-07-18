@@ -306,26 +306,26 @@ const ViewPlayer = () => {
               {orgId ? (
                 <OrganizationHeader title="Player Details" />
               ) : (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                     <Link
                       to={orgId ? `/organisations/${orgId}/players` : "/players"}
                       className="text-gray-600 hover:text-gray-800 font-medium"
                     >
                       ← Back to Players
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Player Details</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Player Details</h1>
                   </div>
-                  <div className="flex space-x-3">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <Link
                       to={`/players/${id}/edit`}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto text-center"
                     >
                       Edit Player
                     </Link>
                     <button
                       onClick={handleDelete}
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto"
                     >
                       Delete Player
                     </button>

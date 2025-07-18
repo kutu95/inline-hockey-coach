@@ -794,7 +794,7 @@ const PlayerList = () => {
                               )}
                             </div>
                           </div>
-                          <div className="flex space-x-2">
+                          <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
                             <Link
                               to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"

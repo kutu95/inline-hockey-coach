@@ -28,7 +28,7 @@ const Drills = () => {
   const availableFeatures = [
     'agility', 'back-checking', 'break outs', 'defense', 'face-offs', 
     'fitness', 'fore-checking', 'fun', 'goalie', 'Offensive cycling', 
-    'passing', 'penalty kills', 'power plays', 'puck handling', 'shooting', 
+    'off-ice', 'passing', 'penalty kills', 'power plays', 'puck handling', 'shooting', 
     'Warm down', 'Warm up'
   ]
 
@@ -40,7 +40,8 @@ const Drills = () => {
   const [showFilters, setShowFilters] = useState(false)
   const [filters, setFilters] = useState({
     playerCount: '',
-    selectedFeatures: [] // Default to no features selected
+    selectedFeatures: [], // Default to no features selected
+    filterMode: 'all' // 'all' = AND logic, 'any' = OR logic
   })
 
   useEffect(() => {
@@ -167,10 +168,18 @@ const Drills = () => {
     }))
   }
 
+  const handleFilterModeChange = () => {
+    setFilters(prev => ({
+      ...prev,
+      filterMode: prev.filterMode === 'all' ? 'any' : 'all'
+    }))
+  }
+
   const clearFilters = () => {
     setFilters({
       playerCount: '',
-      selectedFeatures: [] // Reset to no features selected
+      selectedFeatures: [], // Reset to no features selected
+      filterMode: 'all' // Reset to default mode
     })
   }
 
@@ -377,11 +386,23 @@ const Drills = () => {
       // Filter by features
       if (filters.selectedFeatures.length > 0) {
         const drillFeatures = drill.features || []
-        const hasAllSelectedFeatures = filters.selectedFeatures.every(feature => 
-          drillFeatures.includes(feature)
-        )
-        if (!hasAllSelectedFeatures) {
-          return false
+        
+        if (filters.filterMode === 'all') {
+          // AND logic: all selected features must be present
+          const hasAllSelectedFeatures = filters.selectedFeatures.every(feature => 
+            drillFeatures.includes(feature)
+          )
+          if (!hasAllSelectedFeatures) {
+            return false
+          }
+        } else {
+          // OR logic: any selected feature must be present
+          const hasAnySelectedFeature = filters.selectedFeatures.some(feature => 
+            drillFeatures.includes(feature)
+          )
+          if (!hasAnySelectedFeature) {
+            return false
+          }
         }
       }
       // If no features are selected, don't filter on features (show all drills)
@@ -534,9 +555,28 @@ const Drills = () => {
                   {/* Features Filter */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Drill Features (must have ALL selected)
-                      </label>
+                      <div className="flex items-center space-x-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Drill Features
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs text-gray-500">Mode:</span>
+                          <button
+                            type="button"
+                            onClick={handleFilterModeChange}
+                            className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${
+                              filters.filterMode === 'all'
+                                ? 'bg-indigo-100 text-indigo-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {filters.filterMode === 'all' ? 'ALL' : 'ANY'}
+                          </button>
+                          <span className="text-xs text-gray-500">
+                            {filters.filterMode === 'all' ? '(must have all selected)' : '(must have any selected)'}
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex space-x-2">
                         <button
                           type="button"

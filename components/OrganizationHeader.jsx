@@ -35,8 +35,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
   if (loading) {
     return (
       <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             {showBackButton && (
               <Link
                 to={`/organisations/${orgId}`}
@@ -49,8 +49,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
               <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
               <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>
         </div>
       </div>
     )
@@ -59,8 +59,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
   if (!organization) {
     return (
       <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
             {showBackButton && (
               <Link
                 to={`/organisations/${orgId}`}
@@ -69,8 +69,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
                 ← Back to Organisation
               </Link>
             )}
-            <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>
         </div>
       </div>
     )
@@ -78,8 +78,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
 
   return (
     <div className="px-6 py-4 border-b border-gray-200">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           {showBackButton && (
             <Link
               to={`/organisations/${orgId}`}
@@ -103,9 +103,8 @@ const OrganizationHeader = ({ title, showBackButton = true }) => {
               {organization.name}
             </div>
           </div>
-          <div className="text-gray-400">|</div>
-          <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
         </div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>
       </div>
     </div>
   )

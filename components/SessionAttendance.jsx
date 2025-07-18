@@ -313,15 +313,15 @@ const SessionAttendance = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
                     to={orgId ? `/organisations/${orgId}/sessions` : "/sessions"}
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
                     ← Back to Sessions
                   </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Session Attendance</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Session Attendance</h1>
                 </div>
               </div>
             </div>

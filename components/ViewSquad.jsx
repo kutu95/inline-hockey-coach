@@ -211,8 +211,8 @@ const ViewSquad = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
                     to={orgId ? `/organisations/${orgId}/squads` : "/squads"}
                     className="text-gray-600 hover:text-gray-800 font-medium"
@@ -220,15 +220,15 @@ const ViewSquad = () => {
                     ← Back to Squads
                   </Link>
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                       {squad.name}
                     </h1>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <p className="text-gray-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 mt-1">
+                      <p className="text-gray-600 text-sm sm:text-base">
                         {players.length} player{players.length !== 1 ? 's' : ''} in squad
                       </p>
                       {calculateAverageAge() && (
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 text-sm sm:text-base">
                           Average age: {calculateAverageAge()} years old
                         </p>
                       )}
