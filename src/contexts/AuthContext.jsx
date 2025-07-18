@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
   const [userRoles, setUserRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [roleCache, setRoleCache] = useState(new Map())
+  const [fetchingRoles, setFetchingRoles] = useState(false)
 
   const fetchUserRoles = async (userId) => {
     if (!userId) {
@@ -31,43 +32,51 @@ export function AuthProvider({ children }) {
       return roleCache.get(userId)
     }
 
+    // Prevent duplicate fetches
+    if (fetchingRoles) {
+      console.log('Already fetching roles, waiting...')
+      return []
+    }
+
+    setFetchingRoles(true)
+
     try {
-      // Add timeout to prevent hanging (increased to 10 seconds)
+      // Add timeout to prevent hanging (reduced to 3 seconds for faster loading)
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Role fetch timeout')), 10000)
+        setTimeout(() => reject(new Error('Role fetch timeout')), 3000)
       })
 
       const fetchPromise = async () => {
         try {
-          // Use RPC function directly since direct query has RLS issues
+          // Try direct query first (usually faster)
+          console.log('Trying direct query first...')
+          const { data: directData, error: directError } = await supabase
+            .from('user_roles')
+            .select(`
+              roles (
+                name
+              )
+            `)
+            .eq('user_id', userId)
+          
+          if (!directError && directData) {
+            const directRoles = directData
+              ?.map(item => item.roles?.name)
+              .filter(Boolean) || []
+            
+            console.log('Direct query successful, roles:', directRoles)
+            return directRoles
+          }
+          
+          // Fallback to RPC function if direct query fails
+          console.log('Direct query failed, trying RPC function...')
           const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
             user_uuid: userId
           })
           
           if (error) {
-            console.error('Error fetching user roles via RPC:', error)
-            // Fallback to direct query
-            console.log('Trying fallback direct query...')
-            const { data: fallbackData, error: fallbackError } = await supabase
-              .from('user_roles')
-              .select(`
-                roles (
-                  name
-                )
-              `)
-              .eq('user_id', userId)
-            
-            if (fallbackError) {
-              console.error('Fallback query also failed:', fallbackError)
-              return []
-            }
-            
-            const fallbackRoles = fallbackData
-              ?.map(item => item.roles?.name)
-              .filter(Boolean) || []
-            
-            console.log('Fallback roles:', fallbackRoles)
-            return fallbackRoles
+            console.error('RPC function also failed:', error)
+            return []
           }
           
           return Array.isArray(roleNames) ? roleNames : []
@@ -90,6 +99,8 @@ export function AuthProvider({ children }) {
       // Cache empty array to prevent repeated timeouts
       setRoleCache(prev => new Map(prev).set(userId, []))
       return []
+    } finally {
+      setFetchingRoles(false)
     }
   }
 
