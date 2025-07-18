@@ -290,46 +290,10 @@ const Clubs = () => {
       return url
     }
     
-    try {
-      // Extract file path from the URL
-      // URL format: https://.../storage/v1/object/public/club-logos/user_id/filename
-      const urlParts = url.split('/')
-      const bucketIndex = urlParts.findIndex(part => part === 'club-logos')
-      
-      if (bucketIndex === -1) {
-        console.warn('Could not find bucket name in URL:', url)
-        return url
-      }
-      
-      // Get everything after the bucket name
-      const filePath = urlParts.slice(bucketIndex + 1).join('/')
-      
-      if (!filePath) {
-        console.warn('Could not extract file path from URL:', url)
-        return url
-      }
-      
-      console.log('Extracted file path:', filePath, 'from URL:', url)
-      
-      const { data, error } = await supabase.storage
-        .from('club-logos')
-        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
-      
-      if (error) {
-        console.error('Supabase storage error:', error)
-        return url
-      }
-      
-      if (!data || !data.signedUrl) {
-        console.error('No signed URL returned from Supabase')
-        return url
-      }
-      
-      return data.signedUrl
-    } catch (err) {
-      console.error('Error getting signed URL for:', url, err)
-      return url // Fallback to original URL
-    }
+    // For now, just return the original URL since it's already a public URL
+    // The signed URL generation is failing, so let's use the public URL directly
+    console.log('Using original public URL for:', url)
+    return url
   }
 
   // State for signed URLs
