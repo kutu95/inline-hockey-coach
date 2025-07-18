@@ -285,10 +285,28 @@ const Clubs = () => {
   const getSignedUrl = async (url) => {
     if (!url) return null
     
+    // If it's already a signed URL or external URL, return as is
+    if (url.includes('?') || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return url
+    }
+    
     try {
       // Extract file path from the URL
       const urlParts = url.split('/')
-      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      const storageIndex = urlParts.findIndex(part => part === 'storage')
+      
+      if (storageIndex === -1) {
+        console.warn('Could not find storage path in URL:', url)
+        return url
+      }
+      
+      // Get everything after /storage/v1/object/public/bucket/
+      const filePath = urlParts.slice(storageIndex + 4).join('/')
+      
+      if (!filePath) {
+        console.warn('Could not extract file path from URL:', url)
+        return url
+      }
       
       const { data: { signedUrl } } = await supabase.storage
         .from('club-logos')
@@ -296,7 +314,7 @@ const Clubs = () => {
       
       return signedUrl
     } catch (err) {
-      console.error('Error getting signed URL:', err)
+      console.error('Error getting signed URL for:', url, err)
       return url // Fallback to original URL
     }
   }
@@ -310,7 +328,10 @@ const Clubs = () => {
       const urls = {}
       for (const club of clubs) {
         if (club.logo_url) {
-          urls[club.id] = await getSignedUrl(club.logo_url)
+          console.log(`Getting signed URL for club ${club.name} (${club.id}):`, club.logo_url)
+          const signedUrl = await getSignedUrl(club.logo_url)
+          urls[club.id] = signedUrl
+          console.log(`Signed URL for club ${club.name}:`, signedUrl)
         }
       }
       setSignedUrls(urls)
@@ -531,11 +552,23 @@ const Clubs = () => {
                     <div key={club.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg space-y-4 sm:space-y-0">
                       <div className="flex items-center space-x-4">
                         {club.logo_url ? (
-                          <img
-                            src={signedUrls[club.id] || club.logo_url}
-                            alt={`${club.name} logo`}
-                            className="w-16 h-16 object-contain border border-gray-300 rounded-lg bg-white"
-                          />
+                          <>
+                            <img
+                              src={signedUrls[club.id] || club.logo_url}
+                              alt={`${club.name} logo`}
+                              className="w-16 h-16 object-contain border border-gray-300 rounded-lg bg-white"
+                              onError={(e) => {
+                                console.error(`Failed to load logo for club ${club.name}:`, e.target.src)
+                                e.target.style.display = 'none'
+                                e.target.nextSibling.style.display = 'flex'
+                              }}
+                            />
+                            <div className="w-16 h-16 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center" style={{ display: 'none' }}>
+                              <span className="text-gray-500 text-sm font-medium">
+                                {club.name.charAt(0)}
+                              </span>
+                            </div>
+                          </>
                         ) : (
                           <div className="w-16 h-16 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center">
                             <span className="text-gray-500 text-sm font-medium">
