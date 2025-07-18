@@ -41,41 +41,21 @@ export function AuthProvider({ children }) {
     setFetchingRoles(true)
 
     try {
-      // Add timeout to prevent hanging (reduced to 3 seconds for faster loading)
+      // Add timeout to prevent hanging (reduced to 2 seconds since RPC should be fast)
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Role fetch timeout')), 3000)
+        setTimeout(() => reject(new Error('Role fetch timeout')), 2000)
       })
 
       const fetchPromise = async () => {
         try {
-          // Try direct query first (usually faster)
-          console.log('Trying direct query first...')
-          const { data: directData, error: directError } = await supabase
-            .from('user_roles')
-            .select(`
-              roles (
-                name
-              )
-            `)
-            .eq('user_id', userId)
-          
-          if (!directError && directData) {
-            const directRoles = directData
-              ?.map(item => item.roles?.name)
-              .filter(Boolean) || []
-            
-            console.log('Direct query successful, roles:', directRoles)
-            return directRoles
-          }
-          
-          // Fallback to RPC function if direct query fails
-          console.log('Direct query failed, trying RPC function...')
+          // Use RPC function directly since direct query has RLS issues
+          console.log('Fetching roles via RPC function...')
           const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
             user_uuid: userId
           })
           
           if (error) {
-            console.error('RPC function also failed:', error)
+            console.error('RPC function failed:', error)
             return []
           }
           
