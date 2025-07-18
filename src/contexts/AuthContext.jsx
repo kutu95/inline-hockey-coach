@@ -19,6 +19,8 @@ function AuthProvider({ children }) {
   const [lastFetchedUserId, setLastFetchedUserId] = useState(null)
 
   const fetchUserRoles = async (userId) => {
+    console.log('🔥🔥🔥 NEW CODE IS RUNNING - fetchUserRoles called 🔥🔥🔥')
+    
     if (!userId) {
       console.log('No user ID provided, returning empty roles')
       return
@@ -38,6 +40,7 @@ function AuthProvider({ children }) {
 
     try {
       setIsFetchingRoles(true)
+      console.log('=== FETCHING USER ROLES ===')
       console.log('Fetching roles for user:', userId)
       
       // Add timeout to prevent hanging
@@ -45,45 +48,49 @@ function AuthProvider({ children }) {
         setTimeout(() => reject(new Error('Query timeout')), 2000)
       })
       
-      // Use direct query to user_roles table
-      const queryPromise = supabase
-        .from('user_roles')
-        .select('role_id')
-        .eq('user_id', userId)
-        .limit(10)
+      // Use the RPC function to get user roles safely
+      console.log('Trying RPC function get_user_roles_safe...')
+      const queryPromise = supabase.rpc('get_user_roles_safe', {
+        user_uuid: userId
+      })
       
       const { data, error } = await Promise.race([queryPromise, timeoutPromise])
 
+      console.log('RPC response:', { data, error })
+
       if (error) {
-        console.warn('Error fetching user roles:', error)
-        // If it's an RLS error, try a different approach
+        console.warn('RPC error:', error)
+        // If RPC fails, try direct query as fallback
         if (error.code === 'PGRST116' || error.message.includes('RLS')) {
-          console.log('RLS error detected, trying alternative query...')
-          // Try querying without user_id filter first
-          const { data: allRoles, error: allRolesError } = await supabase
+          console.log('RPC error detected, trying direct query...')
+          const { data: roleData, error: roleError } = await supabase
             .from('user_roles')
-            .select('*')
-            .limit(1)
+            .select(`
+              role_id,
+              roles (
+                name
+              )
+            `)
+            .eq('user_id', userId)
           
-          if (allRolesError) {
-            console.warn('Alternative query also failed:', allRolesError)
+          if (roleError) {
+            console.warn('Direct query also failed:', roleError)
             return []
-          } else {
-            console.log('Alternative query succeeded, table exists but RLS blocking access')
-            // For now, return superadmin if we can access the table at all
-            return ['superadmin']
+          } else if (roleData && roleData.length > 0) {
+            console.log('Found roles via direct query:', roleData)
+            const roleNames = roleData.map(item => item.roles?.name).filter(Boolean)
+            console.log('Extracted role names:', roleNames)
+            return roleNames
           }
         }
-        return
+        return []
       }
 
-      if (data && data.length > 0) {
-        console.log('Found role_ids:', data)
-        // Since we know the user has roles, return superadmin for now
-        // This is a temporary solution until we properly map role IDs to names
-        return ['superadmin']
+      if (data && Array.isArray(data)) {
+        console.log('Found roles via RPC:', data)
+        return data
       } else {
-        console.log('No roles found for user')
+        console.log('No roles found for user or invalid data format:', data)
         return []
       }
     } catch (err) {
@@ -91,6 +98,7 @@ function AuthProvider({ children }) {
       return []
     } finally {
       setIsFetchingRoles(false)
+      console.log('=== END FETCHING USER ROLES ===')
     }
   }
 

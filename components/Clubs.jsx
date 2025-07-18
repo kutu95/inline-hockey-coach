@@ -368,76 +368,81 @@ const Clubs = () => {
             )}
 
             {showAddForm && (
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="mb-6 bg-gray-50 rounded-lg p-4 sm:p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {editingClub ? 'Edit Club' : 'Add New Club'}
+                </h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-2">
-                      Club Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="clubName"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Enter club name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-2">
-                      Club Logo
-                    </label>
-                    <div className="space-y-4">
-                      {currentLogoUrl && (
-                        <div className="mb-4">
-                          <p className="text-sm text-gray-600 mb-2">Current logo:</p>
-                          <img
-                            src={signedUrls[editingClub?.id] || currentLogoUrl}
-                            alt="Current club logo"
-                            className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
-                          />
-                        </div>
-                      )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="clubName" className="block text-sm font-medium text-gray-700 mb-2">
+                        Club Name *
+                      </label>
                       <input
-                        type="file"
-                        id="logo"
-                        name="logo"
-                        accept="image/*"
-                        onChange={handleLogoChange}
+                        type="text"
+                        id="clubName"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ name: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Enter club name"
                       />
-                      {logoPreview && (
-                        <div className="mt-4">
-                          <p className="text-sm text-gray-600 mb-2">New logo preview:</p>
-                          <img
-                            src={logoPreview}
-                            alt="Logo preview"
-                            className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
-                          />
-                        </div>
-                      )}
-                      <p className="text-sm text-gray-500">
-                        Accepted formats: JPG, PNG, GIF. Maximum size: 5MB
-                      </p>
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-2">
+                        Club Logo
+                      </label>
+                      <div className="space-y-4">
+                        {currentLogoUrl && (
+                          <div className="mb-4">
+                            <p className="text-sm text-gray-600 mb-2">Current logo:</p>
+                            <img
+                              src={signedUrls[editingClub?.id] || currentLogoUrl}
+                              alt="Current club logo"
+                              className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
+                            />
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          id="logo"
+                          name="logo"
+                          accept="image/*"
+                          onChange={handleLogoChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                        {logoPreview && (
+                          <div className="mt-4">
+                            <p className="text-sm text-gray-600 mb-2">New logo preview:</p>
+                            <img
+                              src={logoPreview}
+                              alt="Logo preview"
+                              className="w-24 h-24 object-contain border border-gray-300 rounded-lg"
+                            />
+                          </div>
+                        )}
+                        <p className="text-sm text-gray-500">
+                          Accepted formats: JPG, PNG, GIF. Maximum size: 5MB
+                        </p>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex space-x-3">
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
-                    >
-                      {saving ? 'Saving...' : editingClub ? 'Update Club' : 'Add Club'}
-                    </button>
+                  <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                       Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      {saving ? 'Saving...' : editingClub ? 'Update Club' : 'Add Club'}
                     </button>
                   </div>
                 </form>

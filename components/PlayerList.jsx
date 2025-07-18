@@ -30,63 +30,166 @@ const PlayerList = () => {
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
-
   useEffect(() => {
-    fetchPlayers()
-  }, [sortField, sortDirection])
+    if (orgId && orgId !== 'undefined') {
+      fetchPlayers()
+    }
+  }, [sortField, sortDirection, orgId])
 
   // Function to get signed URL for club logos
   const getSignedUrl = async (url) => {
-    if (!url) return null
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
     
     try {
       // Extract file path from the URL
       const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      const { data: { signedUrl } } = await supabase.storage
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('club-logos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
         .from('club-logos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
-      return signedUrl
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
     } catch (err) {
-      console.error('Error getting signed URL:', err)
-      return url // Fallback to original URL
+      // Silently skip if there's an error
+      return null
     }
   }
 
   // Function to get signed URL for player photos
   const getSignedUrlForPlayerPhoto = async (url) => {
-    if (!url) return null
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
     
     try {
       // Extract file path from the URL
       const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      const { data: { signedUrl } } = await supabase.storage
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
         .from('player-photos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
-      return signedUrl
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
     } catch (err) {
-      console.error('Error getting signed URL for player photo:', err)
-      return url // Fallback to original URL
+      // Silently skip if there's an error
+      return null
     }
   }
 
   // Get signed URLs for all club logos and player photos
   useEffect(() => {
     const getSignedUrls = async () => {
+      if (!players || players.length === 0) {
+        setSignedUrls({})
+        setPlayerPhotoUrls({})
+        return
+      }
+      
+      // Check if there are any valid storage URLs to process
+      const hasValidStorageUrls = players.some(player => {
+        const hasValidClubLogo = player.clubs?.logo_url && 
+          player.clubs.logo_url.includes('supabase.co') && 
+          player.clubs.logo_url.includes('/storage/')
+        
+        const hasValidPhoto = player.photo_url && 
+          player.photo_url.includes('supabase.co') && 
+          player.photo_url.includes('/storage/')
+        
+        return hasValidClubLogo || hasValidPhoto
+      })
+      
+      // If no valid storage URLs, don't process anything
+      if (!hasValidStorageUrls) {
+        setSignedUrls({})
+        setPlayerPhotoUrls({})
+        return
+      }
+      
       const clubUrls = {}
       const photoUrls = {}
       
+      // Process club logos - only once per unique club
+      const processedClubs = new Set()
+      
       for (const player of players) {
-        if (player.clubs?.logo_url) {
-          clubUrls[player.clubs.id] = await getSignedUrl(player.clubs.logo_url)
+        // Only process club logos that are from Supabase storage and haven't been processed yet
+        if (player.clubs?.logo_url && 
+            player.clubs.logo_url.includes('supabase.co') && 
+            player.clubs.logo_url.includes('/storage/') &&
+            !processedClubs.has(player.clubs.id)) {
+          processedClubs.add(player.clubs.id)
+          const signedUrl = await getSignedUrl(player.clubs.logo_url)
+          if (signedUrl) {
+            clubUrls[player.clubs.id] = signedUrl
+          }
         }
-        if (player.photo_url) {
-          photoUrls[player.id] = await getSignedUrlForPlayerPhoto(player.photo_url)
+        
+        // Only process player photos that are from Supabase storage
+        if (player.photo_url && 
+            player.photo_url.includes('supabase.co') && 
+            player.photo_url.includes('/storage/')) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(player.photo_url)
+          if (signedUrl) {
+            photoUrls[player.id] = signedUrl
+          }
         }
       }
       
@@ -94,14 +197,20 @@ const PlayerList = () => {
       setPlayerPhotoUrls(photoUrls)
     }
     
-    if (players.length > 0) {
-      getSignedUrls()
-    }
+    getSignedUrls()
   }, [players])
 
   const fetchPlayers = async () => {
     try {
       setLoading(true)
+      setError('')
+      
+      if (!orgId || orgId === 'undefined') {
+        setError('Invalid organization ID')
+        setLoading(false)
+        return
+      }
+      
       let query = supabase
         .from('players')
         .select(`
@@ -118,9 +227,8 @@ const PlayerList = () => {
             )
           )
         `)
-        .order(sortField, { ascending: sortDirection === 'asc' })
 
-      // If we're in an organization context, filter by organization_id
+      // If we're in an organization context (orgId from route params), filter by organization_id
       if (orgId) {
         query = query.eq('organization_id', orgId)
       } else {
@@ -128,12 +236,14 @@ const PlayerList = () => {
         query = query.eq('coach_id', user.id)
       }
 
+      query = query.order(sortField, { ascending: sortDirection === 'asc' })
+
       const { data, error } = await query
 
       if (error) throw error
       setPlayers(data || [])
     } catch (err) {
-      setError('Failed to fetch players')
+      setError('Failed to fetch players: ' + err.message)
       console.error('Error fetching players:', err)
     } finally {
       setLoading(false)
@@ -219,20 +329,10 @@ const PlayerList = () => {
     if (!confirm('Are you sure you want to delete this player?')) return
 
     try {
-      let query = supabase
+      const { error } = await supabase
         .from('players')
         .delete()
         .eq('id', playerId)
-
-      // If we're in an organization context, ensure the player belongs to the organization
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, ensure the player belongs to the coach
-        query = query.eq('coach_id', user.id)
-      }
-
-      const { error } = await query
 
       if (error) throw error
       
@@ -292,8 +392,33 @@ const PlayerList = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="bg-white shadow rounded-lg">
+              <div className="px-6 py-4 border-b border-gray-200">
+                {orgId ? (
+                  <OrganizationHeader title="Players" />
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Link
+                        to={orgId ? `/organisations/${orgId}/players` : "/players"}
+                        className="text-gray-600 hover:text-gray-800 font-medium"
+                      >
+                        ← Back to Players
+                      </Link>
+                      <h1 className="text-3xl font-bold text-gray-900">Players</h1>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -318,7 +443,7 @@ const PlayerList = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Players</h1>
                   </div>
                   <Link
-                    to="/players/add"
+                    to={orgId ? `/organisations/${orgId}/players/add` : "/players/add"}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
                     Add Player
@@ -341,6 +466,16 @@ const PlayerList = () => {
               <div className="px-6 py-4">
                 <div className="rounded-md bg-red-50 p-4">
                   <div className="text-sm text-red-700">{error}</div>
+                  {error.includes('Invalid organization ID') && (
+                    <div className="mt-2">
+                      <Link
+                        to="/organisations"
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      >
+                        ← Back to Organisations
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -531,9 +666,17 @@ const PlayerList = () => {
                                   src={playerPhotoUrls[player.id] || player.photo_url}
                                   alt={`${player.first_name} ${player.last_name}`}
                                   className="w-12 h-12 object-cover rounded-full border border-gray-300"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none'
+                                    e.target.nextSibling.style.display = 'flex'
+                                  }}
+                                  onLoad={(e) => {
+                                    // Hide the fallback when image loads successfully
+                                    e.target.nextSibling.style.display = 'none'
+                                  }}
                                 />
                               ) : (
-                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center" style={{ display: player.photo_url ? 'none' : 'flex' }}>
                                   <span className="text-gray-500 text-sm font-medium">
                                     {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                                   </span>
@@ -597,6 +740,13 @@ const PlayerList = () => {
                                         src={signedUrls[player.clubs.id] || player.clubs.logo_url}
                                         alt={`${player.clubs.name} logo`}
                                         className="w-5 h-5 object-contain"
+                                        onError={(e) => {
+                                          e.target.style.display = 'none'
+                                        }}
+                                        onLoad={(e) => {
+                                          // Image loaded successfully
+                                        }}
+                                        style={{ display: 'block' }}
                                       />
                                     ) : null}
                                     <span className="text-sm text-gray-600">

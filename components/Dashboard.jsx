@@ -1,8 +1,40 @@
 import { useAuth } from '../src/contexts/AuthContext'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { supabase } from '../src/lib/supabase'
 
 const Dashboard = () => {
   const { user, signOut, userRoles, hasRole, loading } = useAuth()
+  const [userOrganization, setUserOrganization] = useState(null)
+  const [fetchingOrg, setFetchingOrg] = useState(false)
+  const [shouldRedirect, setShouldRedirect] = useState(false)
+
+  // Check if admin should be redirected to their organization
+  useEffect(() => {
+    const checkAdminRedirect = async () => {
+      if (user && hasRole('admin') && !fetchingOrg && !shouldRedirect) {
+        try {
+          setFetchingOrg(true)
+          const { data: orgId, error } = await supabase.rpc('get_user_organization', {
+            user_uuid: user.id
+          })
+
+          if (error) {
+            console.error('Error fetching user organization:', error)
+          } else if (orgId) {
+            setUserOrganization(orgId)
+            setShouldRedirect(true)
+          }
+        } catch (err) {
+          console.error('Error fetching user organization:', err)
+        } finally {
+          setFetchingOrg(false)
+        }
+      }
+    }
+
+    checkAdminRedirect()
+  }, [user, userRoles, hasRole, fetchingOrg, shouldRedirect])
 
   const handleSignOut = async () => {
     console.log('Sign out button clicked')
@@ -23,13 +55,18 @@ const Dashboard = () => {
     }
   }
 
-  // Show loading spinner while auth context is loading
-  if (loading) {
+  // Show loading spinner while auth context is loading or fetching organization
+  if (loading || fetchingOrg) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 border-b-2 border-indigo-600"></div>
       </div>
     )
+  }
+
+  // Redirect admin to their organization page
+  if (shouldRedirect && userOrganization) {
+    return <Navigate to={`/organisations/${userOrganization}`} replace />
   }
 
   const getRoleBadgeColor = (role) => {
@@ -107,23 +144,8 @@ const Dashboard = () => {
                 </Link>
               )}
 
-              {/* Admin-only section */}
-              {hasRole('admin') && (
-                <Link
-                  to="/admin/users"
-                  className="bg-red-50 border border-red-200 rounded-lg p-4 hover:bg-red-100 transition-colors duration-200"
-                >
-                  <h3 className="text-lg font-semibold text-red-900 mb-2">
-                    User Administration
-                  </h3>
-                  <p className="text-red-700">
-                    Manage user roles and access permissions
-                  </p>
-                </Link>
-              )}
-
-              {/* Coach and Admin access */}
-              {(hasRole('coach') || hasRole('admin')) && (
+              {/* Coach access */}
+              {hasRole('coach') && (
                 <>
                   <Link
                     to="/players"

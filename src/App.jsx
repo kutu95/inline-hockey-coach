@@ -122,7 +122,7 @@ function App() {
             <Route 
               path="/organisations/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <OrganizationDetail />
                 </RoleProtectedRoute>
               } 
@@ -132,7 +132,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/players" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <PlayerList />
                 </RoleProtectedRoute>
               } 
@@ -140,7 +140,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/players/add" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <AddPlayer />
                 </RoleProtectedRoute>
               } 
@@ -148,7 +148,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/players/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <ViewPlayer />
                 </RoleProtectedRoute>
               } 
@@ -156,7 +156,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/players/:id/edit" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <EditPlayer />
                 </RoleProtectedRoute>
               } 
@@ -164,7 +164,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/squads" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <Squads />
                 </RoleProtectedRoute>
               } 
@@ -172,7 +172,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/squads/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <ViewSquad />
                 </RoleProtectedRoute>
               } 
@@ -180,7 +180,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/sessions" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <Sessions />
                 </RoleProtectedRoute>
               } 
@@ -188,7 +188,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/drills" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <Drills />
                 </RoleProtectedRoute>
               } 
@@ -196,7 +196,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/clubs" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <Clubs />
                 </RoleProtectedRoute>
               } 
@@ -204,7 +204,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/clubs/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <ViewClub />
                 </RoleProtectedRoute>
               } 
@@ -212,7 +212,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/attendance" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <OrganizationAttendance />
                 </RoleProtectedRoute>
               } 
@@ -220,7 +220,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/sessions/:sessionId/attendance" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <SessionAttendance />
                 </RoleProtectedRoute>
               } 
@@ -228,7 +228,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/locations" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin']}>
                   <Locations />
                 </RoleProtectedRoute>
               } 
@@ -236,7 +236,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/admin" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin']}>
                   <AdminPanel />
                 </RoleProtectedRoute>
               } 
@@ -244,7 +244,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/reports" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <Reports />
                 </RoleProtectedRoute>
               } 

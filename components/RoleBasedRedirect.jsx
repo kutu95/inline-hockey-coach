@@ -1,14 +1,43 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
+import { supabase } from '../src/lib/supabase'
 
 const RoleBasedRedirect = () => {
   const { user, userRoles, loading } = useAuth()
+  const [userOrganization, setUserOrganization] = useState(null)
+  const [fetchingOrg, setFetchingOrg] = useState(false)
 
   console.log('RoleBasedRedirect: user:', !!user, 'userRoles:', userRoles, 'loading:', loading)
 
-  // Show loading while determining user roles
-  if (loading) {
+  // Fetch user's organization if they have any role (admin, coach, player)
+  useEffect(() => {
+    const fetchUserOrganization = async () => {
+      if (user && (userRoles.includes('admin') || userRoles.includes('coach') || userRoles.includes('player')) && !fetchingOrg) {
+        try {
+          setFetchingOrg(true)
+          const { data: orgId, error } = await supabase.rpc('get_user_organization', {
+            user_uuid: user.id
+          })
+
+          if (error) {
+            console.error('Error fetching user organization:', error)
+          } else {
+            setUserOrganization(orgId)
+          }
+        } catch (err) {
+          console.error('Error fetching user organization:', err)
+        } finally {
+          setFetchingOrg(false)
+        }
+      }
+    }
+
+    fetchUserOrganization()
+  }, [user, userRoles, fetchingOrg])
+
+  // Show loading while determining user roles or fetching organization
+  if (loading || ((userRoles.includes('admin') || userRoles.includes('coach') || userRoles.includes('player')) && fetchingOrg)) {
     console.log('RoleBasedRedirect: Still loading, showing spinner')
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -28,10 +57,13 @@ const RoleBasedRedirect = () => {
     console.log('RoleBasedRedirect: User is superadmin, redirecting to organisations')
     return <Navigate to="/organisations" replace />
   } else if (userRoles.includes('admin') || userRoles.includes('coach') || userRoles.includes('player')) {
-    console.log('RoleBasedRedirect: User is admin/coach/player, redirecting to dashboard')
-    // For non-superadmin users, redirect to dashboard
-    // They can then navigate to their organization-specific pages
-    return <Navigate to="/dashboard" replace />
+    if (userOrganization) {
+      console.log('RoleBasedRedirect: User is admin/coach/player, redirecting to their organization:', userOrganization)
+      return <Navigate to={`/organisations/${userOrganization}`} replace />
+    } else {
+      console.log('RoleBasedRedirect: User is admin/coach/player but no organization found, redirecting to dashboard')
+      return <Navigate to="/dashboard" replace />
+    }
   } else {
     console.log('RoleBasedRedirect: No specific role found, redirecting to dashboard as fallback')
     // Fallback to dashboard if no specific role is found

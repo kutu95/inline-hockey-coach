@@ -258,20 +258,20 @@ const AddPlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+    <>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-2xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
                     to={orgId ? `/organisations/${orgId}` : '/dashboard'}
-                    className="text-gray-600 hover:text-gray-800 font-medium"
+                    className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                   >
                     ← Back to Dashboard
                   </Link>
-                  <h1 className="text-3xl font-bold text-gray-900">Add Player</h1>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add Player</h1>
                 </div>
                 <button
                   onClick={() => {
@@ -286,7 +286,7 @@ const AddPlayer = () => {
                       navigate(orgId ? `/organisations/${orgId}/players` : '/players')
                     }
                   }}
-                  className="text-gray-600 hover:text-gray-800 font-medium"
+                  className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                 >
                   ← Back to {clubId ? 'Club' : 'Players'}
                 </button>
@@ -294,7 +294,7 @@ const AddPlayer = () => {
             </div>
 
             {error && (
-              <div className="px-6 py-4">
+              <div className="px-4 sm:px-6 py-4">
                 <div className="rounded-md bg-red-50 p-4">
                   <div className="text-sm text-red-700">{error}</div>
                 </div>
@@ -302,14 +302,14 @@ const AddPlayer = () => {
             )}
 
             {success && (
-              <div className="px-6 py-4">
+              <div className="px-4 sm:px-6 py-4">
                 <div className="rounded-md bg-green-50 p-4">
                   <div className="text-sm text-green-700">{success}</div>
                 </div>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="px-6 py-4">
+            <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Basic Information */}
                 <div className="md:col-span-2">
@@ -612,18 +612,18 @@ const AddPlayer = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-4 mt-8">
-                                  <button
-                    type="button"
-                    onClick={() => navigate(orgId ? `/organisations/${orgId}/players` : '/players')}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    Cancel
-                  </button>
+              <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => navigate(orgId ? `/organisations/${orgId}/players` : '/players')}
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={loading || (sendInvitation && sendingInvitation)}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Adding...' : sendingInvitation ? 'Sending Invitation...' : 'Add Player'}
                 </button>
@@ -632,7 +632,7 @@ const AddPlayer = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

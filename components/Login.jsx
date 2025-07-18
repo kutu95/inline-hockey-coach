@@ -58,10 +58,10 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900">
             {isResetPassword ? 'Reset Password' : 'Sign In'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -71,7 +71,6 @@ const Login = () => {
             }
           </p>
         </div>
-        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -110,24 +109,21 @@ const Login = () => {
               </div>
             )}
           </div>
-
           {error && (
             <div className="rounded-md bg-red-50 p-4">
               <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-
           {message && (
             <div className="rounded-md bg-green-50 p-4">
               <div className="text-sm text-green-700">{message}</div>
             </div>
           )}
-
-          <div>
+          <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4">
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -143,21 +139,17 @@ const Login = () => {
               }
             </button>
           </div>
-
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 space-y-2 sm:space-y-0">
             {!isResetPassword && (
-              <div className="text-sm">
-                <button
-                  type="button"
-                  onClick={() => setIsResetPassword(true)}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot your password?
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsResetPassword(true)}
+                className="font-medium text-indigo-600 hover:text-indigo-500 text-sm"
+              >
+                Forgot your password?
+              </button>
             )}
-            
-            <div className="text-sm">
+            <div className="text-sm text-center text-gray-600">
               {isResetPassword ? (
                 <button
                   type="button"
@@ -167,9 +159,7 @@ const Login = () => {
                   Back to sign in
                 </button>
               ) : (
-                <div className="text-center text-gray-600">
-                  <p>Need an account? Contact your coach for an invitation.</p>
-                </div>
+                <p>Need an account? Contact your coach for an invitation.</p>
               )}
             </div>
           </div>

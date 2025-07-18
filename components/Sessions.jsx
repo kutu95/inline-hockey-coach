@@ -430,7 +430,7 @@ const Sessions = () => {
             <div className="px-6 py-4">
               {/* Add/Edit Form */}
               {showAddForm && (
-                <div className="mb-6 bg-gray-50 rounded-lg p-6">
+                <div className="mb-6 bg-gray-50 rounded-lg p-4 sm:p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     {editingSession ? 'Edit Session' : 'Add New Session'}
                   </h3>
@@ -584,17 +584,17 @@ const Sessions = () => {
                       )}
                     </div>
 
-                    <div className="flex justify-end space-x-3">
+                    <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                       <button
                         type="button"
                         onClick={resetForm}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       >
                         {editingSession ? 'Update Session' : 'Add Session'}
                       </button>

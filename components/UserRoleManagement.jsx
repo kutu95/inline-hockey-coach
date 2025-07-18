@@ -6,10 +6,11 @@ import { useAuth } from '../src/contexts/AuthContext'
 const UserRoleManagement = () => {
   const { userId } = useParams()
   const navigate = useNavigate()
-  const { user, hasRole } = useAuth()
+  const { user, hasRole, userRoles: currentUserRoles } = useAuth()
   const [targetUser, setTargetUser] = useState(null)
   const [userRoles, setUserRoles] = useState([])
   const [availableRoles, setAvailableRoles] = useState([])
+  const [filteredRoles, setFilteredRoles] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [updating, setUpdating] = useState(false)
@@ -23,6 +24,20 @@ const UserRoleManagement = () => {
     fetchUserData()
     fetchAvailableRoles()
   }, [userId])
+
+  // Recalculate filtered roles when available roles or user roles change
+  useEffect(() => {
+    console.log('useEffect triggered - recalculating filtered roles')
+    console.log('Dependencies changed:', {
+      availableRolesCount: availableRoles.length,
+      currentUserRoles: currentUserRoles,
+      userId: userId,
+      user_id: user?.id
+    })
+    
+    const filtered = getFilteredAvailableRoles()
+    setFilteredRoles(filtered)
+  }, [availableRoles, currentUserRoles, userId, user?.id])
 
   const fetchUserData = async () => {
     try {
@@ -86,6 +101,45 @@ const UserRoleManagement = () => {
     } catch (err) {
       console.error('Error fetching available roles:', err)
     }
+  }
+
+  // Filter available roles based on current user's permissions
+  const getFilteredAvailableRoles = () => {
+    console.log('=== FILTERING ROLES ===')
+    console.log('Available roles:', availableRoles.map(r => r.name))
+    console.log('Current user roles:', currentUserRoles)
+    console.log('Has superadmin role:', hasRole('superadmin'))
+    console.log('Current user ID:', user?.id)
+    console.log('Target user ID:', userId)
+    console.log('Is self assignment:', userId === user?.id)
+    
+    if (!availableRoles.length) {
+      console.log('No available roles, returning empty array')
+      return []
+    }
+    
+    const filtered = availableRoles.filter(role => {
+      console.log(`Checking role: ${role.name}`)
+      
+      // Only superadmins can assign superadmin role
+      if (role.name === 'superadmin' && !hasRole('superadmin')) {
+        console.log('❌ Filtering out superadmin role - user is not superadmin')
+        return false
+      }
+      
+      // Users cannot assign roles to themselves (except superadmins)
+      if (userId === user?.id && !hasRole('superadmin')) {
+        console.log('❌ Filtering out role - user cannot assign to themselves')
+        return false
+      }
+      
+      console.log(`✅ Keeping role: ${role.name}`)
+      return true
+    })
+    
+    console.log('Final filtered roles:', filtered.map(r => r.name))
+    console.log('=== END FILTERING ===')
+    return filtered
   }
 
   const handleRoleToggle = async (roleName) => {
@@ -237,32 +291,36 @@ const UserRoleManagement = () => {
 
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Available Roles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {availableRoles.map(role => (
-                    <div
-                      key={role.id}
-                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
-                    >
-                      <div>
-                        <h3 className="font-medium text-gray-900">{role.name}</h3>
-                        {role.description && (
-                          <p className="text-sm text-gray-600">{role.description}</p>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleRoleToggle(role.name)}
-                        disabled={updating}
-                        className={`px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out ${
-                          userRoles.includes(role.name)
-                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                            : 'bg-green-600 hover:bg-green-700 text-white'
-                        } disabled:bg-gray-400`}
+                {filteredRoles.length === 0 ? (
+                  <p className="text-gray-600">No roles available to assign</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredRoles.map(role => (
+                      <div
+                        key={role.id}
+                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
                       >
-                        {updating ? 'Updating...' : userRoles.includes(role.name) ? 'Remove' : 'Add'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">{role.name}</h3>
+                          {role.description && (
+                            <p className="text-sm text-gray-600">{role.description}</p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleRoleToggle(role.name)}
+                          disabled={updating}
+                          className={`px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out ${
+                            userRoles.includes(role.name)
+                              ? 'bg-red-600 hover:bg-red-700 text-white'
+                              : 'bg-green-600 hover:bg-green-700 text-white'
+                          } disabled:bg-gray-400`}
+                        >
+                          {updating ? 'Updating...' : userRoles.includes(role.name) ? 'Remove' : 'Add'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
