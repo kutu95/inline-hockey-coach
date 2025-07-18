@@ -9,6 +9,8 @@ const Dashboard = () => {
   const [loadingOrg, setLoadingOrg] = useState(false)
 
   // Show loading state while auth is initializing
+  console.log('Dashboard: loading =', loading, 'userRoles =', userRoles, 'user =', !!user)
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

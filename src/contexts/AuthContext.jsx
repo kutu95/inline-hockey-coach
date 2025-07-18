@@ -79,6 +79,7 @@ function AuthProvider({ children }) {
 
   // Function to check if user has a specific role
   const hasRole = (roleName) => {
+    console.log('hasRole called with:', roleName, 'userRoles:', userRoles, 'result:', userRoles.includes(roleName))
     return userRoles.includes(roleName)
   }
 
@@ -236,7 +237,7 @@ function AuthProvider({ children }) {
     refreshUserRoles,
   }
 
-  console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading)
+  console.log('AuthProvider: Current state - user:', !!user, 'roles:', userRoles, 'loading:', loading, 'isFetchingRoles:', isFetchingRoles)
 
   return (
     <AuthContext.Provider value={value}>
