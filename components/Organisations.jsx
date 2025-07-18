@@ -33,24 +33,20 @@ const Organisations = () => {
   const fetchOrganisations = async () => {
     try {
       setLoading(true)
-      console.log('Fetching organisations...')
+      setError('')
+      
       const { data, error } = await supabase
         .from('organizations')
         .select('*')
         .order('name')
 
-      console.log('Fetch result:', { data, error })
       if (error) {
-        console.error('Error in fetchOrganisations:', error)
-        throw error
+        console.error('Error fetching organisations:', error)
+        setError('Failed to fetch organisations: ' + error.message)
+        return
       }
-      console.log('Setting organisations state with:', data || [])
+      
       setOrganisations(data || [])
-      console.log('Organisations state updated successfully')
-      // Log the actual organisation data
-      if (data && data.length > 0) {
-        console.log('Organisation details:', data[0])
-      }
     } catch (err) {
       console.error('Error fetching organisations:', err)
       setError('Failed to fetch organisations: ' + err.message)

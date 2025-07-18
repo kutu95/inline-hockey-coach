@@ -8,8 +8,6 @@ const Dashboard = () => {
   const [userOrganization, setUserOrganization] = useState(null)
   const [loadingOrg, setLoadingOrg] = useState(false)
 
-
-  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -23,10 +21,10 @@ const Dashboard = () => {
 
   // Fetch user's organization if they're an admin
   useEffect(() => {
-    if (userRoles.includes('admin') && !userOrganization) {
+    if (userRoles.includes('admin') && !userOrganization && !loadingOrg) {
       fetchUserOrganization()
     }
-  }, [userRoles, userOrganization])
+  }, [userRoles])
 
   const fetchUserOrganization = async () => {
     // Prevent duplicate calls
