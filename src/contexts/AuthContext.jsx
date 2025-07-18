@@ -24,17 +24,13 @@ export function AuthProvider({ children }) {
       return []
     }
 
-    console.log('Fetching roles for user:', userId)
-
     // Check cache first
     if (roleCache.has(userId)) {
-      console.log('Using cached roles for user:', userId)
       return roleCache.get(userId)
     }
 
     // Prevent duplicate fetches
     if (fetchingRoles) {
-      console.log('Already fetching roles, waiting...')
       return []
     }
 
@@ -49,7 +45,6 @@ export function AuthProvider({ children }) {
       const fetchPromise = async () => {
         try {
           // Use RPC function directly since direct query has RLS issues
-          console.log('Fetching roles via RPC function...')
           const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
             user_uuid: userId
           })
@@ -67,8 +62,6 @@ export function AuthProvider({ children }) {
       }
 
       const roles = await Promise.race([fetchPromise(), timeoutPromise])
-      
-      console.log('Successfully fetched roles for user:', userId, 'Roles:', roles)
       
       // Cache the result
       setRoleCache(prev => new Map(prev).set(userId, roles))
@@ -127,7 +120,6 @@ export function AuthProvider({ children }) {
               setUserRoles(roles)
             }
           } catch (err) {
-            console.error('Failed to fetch roles, using empty array:', err)
             if (mounted) {
               setUserRoles([])
             }
@@ -157,8 +149,11 @@ export function AuthProvider({ children }) {
       async (event, session) => {
         if (!mounted) return
         
-        try {
-          const currentUser = session?.user ?? null
+        const currentUser = session?.user ?? null
+        const previousUser = user
+        
+        // Only fetch roles if the user actually changed
+        if (currentUser?.id !== previousUser?.id) {
           setUser(currentUser)
           
           if (!currentUser) {
@@ -172,29 +167,41 @@ export function AuthProvider({ children }) {
                 setLoading(false)
               }
             } catch (err) {
-              console.error('Failed to fetch roles in auth state change, using empty array:', err)
               if (mounted) {
                 setUserRoles([])
                 setLoading(false)
               }
             }
           }
-        } catch (error) {
-          console.error('Error in auth state change:', error)
-          if (mounted) {
-            setUser(null)
-            setUserRoles([])
-            setLoading(false)
-          }
+        }
+        // For token refresh events (TOKEN_REFRESHED), just update the user object without refetching roles
+        else if (event === 'TOKEN_REFRESHED' && currentUser) {
+          setUser(currentUser)
         }
       }
     )
 
+    // Handle page visibility changes to prevent unnecessary auth re-initialization
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user) {
+        // Page became visible, but don't re-fetch roles unless necessary
+        // Just ensure the user object is up to date
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (mounted && session?.user && session.user.id === user.id) {
+            setUser(session.user)
+          }
+        })
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       mounted = false
       subscription.unsubscribe()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [])
+  }, [user]) // Add user to dependencies to track changes
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
