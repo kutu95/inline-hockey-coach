@@ -10,8 +10,8 @@ const PlayerList = () => {
   const [filteredPlayers, setFilteredPlayers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [sortField, setSortField] = useState('created_at')
-  const [sortDirection, setSortDirection] = useState('desc')
+  const [sortField, setSortField] = useState('last_name')
+  const [sortDirection, setSortDirection] = useState('asc')
   // State for signed URLs
   const [signedUrls, setSignedUrls] = useState({})
   const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
@@ -26,13 +26,44 @@ const PlayerList = () => {
   const [showFilters, setShowFilters] = useState(false)
   // Search state
   const [searchTerm, setSearchTerm] = useState('')
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const { user } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
+
   useEffect(() => {
     if (orgId && orgId !== 'undefined') {
       fetchPlayers()
+      fetchPlayerProfile()
     }
   }, [sortField, sortDirection, orgId])
 
@@ -397,10 +428,10 @@ const PlayerList = () => {
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
             <div className="bg-white shadow rounded-lg">
-              <div className="px-6 py-4 border-b border-gray-200">
-                {orgId ? (
-                  <OrganizationHeader title="Players" />
-                ) : (
+                          <div className="px-6 py-4 border-b border-gray-200">
+              {orgId ? (
+                <OrganizationHeader title="Players" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
+              ) : (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <Link
@@ -431,7 +462,7 @@ const PlayerList = () => {
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
               {orgId ? (
-                <OrganizationHeader title="Players" />
+                <OrganizationHeader title="Players" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">

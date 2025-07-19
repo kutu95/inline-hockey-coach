@@ -8,9 +8,113 @@ const Drills = () => {
   const [drills, setDrills] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [editingDrill, setEditingDrill] = useState(null)
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    difficulty: '',
+    duration_minutes: '',
+    equipment_needed: '',
+    instructions: '',
+    is_public: false
+  })
+  const [saving, setSaving] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [currentImageUrl, setCurrentImageUrl] = useState('')
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const { user, hasRole } = useAuth()
+  
+  // Determine user permissions
+  const canManageDrills = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
+  const canDeleteDrills = hasRole('superadmin') || hasRole('admin')
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (orgId && orgId !== 'undefined') {
+      fetchDrills()
+      fetchPlayerProfile()
+    }
+  }, [orgId])
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      // Silently skip if there's an error
+      return null
+    }
+  }
 
   const availableFeatures = [
     'agility', 'back-checking', 'break outs', 'defense', 'face-offs', 
@@ -292,7 +396,7 @@ const Drills = () => {
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
               {orgId ? (
-                <OrganizationHeader title="Drills" />
+                <OrganizationHeader title="Drills" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
               ) : (
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                   <div className="flex items-center space-x-4">

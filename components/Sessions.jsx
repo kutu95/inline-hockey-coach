@@ -13,6 +13,8 @@ const Sessions = () => {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingSession, setEditingSession] = useState(null)
   const [selectedSquads, setSelectedSquads] = useState([])
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const { user, hasRole } = useAuth()
   
   // Determine user permissions
@@ -32,11 +34,89 @@ const Sessions = () => {
     notes: ''
   })
 
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
+
   useEffect(() => {
-    fetchSessions()
-    fetchSquads()
-    fetchLocations()
-  }, [])
+    if (orgId && orgId !== 'undefined') {
+      fetchSessions()
+      fetchSquads()
+      fetchLocations()
+      fetchPlayerProfile()
+    }
+  }, [orgId])
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      // Silently skip if there's an error
+      return null
+    }
+  }
 
   const fetchSessions = async () => {
     try {
@@ -85,6 +165,7 @@ const Sessions = () => {
       let query = supabase
         .from('squads')
         .select('*')
+        .eq('is_active', true)
         .order('name', { ascending: true })
 
       // If we're in an organization context, filter by organization_id
@@ -392,7 +473,7 @@ const Sessions = () => {
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
               {orgId ? (
-                <OrganizationHeader title="Sessions" />
+                <OrganizationHeader title="Sessions" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -404,18 +485,32 @@ const Sessions = () => {
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900">Sessions</h1>
                   </div>
-                  {canManageSessions && (
-                    <button
-                      onClick={() => setShowAddForm(true)}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      to="/sessions/calendar"
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
-                      Add Session
-                    </button>
-                  )}
+                      Calendar View
+                    </Link>
+                    {canManageSessions && (
+                      <button
+                        onClick={() => setShowAddForm(true)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      >
+                        Add Session
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
               {orgId && (
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex justify-end space-x-2">
+                  <Link
+                    to={`/organisations/${orgId}/sessions/calendar`}
+                    className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Calendar View
+                  </Link>
                   {canManageSessions && (
                     <button
                       onClick={() => setShowAddForm(true)}

@@ -1,29 +1,96 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { formatAccreditations, getAccreditationBadges, calculateAge, formatBirthdate } from '../src/utils/formatters'
-import SquadAssignment from './SquadAssignment'
 import { sendInvitationEmail } from '../src/lib/email'
 import OrganizationHeader from './OrganizationHeader'
+import SquadAssignment from './SquadAssignment'
 
 const ViewPlayer = () => {
-  const { id, orgId } = useParams()
-  const navigate = useNavigate()
-  const { user, hasRole } = useAuth()
+  console.log('ViewPlayer component rendering...');
+  
   const [player, setPlayer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [signedUrl, setSignedUrl] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
-  const [sendingInvitation, setSendingInvitation] = useState(false)
-  const [isSuperadmin, setIsSuperadmin] = useState(false)
+  const [currentUserProfile, setCurrentUserProfile] = useState(null)
+  const [currentUserPhotoUrl, setCurrentUserPhotoUrl] = useState(null)
   const [playerRoles, setPlayerRoles] = useState([])
+  const [isSuperadmin, setIsSuperadmin] = useState(false)
+  const [sendingInvitation, setSendingInvitation] = useState(false)
+  const { user, hasRole } = useAuth()
+  const navigate = useNavigate()
+  const params = useParams()
+  const playerId = params.id
+  const orgId = params.orgId
+  
+  console.log('ViewPlayer state initialized:', { playerId, orgId, user: user?.id });
 
   useEffect(() => {
-    checkSuperadminStatus()
-    fetchPlayer()
-  }, [id])
+    console.log('ViewPlayer useEffect triggered with playerId:', playerId, 'orgId:', orgId);
+    if (playerId && playerId !== 'undefined') {
+      console.log('Calling fetchPlayer and fetchCurrentUserProfile');
+      fetchPlayer()
+      fetchCurrentUserProfile()
+    } else {
+      console.log('playerId is not valid, skipping fetchPlayer and fetchCurrentUserProfile');
+    }
+  }, [playerId])
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data: { signedUrl } } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      return signedUrl
+    } catch (err) {
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
+    }
+  }
+
+  // Fetch current user's player profile
+  const fetchCurrentUserProfile = async () => {
+    try {
+      if (!user?.id) {
+        console.log('No user ID available, skipping fetchCurrentUserProfile');
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching current user profile:', error)
+        return
+      }
+
+      if (data) {
+        setCurrentUserProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setCurrentUserPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchCurrentUserProfile:', err)
+    }
+  }
 
   // Fetch player roles when player data changes
   useEffect(() => {
@@ -66,7 +133,7 @@ const ViewPlayer = () => {
   }
 
   const getInvitationStatus = () => {
-    if (!player.user_id) {
+    if (!player || !player.user_id) {
       return { status: 'No Account', color: 'text-red-600' }
     }
     
@@ -100,26 +167,6 @@ const ViewPlayer = () => {
     }
   }
 
-  // Function to get signed URL for player photo
-  const getSignedUrlForPlayerPhoto = async (url) => {
-    if (!url) return null
-    
-    try {
-      // Extract file path from the URL
-      const urlParts = url.split('/')
-      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
-      
-      const { data: { signedUrl } } = await supabase.storage
-        .from('player-photos')
-        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
-      
-      return signedUrl
-    } catch (err) {
-      console.error('Error getting signed URL for player photo:', err)
-      return url // Fallback to original URL
-    }
-  }
-
   // Get signed URLs for club logo and player photo when player data changes
   useEffect(() => {
     const getSignedUrlsForPlayer = async () => {
@@ -139,8 +186,15 @@ const ViewPlayer = () => {
   }, [player])
 
   const fetchPlayer = async () => {
+    console.log('fetchPlayer called with playerId:', playerId);
+    if (!playerId || playerId === 'undefined') {
+      console.log('playerId is undefined, skipping fetchPlayer');
+      return;
+    }
+    
     try {
       setLoading(true)
+      console.log('Starting fetchPlayer query...');
       
       let query = supabase
         .from('players')
@@ -159,7 +213,7 @@ const ViewPlayer = () => {
             )
           )
         `)
-        .eq('id', id)
+        .eq('id', playerId)
       
       // If we're in an organization context, filter by organization_id
       if (orgId) {
@@ -168,13 +222,20 @@ const ViewPlayer = () => {
       // RLS policies will handle access control for other cases
       
       const { data, error } = await query.single()
+      console.log('fetchPlayer query result:', { data, error });
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Setting player data:', data);
       setPlayer(data)
     } catch (err) {
-      setError('Failed to fetch player')
-      console.error('Error fetching player:', err)
+      console.error('Error in fetchPlayer:', err);
+      setError('Failed to fetch player: ' + err.message)
     } finally {
+      console.log('Setting loading to false');
       setLoading(false)
     }
   }
@@ -188,7 +249,7 @@ const ViewPlayer = () => {
       let query = supabase
         .from('players')
         .delete()
-        .eq('id', id)
+        .eq('id', playerId)
 
       // If we're in an organization context, ensure the player belongs to the organization
       if (orgId) {
@@ -298,14 +359,15 @@ const ViewPlayer = () => {
     )
   }
 
-  return (
+  try {
+    return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
               {orgId ? (
-                <OrganizationHeader title="Player Details" />
+                <OrganizationHeader title="Player Details" showBackButton={false} playerProfile={currentUserProfile} playerPhotoUrl={currentUserPhotoUrl} />
               ) : (
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                   <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
@@ -318,9 +380,9 @@ const ViewPlayer = () => {
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Player Details</h1>
                   </div>
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                    {(hasRole('admin') || hasRole('coach')) && (
+                    {(hasRole('superadmin') || hasRole('admin') || hasRole('coach') || (hasRole('player') && player.user_id === user.id)) && (
                       <Link
-                        to={`/players/${id}/edit`}
+                        to={`/players/${playerId}/edit`}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto text-center"
                       >
                         Edit Player
@@ -339,9 +401,9 @@ const ViewPlayer = () => {
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end space-x-3">
-                  {(hasRole('admin') || hasRole('coach')) && (
+                  {(hasRole('superadmin') || hasRole('admin') || hasRole('coach') || (hasRole('player') && player.user_id === user.id)) && (
                     <Link
-                      to={`/organisations/${orgId}/players/${id}/edit`}
+                      to={`/organisations/${orgId}/players/${playerId}/edit`}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
                       Edit Player
@@ -614,7 +676,7 @@ const ViewPlayer = () => {
                   </Link>
                   {(hasRole('admin') || hasRole('coach')) && (
                     <Link
-                      to={`/players/${id}/edit`}
+                      to={`/players/${playerId}/edit`}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
                       Edit Player
@@ -628,6 +690,30 @@ const ViewPlayer = () => {
       </div>
     </div>
   )
+  } catch (err) {
+    console.error('Error rendering ViewPlayer:', err);
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="bg-white shadow rounded-lg p-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Player</h2>
+                <p className="text-gray-600 mb-6">There was an error loading the player details. Please try again.</p>
+                <p className="text-red-600 text-sm mb-4">{err.message}</p>
+                <Link
+                  to={orgId ? `/organisations/${orgId}/players` : "/players"}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                >
+                  Back to Players
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default ViewPlayer 

@@ -8,13 +8,98 @@ const OrganizationAttendance = () => {
   const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { user } = useAuth()
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const { user, hasRole } = useAuth()
+  
+  // Determine user permissions
+  const canViewAttendance = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
   const params = useParams()
-  const orgId = params.orgId
+  const orgId = params.orgId // Get organization ID from route params
 
   useEffect(() => {
-    fetchSessions()
+    if (orgId) {
+      fetchSessions()
+      fetchPlayerProfile()
+    }
   }, [orgId])
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      // Silently skip if there's an error
+      return null
+    }
+  }
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
 
   const fetchSessions = async () => {
     try {
@@ -60,6 +145,19 @@ const OrganizationAttendance = () => {
     })
   }
 
+  const calculateEndTime = (startTime, durationMinutes) => {
+    if (!startTime || !durationMinutes) return null
+    
+    const startDate = new Date(`2000-01-01T${startTime}`)
+    const endDate = new Date(startDate.getTime() + durationMinutes * 60000)
+    
+    return endDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'short',
@@ -95,7 +193,7 @@ const OrganizationAttendance = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <OrganizationHeader title="Attendance Overview" />
+              <OrganizationHeader title="Attendance Overview" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
             </div>
 
             {error && (
@@ -120,9 +218,15 @@ const OrganizationAttendance = () => {
                       <div key={session.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900">{session.title}</h3>
+                            <Link
+                              to={`/organisations/${orgId}/sessions/${session.id}`}
+                              className="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-150"
+                            >
+                              {session.title}
+                            </Link>
                             <p className="text-sm text-gray-600">
-                              {formatDate(session.date)} • {formatTime(session.start_time)} - {formatTime(session.start_time + session.duration_minutes * 60000)}
+                              {formatDate(session.date)} • {formatTime(session.start_time)}
+                              {session.duration_minutes && ` - ${calculateEndTime(session.start_time, session.duration_minutes)}`}
                             </p>
                             {session.location && (
                               <p className="text-sm text-gray-500">📍 {session.location}</p>

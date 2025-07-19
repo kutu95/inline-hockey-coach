@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { useParams, Link, Navigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 
@@ -10,7 +10,11 @@ const OrganisationDetail = () => {
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { hasRole, signOut, userRoles } = useAuth()
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const [hasAccess, setHasAccess] = useState(false)
+  const [checkingAccess, setCheckingAccess] = useState(true)
+  const { hasRole, signOut, userRoles, user } = useAuth()
 
   const handleSignOut = async () => {
     try {
@@ -20,17 +24,125 @@ const OrganisationDetail = () => {
     }
   }
 
+  // Function to get signed URL for player photo
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/')
+      
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0])
+      
+      if (existsError) return null
+      
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) return null
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7)
+      
+      if (error) return null
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      return null
+    }
+  }
+
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
+
   useEffect(() => {
     console.log('OrganizationDetail: orgId =', orgId)
     console.log('OrganizationDetail: params =', params)
     
-    if (orgId && orgId !== 'undefined') {
-      fetchOrganisationData()
-    } else {
-      setError('Invalid organisation ID')
-      setLoading(false)
+    const initializeComponent = async () => {
+      if (orgId && orgId !== 'undefined') {
+        // Check if user has access to this organization
+        const access = await checkUserAccess()
+        setHasAccess(access)
+        
+        if (access) {
+          fetchOrganisationData()
+          fetchPlayerProfile()
+        } else {
+          setError('You do not have access to this organization')
+          setLoading(false)
+        }
+      } else {
+        setError('Invalid organisation ID')
+        setLoading(false)
+      }
+      setCheckingAccess(false)
     }
-  }, [orgId])
+
+    initializeComponent()
+  }, [orgId, user])
+
+  // Check if user has access to this organization
+  const checkUserAccess = async () => {
+    if (!user || !orgId) {
+      return false
+    }
+
+    try {
+      // Superadmin can access any organization
+      if (hasRole('superadmin')) {
+        return true
+      }
+
+      // Check if user belongs to this organization
+      const { data: playerData, error } = await supabase
+        .from('players')
+        .select('organization_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error checking user access:', error)
+        return false
+      }
+
+      return playerData?.organization_id === orgId
+    } catch (err) {
+      console.error('Error in checkUserAccess:', err)
+      return false
+    }
+  }
 
   const fetchOrganisationData = async () => {
     try {
@@ -103,10 +215,35 @@ const OrganisationDetail = () => {
     return hasRole('admin') || hasRole('coach') || hasRole('superadmin')
   }
 
-  if (loading) {
+  // Show loading while checking access or loading data
+  if (loading || checkingAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+
+  // If user doesn't have access, show error with redirect option
+  if (!hasAccess && !error.includes('Invalid organisation ID')) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="bg-white shadow rounded-lg p-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+                <p className="text-gray-600 mb-6">You do not have access to this organization.</p>
+                <Link
+                  to="/dashboard"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                >
+                  Go to Dashboard
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -241,15 +378,39 @@ const OrganisationDetail = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  <div className="text-sm text-gray-500">
-                    Created {new Date(organisation.created_at).toLocaleDateString()}
-                  </div>
+                <div className="flex flex-col items-end space-y-2">
+                  {playerProfile && (
+                    <Link
+                      to={`/organisations/${playerProfile.organization_id}/players/${playerProfile.id}`}
+                      className="hover:opacity-80 transition-opacity flex-shrink-0"
+                    >
+                      {playerProfile.photo_url ? (
+                        <img
+                          src={playerPhotoUrl || playerProfile.photo_url}
+                          alt={`${playerProfile.first_name} ${playerProfile.last_name}`}
+                          className="w-10 h-10 object-cover rounded-full border border-gray-300"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            e.target.nextSibling.style.display = 'flex'
+                          }}
+                          onLoad={(e) => {
+                            e.target.nextSibling.style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center" style={{ display: playerProfile.photo_url ? 'none' : 'flex' }}>
+                          <span className="text-gray-500 text-sm font-medium">
+                            {playerProfile.first_name?.charAt(0)}{playerProfile.last_name?.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                    </Link>
+                  )}
                   <button
                     onClick={handleSignOut}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto"
+                    className="text-red-600 hover:text-red-800 text-sm font-medium transition duration-150 ease-in-out"
                   >
-                    Sign Out
+                    Sign out
                   </button>
                 </div>
               </div>

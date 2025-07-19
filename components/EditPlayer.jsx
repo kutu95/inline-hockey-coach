@@ -7,7 +7,7 @@ import OrganizationHeader from './OrganizationHeader'
 const EditPlayer = () => {
   const { id, orgId } = useParams()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -16,6 +16,8 @@ const EditPlayer = () => {
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState('')
+  const [playerUserId, setPlayerUserId] = useState(null)
+  const [isPlayerEditingOwnProfile, setIsPlayerEditingOwnProfile] = useState(false)
   
   const [formData, setFormData] = useState({
     first_name: '',
@@ -103,6 +105,12 @@ const EditPlayer = () => {
         notes: data.notes || ''
       })
       setCurrentPhotoUrl(data.photo_url || '')
+      setPlayerUserId(data.user_id)
+      
+      // Check if current user is a player editing their own profile
+      const isPlayer = hasRole('player')
+      const isOwnProfile = data.user_id === user.id
+      setIsPlayerEditingOwnProfile(isPlayer && isOwnProfile)
     } catch (err) {
       setError('Failed to fetch player')
       console.error('Error fetching player:', err)
@@ -285,7 +293,10 @@ const EditPlayer = () => {
                     required
                     value={formData.first_name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    readOnly={isPlayerEditingOwnProfile}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                      isPlayerEditingOwnProfile ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                   />
                 </div>
 
@@ -300,7 +311,10 @@ const EditPlayer = () => {
                     required
                     value={formData.last_name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    readOnly={isPlayerEditingOwnProfile}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                      isPlayerEditingOwnProfile ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                   />
                 </div>
 
@@ -329,15 +343,20 @@ const EditPlayer = () => {
                           type="checkbox"
                           checked={formData.accreditations.includes(accreditation)}
                           onChange={() => handleAccreditationChange(accreditation)}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          disabled={isPlayerEditingOwnProfile}
+                          className={`h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded ${
+                            isPlayerEditingOwnProfile ? 'cursor-not-allowed opacity-50' : ''
+                          }`}
                         />
-                        <span className="ml-2 text-sm text-gray-700 capitalize">
+                        <span className={`ml-2 text-sm capitalize ${
+                          isPlayerEditingOwnProfile ? 'text-gray-500' : 'text-gray-700'
+                        }`}>
                           {accreditation}
                         </span>
                       </label>
                     ))}
                   </div>
-                  {formData.accreditations.length === 0 && (
+                  {formData.accreditations.length === 0 && !isPlayerEditingOwnProfile && (
                     <p className="text-sm text-red-600 mt-1">Please select at least one accreditation</p>
                   )}
                 </div>
@@ -470,7 +489,10 @@ const EditPlayer = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    readOnly={isPlayerEditingOwnProfile}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                      isPlayerEditingOwnProfile ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                   />
                 </div>
 
@@ -525,21 +547,23 @@ const EditPlayer = () => {
                   />
                 </div>
 
-                {/* Notes */}
-                <div className="md:col-span-2">
-                  <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes
-                  </label>
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    rows="4"
-                    value={formData.notes}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Any additional notes about the player..."
-                  />
-                </div>
+                {/* Notes - Hidden for players editing their own profile */}
+                {!isPlayerEditingOwnProfile && (
+                  <div className="md:col-span-2">
+                    <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+                      Notes
+                    </label>
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      rows="4"
+                      value={formData.notes}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Any additional notes about the player..."
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                 <button

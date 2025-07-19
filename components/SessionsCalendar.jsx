@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import OrganizationHeader from './OrganizationHeader'
 
 const SessionsCalendar = () => {
   const [sessions, setSessions] = useState([])
+  const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingSession, setEditingSession] = useState(null)
+  const [searchDate, setSearchDate] = useState('')
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const { user } = useAuth()
+  const params = useParams()
+  const orgId = params.orgId // Get organization ID from route params
 
   const [formData, setFormData] = useState({
     title: '',
@@ -19,23 +26,125 @@ const SessionsCalendar = () => {
     date: '',
     start_time: '',
     duration_minutes: '',
-    location: '',
+    location_id: '',
     notes: ''
   })
 
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]) // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null
+      }
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      // Silently skip if there's an error
+      return null
+    }
+  }
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
+
   useEffect(() => {
-    fetchSessions()
-  }, [])
+    if (orgId && orgId !== 'undefined') {
+      fetchSessions()
+      fetchPlayerProfile()
+    }
+  }, [orgId])
 
   const fetchSessions = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
+      let query = supabase
         .from('sessions')
-        .select('*')
-        .eq('coach_id', user.id)
+        .select(`
+          *,
+          session_squads (
+            squad_id,
+            squads (
+              id,
+              name
+            )
+          ),
+          locations (
+            id,
+            name
+          )
+        `)
         .order('date', { ascending: true })
         .order('start_time', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // Otherwise, filter by coach_id (single tenant)
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { data, error } = await query
 
       if (error) throw error
       setSessions(data || [])
@@ -44,6 +153,33 @@ const SessionsCalendar = () => {
       console.error('Error fetching sessions:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchLocations = async () => {
+    try {
+      let query = supabase
+        .from('locations')
+        .select('*')
+        .order('name', { ascending: true })
+
+      // If we're in an organization context, filter by organization_id
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        // For single tenant, we'll need to handle this differently
+        // since locations are organization-scoped
+        console.log('No organization context for locations')
+        setLocations([])
+        return
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setLocations(data || [])
+    } catch (err) {
+      console.error('Error fetching locations:', err)
     }
   }
 
@@ -62,7 +198,7 @@ const SessionsCalendar = () => {
       date: '',
       start_time: '',
       duration_minutes: '',
-      location: '',
+      location_id: '',
       notes: ''
     })
     setEditingSession(null)
@@ -72,7 +208,7 @@ const SessionsCalendar = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!formData.title || !formData.date || !formData.start_time || !formData.duration_minutes || !formData.location) {
+    if (!formData.title || !formData.date || !formData.start_time || !formData.duration_minutes || !formData.location_id) {
       setError('Please fill in all required fields')
       return
     }
@@ -85,25 +221,37 @@ const SessionsCalendar = () => {
         date: formData.date,
         start_time: formData.start_time,
         duration_minutes: parseInt(formData.duration_minutes),
-        location: formData.location.trim(),
+        location_id: formData.location_id,
         notes: formData.notes.trim() || null
       }
 
+      if (orgId) {
+        sessionData.organization_id = orgId
+      }
+
       if (editingSession) {
-        const { error } = await supabase
+        let query = supabase
           .from('sessions')
           .update(sessionData)
           .eq('id', editingSession.id)
-          .eq('coach_id', user.id)
+        
+        if (orgId) {
+          query = query.eq('organization_id', orgId)
+        } else {
+          query = query.eq('coach_id', user.id)
+        }
 
+        const { error } = await query
         if (error) throw error
       } else {
+        const insertData = {
+          ...sessionData,
+          ...(orgId ? { organization_id: orgId } : { coach_id: user.id })
+        }
+
         const { error } = await supabase
           .from('sessions')
-          .insert({
-            ...sessionData,
-            coach_id: user.id
-          })
+          .insert(insertData)
 
         if (error) throw error
       }
@@ -124,7 +272,7 @@ const SessionsCalendar = () => {
       date: session.date || '',
       start_time: session.start_time || '',
       duration_minutes: session.duration_minutes || '',
-      location: session.location || '',
+      location_id: session.location_id || '',
       notes: session.notes || ''
     })
     setShowAddForm(true)
@@ -134,11 +282,18 @@ const SessionsCalendar = () => {
     if (!confirm('Are you sure you want to delete this session?')) return
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('sessions')
         .delete()
         .eq('id', sessionId)
-        .eq('coach_id', user.id)
+      
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        query = query.eq('coach_id', user.id)
+      }
+
+      const { error } = await query
 
       if (error) throw error
       
@@ -182,6 +337,21 @@ const SessionsCalendar = () => {
 
   const getNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
+  }
+
+  const handleDateSearch = () => {
+    if (searchDate) {
+      const searchDateObj = new Date(searchDate)
+      setCurrentDate(searchDateObj)
+      setSelectedDate(searchDateObj)
+      setSearchDate('')
+    }
+  }
+
+  const goToToday = () => {
+    const today = new Date()
+    setCurrentDate(today)
+    setSelectedDate(today)
   }
 
   const getSessionsForDate = (date) => {
@@ -282,35 +452,44 @@ const SessionsCalendar = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+                      {orgId && <OrganizationHeader title="Sessions Calendar" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
-                  >
-                    ← Back to Dashboard
-                  </Link>
+              {orgId ? (
+                <div className="flex items-center justify-between">
                   <h1 className="text-3xl font-bold text-gray-900">Sessions Calendar</h1>
+                  <div className="flex space-x-3">
+                    <Link
+                      to={`/organisations/${orgId}/sessions`}
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      List View
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex space-x-3">
-                  <Link
-                    to="/sessions"
-                    className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    List View
-                  </Link>
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Session
-                  </button>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      ← Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-gray-900">Sessions Calendar</h1>
+                  </div>
+                  <div className="flex space-x-3">
+                    <Link
+                      to="/sessions"
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      List View
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {error && (
@@ -324,21 +503,46 @@ const SessionsCalendar = () => {
             <div className="px-6 py-4">
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-6">
-                <button
-                  onClick={getPreviousMonth}
-                  className="p-2 hover:bg-gray-100 rounded-md"
-                >
-                  ← Previous
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={getPreviousMonth}
+                    className="p-2 hover:bg-gray-100 rounded-md"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    onClick={goToToday}
+                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Today
+                  </button>
+                </div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </h2>
-                <button
-                  onClick={getNextMonth}
-                  className="p-2 hover:bg-gray-100 rounded-md"
-                >
-                  Next →
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={getNextMonth}
+                    className="p-2 hover:bg-gray-100 rounded-md"
+                  >
+                    Next →
+                  </button>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="date"
+                      value={searchDate}
+                      onChange={(e) => setSearchDate(e.target.value)}
+                      className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      placeholder="Search date"
+                    />
+                    <button
+                      onClick={handleDateSearch}
+                      className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    >
+                      Go
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Calendar Grid */}
@@ -378,7 +582,7 @@ const SessionsCalendar = () => {
                               <h4 className="font-semibold text-gray-900">{session.title}</h4>
                               <div className="text-sm text-gray-600 mt-1">
                                 <div>Time: {formatTime(session.start_time)} - {getEndTime(session.start_time, session.duration_minutes)}</div>
-                                <div>Location: {session.location}</div>
+                                <div>Location: {session.locations?.name || session.location || 'No location'}</div>
                                 <div>Duration: {session.duration_minutes} minutes</div>
                                 {session.description && (
                                   <div className="mt-2">Description: {session.description}</div>
@@ -387,7 +591,7 @@ const SessionsCalendar = () => {
                             </div>
                             <div className="flex space-x-2 ml-4">
                               <Link
-                                to={`/sessions/${session.id}/attendance`}
+                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                               >
                                 Take Attendance
@@ -438,19 +642,35 @@ const SessionsCalendar = () => {
                       </div>
 
                       <div>
-                        <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="location_id" className="block text-sm font-medium text-gray-700 mb-2">
                           Location *
                         </label>
-                        <input
-                          type="text"
-                          id="location"
-                          name="location"
-                          required
-                          value={formData.location}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="e.g., Main Arena"
-                        />
+                        {locations.length === 0 ? (
+                          <div className="text-sm text-gray-500">
+                            No locations available. 
+                            {orgId && (
+                              <Link to={`/organisations/${orgId}/locations`} className="text-indigo-600 hover:text-indigo-800 ml-1">
+                                Create locations first
+                              </Link>
+                            )}
+                          </div>
+                        ) : (
+                          <select
+                            id="location_id"
+                            name="location_id"
+                            required
+                            value={formData.location_id}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          >
+                            <option value="">Select a location</option>
+                            {locations.map((location) => (
+                              <option key={location.id} value={location.id}>
+                                {location.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </div>
 
                       <div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../src/lib/supabase';
+import { useAuth } from '../src/contexts/AuthContext';
 import OrganizationHeader from './OrganizationHeader';
 
 const Locations = () => {
@@ -14,12 +15,96 @@ const Locations = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    website_url: ''
+    website_url: '',
+    google_maps_pin: ''
   });
+  const [playerProfile, setPlayerProfile] = useState(null);
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchLocations();
+    if (orgId) {
+      fetchPlayerProfile();
+    }
   }, [orgId]);
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null;
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/');
+      if (urlParts.length < 2) return null;
+      
+      const filePath = urlParts.slice(-2).join('/'); // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]); // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null;
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1];
+      const fileExists = existsData?.some(file => file.name === fileName);
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null;
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null;
+      }
+      
+      return data?.signedUrl || null;
+    } catch (err) {
+      // Silently skip if there's an error
+      return null;
+    }
+  };
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching player profile:', error);
+        return;
+      }
+
+      if (data) {
+        setPlayerProfile(data);
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url);
+          setPlayerPhotoUrl(signedUrl);
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err);
+    }
+  };
 
   const fetchLocations = async () => {
     try {
@@ -63,7 +148,7 @@ const Locations = () => {
         if (error) throw error;
       }
 
-      setFormData({ name: '', description: '', website_url: '' });
+      setFormData({ name: '', description: '', website_url: '', google_maps_pin: '' });
       setEditingLocation(null);
       setShowAddForm(false);
       fetchLocations();
@@ -78,7 +163,8 @@ const Locations = () => {
     setFormData({
       name: location.name,
       description: location.description || '',
-      website_url: location.website_url || ''
+      website_url: location.website_url || '',
+      google_maps_pin: location.google_maps_pin || ''
     });
     setShowAddForm(true);
   };
@@ -101,7 +187,7 @@ const Locations = () => {
   };
 
   const handleCancel = () => {
-    setFormData({ name: '', description: '', website_url: '' });
+    setFormData({ name: '', description: '', website_url: '', google_maps_pin: '' });
     setEditingLocation(null);
     setShowAddForm(false);
   };
@@ -109,7 +195,7 @@ const Locations = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <OrganizationHeader organizationId={orgId} />
+        <OrganizationHeader title="Locations" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
@@ -126,7 +212,7 @@ const Locations = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <OrganizationHeader organizationId={orgId} />
+      <OrganizationHeader title="Locations" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
@@ -192,6 +278,21 @@ const Locations = () => {
                     placeholder="https://yourwebsite.com"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Google Maps Pin
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.google_maps_pin}
+                    onChange={(e) => setFormData({ ...formData, google_maps_pin: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Enter Google Maps place ID or coordinates"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter a Google Maps place ID, coordinates (lat,lng), or custom pin data
+                  </p>
+                </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                 <button
@@ -243,6 +344,19 @@ const Locations = () => {
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                         </svg>
                         Website
+                      </a>
+                    )}
+                    {location.google_maps_pin && (
+                      <a
+                        href={location.google_maps_pin.startsWith('http') ? location.google_maps_pin : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.google_maps_pin)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-green-600 hover:text-green-800 text-sm mt-1"
+                      >
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        View on Google Maps
                       </a>
                     )}
                     <p className="text-sm text-gray-500 mt-2">

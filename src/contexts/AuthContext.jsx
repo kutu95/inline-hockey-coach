@@ -21,43 +21,72 @@ export function AuthProvider({ children }) {
   const previousUserRef = useRef(null)
 
   const fetchUserRoles = async (userId) => {
-    if (!userId) {
-      return []
-    }
-
     // Check cache first
-    if (roleCache.has(userId)) {
-      return roleCache.get(userId)
-    }
-
-    // Prevent duplicate fetches
-    if (fetchingRoles) {
-      return []
+    const cachedRoles = roleCache.get(userId)
+    if (cachedRoles) {
+      return cachedRoles
     }
 
     setFetchingRoles(true)
-
+    
     try {
-      // Add timeout to prevent hanging (reduced to 2 seconds since RPC should be fast)
+      console.log('Fetching roles for user:', userId)
+      
+      // Reduce timeout to 1 second for faster loading
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Role fetch timeout')), 2000)
+        setTimeout(() => reject(new Error('Role fetch timeout')), 1000)
       })
 
       const fetchPromise = async () => {
+        console.log('Starting user_roles query...')
+        const startTime = Date.now()
+        
         try {
-          // Use RPC function directly since direct query has RLS issues
-          const { data: roleNames, error } = await supabase.rpc('get_user_roles_safe', {
-            user_uuid: userId
-          })
+          // Use a simpler query to avoid RLS recursion issues
+          const { data: userRolesData, error: userRolesError } = await supabase
+            .from('user_roles')
+            .select('role_id')
+            .eq('user_id', userId)
           
-          if (error) {
-            console.error('RPC function failed:', error)
+          const endTime = Date.now()
+          console.log(`user_roles query took ${endTime - startTime}ms`)
+          console.log('user_roles query completed:', { data: userRolesData, error: userRolesError })
+          
+          if (userRolesError) {
+            console.error('User roles query failed:', userRolesError)
+            // Return empty array instead of throwing
             return []
           }
           
-          return Array.isArray(roleNames) ? roleNames : []
-        } catch (err) {
-          console.error('Exception in fetchPromise:', err)
+          if (!userRolesData || userRolesData.length === 0) {
+            console.log('No roles found for user')
+            return []
+          }
+          
+          console.log('Starting roles query...')
+          const startTime2 = Date.now()
+          // Get role names for the role IDs
+          const roleIds = userRolesData.map(ur => ur.role_id)
+          const { data: rolesData, error: rolesError } = await supabase
+            .from('roles')
+            .select('name')
+            .in('id', roleIds)
+          
+          const endTime2 = Date.now()
+          console.log(`roles query took ${endTime2 - startTime2}ms`)
+          console.log('roles query completed:', { data: rolesData, error: rolesError })
+          
+          if (rolesError) {
+            console.error('Roles query failed:', rolesError)
+            // Return empty array instead of throwing
+            return []
+          }
+          
+          const roles = rolesData?.map(r => r.name).filter(Boolean) || []
+          console.log('Roles fetched successfully:', roles)
+          return roles
+        } catch (error) {
+          console.error('Unexpected error in fetchUserRoles:', error)
           return []
         }
       }
@@ -66,13 +95,14 @@ export function AuthProvider({ children }) {
       
       // Cache the result
       setRoleCache(prev => new Map(prev).set(userId, roles))
-      
       return roles
+      
     } catch (err) {
       console.error('Error fetching user roles:', err)
-      // Cache empty array to prevent repeated timeouts
-      setRoleCache(prev => new Map(prev).set(userId, []))
-      return []
+      // Return empty array if no roles found or error occurred
+      const emptyRoles = []
+      setRoleCache(prev => new Map(prev).set(userId, emptyRoles))
+      return emptyRoles
     } finally {
       setFetchingRoles(false)
     }
@@ -116,19 +146,22 @@ export function AuthProvider({ children }) {
         previousUserRef.current = currentUser
         
         if (currentUser) {
-          try {
-            const roles = await fetchUserRoles(currentUser.id)
+          // Set loading to false immediately to allow UI to render
+          setLoading(false)
+          // Start role fetching in background without waiting
+          fetchUserRoles(currentUser.id).then(roles => {
             if (mounted) {
               setUserRoles(roles)
             }
-          } catch (err) {
+          }).catch(err => {
             if (mounted) {
-              setUserRoles([])
+              console.log('Role fetch failed, keeping empty roles')
             }
-          }
+          })
         } else {
           if (mounted) {
             setUserRoles([])
+            setLoading(false)
           }
         }
       } catch (error) {
@@ -136,9 +169,6 @@ export function AuthProvider({ children }) {
         if (mounted) {
           setUser(null)
           setUserRoles([])
-        }
-      } finally {
-        if (mounted) {
           setLoading(false)
         }
       }
@@ -163,18 +193,18 @@ export function AuthProvider({ children }) {
             setUserRoles([])
             setLoading(false)
           } else {
-            try {
-              const roles = await fetchUserRoles(currentUser.id)
+            // Set loading to false immediately to allow UI to render
+            setLoading(false)
+            // Start role fetching in background without waiting
+            fetchUserRoles(currentUser.id).then(roles => {
               if (mounted) {
                 setUserRoles(roles)
-                setLoading(false)
               }
-            } catch (err) {
+            }).catch(err => {
               if (mounted) {
-                setUserRoles([])
-                setLoading(false)
+                console.log('Role fetch failed, keeping empty roles')
               }
-            }
+            })
           }
         }
         // For token refresh events (TOKEN_REFRESHED), just update the user object without refetching roles

@@ -19,6 +19,7 @@ import OrganizationAttendance from '../components/OrganizationAttendance'
 import SessionPlanner from '../components/SessionPlanner'
 import SessionPDFExport from '../components/SessionPDFExport'
 import ViewSession from '../components/ViewSession'
+import EditSession from '../components/EditSession'
 import Drills from '../components/Drills'
 import EditDrill from '../components/EditDrill'
 import AddDrill from '../components/AddDrill'
@@ -31,6 +32,8 @@ import Reports from '../components/Reports'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import RoleBasedRedirect from '../components/RoleBasedRedirect'
 import UserRoleManagement from '../components/UserRoleManagement'
+import PlayerEditRoute from '../components/PlayerEditRoute'
+import OrganizationPlayerEditRoute from '../components/OrganizationPlayerEditRoute'
 import './App.css'
 
 // Protected Route Component
@@ -73,6 +76,16 @@ const PublicRoute = ({ children }) => {
   if (user && userRoles.length === 0 && !loading) {
     console.log('PublicRoute: User exists but has no roles, redirecting to dashboard')
     return <Navigate to="/dashboard" replace />
+  }
+  
+  // If user exists but we're still loading roles, show loading
+  if (user && loading) {
+    console.log('PublicRoute: User exists but still loading roles')
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
   }
   
   // If no user, show the login page
@@ -161,9 +174,9 @@ function App() {
             <Route 
               path="/organisations/:orgId/players/:id/edit" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                <OrganizationPlayerEditRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <EditPlayer />
-                </RoleProtectedRoute>
+                </OrganizationPlayerEditRoute>
               } 
             />
             <Route 
@@ -247,6 +260,14 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/sessions/:sessionId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin']}>
+                  <EditSession />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/sessions/:sessionId" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
@@ -259,6 +280,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <SessionPlanner />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/sessions/calendar" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
+                  <SessionsCalendar />
                 </RoleProtectedRoute>
               } 
             />
@@ -341,9 +370,9 @@ function App() {
             <Route 
               path="/players/:id/edit" 
               element={
-                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                <PlayerEditRoute requiredRoles={['coach', 'admin']}>
                   <EditPlayer />
-                </RoleProtectedRoute>
+                </PlayerEditRoute>
               } 
             />
             <Route 
@@ -399,6 +428,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <SessionAttendance />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['admin']}>
+                  <EditSession />
                 </RoleProtectedRoute>
               } 
             />

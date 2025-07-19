@@ -15,6 +15,7 @@ const ViewSession = () => {
   
   // Determine user permissions
   const canEditPlan = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
+  const canEditSession = hasRole('superadmin') || hasRole('admin')
   const params = useParams()
   const navigate = useNavigate()
   const sessionId = params.sessionId
@@ -202,6 +203,14 @@ const ViewSession = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Session Details</h1>
                   </div>
                   <div className="flex space-x-2">
+                    {canEditSession && (
+                      <Link
+                        to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/edit` : `/sessions/${sessionId}/edit`}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                      >
+                        Edit Session
+                      </Link>
+                    )}
                     {canEditPlan && (
                       <Link
                         to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/planner` : `/sessions/${sessionId}/planner`}
@@ -230,6 +239,14 @@ const ViewSession = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Session Details</h1>
                   </div>
                   <div className="flex space-x-2">
+                    {canEditSession && (
+                      <Link
+                        to={`/sessions/${sessionId}/edit`}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                      >
+                        Edit Session
+                      </Link>
+                    )}
                     {canEditPlan && (
                       <Link
                         to={`/sessions/${sessionId}/planner`}

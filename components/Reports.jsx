@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../src/lib/supabase";
+import { useAuth } from "../src/contexts/AuthContext";
 import OrganizationHeader from "./OrganizationHeader";
 
 const Reports = () => {
@@ -16,11 +17,94 @@ const Reports = () => {
     totalClubs: 0,
     totalLocations: 0
   });
+  const [playerProfile, setPlayerProfile] = useState(null);
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchOrganizationData();
     fetchStats();
+    if (orgId) {
+      fetchPlayerProfile();
+    }
   }, [orgId]);
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null;
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/');
+      if (urlParts.length < 2) return null;
+      
+      const filePath = urlParts.slice(-2).join('/'); // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]); // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null;
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1];
+      const fileExists = existsData?.some(file => file.name === fileName);
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null;
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null;
+      }
+      
+      return data?.signedUrl || null;
+    } catch (err) {
+      // Silently skip if there's an error
+      return null;
+    }
+  };
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching player profile:', error);
+        return;
+      }
+
+      if (data) {
+        setPlayerProfile(data);
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url);
+          setPlayerPhotoUrl(signedUrl);
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err);
+    }
+  };
 
   const fetchOrganizationData = async () => {
     try {
@@ -99,7 +183,7 @@ const Reports = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <OrganizationHeader organization={organization} />
+              <OrganizationHeader title="Reports" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">

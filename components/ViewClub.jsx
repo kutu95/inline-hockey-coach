@@ -6,25 +6,46 @@ import OrganizationHeader from './OrganizationHeader';
 import { getAccreditationBadges, calculateAge } from '../src/utils/formatters';
 
 const ViewClub = () => {
-  const params = useParams();
-  const clubId = params.id;
-  const orgId = params.orgId;
+  const { orgId, id: clubId } = useParams();
   const [club, setClub] = useState(null);
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const { user, hasRole } = useAuth();
+  const [error, setError] = useState(null);
+  const [playerProfile, setPlayerProfile] = useState(null);
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null);
+  const { user } = useAuth();
+  
+  // Debug logging
+  console.log('ViewClub: orgId =', orgId);
+  console.log('ViewClub: clubId =', clubId);
   
   // Determine user permissions
-  const canAddPlayers = hasRole('superadmin') || hasRole('admin') || hasRole('coach');
+  const canAddPlayers = user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'coach';
 
   useEffect(() => {
-    if (clubId) {
-      fetchClubData();
+    console.log('ViewClub useEffect triggered with clubId:', clubId, 'orgId:', orgId);
+    if (clubId && clubId !== 'undefined') {
+      console.log('Calling fetchClub and fetchPlayers');
+      fetchClub();
+      fetchPlayers();
+    } else {
+      console.log('clubId is not valid, skipping fetchClub and fetchPlayers');
     }
-  }, [clubId]);
+    if (orgId && orgId !== 'undefined') {
+      console.log('Calling fetchPlayerProfile');
+      fetchPlayerProfile();
+    } else {
+      console.log('orgId is not valid, skipping fetchPlayerProfile');
+    }
+  }, [clubId, orgId]);
 
-  const fetchClubData = async () => {
+  const fetchClub = async () => {
+    console.log('fetchClub called with clubId:', clubId);
+    if (!clubId || clubId === 'undefined') {
+      console.log('clubId is undefined, skipping fetchClub');
+      return;
+    }
+    
     try {
       setLoading(true);
       
@@ -38,7 +59,22 @@ const ViewClub = () => {
       if (clubError) throw clubError;
       setClub(clubData);
 
-      // Fetch players in this club
+    } catch (err) {
+      console.error('Error fetching club data:', err);
+      setError('Failed to fetch club data: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPlayers = async () => {
+    console.log('fetchPlayers called with clubId:', clubId);
+    if (!clubId || clubId === 'undefined') {
+      console.log('clubId is undefined, skipping fetchPlayers');
+      return;
+    }
+    
+    try {
       const { data: playersData, error: playersError } = await supabase
         .from('players')
         .select('*')
@@ -50,10 +86,85 @@ const ViewClub = () => {
       setPlayers(playersData || []);
 
     } catch (err) {
-      console.error('Error fetching club data:', err);
-      setError('Failed to fetch club data: ' + err.message);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching players:', err);
+      setError('Failed to fetch players: ' + err.message);
+    }
+  };
+
+  // Function to get signed URL for player photos
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    // Only process URLs that are from Supabase storage
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null;
+    }
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/');
+      if (urlParts.length < 2) return null;
+      
+      const filePath = urlParts.slice(-2).join('/'); // Get user_id/filename
+      
+      // First check if the file exists
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0]); // List files in the user directory
+      
+      if (existsError) {
+        // Silently skip if we can't check file existence
+        return null;
+      }
+      
+      // Check if the file exists in the list
+      const fileName = filePath.split('/')[1];
+      const fileExists = existsData?.some(file => file.name === fileName);
+      
+      if (!fileExists) {
+        // Silently skip missing files - this is expected for some records
+        return null;
+      }
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days expiry
+      
+      if (error) {
+        // Silently skip if we can't get signed URL
+        return null;
+      }
+      
+      return data?.signedUrl || null;
+    } catch (err) {
+      // Silently skip if there's an error
+      return null;
+    }
+  };
+
+  // Fetch current user's player profile
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching player profile:', error);
+        return;
+      }
+
+      if (data) {
+        setPlayerProfile(data);
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url);
+          setPlayerPhotoUrl(signedUrl);
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err);
     }
   };
 
@@ -67,7 +178,7 @@ const ViewClub = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <OrganizationHeader organizationId={orgId} />
+        <OrganizationHeader organizationId={orgId} showBackButton={false} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
@@ -85,7 +196,7 @@ const ViewClub = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <OrganizationHeader organizationId={orgId} />
+        <OrganizationHeader organizationId={orgId} showBackButton={false} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white shadow rounded-lg p-6">
             <div className="text-center">
@@ -107,7 +218,7 @@ const ViewClub = () => {
   if (!club) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <OrganizationHeader organizationId={orgId} />
+        <OrganizationHeader organizationId={orgId} showBackButton={false} />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white shadow rounded-lg p-6">
             <div className="text-center">
@@ -128,7 +239,12 @@ const ViewClub = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <OrganizationHeader organizationId={orgId} />
+              <OrganizationHeader 
+          title="Club Details" 
+          showBackButton={false} 
+          playerProfile={playerProfile} 
+          playerPhotoUrl={playerPhotoUrl}
+        />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white shadow rounded-lg mb-6">

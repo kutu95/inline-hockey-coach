@@ -11,7 +11,71 @@ const Organisations = () => {
   const [editingOrg, setEditingOrg] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [logoPreview, setLogoPreview] = useState(null)
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const { hasRole, userRoles, signOut, user } = useAuth()
+
+  // Function to get signed URL for player photo
+  const getSignedUrlForPlayerPhoto = async (url) => {
+    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      return null
+    }
+    
+    try {
+      const urlParts = url.split('/')
+      if (urlParts.length < 2) return null
+      
+      const filePath = urlParts.slice(-2).join('/')
+      
+      const { data: existsData, error: existsError } = await supabase.storage
+        .from('player-photos')
+        .list(filePath.split('/')[0])
+      
+      if (existsError) return null
+      
+      const fileName = filePath.split('/')[1]
+      const fileExists = existsData?.some(file => file.name === fileName)
+      
+      if (!fileExists) return null
+      
+      const { data, error } = await supabase.storage
+        .from('player-photos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7)
+      
+      if (error) return null
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      return null
+    }
+  }
+
+  const fetchPlayerProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id, first_name, last_name, photo_url')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+        
+        // Get signed URL for photo if it exists
+        if (data.photo_url) {
+          const signedUrl = await getSignedUrlForPlayerPhoto(data.photo_url)
+          setPlayerPhotoUrl(signedUrl)
+        }
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    }
+  }
 
   const handleSignOut = async () => {
     try {
@@ -57,6 +121,7 @@ const Organisations = () => {
 
   useEffect(() => {
     fetchOrganisations()
+    fetchPlayerProfile()
   }, [])
 
   const handleSubmit = async (e) => {
@@ -272,9 +337,6 @@ const Organisations = () => {
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">Organisations</h1>
                     <p className="text-gray-600 mt-1">Manage hockey organisations</p>
-                    {user && (
-                      <p className="text-xs text-gray-400 mt-1">Logged in as: {user.email}</p>
-                    )}
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -284,12 +346,41 @@ const Organisations = () => {
                   >
                     Add Organisation
                   </button>
-                  <button
-                    onClick={handleSignOut}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Sign Out
-                  </button>
+                  <div className="flex flex-col items-end space-y-2">
+                    {playerProfile && (
+                      <Link
+                        to={`/organisations/${playerProfile.organization_id}/players/${playerProfile.id}`}
+                        className="hover:opacity-80 transition-opacity flex-shrink-0"
+                      >
+                        {playerProfile.photo_url ? (
+                          <img
+                            src={playerPhotoUrl || playerProfile.photo_url}
+                            alt={`${playerProfile.first_name} ${playerProfile.last_name}`}
+                            className="w-10 h-10 object-cover rounded-full border border-gray-300"
+                            onError={(e) => {
+                              e.target.style.display = 'none'
+                              e.target.nextSibling.style.display = 'flex'
+                            }}
+                            onLoad={(e) => {
+                              e.target.nextSibling.style.display = 'none'
+                            }}
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center" style={{ display: playerProfile.photo_url ? 'none' : 'flex' }}>
+                            <span className="text-gray-500 text-sm font-medium">
+                              {playerProfile.first_name?.charAt(0)}{playerProfile.last_name?.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleSignOut}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium transition duration-150 ease-in-out"
+                    >
+                      Sign out
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
