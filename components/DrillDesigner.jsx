@@ -2253,10 +2253,10 @@ const DrillDesigner = () => {
                   {/* Goals */}
                   {/* Left Goal */}
                   <Rect
-                    x={mToPx(4.5) - mToPxY(1)}
-                    y={canvasHeight / 2 - mToPx(0.9)}
-                    width={mToPxY(1)}
-                    height={mToPx(1.8)}
+                    x={mToPx(4.5) - mToPxY(1.5)}
+                    y={canvasHeight / 2 - mToPx(1.35)}
+                    width={mToPxY(1.5)}
+                    height={mToPx(2.7)}
                     fill="#FFFFFF"
                     stroke="#000000"
                     strokeWidth={2}
@@ -2266,9 +2266,9 @@ const DrillDesigner = () => {
                   {/* Right Goal */}
                   <Rect
                     x={canvasWidth - mToPx(4.5)}
-                    y={canvasHeight / 2 - mToPx(0.9)}
-                    width={mToPxY(1)}
-                    height={mToPx(1.8)}
+                    y={canvasHeight / 2 - mToPx(1.35)}
+                    width={mToPxY(1.5)}
+                    height={mToPx(2.7)}
                     fill="#FFFFFF"
                     stroke="#000000"
                     strokeWidth={2}
