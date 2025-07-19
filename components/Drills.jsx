@@ -135,7 +135,7 @@ const Drills = () => {
   useEffect(() => {
     fetchDrills()
     fetchOrganizations()
-  }, [])
+  }, [orgId])
 
   // Function to get signed URL for drill images
   const getSignedUrl = async (url) => {

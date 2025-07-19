@@ -2115,8 +2115,8 @@ const DrillDesigner = () => {
                   <Rect
                     x={0}
                     y={0}
-                    width={rinkWidth}
-                    height={rinkHeight}
+                    width={canvasWidth}
+                    height={canvasHeight}
                     fill={rinkColor}
                     cornerRadius={mToPx(cornerRadius)}
                     listening={false}
@@ -2126,8 +2126,8 @@ const DrillDesigner = () => {
                   <Rect
                     x={0}
                     y={0}
-                    width={rinkWidth}
-                    height={rinkHeight}
+                    width={canvasWidth}
+                    height={canvasHeight}
                     stroke={borderColor}
                     strokeWidth={3}
                     fill="transparent"
@@ -2137,7 +2137,7 @@ const DrillDesigner = () => {
 
                   {/* Center Line */}
                   <Line
-                    points={[rinkWidth / 2, 0, rinkWidth / 2, rinkHeight]}
+                    points={[canvasWidth / 2, 0, canvasWidth / 2, canvasHeight]}
                     stroke={lineColor}
                     strokeWidth={3}
                     listening={false}
@@ -2145,8 +2145,8 @@ const DrillDesigner = () => {
 
                   {/* Face-off Circles */}
                   <Circle
-                    x={rinkWidth / 2}
-                    y={rinkHeight / 2}
+                    x={canvasWidth / 2}
+                    y={canvasHeight / 2}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2161,7 +2161,7 @@ const DrillDesigner = () => {
                     listening={false}
                   />
                   <Circle
-                    x={rinkWidth - mToPx(10)}
+                    x={canvasWidth - mToPx(10)}
                     y={mToPxY(5)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
@@ -2170,15 +2170,15 @@ const DrillDesigner = () => {
                   />
                   <Circle
                     x={mToPx(10)}
-                    y={rinkHeight - mToPxY(5)}
+                    y={canvasHeight - mToPxY(5)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
                     listening={false}
                   />
                   <Circle
-                    x={rinkWidth - mToPx(10)}
-                    y={rinkHeight - mToPxY(5)}
+                    x={canvasWidth - mToPx(10)}
+                    y={canvasHeight - mToPxY(5)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2198,7 +2198,7 @@ const DrillDesigner = () => {
 
                   {/* Top Right Face-off Circle */}
                   <Rect
-                    x={rinkWidth - mToPx(10) - mToPx(0.3)}
+                    x={canvasWidth - mToPx(10) - mToPx(0.3)}
                     y={mToPxY(5) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
@@ -2209,7 +2209,7 @@ const DrillDesigner = () => {
                   {/* Bottom Left Face-off Circle */}
                   <Rect
                     x={mToPx(10) - mToPx(0.3)}
-                    y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
+                    y={canvasHeight - mToPxY(5) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
@@ -2218,8 +2218,8 @@ const DrillDesigner = () => {
 
                   {/* Bottom Right Face-off Circle */}
                   <Rect
-                    x={rinkWidth - mToPx(10) - mToPx(0.3)}
-                    y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
+                    x={canvasWidth - mToPx(10) - mToPx(0.3)}
+                    y={canvasHeight - mToPxY(5) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
@@ -2228,8 +2228,8 @@ const DrillDesigner = () => {
 
                   {/* Center Ice Hash Mark */}
                   <Rect
-                    x={rinkWidth / 2 - mToPx(0.3)}
-                    y={rinkHeight / 2 - mToPxY(0.3)}
+                    x={canvasWidth / 2 - mToPx(0.3)}
+                    y={canvasHeight / 2 - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill="#0000FF"
@@ -2238,13 +2238,13 @@ const DrillDesigner = () => {
 
                   {/* Goal Lines */}
                   <Line
-                    points={[mToPx(2.5), 10, mToPx(2.5), rinkHeight - 10]}
+                    points={[mToPx(2.5), 10, mToPx(2.5), canvasHeight - 10]}
                     stroke={lineColor}
                     strokeWidth={3}
                     listening={false}
                   />
                   <Line
-                    points={[rinkWidth - mToPx(2.5), 10, rinkWidth - mToPx(2.5), rinkHeight - 10]}
+                    points={[canvasWidth - mToPx(2.5), 10, canvasWidth - mToPx(2.5), canvasHeight - 10]}
                     stroke={lineColor}
                     strokeWidth={3}
                     listening={false}
@@ -2254,7 +2254,7 @@ const DrillDesigner = () => {
                   {/* Left Goal */}
                   <Rect
                     x={mToPx(2.5) - mToPxY(1)}
-                    y={rinkHeight / 2 - mToPx(0.9)}
+                    y={canvasHeight / 2 - mToPx(0.9)}
                     width={mToPxY(1)}
                     height={mToPx(1.8)}
                     fill="#FFFFFF"
@@ -2265,8 +2265,8 @@ const DrillDesigner = () => {
 
                   {/* Right Goal */}
                   <Rect
-                    x={rinkWidth - mToPx(2.5)}
-                    y={rinkHeight / 2 - mToPx(0.9)}
+                    x={canvasWidth - mToPx(2.5)}
+                    y={canvasHeight / 2 - mToPx(0.9)}
                     width={mToPxY(1)}
                     height={mToPx(1.8)}
                     fill="#FFFFFF"
@@ -2277,15 +2277,15 @@ const DrillDesigner = () => {
 
                   {/* Neutral Zone Dots */}
                   <Circle
-                    x={rinkWidth / 2}
+                    x={canvasWidth / 2}
                     y={mToPxY(3)}
                     radius={mToPx(0.3)}
                     fill={lineColor}
                     listening={false}
                   />
                   <Circle
-                    x={rinkWidth / 2}
-                    y={rinkHeight - mToPxY(3)}
+                    x={canvasWidth / 2}
+                    y={canvasHeight - mToPxY(3)}
                     radius={mToPx(0.3)}
                     fill={lineColor}
                     listening={false}
@@ -2293,8 +2293,8 @@ const DrillDesigner = () => {
 
                   {/* Center Ice Dot */}
                   <Circle
-                    x={rinkWidth / 2}
-                    y={rinkHeight / 2}
+                    x={canvasWidth / 2}
+                    y={canvasHeight / 2}
                     radius={mToPx(0.3)}
                     fill={lineColor}
                     listening={false}
