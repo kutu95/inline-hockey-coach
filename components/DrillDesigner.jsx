@@ -7,7 +7,7 @@ import { Link, useParams } from 'react-router-dom'
 const DrillDesigner = () => {
   const { orgId } = useParams()
   const [selectedTool, setSelectedTool] = useState('puck')
-  const [selectedColor, setSelectedColor] = useState('#FF0000')
+  const [selectedColor, setSelectedColor] = useState('#ff0000')
   const [elements, setElements] = useState([])
   const [selectedElement, setSelectedElement] = useState(null)
   const [isDrawing, setIsDrawing] = useState(false)
@@ -40,6 +40,8 @@ const DrillDesigner = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [canvasScale, setCanvasScale] = useState(1)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [selectedPlayer, setSelectedPlayer] = useState('player')
+  const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
   
   const stageRef = useRef()
   const animationRef = useRef()
@@ -92,18 +94,30 @@ const DrillDesigner = () => {
     goalie2.src = '/images/goalie-silhouette2.png'
   }, [])
 
-  // Mobile responsiveness detection
+  // Mobile detection effect
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
-      setCanvasScale(mobile ? 0.6 : 1)
+      const isMobileDevice = window.innerWidth < 768
+      setIsMobile(isMobileDevice)
+      setCanvasScale(isMobileDevice ? 0.6 : 1)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showPlayerDropdown && !event.target.closest('.player-dropdown')) {
+        setShowPlayerDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showPlayerDropdown])
 
   // Load available drills and sessions
   useEffect(() => {
@@ -167,18 +181,22 @@ const DrillDesigner = () => {
   const mToPx = (meters) => meters * scaleX
   const mToPxY = (meters) => meters * scaleY
 
-  // Tool options
+  // Tool options (non-player tools)
   const tools = [
     { id: 'puck', label: 'Puck', icon: '●' },
     { id: 'arrow', label: 'Arrow', icon: '→' },
     { id: 'text', label: 'Text', icon: 'T' },
+    { id: 'draw', label: 'Draw', icon: '✏️' }
+  ]
+
+  // Player tool options for dropdown
+  const playerTools = [
     { id: 'player', label: 'Player 1', icon: '🏒', image: playerImage },
     { id: 'player2', label: 'Player 2', icon: '🏒', image: playerImage2 },
     { id: 'player3', label: 'Player 3', icon: '🏒', image: playerImage3 },
     { id: 'player4', label: 'Player 4', icon: '🏒', image: playerImage4 },
     { id: 'goalie', label: 'Goalie 1', icon: '🏒', image: goalieImage },
-    { id: 'goalie2', label: 'Goalie 2', icon: '🏒', image: goalieImage2 },
-    { id: 'draw', label: 'Draw', icon: '✏️' }
+    { id: 'goalie2', label: 'Goalie 2', icon: '🏒', image: goalieImage2 }
   ]
 
   // Color options
@@ -187,12 +205,17 @@ const DrillDesigner = () => {
   ]
 
   const addElement = (type, x, y) => {
+    // If the selected tool is a player type, use the selectedPlayer instead
+    const elementType = (type === 'player' || type === 'player2' || type === 'player3' || type === 'player4' || type === 'goalie' || type === 'goalie2') 
+      ? selectedPlayer 
+      : type
+    
     const newElement = {
       id: Date.now(),
-      type,
+      type: elementType,
       x,
       y,
-      ...getDefaultProperties(type)
+      ...getDefaultProperties(elementType)
     }
     setElements([...elements, newElement])
   }
@@ -245,7 +268,13 @@ const DrillDesigner = () => {
     if (e.target === e.target.getStage()) {
       const pos = e.target.getStage().getPointerPosition()
       console.log('Adding element:', selectedTool, 'at position:', pos)
-      addElement(selectedTool, pos.x, pos.y)
+      
+      // If selectedTool is a player type, use selectedPlayer
+      const toolToAdd = (selectedTool === 'player' || selectedTool === 'player2' || selectedTool === 'player3' || selectedTool === 'player4' || selectedTool === 'goalie' || selectedTool === 'goalie2') 
+        ? selectedPlayer 
+        : selectedTool
+      
+      addElement(toolToAdd, pos.x, pos.y)
     }
   }
 
@@ -1824,6 +1853,58 @@ const DrillDesigner = () => {
                   )}
                 </button>
               ))}
+              
+              {/* Player Tool with Dropdown */}
+              <div className="relative player-dropdown">
+                <button
+                  onClick={() => {
+                    setSelectedTool('player')
+                    setShowPlayerDropdown(!showPlayerDropdown)
+                  }}
+                  className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                    selectedTool === 'player'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  <span className="text-base md:text-lg mr-1 md:mr-2">🏒</span>
+                  <span className="hidden md:inline">Player</span>
+                  <span className="ml-1">▼</span>
+                </button>
+                
+                {/* Player Dropdown */}
+                {showPlayerDropdown && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
+                    {playerTools.map((player) => (
+                      <button
+                        key={player.id}
+                        onClick={() => {
+                          setSelectedPlayer(player.id)
+                          setSelectedTool('player')
+                          setShowPlayerDropdown(false)
+                        }}
+                        className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
+                          selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                        }`}
+                      >
+                        {player.image ? (
+                          <img 
+                            src={player.image.src} 
+                            alt={player.label} 
+                            className="w-6 h-6"
+                          />
+                        ) : (
+                          <span className="text-lg">{player.icon}</span>
+                        )}
+                        <span className="text-sm">{player.label}</span>
+                        {selectedPlayer === player.id && (
+                          <span className="ml-auto text-blue-600">✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
