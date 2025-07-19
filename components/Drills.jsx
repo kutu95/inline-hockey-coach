@@ -638,14 +638,6 @@ const Drills = () => {
                                     <span className="font-medium">Created by:</span> {drill.created_by === user.id ? 'You' : 'Another user'}
                                   </div>
                                 )}
-                                {drill.description && (
-                                  <div className="md:col-span-2">
-                                    <span className="font-medium">Description:</span>
-                                    <div className="mt-1 text-gray-600 whitespace-pre-wrap">
-                                      {drill.description}
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             </div>
                             

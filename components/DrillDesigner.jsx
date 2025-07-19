@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Stage, Layer, Rect, Circle, Line, Text, Arrow, Shape, Image, Group } from 'react-konva'
 import JSZip from 'jszip'
 import { supabase } from '../src/lib/supabase'
@@ -7,17 +7,45 @@ import { Link, useParams } from 'react-router-dom'
 const DrillDesigner = () => {
   const { orgId } = useParams()
   const [selectedTool, setSelectedTool] = useState('puck')
-  const [elements, setElements] = useState([
-    { id: 1, type: 'puck', x: 100, y: 100, radius: 8, fill: '#000000' },
-    { id: 2, type: 'player', x: 200, y: 150, fill: '#00ff00', stroke: '#ffffff', strokeWidth: 2 }
-  ])
+  const [selectedColor, setSelectedColor] = useState('#FF0000')
+  const [elements, setElements] = useState([])
   const [selectedElement, setSelectedElement] = useState(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [drawingPoints, setDrawingPoints] = useState([])
+  const [frames, setFrames] = useState([])
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(-1)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportFormat, setExportFormat] = useState('webm')
+  const [frameRate, setFrameRate] = useState(5)
+  const [audioBlob, setAudioBlob] = useState(null)
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false)
+  const [mediaRecorder, setMediaRecorder] = useState(null)
+  const [startFrame, setStartFrame] = useState(null)
+  const [endFrame, setEndFrame] = useState(null)
+  const [tweenFrames, setTweenFrames] = useState(5)
   const [editingText, setEditingText] = useState(null)
   const [editTextValue, setEditTextValue] = useState('')
-  const [selectedColor, setSelectedColor] = useState('#ff0000')
-  const [isDrawing, setIsDrawing] = useState(false)
-  const [currentLine, setCurrentLine] = useState([])
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [saveTitle, setSaveTitle] = useState('')
+  const [saveDescription, setSaveDescription] = useState('')
+  const [saveType, setSaveType] = useState('drill')
+  const [selectedDrillId, setSelectedDrillId] = useState('')
+  const [selectedSessionId, setSelectedSessionId] = useState('')
+  const [availableDrills, setAvailableDrills] = useState([])
+  const [availableSessions, setAvailableSessions] = useState([])
+  const [isSaving, setIsSaving] = useState(false)
+  
+  // Mobile responsiveness state
+  const [isMobile, setIsMobile] = useState(false)
+  const [canvasScale, setCanvasScale] = useState(1)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
+  
   const stageRef = useRef()
+  const animationRef = useRef()
+  const audioChunksRef = useRef([])
+  
+  // Player image states
   const [playerImage, setPlayerImage] = useState(null)
   const [playerImage2, setPlayerImage2] = useState(null)
   const [playerImage3, setPlayerImage3] = useState(null)
@@ -25,42 +53,8 @@ const DrillDesigner = () => {
   const [goalieImage, setGoalieImage] = useState(null)
   const [goalieImage2, setGoalieImage2] = useState(null)
 
-  // Animation frame management
-  const [frames, setFrames] = useState([])
-  const [currentFrameIndex, setCurrentFrameIndex] = useState(-1)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [frameRate, setFrameRate] = useState(4) // frames per second
-  const isPlayingRef = useRef(false)
-  
-  // Tweening functionality
-  const [startFrame, setStartFrame] = useState(null)
-  const [endFrame, setEndFrame] = useState(null)
-  const [tweenFrames, setTweenFrames] = useState(5) // Number of frames to generate between start and end
-  
-  // Video export settings
-  const [exportFormat, setExportFormat] = useState('webm')
-  const [isExporting, setIsExporting] = useState(false)
-  
-  // Audio recording settings
-  const [isRecordingAudio, setIsRecordingAudio] = useState(false)
-  const [audioBlob, setAudioBlob] = useState(null)
-  const [audioStream, setAudioStream] = useState(null)
-  const [mediaRecorder, setMediaRecorder] = useState(null)
-  const [audioChunks, setAudioChunks] = useState([])
-  
-  // Save to drill/session functionality
-  const [showSaveDialog, setShowSaveDialog] = useState(false)
-  const [saveTitle, setSaveTitle] = useState('')
-  const [saveDescription, setSaveDescription] = useState('')
-  const [saveType, setSaveType] = useState('drill') // 'drill' or 'session'
-  const [selectedDrillId, setSelectedDrillId] = useState('')
-  const [selectedSessionId, setSelectedSessionId] = useState('')
-  const [availableDrills, setAvailableDrills] = useState([])
-  const [availableSessions, setAvailableSessions] = useState([])
-  const [isSaving, setIsSaving] = useState(false)
-
   // Load player images
-  React.useEffect(() => {
+  useEffect(() => {
     const image1 = new window.Image()
     image1.onload = () => {
       setPlayerImage(image1)
@@ -98,6 +92,25 @@ const DrillDesigner = () => {
     goalie2.src = '/images/goalie-silhouette2.png'
   }, [])
 
+  // Mobile responsiveness detection
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      setCanvasScale(mobile ? 0.6 : 1)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Load available drills and sessions
+  useEffect(() => {
+    loadAvailableDrills()
+    loadAvailableSessions()
+  }, [orgId])
+
   // Player Image Component
   const PlayerImage = ({ x, y, fill, stroke, strokeWidth, isSelected, onClick, onDragEnd, draggable }) => {
     console.log('PlayerImage render:', { x, y, isSelected, draggable, hasImage: !!playerImage })
@@ -129,21 +142,26 @@ const DrillDesigner = () => {
     )
   }
 
-  // Rink dimensions (scaled down for display)
-  const rinkWidth = 800
-  const rinkHeight = 400
+  // Rink dimensions and scaling
+  const rinkLength = 60 // meters
+  const rinkWidth = 30 // meters
+  const cornerRadius = 8.5 // meters
+  
+  // Responsive canvas dimensions
+  const baseCanvasWidth = 1200
+  const baseCanvasHeight = 600
+  const canvasWidth = Math.floor(baseCanvasWidth * canvasScale)
+  const canvasHeight = Math.floor(baseCanvasHeight * canvasScale)
+  
+  const scaleX = canvasWidth / rinkLength
+  const scaleY = canvasHeight / rinkWidth
+  
+  // Rink colors
   const rinkColor = '#87CEEB' // Light blue
   const lineColor = '#FF0000' // Red lines
   const borderColor = '#000000' // Black border
 
-  // Rink specifications (40m x 20m)
-  const rinkLength = 40 // meters
-  const rinkWidth_m = 20 // meters
-  const cornerRadius = 4 // meters for more rounded corners
 
-  // Scaling factors
-  const scaleX = rinkWidth / rinkLength
-  const scaleY = rinkHeight / rinkWidth_m
 
   // Convert meters to pixels
   const mToPx = (meters) => meters * scaleX
@@ -235,7 +253,7 @@ const DrillDesigner = () => {
     if (selectedTool === 'draw') {
       setIsDrawing(true)
       const pos = e.target.getStage().getPointerPosition()
-      setCurrentLine([pos.x, pos.y])
+      setDrawingPoints([pos.x, pos.y])
     }
   }
 
@@ -243,15 +261,15 @@ const DrillDesigner = () => {
     if (!isDrawing || selectedTool !== 'draw') return
 
     const pos = e.target.getStage().getPointerPosition()
-    setCurrentLine([...currentLine, pos.x, pos.y])
+    setDrawingPoints([...drawingPoints, pos.x, pos.y])
   }
 
   const handleMouseUp = () => {
-    if (isDrawing && selectedTool === 'draw' && currentLine.length > 2) {
+    if (isDrawing && selectedTool === 'draw' && drawingPoints.length > 2) {
       const newElement = {
         id: Date.now(),
         type: 'draw',
-        points: currentLine,
+        points: drawingPoints,
         stroke: selectedColor,
         strokeWidth: 3,
         tension: 0.5,
@@ -261,7 +279,7 @@ const DrillDesigner = () => {
       setElements([...elements, newElement])
     }
     setIsDrawing(false)
-    setCurrentLine([])
+    setDrawingPoints([])
   }
 
   const handleElementClick = (element) => {
@@ -399,7 +417,6 @@ const DrillDesigner = () => {
     
     console.log('Starting animation with frameRate:', frameRate)
     setIsPlaying(true)
-    isPlayingRef.current = true
     let frameIndex = 0
     
     const playNextFrame = () => {
@@ -1741,24 +1758,24 @@ const DrillDesigner = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-2 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white rounded-lg shadow-lg p-3 md:p-6">
           {/* Header with Logo and Navigation */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6 space-y-2 md:space-y-0">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <img 
                 src="/Backcheck_small.png" 
                 alt="Backcheck Logo" 
-                className="h-12 w-auto"
+                className="h-8 md:h-12 w-auto"
               />
-              <h1 className="text-2xl font-bold text-gray-900">Drill Designer</h1>
+              <h1 className="text-lg md:text-2xl font-bold text-gray-900">Drill Designer</h1>
             </div>
             
             {orgId && (
               <Link
                 to={`/organisations/${orgId}`}
-                className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1"
+                className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1 text-sm md:text-base"
               >
                 <span>←</span>
                 <span>Back to Organisation</span>
@@ -1766,55 +1783,72 @@ const DrillDesigner = () => {
             )}
           </div>
 
-          {/* Toolbar */}
-          <div className="flex space-x-2 mb-4 p-4 bg-gray-50 rounded-lg">
-            {tools.map((tool) => (
+          {/* Mobile Menu Toggle */}
+          {isMobile && (
+            <div className="mb-4">
               <button
-                key={tool.id}
-                onClick={() => setSelectedTool(tool.id)}
-                className={`px-4 py-2 rounded-md border-2 transition-colors ${
-                  selectedTool === tool.id
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                }`}
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
               >
-                {tool.image ? (
-                  <img 
-                    src={tool.image.src} 
-                    alt={tool.label} 
-                    className="w-8 h-8"
-                    style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
-                  />
-                ) : (
-                  <>
-                    <span className="text-lg mr-2">{tool.icon}</span>
-                    {tool.label}
-                  </>
-                )}
+                <span>{showMobileMenu ? '▼' : '▲'}</span>
+                <span>{showMobileMenu ? 'Hide Controls' : 'Show Controls'}</span>
               </button>
-            ))}
-          </div>
+            </div>
+          )}
 
-          {/* Color Picker */}
-          <div className="flex items-center space-x-4 mb-4 p-4 bg-gray-50 rounded-lg">
-            <span className="font-medium text-gray-700">Color:</span>
-            <div className="flex space-x-2">
-              {colors.map((color) => (
+          {/* Toolbar - Responsive */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
+            <div className="flex flex-wrap gap-2 md:gap-2">
+              {tools.map((tool) => (
                 <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    selectedColor === color
-                      ? 'border-gray-800 scale-110'
-                      : 'border-gray-300 hover:scale-105'
+                  key={tool.id}
+                  onClick={() => setSelectedTool(tool.id)}
+                  className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                    selectedTool === tool.id
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   }`}
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
+                >
+                  {tool.image ? (
+                    <img 
+                      src={tool.image.src} 
+                      alt={tool.label} 
+                      className="w-6 h-6 md:w-8 md:h-8"
+                      style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
+                    />
+                  ) : (
+                    <>
+                      <span className="text-base md:text-lg mr-1 md:mr-2">{tool.icon}</span>
+                      <span className="hidden md:inline">{tool.label}</span>
+                    </>
+                  )}
+                </button>
               ))}
             </div>
+          </div>
+
+          {/* Color Picker - Responsive */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Selected:</span>
+              <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
+              <div className="flex space-x-1 md:space-x-2">
+                {colors.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
+                      selectedColor === color
+                        ? 'border-gray-800 scale-110'
+                        : 'border-gray-300 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs md:text-sm text-gray-600">Selected:</span>
               <div 
                 className="w-6 h-6 rounded border border-gray-300"
                 style={{ backgroundColor: selectedColor }}
@@ -1822,17 +1856,17 @@ const DrillDesigner = () => {
             </div>
           </div>
 
-          {/* Animation Controls */}
-          <div className="mb-4 p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-blue-900">Animation Controls</h3>
-              <div className="flex items-center space-x-4">
+          {/* Animation Controls - Mobile Responsive */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
+              <h3 className="font-semibold text-blue-900 text-sm md:text-base">Animation Controls</h3>
+              <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-blue-700">Frame Rate:</span>
+                  <span className="text-xs md:text-sm text-blue-700">Frame Rate:</span>
                   <select 
                     value={frameRate} 
                     onChange={(e) => setFrameRate(Number(e.target.value))}
-                    className="px-2 py-1 border border-blue-300 rounded text-sm"
+                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
                   >
                     <option value={2}>2 FPS</option>
                     <option value={3}>3 FPS</option>
@@ -1846,52 +1880,52 @@ const DrillDesigner = () => {
                   </select>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-blue-700">Export Format:</span>
+                  <span className="text-xs md:text-sm text-blue-700">Export Format:</span>
                   <select 
                     value={exportFormat} 
                     onChange={(e) => setExportFormat(e.target.value)}
-                    className="px-2 py-1 border border-blue-300 rounded text-sm"
+                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
                   >
-                    <option value="webm">WebM Video (Recommended)</option>
-                    <option value="zip">ZIP (Individual Frames)</option>
+                    <option value="webm">WebM Video</option>
+                    <option value="zip">ZIP (Frames)</option>
                     <option value="image">Still Image</option>
                   </select>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-3">
               <button
                 onClick={captureFrame}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
                 📸 Capture Frame ({frames.length + 1})
               </button>
               <button
                 onClick={playAnimation}
                 disabled={frames.length === 0 || isPlaying}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm"
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
                 ▶️ Play
               </button>
               <button
                 onClick={stopAnimation}
                 disabled={!isPlaying}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm"
+                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
                 ⏹️ Stop
               </button>
               <button
                 onClick={exportAnimation}
                 disabled={frames.length === 0 || isExporting}
-                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm"
+                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
                 {isExporting ? '⏳ Exporting...' : `📦 Export ${exportFormat.toUpperCase()}`}
               </button>
               <button
                 onClick={openSaveDialog}
                 disabled={frames.length === 0}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm"
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
                 💾 Save to Drill/Session
               </button>
@@ -2056,397 +2090,407 @@ const DrillDesigner = () => {
             )}
           </div>
 
-          {/* Canvas */}
-          <div className="border-2 border-gray-300 rounded-lg overflow-hidden relative">
-            <Stage
-              ref={stageRef}
-              width={rinkWidth}
-              height={rinkHeight}
-              onClick={handleStageClick}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-            >
-              <Layer>
-                {/* Rink Background - only inside the rounded border */}
-                <Rect
-                  x={0}
-                  y={0}
-                  width={rinkWidth}
-                  height={rinkHeight}
-                  fill={rinkColor}
-                  cornerRadius={mToPx(cornerRadius)}
-                  listening={false}
-                />
-
-                {/* Rink Border - single clean border */}
-                <Rect
-                  x={0}
-                  y={0}
-                  width={rinkWidth}
-                  height={rinkHeight}
-                  stroke={borderColor}
-                  strokeWidth={3}
-                  fill="transparent"
-                  cornerRadius={mToPx(cornerRadius)}
-                  listening={false}
-                />
-
-                {/* Center Line */}
-                <Line
-                  points={[rinkWidth / 2, 0, rinkWidth / 2, rinkHeight]}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-
-                {/* Face-off Circles */}
-                <Circle
-                  x={rinkWidth / 2}
-                  y={rinkHeight / 2}
-                  radius={mToPx(2.25)}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-                <Circle
-                  x={mToPx(10)}
-                  y={mToPxY(5)}
-                  radius={mToPx(2.25)}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-                <Circle
-                  x={rinkWidth - mToPx(10)}
-                  y={mToPxY(5)}
-                  radius={mToPx(2.25)}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-                <Circle
-                  x={mToPx(10)}
-                  y={rinkHeight - mToPxY(5)}
-                  radius={mToPx(2.25)}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-                <Circle
-                  x={rinkWidth - mToPx(10)}
-                  y={rinkHeight - mToPxY(5)}
-                  radius={mToPx(2.25)}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-
-                {/* Hash Marks at Face-off Circles */}
-                {/* Top Left Face-off Circle */}
-                <Rect
-                  x={mToPx(10) - mToPx(0.3)}
-                  y={mToPxY(5) - mToPxY(0.3)}
-                  width={mToPx(0.6)}
-                  height={mToPxY(0.6)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Top Right Face-off Circle */}
-                <Rect
-                  x={rinkWidth - mToPx(10) - mToPx(0.3)}
-                  y={mToPxY(5) - mToPxY(0.3)}
-                  width={mToPx(0.6)}
-                  height={mToPxY(0.6)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Bottom Left Face-off Circle */}
-                <Rect
-                  x={mToPx(10) - mToPx(0.3)}
-                  y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
-                  width={mToPx(0.6)}
-                  height={mToPxY(0.6)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Bottom Right Face-off Circle */}
-                <Rect
-                  x={rinkWidth - mToPx(10) - mToPx(0.3)}
-                  y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
-                  width={mToPx(0.6)}
-                  height={mToPxY(0.6)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Center Ice Hash Mark */}
-                <Rect
-                  x={rinkWidth / 2 - mToPx(0.3)}
-                  y={rinkHeight / 2 - mToPxY(0.3)}
-                  width={mToPx(0.6)}
-                  height={mToPxY(0.6)}
-                  fill="#0000FF"
-                  listening={false}
-                />
-
-                {/* Goal Lines */}
-                <Line
-                  points={[mToPx(2.5), 10, mToPx(2.5), rinkHeight - 10]}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-                <Line
-                  points={[rinkWidth - mToPx(2.5), 10, rinkWidth - mToPx(2.5), rinkHeight - 10]}
-                  stroke={lineColor}
-                  strokeWidth={3}
-                  listening={false}
-                />
-
-                {/* Goals */}
-                {/* Left Goal */}
-                <Rect
-                  x={mToPx(2.5) - mToPxY(1)}
-                  y={rinkHeight / 2 - mToPx(0.9)}
-                  width={mToPxY(1)}
-                  height={mToPx(1.8)}
-                  fill="#FFFFFF"
-                  stroke="#000000"
-                  strokeWidth={2}
-                  listening={false}
-                />
-
-                {/* Right Goal */}
-                <Rect
-                  x={rinkWidth - mToPx(2.5)}
-                  y={rinkHeight / 2 - mToPx(0.9)}
-                  width={mToPxY(1)}
-                  height={mToPx(1.8)}
-                  fill="#FFFFFF"
-                  stroke="#000000"
-                  strokeWidth={2}
-                  listening={false}
-                />
-
-                {/* Neutral Zone Dots */}
-                <Circle
-                  x={rinkWidth / 2}
-                  y={mToPxY(3)}
-                  radius={mToPx(0.3)}
-                  fill={lineColor}
-                  listening={false}
-                />
-                <Circle
-                  x={rinkWidth / 2}
-                  y={rinkHeight - mToPxY(3)}
-                  radius={mToPx(0.3)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Center Ice Dot */}
-                <Circle
-                  x={rinkWidth / 2}
-                  y={rinkHeight / 2}
-                  radius={mToPx(0.3)}
-                  fill={lineColor}
-                  listening={false}
-                />
-
-                {/* Draw Elements */}
-                {elements.map((element) => {
-                  const isSelected = selectedElement?.id === element.id
-                  
-                  switch (element.type) {
-                    case 'puck':
-                      return (
-                        <Circle
-                          key={element.id}
-                          x={element.x}
-                          y={element.y}
-                          radius={element.radius}
-                          fill={element.fill}
-                          stroke={isSelected ? '#00ff00' : 'transparent'}
-                          strokeWidth={isSelected ? 3 : 0}
-                          onClick={() => handleElementClick(element)}
-                          onDragEnd={(e) => handleDragEnd(e, element.id)}
-                          draggable
-                        />
-                      )
-                    case 'arrow':
-                      return (
-                        <Arrow
-                          key={element.id}
-                          x={element.x}
-                          y={element.y}
-                          points={element.points}
-                          stroke={isSelected ? '#00ff00' : element.stroke}
-                          strokeWidth={isSelected ? 5 : element.strokeWidth}
-                          fill={element.fill}
-                          onClick={() => handleElementClick(element)}
-                          onDragEnd={(e) => handleDragEnd(e, element.id)}
-                          draggable
-                        />
-                      )
-                    case 'text':
-                      return (
-                        <Text
-                          key={element.id}
-                          x={element.x}
-                          y={element.y}
-                          text={element.text}
-                          fontSize={element.fontSize}
-                          fill={element.fill}
-                          fontFamily={element.fontFamily}
-                          stroke={isSelected ? '#00ff00' : 'transparent'}
-                          strokeWidth={isSelected ? 1 : 0}
-                          onClick={() => handleElementClick(element)}
-                          onDblClick={() => handleTextDoubleClick(element)}
-                          onDragEnd={(e) => handleDragEnd(e, element.id)}
-                          draggable
-                        />
-                      )
-                    case 'player':
-                    case 'player2':
-                    case 'player3':
-                    case 'player4':
-                    case 'goalie':
-                    case 'goalie2':
-                      const playerImageMap = {
-                        'player': playerImage,
-                        'player2': playerImage2,
-                        'player3': playerImage3,
-                        'player4': playerImage4,
-                        'goalie': goalieImage,
-                        'goalie2': goalieImage2
-                      }
-                      const currentPlayerImage = playerImageMap[element.type]
-                      
-                      return (
-                        <Group
-                          key={element.id}
-                          x={element.x}
-                          y={element.y}
-                          onClick={() => handleElementClick(element)}
-                          onDragStart={(e) => {
-                            console.log('Player drag start:', e.target.position())
-                          }}
-                          onDragMove={(e) => {
-                            console.log('Player drag move:', e.target.position())
-                          }}
-                          onDragEnd={(e) => {
-                            console.log('Player drag end:', e.target.position())
-                            handleDragEnd(e, element.id)
-                          }}
-                          draggable={true}
-                        >
-                          {currentPlayerImage && (
-                            <Image
-                              image={currentPlayerImage}
-                              x={-currentPlayerImage.width / 2}
-                              y={-currentPlayerImage.height / 2}
-                              width={currentPlayerImage.width}
-                              height={currentPlayerImage.height}
-                            />
-                          )}
-                          {isSelected && (
-                            <Circle
-                              x={0}
-                              y={0}
-                              radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
-                              fill="transparent"
-                              stroke="#00ff00"
-                              strokeWidth={4}
-                            />
-                          )}
-                        </Group>
-                      )
-                    case 'draw':
-                      return (
-                        <Line
-                          key={element.id}
-                          points={element.points}
-                          stroke={isSelected ? '#00ff00' : element.stroke}
-                          strokeWidth={isSelected ? 5 : element.strokeWidth}
-                          tension={element.tension}
-                          lineCap={element.lineCap}
-                          lineJoin={element.lineJoin}
-                          onClick={() => handleElementClick(element)}
-                          onDragEnd={(e) => handleDragEnd(e, element.id)}
-                          draggable
-                        />
-                      )
-                    default:
-                      return null
-                  }
-                })}
-
-                {/* Current drawing line */}
-                {isDrawing && currentLine.length > 2 && (
-                  <Line
-                    points={currentLine}
-                    stroke={selectedColor}
-                    strokeWidth={3}
-                    tension={0.5}
-                    lineCap="round"
-                    lineJoin="round"
-                  />
-                )}
-              </Layer>
-            </Stage>
-
-            {/* Text Edit Overlay */}
-            {editingText && (
-              <div 
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) {
-                    setEditingText(null)
-                    setEditTextValue('')
-                  }
+          {/* Canvas - Responsive */}
+          <div className="border-2 border-gray-300 rounded-lg overflow-hidden relative mb-4">
+            <div className="flex justify-center">
+              <Stage
+                ref={stageRef}
+                width={canvasWidth}
+                height={canvasHeight}
+                onClick={handleStageClick}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onTouchStart={handleMouseDown}
+                onTouchMove={handleMouseMove}
+                onTouchEnd={handleMouseUp}
+                style={{ 
+                  maxWidth: '100%', 
+                  height: 'auto',
+                  touchAction: 'none' // Prevents default touch behaviors
                 }}
               >
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-semibold mb-2">Edit Text</h3>
-                  <input
-                    type="text"
-                    value={editTextValue}
-                    onChange={(e) => setEditTextValue(e.target.value)}
-                    onKeyDown={handleTextEditKeyDown}
-                    onBlur={handleTextEdit}
-                    className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    autoFocus
+                <Layer>
+                  {/* Rink Background - only inside the rounded border */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={rinkWidth}
+                    height={rinkHeight}
+                    fill={rinkColor}
+                    cornerRadius={mToPx(cornerRadius)}
+                    listening={false}
                   />
-                  <div className="mt-3 flex space-x-2">
-                    <button
-                      onClick={handleTextEdit}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => {
-                        setEditingText(null)
-                        setEditTextValue('')
-                      }}
-                      className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+
+                  {/* Rink Border - single clean border */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={rinkWidth}
+                    height={rinkHeight}
+                    stroke={borderColor}
+                    strokeWidth={3}
+                    fill="transparent"
+                    cornerRadius={mToPx(cornerRadius)}
+                    listening={false}
+                  />
+
+                  {/* Center Line */}
+                  <Line
+                    points={[rinkWidth / 2, 0, rinkWidth / 2, rinkHeight]}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+
+                  {/* Face-off Circles */}
+                  <Circle
+                    x={rinkWidth / 2}
+                    y={rinkHeight / 2}
+                    radius={mToPx(2.25)}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+                  <Circle
+                    x={mToPx(10)}
+                    y={mToPxY(5)}
+                    radius={mToPx(2.25)}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+                  <Circle
+                    x={rinkWidth - mToPx(10)}
+                    y={mToPxY(5)}
+                    radius={mToPx(2.25)}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+                  <Circle
+                    x={mToPx(10)}
+                    y={rinkHeight - mToPxY(5)}
+                    radius={mToPx(2.25)}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+                  <Circle
+                    x={rinkWidth - mToPx(10)}
+                    y={rinkHeight - mToPxY(5)}
+                    radius={mToPx(2.25)}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+
+                  {/* Hash Marks at Face-off Circles */}
+                  {/* Top Left Face-off Circle */}
+                  <Rect
+                    x={mToPx(10) - mToPx(0.3)}
+                    y={mToPxY(5) - mToPxY(0.3)}
+                    width={mToPx(0.6)}
+                    height={mToPxY(0.6)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Top Right Face-off Circle */}
+                  <Rect
+                    x={rinkWidth - mToPx(10) - mToPx(0.3)}
+                    y={mToPxY(5) - mToPxY(0.3)}
+                    width={mToPx(0.6)}
+                    height={mToPxY(0.6)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Bottom Left Face-off Circle */}
+                  <Rect
+                    x={mToPx(10) - mToPx(0.3)}
+                    y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
+                    width={mToPx(0.6)}
+                    height={mToPxY(0.6)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Bottom Right Face-off Circle */}
+                  <Rect
+                    x={rinkWidth - mToPx(10) - mToPx(0.3)}
+                    y={rinkHeight - mToPxY(5) - mToPxY(0.3)}
+                    width={mToPx(0.6)}
+                    height={mToPxY(0.6)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Center Ice Hash Mark */}
+                  <Rect
+                    x={rinkWidth / 2 - mToPx(0.3)}
+                    y={rinkHeight / 2 - mToPxY(0.3)}
+                    width={mToPx(0.6)}
+                    height={mToPxY(0.6)}
+                    fill="#0000FF"
+                    listening={false}
+                  />
+
+                  {/* Goal Lines */}
+                  <Line
+                    points={[mToPx(2.5), 10, mToPx(2.5), rinkHeight - 10]}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+                  <Line
+                    points={[rinkWidth - mToPx(2.5), 10, rinkWidth - mToPx(2.5), rinkHeight - 10]}
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    listening={false}
+                  />
+
+                  {/* Goals */}
+                  {/* Left Goal */}
+                  <Rect
+                    x={mToPx(2.5) - mToPxY(1)}
+                    y={rinkHeight / 2 - mToPx(0.9)}
+                    width={mToPxY(1)}
+                    height={mToPx(1.8)}
+                    fill="#FFFFFF"
+                    stroke="#000000"
+                    strokeWidth={2}
+                    listening={false}
+                  />
+
+                  {/* Right Goal */}
+                  <Rect
+                    x={rinkWidth - mToPx(2.5)}
+                    y={rinkHeight / 2 - mToPx(0.9)}
+                    width={mToPxY(1)}
+                    height={mToPx(1.8)}
+                    fill="#FFFFFF"
+                    stroke="#000000"
+                    strokeWidth={2}
+                    listening={false}
+                  />
+
+                  {/* Neutral Zone Dots */}
+                  <Circle
+                    x={rinkWidth / 2}
+                    y={mToPxY(3)}
+                    radius={mToPx(0.3)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+                  <Circle
+                    x={rinkWidth / 2}
+                    y={rinkHeight - mToPxY(3)}
+                    radius={mToPx(0.3)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Center Ice Dot */}
+                  <Circle
+                    x={rinkWidth / 2}
+                    y={rinkHeight / 2}
+                    radius={mToPx(0.3)}
+                    fill={lineColor}
+                    listening={false}
+                  />
+
+                  {/* Draw Elements */}
+                  {elements.map((element) => {
+                    const isSelected = selectedElement?.id === element.id
+                    
+                    switch (element.type) {
+                      case 'puck':
+                        return (
+                          <Circle
+                            key={element.id}
+                            x={element.x}
+                            y={element.y}
+                            radius={element.radius}
+                            fill={element.fill}
+                            stroke={isSelected ? '#00ff00' : 'transparent'}
+                            strokeWidth={isSelected ? 3 : 0}
+                            onClick={() => handleElementClick(element)}
+                            onDragEnd={(e) => handleDragEnd(e, element.id)}
+                            draggable
+                          />
+                        )
+                      case 'arrow':
+                        return (
+                          <Arrow
+                            key={element.id}
+                            x={element.x}
+                            y={element.y}
+                            points={element.points}
+                            stroke={isSelected ? '#00ff00' : element.stroke}
+                            strokeWidth={isSelected ? 5 : element.strokeWidth}
+                            fill={element.fill}
+                            onClick={() => handleElementClick(element)}
+                            onDragEnd={(e) => handleDragEnd(e, element.id)}
+                            draggable
+                          />
+                        )
+                      case 'text':
+                        return (
+                          <Text
+                            key={element.id}
+                            x={element.x}
+                            y={element.y}
+                            text={element.text}
+                            fontSize={element.fontSize}
+                            fill={element.fill}
+                            fontFamily={element.fontFamily}
+                            stroke={isSelected ? '#00ff00' : 'transparent'}
+                            strokeWidth={isSelected ? 1 : 0}
+                            onClick={() => handleElementClick(element)}
+                            onDblClick={() => handleTextDoubleClick(element)}
+                            onDragEnd={(e) => handleDragEnd(e, element.id)}
+                            draggable
+                          />
+                        )
+                      case 'player':
+                      case 'player2':
+                      case 'player3':
+                      case 'player4':
+                      case 'goalie':
+                      case 'goalie2':
+                        const playerImageMap = {
+                          'player': playerImage,
+                          'player2': playerImage2,
+                          'player3': playerImage3,
+                          'player4': playerImage4,
+                          'goalie': goalieImage,
+                          'goalie2': goalieImage2
+                        }
+                        const currentPlayerImage = playerImageMap[element.type]
+                        
+                        return (
+                          <Group
+                            key={element.id}
+                            x={element.x}
+                            y={element.y}
+                            onClick={() => handleElementClick(element)}
+                            onDragStart={(e) => {
+                              console.log('Player drag start:', e.target.position())
+                            }}
+                            onDragMove={(e) => {
+                              console.log('Player drag move:', e.target.position())
+                            }}
+                            onDragEnd={(e) => {
+                              console.log('Player drag end:', e.target.position())
+                              handleDragEnd(e, element.id)
+                            }}
+                            draggable={true}
+                          >
+                            {currentPlayerImage && (
+                              <Image
+                                image={currentPlayerImage}
+                                x={-currentPlayerImage.width / 2}
+                                y={-currentPlayerImage.height / 2}
+                                width={currentPlayerImage.width}
+                                height={currentPlayerImage.height}
+                              />
+                            )}
+                            {isSelected && (
+                              <Circle
+                                x={0}
+                                y={0}
+                                radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
+                                fill="transparent"
+                                stroke="#00ff00"
+                                strokeWidth={4}
+                              />
+                            )}
+                          </Group>
+                        )
+                      case 'draw':
+                        return (
+                          <Line
+                            key={element.id}
+                            points={element.points}
+                            stroke={isSelected ? '#00ff00' : element.stroke}
+                            strokeWidth={isSelected ? 5 : element.strokeWidth}
+                            tension={element.tension}
+                            lineCap={element.lineCap}
+                            lineJoin={element.lineJoin}
+                            onClick={() => handleElementClick(element)}
+                            onDragEnd={(e) => handleDragEnd(e, element.id)}
+                            draggable
+                          />
+                        )
+                      default:
+                        return null
+                    }
+                  })}
+
+                  {/* Current drawing line */}
+                  {isDrawing && drawingPoints.length > 2 && (
+                    <Line
+                      points={drawingPoints}
+                      stroke={selectedColor}
+                      strokeWidth={3}
+                      tension={0.5}
+                      lineCap="round"
+                      lineJoin="round"
+                    />
+                  )}
+                </Layer>
+              </Stage>
+            </div>
           </div>
 
-          {/* Instructions */}
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <h3 className="font-semibold text-blue-900 mb-2">How to Use:</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+          {/* Text Edit Overlay */}
+          {editingText && (
+            <div 
+              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setEditingText(null)
+                  setEditTextValue('')
+                }
+              }}
+            >
+              <div className="bg-white p-4 rounded-lg shadow-lg">
+                <h3 className="text-lg font-semibold mb-2">Edit Text</h3>
+                <input
+                  type="text"
+                  value={editTextValue}
+                  onChange={(e) => setEditTextValue(e.target.value)}
+                  onKeyDown={handleTextEditKeyDown}
+                  onBlur={handleTextEdit}
+                  className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+                <div className="mt-3 flex space-x-2">
+                  <button
+                    onClick={handleTextEdit}
+                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditingText(null)
+                      setEditTextValue('')
+                    }}
+                    className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Instructions - Mobile Responsive */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mt-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+            <h3 className="font-semibold text-blue-900 mb-2 text-sm md:text-base">How to Use:</h3>
+            <ul className="text-xs md:text-sm text-blue-800 space-y-1">
               <li>• Select a tool from the toolbar above (Puck, Arrow, Text, Player, or Draw)</li>
               <li>• Choose a color from the color picker</li>
               <li>• Click on empty space on the rink to add elements (except for Draw tool)</li>
@@ -2457,6 +2501,9 @@ const DrillDesigner = () => {
               <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
               <li>• Use the Delete Selected button to remove elements</li>
               <li>• Use the Export button to save your drill as an image</li>
+              {isMobile && (
+                <li>• <strong>Mobile:</strong> Use touch gestures to interact with the canvas</li>
+              )}
             </ul>
           </div>
         </div>
