@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import { loginRateLimiter, passwordResetRateLimiter } from '../src/utils/rateLimiter'
+import { botDetector, detectBot } from '../src/utils/botDetection'
 
 const Login = () => {
   const [isResetPassword, setIsResetPassword] = useState(false)
@@ -9,10 +11,75 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [recaptchaToken, setRecaptchaToken] = useState('')
 
   const { signIn, resetPassword } = useAuth()
 
+  // Load reCAPTCHA script and start bot detection
+  useEffect(() => {
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+    
+    // Only load reCAPTCHA if site key is configured
+    if (siteKey) {
+      const script = document.createElement('script')
+      script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`
+      script.async = true
+      script.defer = true
+      script.onerror = () => {
+        console.warn('Failed to load reCAPTCHA script')
+      }
+      document.head.appendChild(script)
+    }
 
+    // Start bot detection tracking
+    botDetector.startTracking()
+
+    // Add event listeners for user behavior tracking
+    const handleMouseMove = () => botDetector.trackMouseMovement()
+    const handleKeyPress = () => botDetector.trackKeyStroke()
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('keypress', handleKeyPress)
+
+    return () => {
+      // Only remove script if it was added
+      if (siteKey) {
+        const existingScript = document.querySelector(`script[src*="recaptcha"]`)
+        if (existingScript) {
+          document.head.removeChild(existingScript)
+        }
+      }
+      botDetector.stopTracking()
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('keypress', handleKeyPress)
+    }
+  }, [])
+
+  // Execute reCAPTCHA
+  const executeRecaptcha = async () => {
+    // Check if reCAPTCHA is configured
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+    if (!siteKey) {
+      console.warn('reCAPTCHA site key not configured, skipping verification')
+      return 'no-recaptcha-configured'
+    }
+
+    if (typeof window.grecaptcha !== 'undefined') {
+      try {
+        const token = await window.grecaptcha.execute(siteKey, { action: 'login' })
+        setRecaptchaToken(token)
+        return token
+      } catch (error) {
+        console.error('reCAPTCHA error:', error)
+        // Fallback: allow login without reCAPTCHA if it fails
+        return 'recaptcha-failed'
+      }
+    }
+    
+    // Fallback: allow login without reCAPTCHA if script hasn't loaded
+    console.warn('reCAPTCHA script not loaded, allowing login without verification')
+    return 'recaptcha-not-loaded'
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -21,6 +88,38 @@ const Login = () => {
     setMessage('')
 
     try {
+      // Check rate limiting
+      const rateLimiter = isResetPassword ? passwordResetRateLimiter : loginRateLimiter
+      const identifier = email || 'anonymous'
+      
+      if (!rateLimiter.isAllowed(identifier)) {
+        const timeUntilReset = rateLimiter.getTimeUntilReset(identifier)
+        const minutes = Math.ceil(timeUntilReset / (1000 * 60))
+        setError(`Too many attempts. Please try again in ${minutes} minutes.`)
+        setLoading(false)
+        return
+      }
+
+      // Check for suspicious bot behavior (only in production or if explicitly enabled)
+      const isDevelopment = import.meta.env.DEV
+      if (!isDevelopment) {
+        const botDetection = detectBot()
+        if (botDetection.isBot) {
+          console.warn('Bot detected:', botDetection)
+          setError('Suspicious activity detected. Please try again.')
+          setLoading(false)
+          return
+        }
+      }
+
+      // Execute reCAPTCHA before authentication
+      const token = await executeRecaptcha()
+      if (token === null) {
+        setError('Security verification failed. Please try again.')
+        setLoading(false)
+        return
+      }
+
       if (isResetPassword) {
         console.log('Attempting password reset for:', email)
         const { error } = await resetPassword(email)
@@ -39,6 +138,8 @@ const Login = () => {
           setError(error.message)
         } else {
           console.log('Sign in successful')
+          // Clear rate limiting on successful login
+          loginRateLimiter.clear(identifier)
         }
       }
     } catch (err) {
@@ -72,6 +173,17 @@ const Login = () => {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {/* Honeypot field to catch bots */}
+          <div className="hidden">
+            <input
+              type="text"
+              name="website"
+              tabIndex="-1"
+              autoComplete="off"
+              style={{ position: 'absolute', left: '-9999px' }}
+            />
+          </div>
+          
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">
