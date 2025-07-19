@@ -199,10 +199,10 @@ const UserRoleManagement = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">User Not Found</h2>
                 <p className="text-gray-600 mb-6">The user you're looking for doesn't exist.</p>
                 <Link
-                  to="/dashboard"
+                  to="/admin/users"
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
-                  Back to Player
+                  Back to Users
                 </Link>
               </div>
             </div>
@@ -221,10 +221,10 @@ const UserRoleManagement = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Link
-                    to="/dashboard"
+                    to="/admin/users"
                     className="text-gray-600 hover:text-gray-800 font-medium"
                   >
-                    ← Back to Player
+                    ← Back to Users
                   </Link>
                   <h1 className="text-3xl font-bold text-gray-900">Manage User Roles</h1>
                 </div>

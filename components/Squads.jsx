@@ -332,6 +332,7 @@ const Squads = () => {
                       squad={squad}
                       orgId={orgId}
                       canEdit={canManageSquads}
+                      canDelete={canDeleteSquads}
                       onDelete={handleDeleteSquad}
                       onEdit={handleEditSquad}
                       onToggleActive={handleToggleActiveStatus}
@@ -347,7 +348,7 @@ const Squads = () => {
   )
 }
 
-const SquadItem = ({ squad, orgId, canEdit, onDelete, onEdit, onToggleActive }) => {
+const SquadItem = ({ squad, orgId, canEdit, canDelete, onDelete, onEdit, onToggleActive }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(squad.name)
 
@@ -414,7 +415,7 @@ const SquadItem = ({ squad, orgId, canEdit, onDelete, onEdit, onToggleActive }) 
           </div>
           {!isEditing && (
             <div className="flex space-x-2">
-              {canEdit && (
+              {canDelete && (
                 <button
                   onClick={() => onToggleActive(squad.id, squad.is_active)}
                   className={`text-sm font-medium ${
@@ -434,20 +435,20 @@ const SquadItem = ({ squad, orgId, canEdit, onDelete, onEdit, onToggleActive }) 
                 View Players
               </Link>
               {canEdit && (
-                <>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="text-green-600 hover:text-green-800 text-sm font-medium"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => onDelete(squad.id)}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium"
-                  >
-                    Delete
-                  </button>
-                </>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="text-green-600 hover:text-green-800 text-sm font-medium"
+                >
+                  Edit
+                </button>
+              )}
+              {canDelete && (
+                <button
+                  onClick={() => onDelete(squad.id)}
+                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                >
+                  Delete
+                </button>
               )}
             </div>
           )}

@@ -28,9 +28,12 @@ const PlayerList = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [playerProfile, setPlayerProfile] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
+  
+  // Determine user permissions
+  const canDeletePlayers = hasRole('superadmin') || hasRole('admin')
 
   // Fetch current user's player profile
   const fetchPlayerProfile = async () => {
@@ -849,12 +852,14 @@ const PlayerList = () => {
                             >
                               Edit
                             </Link>
-                            <button
-                              onClick={() => handleDelete(player.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium"
-                            >
-                              Delete
-                            </button>
+                            {canDeletePlayers && (
+                              <button
+                                onClick={() => handleDelete(player.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
