@@ -34,6 +34,8 @@ import RoleBasedRedirect from '../components/RoleBasedRedirect'
 import UserRoleManagement from '../components/UserRoleManagement'
 import PlayerEditRoute from '../components/PlayerEditRoute'
 import OrganizationPlayerEditRoute from '../components/OrganizationPlayerEditRoute'
+import DrillDesigner from '../components/DrillDesigner'
+import ViewDrill from '../components/ViewDrill'
 import './App.css'
 
 // Protected Route Component
@@ -216,6 +218,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
                   <AddDrill />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/drills/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
+                  <ViewDrill />
                 </RoleProtectedRoute>
               } 
             />
@@ -480,6 +490,14 @@ function App() {
               } 
             />
             <Route 
+              path="/drills/:id" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
+                  <ViewDrill />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/drills/:drillId/edit" 
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
@@ -487,6 +505,17 @@ function App() {
                 </RoleProtectedRoute>
               } 
             />
+            
+            {/* Organization-scoped Drill Designer - restricted to admin, superadmin, and coach */}
+            <Route 
+              path="/organisations/:orgId/drill-designer" 
+              element={
+                <RoleProtectedRoute requiredRoles={['admin', 'superadmin', 'coach']}>
+                  <DrillDesigner />
+                </RoleProtectedRoute>
+              } 
+            />
+            
             <Route path="/" element={<RoleBasedRedirect />} />
           </Routes>
         </div>

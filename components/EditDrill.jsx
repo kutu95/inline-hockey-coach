@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import MediaAttachments from './MediaAttachments'
 
 const EditDrill = () => {
   const [drill, setDrill] = useState(null)
@@ -480,6 +481,15 @@ const EditDrill = () => {
                   <p className="text-xs text-gray-500 mt-1">
                     Public drills can be viewed by users from other organizations
                   </p>
+                </div>
+
+                {/* Media Attachments Section */}
+                <div className="pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Media Attachments</h3>
+                  <MediaAttachments 
+                    type="drill" 
+                    itemId={drillId} 
+                  />
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">

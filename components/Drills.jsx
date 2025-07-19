@@ -398,35 +398,47 @@ const Drills = () => {
               {orgId ? (
                 <OrganizationHeader title="Drills" showBackButton={false} playerProfile={playerProfile} playerPhotoUrl={playerPhotoUrl} />
               ) : (
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                  <div className="flex items-center space-x-4">
-                    <Link
-                      to="/dashboard"
-                      className="text-gray-600 hover:text-gray-800 font-medium"
-                    >
-                      ← Back to Dashboard
-                    </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
-                  </div>
-                                      {(hasRole('superadmin') || hasRole('admin') || hasRole('coach')) && (
+                                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div className="flex items-center space-x-4">
                       <Link
-                        to="/drills/add"
+                        to="/dashboard"
+                        className="text-gray-600 hover:text-gray-800 font-medium"
+                      >
+                        ← Back to Dashboard
+                      </Link>
+                      <h1 className="text-3xl font-bold text-gray-900">Drills</h1>
+                    </div>
+                    <div className="flex space-x-2">
+                      {(hasRole('superadmin') || hasRole('admin') || hasRole('coach')) && (
+                        <>
+                          <Link
+                            to="/drills/add"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                          >
+                            Add Drill
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                </div>
+              )}
+              {orgId && (
+                <div className="mt-4 flex justify-end space-x-2">
+                  {(hasRole('superadmin') || hasRole('admin') || hasRole('coach')) && (
+                    <>
+                      <Link
+                        to={`/organisations/${orgId}/drills/add`}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                       >
                         Add Drill
                       </Link>
-                    )}
-                </div>
-              )}
-              {orgId && (
-                <div className="mt-4 flex justify-end">
-                  {(hasRole('superadmin') || hasRole('admin') || hasRole('coach')) && (
-                    <Link
-                      to={`/organisations/${orgId}/drills/add`}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                    >
-                      Add Drill
-                    </Link>
+                      <Link
+                        to={`/organisations/${orgId}/drill-designer`}
+                        className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                      >
+                        Design Animation
+                      </Link>
+                    </>
                   )}
                 </div>
               )}
@@ -571,7 +583,12 @@ const Drills = () => {
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                             <div className="flex-1">
                               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-2">
-                                <h3 className="text-xl font-semibold text-gray-900">{drill.title}</h3>
+                                <Link
+                                  to={orgId ? `/organisations/${orgId}/drills/${drill.id}` : `/drills/${drill.id}`}
+                                  className="text-xl font-semibold text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out"
+                                >
+                                  {drill.title}
+                                </Link>
                                 <div className="flex flex-wrap gap-2">
                                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                     {formatPlayerCount(drill.min_players, drill.max_players)}
@@ -634,6 +651,12 @@ const Drills = () => {
                             
                             {(hasRole('admin') || hasRole('superadmin') || hasRole('coach')) && (
                               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-4">
+                                <Link
+                                  to={orgId ? `/organisations/${orgId}/drills/${drill.id}` : `/drills/${drill.id}`}
+                                  className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
+                                >
+                                  View
+                                </Link>
                                 <button
                                   onClick={() => handleEdit(drill)}
                                   className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
