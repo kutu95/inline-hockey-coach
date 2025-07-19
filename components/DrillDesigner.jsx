@@ -42,56 +42,19 @@ const DrillDesigner = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [selectedPlayer, setSelectedPlayer] = useState('player')
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
+  const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
+  const [flippedPlayers, setFlippedPlayers] = useState(new Set())
   
   const stageRef = useRef()
   const animationRef = useRef()
   const audioChunksRef = useRef([])
   
-  // Player image states
-  const [playerImage, setPlayerImage] = useState(null)
-  const [playerImage2, setPlayerImage2] = useState(null)
-  const [playerImage3, setPlayerImage3] = useState(null)
-  const [playerImage4, setPlayerImage4] = useState(null)
-  const [goalieImage, setGoalieImage] = useState(null)
-  const [goalieImage2, setGoalieImage2] = useState(null)
 
-  // Load player images
+
+  // Load dynamic players on component mount
   useEffect(() => {
-    const image1 = new window.Image()
-    image1.onload = () => {
-      setPlayerImage(image1)
-    }
-    image1.src = '/images/player-silhouette.png'
-
-    const image2 = new window.Image()
-    image2.onload = () => {
-      setPlayerImage2(image2)
-    }
-    image2.src = '/images/player-silhouette2.png'
-
-    const image3 = new window.Image()
-    image3.onload = () => {
-      setPlayerImage3(image3)
-    }
-    image3.src = '/images/player-silhouette3.png'
-
-    const image4 = new window.Image()
-    image4.onload = () => {
-      setPlayerImage4(image4)
-    }
-    image4.src = '/images/player-silhouette4.png'
-
-    const goalie1 = new window.Image()
-    goalie1.onload = () => {
-      setGoalieImage(goalie1)
-    }
-    goalie1.src = '/images/goalie-silhouette.png'
-
-    const goalie2 = new window.Image()
-    goalie2.onload = () => {
-      setGoalieImage2(goalie2)
-    }
-    goalie2.src = '/images/goalie-silhouette2.png'
+    loadDynamicPlayers()
   }, [])
 
   // Mobile detection effect
@@ -125,36 +88,107 @@ const DrillDesigner = () => {
     loadAvailableSessions()
   }, [orgId])
 
-  // Player Image Component
-  const PlayerImage = ({ x, y, fill, stroke, strokeWidth, isSelected, onClick, onDragEnd, draggable }) => {
-    console.log('PlayerImage render:', { x, y, isSelected, draggable, hasImage: !!playerImage })
-    
-    // Temporary: Use circle for testing drag
-    return (
-      <Circle
-        x={x}
-        y={y}
-        radius={25}
-        fill={isSelected ? '#00ff00' : '#ff0000'}
-        stroke={isSelected ? '#00ff00' : stroke}
-        strokeWidth={isSelected ? 4 : strokeWidth}
-        onClick={onClick}
-        onDragStart={(e) => {
-          console.log('PlayerImage drag start:', e.target.position())
-        }}
-        onDragMove={(e) => {
-          console.log('PlayerImage drag move:', e.target.position())
-        }}
-        onDragEnd={(e) => {
-          console.log('PlayerImage drag end:', e.target.position())
-          if (onDragEnd) {
-            onDragEnd(e)
+  // Dynamic player loading
+  const loadDynamicPlayers = async () => {
+    try {
+      setIsLoadingPlayers(true)
+      
+      // Dynamic file discovery - try to load files with common naming patterns
+      // This approach tries to discover all player and goalie files automatically
+      const playerFiles = []
+      
+      // Try to discover player files (player-silhouette.png, player-silhouette2.png, etc.)
+      for (let i = 1; i <= 50; i++) { // Try up to 50 players
+        const fileName = i === 1 ? 'player-silhouette.png' : `player-silhouette${i}.png`
+        playerFiles.push(fileName)
+      }
+      
+      // Try to discover goalie files (goalie-silhouette.png, goalie-silhouette2.png, etc.)
+      for (let i = 1; i <= 20; i++) { // Try up to 20 goalies
+        const fileName = i === 1 ? 'goalie-silhouette.png' : `goalie-silhouette${i}.png`
+        playerFiles.push(fileName)
+      }
+      
+      // Also try alternative naming patterns
+      const alternativePatterns = [
+        'player.png', 'player1.png', 'player2.png', 'player3.png', 'player4.png', 'player5.png', 'player6.png',
+        'goalie.png', 'goalie1.png', 'goalie2.png', 'goalie3.png', 'goalie4.png', 'goalie5.png'
+      ]
+      
+      alternativePatterns.forEach(fileName => {
+        if (!playerFiles.includes(fileName)) {
+          playerFiles.push(fileName)
+        }
+      })
+      
+      const loadedPlayers = []
+      
+      for (let i = 0; i < playerFiles.length; i++) {
+        const fileName = playerFiles[i]
+        const imagePath = `/images/players/${fileName}`
+        
+        try {
+          const img = new window.Image()
+          await new Promise((resolve, reject) => {
+            img.onload = resolve
+            img.onerror = reject
+            img.src = imagePath
+          })
+          
+          // Generate a unique ID and label based on filename
+          const baseName = fileName.replace('.png', '')
+          const isGoalie = baseName.includes('goalie')
+          
+          // Extract number from filename (e.g., "player-silhouette6" -> "6")
+          let playerNumber = ''
+          if (baseName.includes('player-silhouette')) {
+            const match = baseName.match(/player-silhouette(\d+)/)
+            playerNumber = match ? match[1] : ''
+          } else if (baseName.includes('goalie-silhouette')) {
+            const match = baseName.match(/goalie-silhouette(\d+)/)
+            playerNumber = match ? match[1] : ''
+          } else if (baseName.match(/^(player|goalie)(\d+)$/)) {
+            const match = baseName.match(/^(player|goalie)(\d+)$/)
+            playerNumber = match ? match[2] : ''
           }
-        }}
-        draggable={draggable}
-      />
-    )
+          
+          const playerId = `dynamic-player-${i}`
+          const playerLabel = isGoalie 
+            ? `Goalie ${playerNumber || '1'}`
+            : `Player ${playerNumber || (i + 1)}`
+          
+          loadedPlayers.push({
+            id: playerId,
+            label: playerLabel,
+            icon: '🏒',
+            image: img,
+            fileName: fileName
+          })
+          
+          console.log(`Successfully loaded: ${fileName}`)
+        } catch (error) {
+          // Silently skip files that don't exist - this is expected for discovery
+          console.log(`File not found (skipping): ${fileName}`)
+        }
+      }
+      
+      console.log('Loaded players:', loadedPlayers)
+      setDynamicPlayerTools(loadedPlayers)
+      
+      // Set the first player as default if we have any
+      if (loadedPlayers.length > 0) {
+        setSelectedPlayer(loadedPlayers[0].id)
+        console.log('Set default player:', loadedPlayers[0].id)
+      }
+      
+    } catch (error) {
+      console.error('Error loading dynamic players:', error)
+    } finally {
+      setIsLoadingPlayers(false)
+    }
   }
+
+
 
   // Rink dimensions and scaling
   const rinkLength = 60 // meters
@@ -189,24 +223,16 @@ const DrillDesigner = () => {
     { id: 'draw', label: 'Draw', icon: '✏️' }
   ]
 
-  // Player tool options for dropdown
-  const playerTools = [
-    { id: 'player', label: 'Player 1', icon: '🏒', image: playerImage },
-    { id: 'player2', label: 'Player 2', icon: '🏒', image: playerImage2 },
-    { id: 'player3', label: 'Player 3', icon: '🏒', image: playerImage3 },
-    { id: 'player4', label: 'Player 4', icon: '🏒', image: playerImage4 },
-    { id: 'goalie', label: 'Goalie 1', icon: '🏒', image: goalieImage },
-    { id: 'goalie2', label: 'Goalie 2', icon: '🏒', image: goalieImage2 }
-  ]
+
 
   // Color options
   const colors = [
-    '#ff0000', '#00ff00', '#000000', '#ffffff', '#000080'
+    '#ff0000', '#00ff00', '#000000', '#ffffff', '#ff8c00'
   ]
 
   const addElement = (type, x, y) => {
     // If the selected tool is a player type, use the selectedPlayer instead
-    const elementType = (type === 'player' || type === 'player2' || type === 'player3' || type === 'player4' || type === 'goalie' || type === 'goalie2') 
+    const elementType = (type === 'player') 
       ? selectedPlayer 
       : type
     
@@ -223,7 +249,7 @@ const DrillDesigner = () => {
   const getDefaultProperties = (type) => {
     switch (type) {
       case 'puck':
-        return { radius: 8, fill: '#000000' }
+        return { radius: 8, fill: selectedColor }
       case 'arrow':
         return { 
           points: [0, 0, 50, 0], 
@@ -238,17 +264,7 @@ const DrillDesigner = () => {
           fill: selectedColor,
           fontFamily: 'Arial'
         }
-      case 'player':
-      case 'player2':
-      case 'player3':
-      case 'player4':
-      case 'goalie':
-      case 'goalie2':
-        return { 
-          fill: selectedColor,
-          stroke: '#ffffff',
-          strokeWidth: 2
-        }
+
       case 'draw':
         return {
           points: [],
@@ -259,6 +275,14 @@ const DrillDesigner = () => {
           lineJoin: 'round'
         }
       default:
+        // Handle dynamic player IDs (they start with 'dynamic-player-')
+        if (type.startsWith('dynamic-player-')) {
+          return { 
+            fill: selectedColor,
+            stroke: '#ffffff',
+            strokeWidth: 2
+          }
+        }
         return {}
     }
   }
@@ -270,7 +294,7 @@ const DrillDesigner = () => {
       console.log('Adding element:', selectedTool, 'at position:', pos)
       
       // If selectedTool is a player type, use selectedPlayer
-      const toolToAdd = (selectedTool === 'player' || selectedTool === 'player2' || selectedTool === 'player3' || selectedTool === 'player4' || selectedTool === 'goalie' || selectedTool === 'goalie2') 
+      const toolToAdd = (selectedTool === 'player') 
         ? selectedPlayer 
         : selectedTool
       
@@ -372,6 +396,18 @@ const DrillDesigner = () => {
       }
       setElements([...elements, newElement])
       setSelectedElement(newElement) // Select the new copy
+    }
+  }
+
+  const flipSelectedElement = () => {
+    if (selectedElement && selectedElement.type.startsWith('dynamic-player-')) {
+      const newFlippedPlayers = new Set(flippedPlayers)
+      if (newFlippedPlayers.has(selectedElement.id)) {
+        newFlippedPlayers.delete(selectedElement.id)
+      } else {
+        newFlippedPlayers.add(selectedElement.id)
+      }
+      setFlippedPlayers(newFlippedPlayers)
     }
   }
 
@@ -952,48 +988,48 @@ const DrillDesigner = () => {
         ctx.fill()
         break
         
-      case 'player':
-      case 'player2':
-      case 'player3':
-      case 'player4':
-      case 'goalie':
-      case 'goalie2':
-        // Get the appropriate player image
-        const playerImageMap = {
-          'player': playerImage,
-          'player2': playerImage2,
-          'player3': playerImage3,
-          'player4': playerImage4,
-          'goalie': goalieImage,
-          'goalie2': goalieImage2
-        }
-        const currentPlayerImage = playerImageMap[element.type]
-        
-        if (currentPlayerImage) {
-          // Draw the player image
-          const imageWidth = currentPlayerImage.width
-          const imageHeight = currentPlayerImage.height
-          ctx.drawImage(
-            currentPlayerImage,
-            element.x - imageWidth / 2,
-            element.y - imageHeight / 2,
-            imageWidth,
-            imageHeight
-          )
-        } else {
-          // Fallback to colored circle if image not loaded
-          const fillColor = element.fill || '#ff0000'
-          const strokeColor = element.stroke || '#ffffff'
-          const strokeWidth = element.strokeWidth || 2
+      default:
+        // Handle dynamic player IDs (they start with 'dynamic-player-')
+        if (element.type.startsWith('dynamic-player-')) {
+          // Find the corresponding player in dynamicPlayerTools
+          const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
+          const currentPlayerImage = dynamicPlayer?.image
+          const isFlipped = flippedPlayers.has(element.id)
           
-          ctx.fillStyle = fillColor
-          ctx.strokeStyle = strokeColor
-          ctx.lineWidth = strokeWidth
-          
-          ctx.beginPath()
-          ctx.arc(element.x, element.y, 25, 0, 2 * Math.PI)
-          ctx.fill()
-          ctx.stroke()
+          if (currentPlayerImage) {
+            // Draw the player image
+            const imageWidth = currentPlayerImage.width
+            const imageHeight = currentPlayerImage.height
+            
+            ctx.save()
+            ctx.translate(element.x, element.y)
+            if (isFlipped) {
+              ctx.scale(-1, 1)
+              ctx.translate(-imageWidth, 0)
+            }
+            ctx.drawImage(
+              currentPlayerImage,
+              -imageWidth / 2,
+              -imageHeight / 2,
+              imageWidth,
+              imageHeight
+            )
+            ctx.restore()
+          } else {
+            // Fallback to colored circle if image not loaded
+            const fillColor = element.fill || '#ff0000'
+            const strokeColor = element.stroke || '#ffffff'
+            const strokeWidth = element.strokeWidth || 2
+            
+            ctx.fillStyle = fillColor
+            ctx.strokeStyle = strokeColor
+            ctx.lineWidth = strokeWidth
+            
+            ctx.beginPath()
+            ctx.arc(element.x, element.y, 25, 0, 2 * Math.PI)
+            ctx.fill()
+            ctx.stroke()
+          }
         }
         break
         
@@ -1875,33 +1911,40 @@ const DrillDesigner = () => {
                 {/* Player Dropdown */}
                 {showPlayerDropdown && (
                   <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
-                    {playerTools.map((player) => (
-                      <button
-                        key={player.id}
-                        onClick={() => {
-                          setSelectedPlayer(player.id)
-                          setSelectedTool('player')
-                          setShowPlayerDropdown(false)
-                        }}
-                        className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
-                          selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                        }`}
-                      >
-                        {player.image ? (
-                          <img 
-                            src={player.image.src} 
-                            alt={player.label} 
-                            className="w-6 h-6"
-                          />
-                        ) : (
-                          <span className="text-lg">{player.icon}</span>
-                        )}
-                        <span className="text-sm">{player.label}</span>
-                        {selectedPlayer === player.id && (
-                          <span className="ml-auto text-blue-600">✓</span>
-                        )}
-                      </button>
-                    ))}
+                    {isLoadingPlayers ? (
+                      <div className="px-4 py-2 text-sm text-gray-500">Loading players...</div>
+                    ) : (
+                      <>
+                        <div className="px-4 py-2 text-sm text-gray-500">Debug: {dynamicPlayerTools.length} players loaded</div>
+                                                {dynamicPlayerTools.map((player) => (
+                          <button
+                            key={player.id}
+                            onClick={() => {
+                              setSelectedPlayer(player.id)
+                              setSelectedTool('player')
+                              setShowPlayerDropdown(false)
+                            }}
+                            className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
+                              selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                            }`}
+                          >
+                            {player.image ? (
+                              <img 
+                                src={player.image.src} 
+                                alt={player.label} 
+                                className="w-6 h-6"
+                              />
+                            ) : (
+                              <span className="text-lg">{player.icon}</span>
+                            )}
+                            <span className="text-sm">{player.label}</span>
+                            {selectedPlayer === player.id && (
+                              <span className="ml-auto text-blue-600">✓</span>
+                            )}
+                          </button>
+                        ))}
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -2116,6 +2159,13 @@ const DrillDesigner = () => {
                   className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
                 >
                   📋 Duplicate
+                </button>
+                <button
+                  onClick={flipSelectedElement}
+                  disabled={!selectedElement || !selectedElement.type.startsWith('dynamic-player-')}
+                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                >
+                  🔄 Flip
                 </button>
                 <button
                   onClick={deleteSelectedElement}
@@ -2434,61 +2484,7 @@ const DrillDesigner = () => {
                             draggable
                           />
                         )
-                      case 'player':
-                      case 'player2':
-                      case 'player3':
-                      case 'player4':
-                      case 'goalie':
-                      case 'goalie2':
-                        const playerImageMap = {
-                          'player': playerImage,
-                          'player2': playerImage2,
-                          'player3': playerImage3,
-                          'player4': playerImage4,
-                          'goalie': goalieImage,
-                          'goalie2': goalieImage2
-                        }
-                        const currentPlayerImage = playerImageMap[element.type]
-                        
-                        return (
-                          <Group
-                            key={element.id}
-                            x={element.x}
-                            y={element.y}
-                            onClick={() => handleElementClick(element)}
-                            onDragStart={(e) => {
-                              console.log('Player drag start:', e.target.position())
-                            }}
-                            onDragMove={(e) => {
-                              console.log('Player drag move:', e.target.position())
-                            }}
-                            onDragEnd={(e) => {
-                              console.log('Player drag end:', e.target.position())
-                              handleDragEnd(e, element.id)
-                            }}
-                            draggable={true}
-                          >
-                            {currentPlayerImage && (
-                              <Image
-                                image={currentPlayerImage}
-                                x={-currentPlayerImage.width / 2}
-                                y={-currentPlayerImage.height / 2}
-                                width={currentPlayerImage.width}
-                                height={currentPlayerImage.height}
-                              />
-                            )}
-                            {isSelected && (
-                              <Circle
-                                x={0}
-                                y={0}
-                                radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
-                                fill="transparent"
-                                stroke="#00ff00"
-                                strokeWidth={4}
-                              />
-                            )}
-                          </Group>
-                        )
+
                       case 'draw':
                         return (
                           <Line
@@ -2505,6 +2501,54 @@ const DrillDesigner = () => {
                           />
                         )
                       default:
+                        // Handle dynamic player IDs (they start with 'dynamic-player-')
+                        if (element.type.startsWith('dynamic-player-')) {
+                          // Find the corresponding player in dynamicPlayerTools
+                          const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
+                          const currentPlayerImage = dynamicPlayer?.image
+                          const isFlipped = flippedPlayers.has(element.id)
+                          
+                          return (
+                            <Group
+                              key={element.id}
+                              x={element.x}
+                              y={element.y}
+                              onClick={() => handleElementClick(element)}
+                              onDragStart={(e) => {
+                                console.log('Dynamic player drag start:', e.target.position())
+                              }}
+                              onDragMove={(e) => {
+                                console.log('Dynamic player drag move:', e.target.position())
+                              }}
+                              onDragEnd={(e) => {
+                                console.log('Dynamic player drag end:', e.target.position())
+                                handleDragEnd(e, element.id)
+                              }}
+                              draggable={true}
+                            >
+                              {currentPlayerImage && (
+                                <Image
+                                  image={currentPlayerImage}
+                                  x={isFlipped ? currentPlayerImage.width / 2 : -currentPlayerImage.width / 2}
+                                  y={-currentPlayerImage.height / 2}
+                                  width={currentPlayerImage.width}
+                                  height={currentPlayerImage.height}
+                                  scaleX={isFlipped ? -1 : 1}
+                                />
+                              )}
+                              {isSelected && (
+                                <Circle
+                                  x={0}
+                                  y={0}
+                                  radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
+                                  fill="transparent"
+                                  stroke="#00ff00"
+                                  strokeWidth={4}
+                                />
+                              )}
+                            </Group>
+                          )
+                        }
                         return null
                     }
                   })}
@@ -2573,13 +2617,14 @@ const DrillDesigner = () => {
             <h3 className="font-semibold text-blue-900 mb-2 text-sm md:text-base">How to Use:</h3>
             <ul className="text-xs md:text-sm text-blue-800 space-y-1">
               <li>• Select a tool from the toolbar above (Puck, Arrow, Text, Player, or Draw)</li>
-              <li>• Choose a color from the color picker</li>
+              <li>• Choose a color from the color picker (affects Puck, Text, and Player colors)</li>
               <li>• Click on empty space on the rink to add elements (except for Draw tool)</li>
               <li>• <strong>For freehand drawing:</strong> Select the Draw tool, then click and drag to draw</li>
               <li>• Click and drag elements to reposition them</li>
               <li>• Click on elements to select them (green outline)</li>
               <li>• <strong>Double-click on text elements to edit them</strong></li>
               <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
+              <li>• <strong>Use the Flip button to flip selected players horizontally</strong></li>
               <li>• Use the Delete Selected button to remove elements</li>
               <li>• Use the Export button to save your drill as an image</li>
               {isMobile && (
