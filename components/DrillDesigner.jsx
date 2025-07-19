@@ -621,35 +621,35 @@ const DrillDesigner = () => {
           
           // Corner face-off circles
           ctx.beginPath()
-          ctx.arc(mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(canvas.width - mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           // Hash Marks at Face-off Circles
           ctx.fillStyle = lineColor
           
           // Top Left Face-off Circle
-          ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Top Right Face-off Circle
-          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Bottom Left Face-off Circle
-          ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Bottom Right Face-off Circle
-          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Center Ice Hash Mark
           ctx.fillStyle = '#0000FF'
@@ -820,35 +820,35 @@ const DrillDesigner = () => {
           
           // Corner face-off circles
           ctx.beginPath()
-          ctx.arc(mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(canvas.width - mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           ctx.beginPath()
-          ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+          ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
           ctx.stroke()
           
           // Hash Marks at Face-off Circles
           ctx.fillStyle = lineColor
           
           // Top Left Face-off Circle
-          ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Top Right Face-off Circle
-          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Bottom Left Face-off Circle
-          ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Bottom Right Face-off Circle
-          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+          ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
           
           // Center Ice Hash Mark
           ctx.fillStyle = '#0000FF'
@@ -1418,35 +1418,35 @@ const DrillDesigner = () => {
         
         // Corner face-off circles
         ctx.beginPath()
-        ctx.arc(mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+        ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
         ctx.stroke()
         
         ctx.beginPath()
-        ctx.arc(canvas.width - mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+        ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
         ctx.stroke()
         
         ctx.beginPath()
-        ctx.arc(mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+        ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
         ctx.stroke()
         
         ctx.beginPath()
-        ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+        ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
         ctx.stroke()
         
         // Hash Marks at Face-off Circles
         ctx.fillStyle = lineColor
         
         // Top Left Face-off Circle
-        ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+        ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
         
         // Top Right Face-off Circle
-        ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+        ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
         
         // Bottom Left Face-off Circle
-        ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+        ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
         
         // Bottom Right Face-off Circle
-        ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+        ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
         
         // Center Ice Hash Mark
         ctx.fillStyle = '#0000FF'
@@ -1548,35 +1548,35 @@ const DrillDesigner = () => {
       
       // Corner face-off circles
       ctx.beginPath()
-      ctx.arc(mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(canvas.width - mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       // Hash Marks at Face-off Circles
       ctx.fillStyle = lineColor
       
       // Top Left Face-off Circle
-      ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Top Right Face-off Circle
-      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Bottom Left Face-off Circle
-      ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Bottom Right Face-off Circle
-      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Center Ice Hash Mark
       ctx.fillStyle = '#0000FF'
@@ -1674,35 +1674,35 @@ const DrillDesigner = () => {
       
       // Corner face-off circles
       ctx.beginPath()
-      ctx.arc(mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(canvas.width - mToPx(14), mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       ctx.beginPath()
-      ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(5), mToPx(2.25), 0, 2 * Math.PI)
+      ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
       ctx.stroke()
       
       // Hash Marks at Face-off Circles
       ctx.fillStyle = lineColor
       
       // Top Left Face-off Circle
-      ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Top Right Face-off Circle
-      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Bottom Left Face-off Circle
-      ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Bottom Right Face-off Circle
-      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(5) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+      ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
       
       // Center Ice Hash Mark
       ctx.fillStyle = '#0000FF'
@@ -2154,7 +2154,7 @@ const DrillDesigner = () => {
                   />
                   <Circle
                     x={mToPx(14)}
-                    y={mToPxY(5)}
+                    y={mToPxY(7)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2162,7 +2162,7 @@ const DrillDesigner = () => {
                   />
                   <Circle
                     x={canvasWidth - mToPx(14)}
-                    y={mToPxY(5)}
+                    y={mToPxY(7)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2170,7 +2170,7 @@ const DrillDesigner = () => {
                   />
                   <Circle
                     x={mToPx(14)}
-                    y={canvasHeight - mToPxY(5)}
+                    y={canvasHeight - mToPxY(7)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2178,7 +2178,7 @@ const DrillDesigner = () => {
                   />
                   <Circle
                     x={canvasWidth - mToPx(14)}
-                    y={canvasHeight - mToPxY(5)}
+                    y={canvasHeight - mToPxY(7)}
                     radius={mToPx(2.25)}
                     stroke={lineColor}
                     strokeWidth={3}
@@ -2189,7 +2189,7 @@ const DrillDesigner = () => {
                   {/* Top Left Face-off Circle */}
                   <Rect
                     x={mToPx(14) - mToPx(0.3)}
-                    y={mToPxY(5) - mToPxY(0.3)}
+                    y={mToPxY(7) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
@@ -2199,7 +2199,7 @@ const DrillDesigner = () => {
                   {/* Top Right Face-off Circle */}
                   <Rect
                     x={canvasWidth - mToPx(14) - mToPx(0.3)}
-                    y={mToPxY(5) - mToPxY(0.3)}
+                    y={mToPxY(7) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
@@ -2209,7 +2209,7 @@ const DrillDesigner = () => {
                   {/* Bottom Left Face-off Circle */}
                   <Rect
                     x={mToPx(14) - mToPx(0.3)}
-                    y={canvasHeight - mToPxY(5) - mToPxY(0.3)}
+                    y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
@@ -2219,7 +2219,7 @@ const DrillDesigner = () => {
                   {/* Bottom Right Face-off Circle */}
                   <Rect
                     x={canvasWidth - mToPx(14) - mToPx(0.3)}
-                    y={canvasHeight - mToPxY(5) - mToPxY(0.3)}
+                    y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
                     width={mToPx(0.6)}
                     height={mToPxY(0.6)}
                     fill={lineColor}
