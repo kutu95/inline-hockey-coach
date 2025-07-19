@@ -150,8 +150,8 @@ const DrillDesigner = () => {
   // Responsive canvas dimensions
   const baseCanvasWidth = 1200
   const baseCanvasHeight = 600
-  const canvasWidth = Math.floor(baseCanvasWidth * canvasScale)
-  const canvasHeight = Math.floor(baseCanvasHeight * canvasScale)
+  const canvasWidth = Math.floor(baseCanvasWidth * (canvasScale || 1))
+  const canvasHeight = Math.floor(baseCanvasHeight * (canvasScale || 1))
   
   const scaleX = canvasWidth / rinkLength
   const scaleY = canvasHeight / rinkWidth

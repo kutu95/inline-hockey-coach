@@ -146,11 +146,16 @@ const Drills = () => {
       const urlParts = url.split('/')
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      const { data: { signedUrl } } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from('drill-images')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
-      return signedUrl
+      if (error) {
+        console.error('Error creating signed URL:', error)
+        return url // Fallback to original URL
+      }
+      
+      return data?.signedUrl || url // Use signed URL if available, otherwise fallback
     } catch (err) {
       console.error('Error getting signed URL:', err)
       return url // Fallback to original URL
