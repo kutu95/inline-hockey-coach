@@ -20,7 +20,10 @@ const Clubs = () => {
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState(null)
   const [currentLogoUrl, setCurrentLogoUrl] = useState('')
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine user permissions
+  const canManageClubs = hasRole('superadmin') || hasRole('admin')
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
@@ -360,22 +363,26 @@ const Clubs = () => {
                     </Link>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Clubs</h1>
                   </div>
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Club
-                  </button>
+                  {canManageClubs && (
+                    <button
+                      onClick={() => setShowAddForm(true)}
+                      className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Add Club
+                    </button>
+                  )}
                 </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Club
-                  </button>
+                  {canManageClubs && (
+                    <button
+                      onClick={() => setShowAddForm(true)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Add Club
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -516,12 +523,14 @@ const Clubs = () => {
               {clubs.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <div className="text-gray-500 text-lg mb-4">No clubs found</div>
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Your First Club
-                  </button>
+                  {canManageClubs && (
+                    <button
+                      onClick={() => setShowAddForm(true)}
+                      className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Add Your First Club
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -596,18 +605,22 @@ const Clubs = () => {
                         >
                           View Details
                         </Link>
-                        <button
-                          onClick={() => handleEdit(club)}
-                          className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(club.id)}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
-                        >
-                          Delete
-                        </button>
+                        {canManageClubs && (
+                          <button
+                            onClick={() => handleEdit(club)}
+                            className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        {canManageClubs && (
+                          <button
+                            onClick={() => handleDelete(club.id)}
+                            className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
+                          >
+                            Delete
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

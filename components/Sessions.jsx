@@ -13,7 +13,12 @@ const Sessions = () => {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingSession, setEditingSession] = useState(null)
   const [selectedSquads, setSelectedSquads] = useState([])
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine user permissions
+  const canViewSessions = hasRole('superadmin') || hasRole('admin') || hasRole('coach') || hasRole('player')
+  const canManageSessions = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
+  const canDeleteSessions = hasRole('superadmin') || hasRole('admin')
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
@@ -399,22 +404,26 @@ const Sessions = () => {
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900">Sessions</h1>
                   </div>
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Session
-                  </button>
+                  {canManageSessions && (
+                    <button
+                      onClick={() => setShowAddForm(true)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Add Session
+                    </button>
+                  )}
                 </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Add Session
-                  </button>
+                  {canManageSessions && (
+                    <button
+                      onClick={() => setShowAddForm(true)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Add Session
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -659,36 +668,44 @@ const Sessions = () => {
                             >
                               View Session
                             </Link>
-                            <Link
-                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}
-                              className="text-purple-600 hover:text-purple-800 text-sm font-medium text-center sm:text-left"
-                            >
-                              Plan Session
-                            </Link>
-                            <Link
-                              to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
-                            >
-                              Take Attendance
-                            </Link>
+                            {canManageSessions && (
+                              <Link
+                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}
+                                className="text-purple-600 hover:text-purple-800 text-sm font-medium text-center sm:text-left"
+                              >
+                                Plan Session
+                              </Link>
+                            )}
+                            {canManageSessions && (
+                              <Link
+                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
+                              >
+                                Take Attendance
+                              </Link>
+                            )}
                             <Link
                               to={orgId ? `/organisations/${orgId}/sessions/${session.id}/pdf` : `/sessions/${session.id}/pdf`}
                               className="text-orange-600 hover:text-orange-800 text-sm font-medium text-center sm:text-left"
                             >
                               Export PDF
                             </Link>
-                            <button
-                              onClick={() => handleEdit(session)}
-                              className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(session.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
-                            >
-                              Delete
-                            </button>
+                            {canManageSessions && (
+                              <button
+                                onClick={() => handleEdit(session)}
+                                className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
+                              >
+                                Edit
+                              </button>
+                            )}
+                            {canDeleteSessions && (
+                              <button
+                                onClick={() => handleDelete(session.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium text-center sm:text-left"
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>

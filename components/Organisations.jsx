@@ -11,7 +11,7 @@ const Organisations = () => {
   const [editingOrg, setEditingOrg] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [logoPreview, setLogoPreview] = useState(null)
-  const { hasRole, userRoles, signOut } = useAuth()
+  const { hasRole, userRoles, signOut, user } = useAuth()
 
   const handleSignOut = async () => {
     try {
@@ -272,6 +272,9 @@ const Organisations = () => {
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">Organisations</h1>
                     <p className="text-gray-600 mt-1">Manage hockey organisations</p>
+                    {user && (
+                      <p className="text-xs text-gray-400 mt-1">Logged in as: {user.email}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

@@ -11,7 +11,10 @@ const ViewSession = () => {
   const [notesBlocks, setNotesBlocks] = useState([])
   const [sessionDrills, setSessionDrills] = useState([])
   
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine user permissions
+  const canEditPlan = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
   const params = useParams()
   const navigate = useNavigate()
   const sessionId = params.sessionId
@@ -199,12 +202,14 @@ const ViewSession = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Session Details</h1>
                   </div>
                   <div className="flex space-x-2">
-                    <Link
-                      to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/planner` : `/sessions/${sessionId}/planner`}
-                      className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-                    >
-                      Edit Plan
-                    </Link>
+                    {canEditPlan && (
+                      <Link
+                        to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/planner` : `/sessions/${sessionId}/planner`}
+                        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                      >
+                        Edit Plan
+                      </Link>
+                    )}
                     <Link
                       to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/pdf` : `/sessions/${sessionId}/pdf`}
                       className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
@@ -225,12 +230,14 @@ const ViewSession = () => {
                     <h1 className="text-3xl font-bold text-gray-900">Session Details</h1>
                   </div>
                   <div className="flex space-x-2">
-                    <Link
-                      to={`/sessions/${sessionId}/planner`}
-                      className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-                    >
-                      Edit Plan
-                    </Link>
+                    {canEditPlan && (
+                      <Link
+                        to={`/sessions/${sessionId}/planner`}
+                        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+                      >
+                        Edit Plan
+                      </Link>
+                    )}
                     <Link
                       to={`/sessions/${sessionId}/pdf`}
                       className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
@@ -283,12 +290,14 @@ const ViewSession = () => {
               {notesBlocks.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No session plan created yet.</p>
-                  <Link
-                    to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/planner` : `/sessions/${sessionId}/planner`}
-                    className="inline-block mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-                  >
-                    Create Session Plan
-                  </Link>
+                  {canEditPlan && (
+                    <Link
+                      to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/planner` : `/sessions/${sessionId}/planner`}
+                      className="inline-block mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                    >
+                      Create Session Plan
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">

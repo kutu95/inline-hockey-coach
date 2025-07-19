@@ -98,6 +98,11 @@ const OrganisationDetail = () => {
     return hasRole('admin')
   }
 
+  // Helper function to check if user can view players and attendance (admin, coach, or superadmin)
+  const canViewPlayersAndAttendance = () => {
+    return hasRole('admin') || hasRole('coach') || hasRole('superadmin')
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -253,25 +258,27 @@ const OrganisationDetail = () => {
 
           {/* Navigation Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Link
-              to={`/organisations/${orgId}/players`}
-              className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                    </svg>
+            {canViewPlayersAndAttendance() && (
+              <Link
+                to={`/organisations/${orgId}/players`}
+                className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Players</h3>
+                    <p className="text-gray-600">Manage players and coaches</p>
+                    <p className="text-sm text-blue-600 mt-1">{stats.players} players</p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Players</h3>
-                  <p className="text-gray-600">Manage players and coaches</p>
-                  <p className="text-sm text-blue-600 mt-1">{stats.players} players</p>
-                </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
             <Link
               to={`/organisations/${orgId}/squads`}
@@ -353,25 +360,27 @@ const OrganisationDetail = () => {
               </div>
             </Link>
 
-            <Link
-              to={`/organisations/${orgId}/attendance`}
-              className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
+            {canViewPlayersAndAttendance() && (
+              <Link
+                to={`/organisations/${orgId}/attendance`}
+                className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Attendance</h3>
+                    <p className="text-gray-600">Training session attendance</p>
+                    <p className="text-sm text-teal-600 mt-1">View attendance</p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Attendance</h3>
-                  <p className="text-gray-600">Training session attendance</p>
-                  <p className="text-sm text-teal-600 mt-1">View attendance</p>
-                </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
             {/* Reports - Only visible to admins and coaches */}
             {canViewReports() && (

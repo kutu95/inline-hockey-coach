@@ -169,7 +169,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/squads" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <Squads />
                 </RoleProtectedRoute>
               } 
@@ -177,7 +177,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/squads/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <ViewSquad />
                 </RoleProtectedRoute>
               } 
@@ -217,7 +217,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/clubs" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <Clubs />
                 </RoleProtectedRoute>
               } 
@@ -225,7 +225,7 @@ function App() {
             <Route 
               path="/organisations/:orgId/clubs/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <ViewClub />
                 </RoleProtectedRoute>
               } 
@@ -349,7 +349,7 @@ function App() {
             <Route 
               path="/clubs" 
               element={
-                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <Clubs />
                 </RoleProtectedRoute>
               } 
@@ -357,7 +357,7 @@ function App() {
             <Route 
               path="/clubs/:id" 
               element={
-                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'player']}>
                   <ViewClub />
                 </RoleProtectedRoute>
               } 

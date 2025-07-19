@@ -10,7 +10,10 @@ const Squads = () => {
   const [error, setError] = useState('')
   const [newSquadName, setNewSquadName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine if user has edit permissions
+  const canEdit = hasRole('admin') || hasRole('coach')
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
 
@@ -205,26 +208,28 @@ const Squads = () => {
             )}
 
             <div className="px-6 py-4">
-              {/* Add Squad Form */}
-              <form onSubmit={handleAddSquad} className="mb-6">
-                <div className="flex space-x-4">
-                  <input
-                    type="text"
-                    value={newSquadName}
-                    onChange={(e) => setNewSquadName(e.target.value)}
-                    placeholder="Enter squad name"
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    disabled={isAdding}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!newSquadName.trim() || isAdding}
-                    className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    {isAdding ? 'Adding...' : 'Add Squad'}
-                  </button>
-                </div>
-              </form>
+              {/* Add Squad Form - Only visible to admins and coaches */}
+              {canEdit && (
+                <form onSubmit={handleAddSquad} className="mb-6">
+                  <div className="flex space-x-4">
+                    <input
+                      type="text"
+                      value={newSquadName}
+                      onChange={(e) => setNewSquadName(e.target.value)}
+                      placeholder="Enter squad name"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      disabled={isAdding}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!newSquadName.trim() || isAdding}
+                      className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      {isAdding ? 'Adding...' : 'Add Squad'}
+                    </button>
+                  </div>
+                </form>
+              )}
 
               {/* Squads List */}
               {squads.length === 0 ? (
@@ -239,6 +244,7 @@ const Squads = () => {
                       key={squad.id}
                       squad={squad}
                       orgId={orgId}
+                      canEdit={canEdit}
                       onDelete={handleDeleteSquad}
                       onEdit={handleEditSquad}
                       onToggleActive={handleToggleActiveStatus}
@@ -254,7 +260,7 @@ const Squads = () => {
   )
 }
 
-const SquadItem = ({ squad, orgId, onDelete, onEdit, onToggleActive }) => {
+const SquadItem = ({ squad, orgId, canEdit, onDelete, onEdit, onToggleActive }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editName, setEditName] = useState(squad.name)
 
@@ -321,35 +327,41 @@ const SquadItem = ({ squad, orgId, onDelete, onEdit, onToggleActive }) => {
           </div>
           {!isEditing && (
             <div className="flex space-x-2">
-              <button
-                onClick={() => onToggleActive(squad.id, squad.is_active)}
-                className={`text-sm font-medium ${
-                  squad.is_active 
-                    ? 'text-orange-600 hover:text-orange-800' 
-                    : 'text-green-600 hover:text-green-800'
-                }`}
-                title={squad.is_active ? 'Deactivate Squad' : 'Activate Squad'}
-              >
-                {squad.is_active ? 'Deactivate' : 'Activate'}
-              </button>
+              {canEdit && (
+                <button
+                  onClick={() => onToggleActive(squad.id, squad.is_active)}
+                  className={`text-sm font-medium ${
+                    squad.is_active 
+                      ? 'text-orange-600 hover:text-orange-800' 
+                      : 'text-green-600 hover:text-green-800'
+                  }`}
+                  title={squad.is_active ? 'Deactivate Squad' : 'Activate Squad'}
+                >
+                  {squad.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+              )}
               <Link
                 to={orgId ? `/organisations/${orgId}/squads/${squad.id}` : `/squads/${squad.id}`}
                 className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
               >
                 View Players
               </Link>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-green-600 hover:text-green-800 text-sm font-medium"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => onDelete(squad.id)}
-                className="text-red-600 hover:text-red-800 text-sm font-medium"
-              >
-                Delete
-              </button>
+              {canEdit && (
+                <>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="text-green-600 hover:text-green-800 text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(squad.id)}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

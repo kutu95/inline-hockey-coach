@@ -7,12 +7,21 @@ const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
   const [playerSquads, setPlayerSquads] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine if user has edit permissions
+  const canEdit = hasRole('admin') || hasRole('coach') || hasRole('superadmin')
 
   useEffect(() => {
-    fetchSquads()
     fetchPlayerSquads()
   }, [playerId])
+
+  // Fetch squads after player squads are loaded
+  useEffect(() => {
+    if (!loading) {
+      fetchSquads()
+    }
+  }, [playerSquads, loading])
 
   const fetchSquads = async () => {
     try {
@@ -28,6 +37,11 @@ const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
       } else {
         // Otherwise, filter by coach_id (single tenant)
         query = query.eq('coach_id', user.id)
+      }
+
+      // If user doesn't have edit permissions, only show squads the player is in
+      if (!canEdit) {
+        query = query.in('id', playerSquads.map(ps => ps.squad_id))
       }
 
       const { data, error } = await query
@@ -108,9 +122,14 @@ const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
 
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-medium text-gray-900">Squad Assignments</h4>
+      <h4 className="text-sm font-medium text-gray-900">
+        Squad Assignments
+        {!canEdit && <span className="text-xs text-gray-500 ml-2">(Read Only)</span>}
+      </h4>
       {squads.length === 0 ? (
-        <p className="text-sm text-gray-500">No squads available. Create squads first.</p>
+        <p className="text-sm text-gray-500">
+          {canEdit ? "No squads available. Create squads first." : "Player is not assigned to any squads."}
+        </p>
       ) : (
         <div className="space-y-4">
           {/* Active Squads */}
@@ -128,9 +147,10 @@ const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
                           type="checkbox"
                           checked={isAssigned}
                           onChange={() => handleToggleSquad(squad.id)}
-                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                          disabled={!canEdit}
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                        <span className="text-sm text-gray-700">{squad.name}</span>
+                        <span className={`text-sm ${!canEdit ? 'text-gray-500' : 'text-gray-700'}`}>{squad.name}</span>
                       </label>
                     )
                   })}
@@ -153,7 +173,8 @@ const SquadAssignment = ({ playerId, onUpdate, orgId }) => {
                           type="checkbox"
                           checked={isAssigned}
                           onChange={() => handleToggleSquad(squad.id)}
-                          className="rounded border-gray-300 text-gray-500 focus:ring-gray-500"
+                          disabled={!canEdit}
+                          className="rounded border-gray-300 text-gray-500 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <span className="text-sm text-gray-500">{squad.name}</span>
                       </label>

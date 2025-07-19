@@ -6,7 +6,13 @@ import { formatAccreditations, getAccreditationBadges, calculateAge } from '../s
 
 const ViewSquad = () => {
   const { id, orgId } = useParams()
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
+  
+  // Determine if user has view permissions (coach, admin, superadmin)
+  const canViewPlayers = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
+  
+  // Determine if user has admin permissions (admin, superadmin only)
+  const canManageSquad = hasRole('superadmin') || hasRole('admin')
   const [squad, setSquad] = useState(null)
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -319,20 +325,26 @@ const ViewSquad = () => {
                               </div>
                             </div>
                           </Link>
-                          <div className="flex space-x-2 ml-4">
-                            <Link
-                              to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                            >
-                              View
-                            </Link>
-                            <button
-                              onClick={() => handleRemovePlayer(player.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium"
-                            >
-                              Remove
-                            </button>
-                          </div>
+                          {(canViewPlayers || canManageSquad) && (
+                            <div className="flex space-x-2 ml-4">
+                              {canViewPlayers && (
+                                <Link
+                                  to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
+                                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                                >
+                                  View
+                                </Link>
+                              )}
+                              {canManageSquad && (
+                                <button
+                                  onClick={() => handleRemovePlayer(player.id)}
+                                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                >
+                                  Remove
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

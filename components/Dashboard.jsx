@@ -7,6 +7,8 @@ const Dashboard = () => {
   const { user, signOut, userRoles, hasRole, loading } = useAuth()
   const [userOrganization, setUserOrganization] = useState(null)
   const [loadingOrg, setLoadingOrg] = useState(false)
+  const [playerProfile, setPlayerProfile] = useState(null)
+  const [loadingPlayer, setLoadingPlayer] = useState(false)
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -22,6 +24,13 @@ const Dashboard = () => {
   useEffect(() => {
     if (userRoles.includes('admin') && !userOrganization && !loadingOrg) {
       fetchUserOrganizations()
+    }
+  }, [userRoles])
+
+  // Fetch player profile for players
+  useEffect(() => {
+    if (hasRole('player') && !playerProfile && !loadingPlayer) {
+      fetchPlayerProfile()
     }
   }, [userRoles])
 
@@ -63,6 +72,30 @@ const Dashboard = () => {
       console.error('Error in fetchUserOrganizations:', err)
     } finally {
       setLoadingOrg(false)
+    }
+  }
+
+  const fetchPlayerProfile = async () => {
+    try {
+      setLoadingPlayer(true)
+      const { data, error } = await supabase
+        .from('players')
+        .select('id, organization_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (error) {
+        console.error('Error fetching player profile:', error)
+        return
+      }
+
+      if (data) {
+        setPlayerProfile(data)
+      }
+    } catch (err) {
+      console.error('Error in fetchPlayerProfile:', err)
+    } finally {
+      setLoadingPlayer(false)
     }
   }
   const handleSignOut = async () => {
@@ -299,17 +332,46 @@ const Dashboard = () => {
               {/* Player access */}
               {hasRole('player') && (
                 <>
-                  <Link
-                    to="/player-profile"
-                    className="bg-green-50 border border-green-200 rounded-lg p-4 hover:bg-green-100 transition-colors duration-200"
-                  >
-                    <h3 className="text-lg font-semibold text-green-900 mb-2">
-                      My Profile
-                    </h3>
-                    <p className="text-green-700">
-                      View and update your player information
-                    </p>
-                  </Link>
+                  {loadingPlayer ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-green-900">Loading profile...</h3>
+                        </div>
+                      </div>
+                    </div>
+                  ) : playerProfile ? (
+                    <Link
+                      to={`/organisations/${playerProfile.organization_id}/players/${playerProfile.id}`}
+                      className="bg-green-50 border border-green-200 rounded-lg p-4 hover:bg-green-100 transition-colors duration-200"
+                    >
+                      <h3 className="text-lg font-semibold text-green-900 mb-2">
+                        My Profile
+                      </h3>
+                      <p className="text-green-700">
+                        View and update your player information
+                      </p>
+                    </Link>
+                  ) : (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-green-600">
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-green-900">
+                            Profile Not Found
+                          </h3>
+                          <p className="text-green-700">
+                            Your player profile is not linked to your account
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
                   <Link
                     to="/sessions"

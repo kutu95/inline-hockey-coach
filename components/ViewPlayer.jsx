@@ -318,35 +318,43 @@ const ViewPlayer = () => {
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Player Details</h1>
                   </div>
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                    <Link
-                      to={`/players/${id}/edit`}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto text-center"
-                    >
-                      Edit Player
-                    </Link>
-                    <button
-                      onClick={handleDelete}
-                      className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto"
-                    >
-                      Delete Player
-                    </button>
+                    {(hasRole('admin') || hasRole('coach')) && (
+                      <Link
+                        to={`/players/${id}/edit`}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto text-center"
+                      >
+                        Edit Player
+                      </Link>
+                    )}
+                    {hasRole('admin') && (
+                      <button
+                        onClick={handleDelete}
+                        className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto"
+                      >
+                        Delete Player
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end space-x-3">
-                  <Link
-                    to={`/organisations/${orgId}/players/${id}/edit`}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Edit Player
-                  </Link>
-                  <button
-                    onClick={handleDelete}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Delete Player
-                  </button>
+                  {(hasRole('admin') || hasRole('coach')) && (
+                    <Link
+                      to={`/organisations/${orgId}/players/${id}/edit`}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Edit Player
+                    </Link>
+                  )}
+                  {hasRole('admin') && (
+                    <button
+                      onClick={handleDelete}
+                      className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Delete Player
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -604,12 +612,14 @@ const ViewPlayer = () => {
                   >
                     ← Back to Players
                   </Link>
-                  <Link
-                    to={`/players/${id}/edit`}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Edit Player
-                  </Link>
+                  {(hasRole('admin') || hasRole('coach')) && (
+                    <Link
+                      to={`/players/${id}/edit`}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Edit Player
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
