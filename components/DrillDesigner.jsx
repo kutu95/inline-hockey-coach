@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Stage, Layer, Rect, Circle, Line, Text, Arrow, Shape, Image, Group } from 'react-konva'
 import JSZip from 'jszip'
 import { supabase } from '../src/lib/supabase'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 
 const DrillDesigner = () => {
   const { orgId } = useParams()
+  const navigate = useNavigate()
   const [selectedTool, setSelectedTool] = useState('puck')
   const [selectedColor, setSelectedColor] = useState('#ff0000')
   const [elements, setElements] = useState([])
@@ -45,10 +46,14 @@ const DrillDesigner = () => {
   const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
   const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
   const [flippedPlayers, setFlippedPlayers] = useState(new Set())
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [draggedFrameIndex, setDraggedFrameIndex] = useState(null)
+  const [dragOverFrameIndex, setDragOverFrameIndex] = useState(null)
   
   const stageRef = useRef()
   const animationRef = useRef()
   const audioChunksRef = useRef([])
+  const isPlayingRef = useRef(false)
   
 
 
@@ -87,6 +92,188 @@ const DrillDesigner = () => {
     loadAvailableDrills()
     loadAvailableSessions()
   }, [orgId])
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      isPlayingRef.current = false
+    }
+  }, [])
+
+  // Keyboard shortcuts for frame navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Only handle keyboard shortcuts when not editing text
+      if (editingText) return
+      
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          goToPreviousFrame()
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          goToNextFrame()
+          break
+        case 'Home':
+          e.preventDefault()
+          goToFirstFrame()
+          break
+        case 'End':
+          e.preventDefault()
+          goToLastFrame()
+          break
+        case ' ':
+          e.preventDefault()
+          if (isPlaying) {
+            stopAnimation()
+          } else {
+            playAnimation()
+          }
+          break
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [frames.length, currentFrameIndex, isPlaying, editingText])
+
+  // Navigation guard to prevent accidental data loss
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        // Standard way to show browser's "Leave Site?" dialog
+        e.preventDefault()
+        e.returnValue = ''
+        return ''
+      }
+    }
+
+    // Store the current location when component mounts
+    const currentLocation = window.location.pathname
+
+    // Intercept all link clicks to check for unsaved changes
+    const handleLinkClick = (e) => {
+      if (hasUnsavedChanges) {
+        const link = e.target.closest('a')
+        if (link && link.href && !link.href.includes('javascript:') && !link.href.includes('#')) {
+          console.log('Navigation guard: Intercepting link click to', link.href)
+          const confirmed = window.confirm(
+            'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+          )
+          if (!confirmed) {
+            console.log('Navigation guard: User cancelled navigation')
+            e.preventDefault()
+            e.stopPropagation()
+            return false
+          }
+          console.log('Navigation guard: User confirmed navigation')
+        }
+      }
+    }
+
+    // Create a custom navigation function that checks for unsaved changes
+    const safeNavigate = (to) => {
+      if (hasUnsavedChanges) {
+        const confirmed = window.confirm(
+          'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+        )
+        if (confirmed) {
+          navigate(to)
+        }
+      } else {
+        navigate(to)
+      }
+    }
+
+    // Make the safeNavigate function available globally for this component
+    window.safeNavigate = safeNavigate
+
+    // Add event listeners
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('click', handleLinkClick, true) // Use capture phase
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('click', handleLinkClick, true)
+      // Clean up global function
+      delete window.safeNavigate
+    }
+  }, [hasUnsavedChanges, navigate])
+
+  // Navigation guard for browser back button using popstate
+  useEffect(() => {
+    console.log('Navigation guard: Setting up popstate guard, hasUnsavedChanges:', hasUnsavedChanges)
+    
+    // Push a state when component mounts to ensure we can intercept back button
+    const currentPath = window.location.pathname
+    window.history.pushState({ fromDrillDesigner: true }, '', currentPath)
+    
+    const handlePopState = (e) => {
+      console.log('Navigation guard: Popstate event detected, hasUnsavedChanges:', hasUnsavedChanges, 'state:', e.state)
+      
+      if (hasUnsavedChanges) {
+        console.log('Navigation guard: Popstate event detected with unsaved changes')
+        
+        const confirmed = window.confirm(
+          'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+        )
+        
+        if (!confirmed) {
+          console.log('Navigation guard: User cancelled popstate navigation')
+          // Push the current state back to prevent navigation
+          window.history.pushState({ fromDrillDesigner: true }, '', currentPath)
+        } else {
+          console.log('Navigation guard: User confirmed popstate navigation')
+        }
+      }
+    }
+
+    // Add popstate listener
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      console.log('Navigation guard: Cleaning up popstate guard')
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [hasUnsavedChanges])
+
+  // Enhanced navigation guard using history state
+  useEffect(() => {
+    console.log('Navigation guard: Setting up enhanced guard, hasUnsavedChanges:', hasUnsavedChanges)
+    
+    if (hasUnsavedChanges) {
+      // Add a state entry when there are unsaved changes
+      const currentPath = window.location.pathname
+      console.log('Navigation guard: Replacing state with hasUnsavedChanges flag')
+      window.history.replaceState({ hasUnsavedChanges: true }, '', currentPath)
+      
+      const handleBeforePopState = (e) => {
+        console.log('Navigation guard: Enhanced popstate handler triggered, state:', e.state)
+        if (e.state?.hasUnsavedChanges) {
+          console.log('Navigation guard: Detected unsaved changes in state')
+          const confirmed = window.confirm(
+            'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+          )
+          if (!confirmed) {
+            console.log('Navigation guard: User cancelled enhanced navigation')
+            // Prevent navigation
+            window.history.pushState({ hasUnsavedChanges: true }, '', currentPath)
+          } else {
+            console.log('Navigation guard: User confirmed enhanced navigation')
+          }
+        }
+      }
+      
+      window.addEventListener('popstate', handleBeforePopState)
+      
+      return () => {
+        console.log('Navigation guard: Cleaning up enhanced guard')
+        window.removeEventListener('popstate', handleBeforePopState)
+      }
+    }
+  }, [hasUnsavedChanges])
 
   // Dynamic player loading
   const loadDynamicPlayers = async () => {
@@ -165,10 +352,10 @@ const DrillDesigner = () => {
             fileName: fileName
           })
           
-          console.log(`Successfully loaded: ${fileName}`)
+          // Successfully loaded - no need to log every file
         } catch (error) {
           // Silently skip files that don't exist - this is expected for discovery
-          console.log(`File not found (skipping): ${fileName}`)
+          // No need to log every missing file
         }
       }
       
@@ -244,6 +431,7 @@ const DrillDesigner = () => {
       ...getDefaultProperties(elementType)
     }
     setElements([...elements, newElement])
+    setHasUnsavedChanges(true)
   }
 
   const getDefaultProperties = (type) => {
@@ -330,6 +518,7 @@ const DrillDesigner = () => {
         lineJoin: 'round'
       }
       setElements([...elements, newElement])
+      setHasUnsavedChanges(true)
     }
     setIsDrawing(false)
     setDrawingPoints([])
@@ -346,11 +535,12 @@ const DrillDesigner = () => {
 
   const handleTextEdit = () => {
     if (editingText) {
-      setElements(elements.map(el => 
-        el.id === editingText 
-          ? { ...el, text: editTextValue }
-          : el
-      ))
+          setElements(elements.map(el => 
+      el.id === editingText 
+        ? { ...el, text: editTextValue }
+        : el
+    ))
+    setHasUnsavedChanges(true)
       setEditingText(null)
       setEditTextValue('')
     }
@@ -377,12 +567,14 @@ const DrillDesigner = () => {
     
     console.log('Updated elements:', updatedElements)
     setElements(updatedElements)
+    setHasUnsavedChanges(true)
   }
 
   const deleteSelectedElement = () => {
     if (selectedElement) {
       setElements(elements.filter(el => el.id !== selectedElement.id))
       setSelectedElement(null)
+      setHasUnsavedChanges(true)
     }
   }
 
@@ -396,6 +588,7 @@ const DrillDesigner = () => {
       }
       setElements([...elements, newElement])
       setSelectedElement(newElement) // Select the new copy
+      setHasUnsavedChanges(true)
     }
   }
 
@@ -408,6 +601,7 @@ const DrillDesigner = () => {
         newFlippedPlayers.add(selectedElement.id)
       }
       setFlippedPlayers(newFlippedPlayers)
+      setHasUnsavedChanges(true)
     }
   }
 
@@ -437,6 +631,7 @@ const DrillDesigner = () => {
     
     setFrames([...frames, newFrame])
     setCurrentFrameIndex(frames.length)
+    setHasUnsavedChanges(true)
     console.log('Frame captured:', newFrame.frameNumber, 'Total frames:', frames.length + 1)
   }
 
@@ -456,6 +651,7 @@ const DrillDesigner = () => {
       if (currentFrameIndex >= frameIndex) {
         setCurrentFrameIndex(Math.max(0, currentFrameIndex - 1))
       }
+      setHasUnsavedChanges(true)
     }
   }
 
@@ -473,6 +669,95 @@ const DrillDesigner = () => {
     }
   }
 
+  const duplicateFrame = (frameIndex) => {
+    if (frameIndex >= 0 && frameIndex < frames.length) {
+      const frameToDuplicate = frames[frameIndex]
+      const newFrame = {
+        ...frameToDuplicate,
+        id: Date.now() + Math.random(),
+        frameNumber: frames.length + 1
+      }
+      
+      // Insert the duplicate right after the original frame
+      const newFrames = [...frames]
+      newFrames.splice(frameIndex + 1, 0, newFrame)
+      
+      // Update frame numbers for all frames after the insertion
+      for (let i = frameIndex + 2; i < newFrames.length; i++) {
+        newFrames[i] = { ...newFrames[i], frameNumber: i + 1 }
+      }
+      
+      setFrames(newFrames)
+      setHasUnsavedChanges(true)
+    }
+  }
+
+  const handleFrameDragStart = (e, frameIndex) => {
+    setDraggedFrameIndex(frameIndex)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/html', frameIndex.toString())
+    
+    // Add a small delay to show the dragged state
+    setTimeout(() => {
+      if (draggedFrameIndex === frameIndex) {
+        e.target.style.opacity = '0.5'
+      }
+    }, 0)
+  }
+
+  const handleFrameDragOver = (e, frameIndex) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverFrameIndex(frameIndex)
+  }
+
+  const handleFrameDragLeave = (e) => {
+    setDragOverFrameIndex(null)
+  }
+
+  const handleFrameDrop = (e, dropIndex) => {
+    e.preventDefault()
+    setDragOverFrameIndex(null)
+    
+    if (draggedFrameIndex !== null && draggedFrameIndex !== dropIndex) {
+      const newFrames = [...frames]
+      const draggedFrame = newFrames[draggedFrameIndex]
+      
+      // Remove the dragged frame from its original position
+      newFrames.splice(draggedFrameIndex, 1)
+      
+      // Insert it at the new position
+      const actualDropIndex = draggedFrameIndex < dropIndex ? dropIndex - 1 : dropIndex
+      newFrames.splice(actualDropIndex, 0, draggedFrame)
+      
+      // Update frame numbers
+      newFrames.forEach((frame, index) => {
+        frame.frameNumber = index + 1
+      })
+      
+      // Update current frame index if it was affected
+      let newCurrentIndex = currentFrameIndex
+      if (currentFrameIndex === draggedFrameIndex) {
+        newCurrentIndex = actualDropIndex
+      } else if (draggedFrameIndex < currentFrameIndex && currentFrameIndex <= actualDropIndex) {
+        newCurrentIndex = currentFrameIndex - 1
+      } else if (actualDropIndex <= currentFrameIndex && currentFrameIndex < draggedFrameIndex) {
+        newCurrentIndex = currentFrameIndex + 1
+      }
+      
+      setFrames(newFrames)
+      setCurrentFrameIndex(newCurrentIndex)
+      setHasUnsavedChanges(true)
+    }
+    
+    setDraggedFrameIndex(null)
+  }
+
+  const handleFrameDragEnd = () => {
+    setDraggedFrameIndex(null)
+    setDragOverFrameIndex(null)
+  }
+
   const playAnimation = () => {
     console.log('Play animation called, frames.length:', frames.length)
     if (frames.length === 0) {
@@ -482,6 +767,7 @@ const DrillDesigner = () => {
     
     console.log('Starting animation with frameRate:', frameRate)
     setIsPlaying(true)
+    isPlayingRef.current = true
     let frameIndex = 0
     
     const playNextFrame = () => {
@@ -492,7 +778,13 @@ const DrillDesigner = () => {
       }
       
       console.log('Loading frame:', frameIndex)
-      loadFrame(frameIndex)
+      // Load frame without triggering unsaved changes during playback
+      if (frameIndex >= 0 && frameIndex < frames.length) {
+        const frameElements = JSON.parse(JSON.stringify(frames[frameIndex].elements))
+        setElements(frameElements)
+        setCurrentFrameIndex(frameIndex)
+        setSelectedElement(null)
+      }
       frameIndex = (frameIndex + 1) % frames.length
       
       setTimeout(playNextFrame, 1000 / frameRate)
@@ -506,14 +798,40 @@ const DrillDesigner = () => {
     isPlayingRef.current = false
   }
 
+  const goToFirstFrame = () => {
+    if (frames.length > 0) {
+      loadFrame(0)
+    }
+  }
+
+  const goToLastFrame = () => {
+    if (frames.length > 0) {
+      loadFrame(frames.length - 1)
+    }
+  }
+
+  const goToPreviousFrame = () => {
+    if (frames.length > 0) {
+      const newIndex = currentFrameIndex > 0 ? currentFrameIndex - 1 : frames.length - 1
+      loadFrame(newIndex)
+    }
+  }
+
+  const goToNextFrame = () => {
+    if (frames.length > 0) {
+      const newIndex = currentFrameIndex < frames.length - 1 ? currentFrameIndex + 1 : 0
+      loadFrame(newIndex)
+    }
+  }
+
   const exportAnimation = async () => {
     if (frames.length === 0) return
 
     if (exportFormat === 'image') {
       // Export current frame as image
       const canvas = document.createElement('canvas')
-      canvas.width = rinkWidth
-      canvas.height = rinkHeight
+      canvas.width = canvasWidth
+      canvas.height = canvasHeight
       const ctx = canvas.getContext('2d')
       
       // Render current frame to canvas
@@ -547,8 +865,8 @@ const DrillDesigner = () => {
         for (let i = 0; i < frames.length; i++) {
           const frame = frames[i]
           const canvas = document.createElement('canvas')
-          canvas.width = rinkWidth
-          canvas.height = rinkHeight
+          canvas.width = canvasWidth
+          canvas.height = canvasHeight
           const ctx = canvas.getContext('2d')
           
           // Render frame to canvas
@@ -593,8 +911,8 @@ const DrillDesigner = () => {
     try {
       // Create a canvas for video recording
       const canvas = document.createElement('canvas')
-      canvas.width = rinkWidth
-      canvas.height = rinkHeight
+      canvas.width = canvasWidth
+      canvas.height = canvasHeight
       const ctx = canvas.getContext('2d')
 
       // Set up video stream
@@ -1229,6 +1547,21 @@ const DrillDesigner = () => {
     setAudioChunks([])
   }
 
+  const clearAllData = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to clear all data? This will remove all elements, frames, and audio. This action cannot be undone.'
+    )
+    if (confirmed) {
+      setElements([])
+      setFrames([])
+      setCurrentFrameIndex(-1)
+      setSelectedElement(null)
+      setAudioBlob(null)
+      setHasUnsavedChanges(false)
+      setFlippedPlayers(new Set())
+    }
+  }
+
   // Load available drills and sessions
   const loadAvailableDrills = async () => {
     try {
@@ -1371,6 +1704,7 @@ const DrillDesigner = () => {
       setSaveDescription('')
       setSelectedDrillId('')
       setSelectedSessionId('')
+      setHasUnsavedChanges(false) // Clear unsaved changes flag after successful save
 
     } catch (error) {
       console.error('Error saving animation:', error)
@@ -1396,8 +1730,8 @@ const DrillDesigner = () => {
   const createVideoBlob = async () => {
     // Create a canvas for video recording
     const canvas = document.createElement('canvas')
-    canvas.width = rinkWidth
-    canvas.height = rinkHeight
+    canvas.width = canvasWidth
+    canvas.height = canvasHeight
     const ctx = canvas.getContext('2d')
 
     // Set up video stream
@@ -1578,8 +1912,8 @@ const DrillDesigner = () => {
     for (let i = 0; i < frames.length; i++) {
       const frame = frames[i]
       const canvas = document.createElement('canvas')
-      canvas.width = rinkWidth
-      canvas.height = rinkHeight
+      canvas.width = canvasWidth
+      canvas.height = canvasHeight
       const ctx = canvas.getContext('2d')
       
       // Render complete rink background with all elements
@@ -1701,8 +2035,8 @@ const DrillDesigner = () => {
 
   const createImageBlob = async () => {
     const canvas = document.createElement('canvas')
-    canvas.width = rinkWidth
-    canvas.height = rinkHeight
+    canvas.width = canvasWidth
+    canvas.height = canvasHeight
     const ctx = canvas.getContext('2d')
     
     // Render current frame to canvas
@@ -1834,17 +2168,36 @@ const DrillDesigner = () => {
                 alt="Backcheck Logo" 
                 className="h-8 md:h-12 w-auto"
               />
-              <h1 className="text-lg md:text-2xl font-bold text-gray-900">Drill Designer</h1>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-lg md:text-2xl font-bold text-gray-900">Drill Designer</h1>
+                {hasUnsavedChanges && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    <span className="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                    Unsaved
+                  </span>
+                )}
+              </div>
             </div>
             
             {orgId && (
-              <Link
-                to={`/organisations/${orgId}`}
+              <button
+                onClick={() => {
+                  if (hasUnsavedChanges) {
+                    const confirmed = window.confirm(
+                      'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+                    )
+                    if (confirmed) {
+                      navigate(`/organisations/${orgId}`)
+                    }
+                  } else {
+                    navigate(`/organisations/${orgId}`)
+                  }
+                }}
                 className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1 text-sm md:text-base"
               >
                 <span>←</span>
                 <span>Back to Organisation</span>
-              </Link>
+              </button>
             )}
           </div>
 
@@ -1861,241 +2214,159 @@ const DrillDesigner = () => {
             </div>
           )}
 
-          {/* Toolbar - Responsive */}
+          {/* Toolbar and Color Picker - Responsive */}
           <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
-            <div className="flex flex-wrap gap-2 md:gap-2">
-              {tools.map((tool) => (
-                <button
-                  key={tool.id}
-                  onClick={() => setSelectedTool(tool.id)}
-                  className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
-                    selectedTool === tool.id
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  {tool.image ? (
-                    <img 
-                      src={tool.image.src} 
-                      alt={tool.label} 
-                      className="w-6 h-6 md:w-8 md:h-8"
-                      style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
-                    />
-                  ) : (
-                    <>
-                      <span className="text-base md:text-lg mr-1 md:mr-2">{tool.icon}</span>
-                      <span className="hidden md:inline">{tool.label}</span>
-                    </>
-                  )}
-                </button>
-              ))}
-              
-              {/* Player Tool with Dropdown */}
-              <div className="relative player-dropdown">
-                <button
-                  onClick={() => {
-                    setSelectedTool('player')
-                    setShowPlayerDropdown(!showPlayerDropdown)
-                  }}
-                  className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
-                    selectedTool === 'player'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  <span className="text-base md:text-lg mr-1 md:mr-2">🏒</span>
-                  <span className="hidden md:inline">Player</span>
-                  <span className="ml-1">▼</span>
-                </button>
-                
-                {/* Player Dropdown */}
-                {showPlayerDropdown && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
-                    {isLoadingPlayers ? (
-                      <div className="px-4 py-2 text-sm text-gray-500">Loading players...</div>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+              {/* Tools Section */}
+              <div className="flex flex-wrap gap-2 md:gap-2">
+                {tools.map((tool) => (
+                  <button
+                    key={tool.id}
+                    onClick={() => setSelectedTool(tool.id)}
+                    className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                      selectedTool === tool.id
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    }`}
+                  >
+                    {tool.image ? (
+                      <img 
+                        src={tool.image.src} 
+                        alt={tool.label} 
+                        className="w-6 h-6 md:w-8 md:h-8"
+                        style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
+                      />
                     ) : (
                       <>
-                        <div className="px-4 py-2 text-sm text-gray-500">Debug: {dynamicPlayerTools.length} players loaded</div>
-                                                {dynamicPlayerTools.map((player) => (
-                          <button
-                            key={player.id}
-                            onClick={() => {
-                              setSelectedPlayer(player.id)
-                              setSelectedTool('player')
-                              setShowPlayerDropdown(false)
-                            }}
-                            className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
-                              selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                            }`}
-                          >
-                            {player.image ? (
-                              <img 
-                                src={player.image.src} 
-                                alt={player.label} 
-                                className="w-6 h-6"
-                              />
-                            ) : (
-                              <span className="text-lg">{player.icon}</span>
-                            )}
-                            <span className="text-sm">{player.label}</span>
-                            {selectedPlayer === player.id && (
-                              <span className="ml-auto text-blue-600">✓</span>
-                            )}
-                          </button>
-                        ))}
+                        <span className="text-base md:text-lg mr-1 md:mr-2">{tool.icon}</span>
+                        <span className="hidden md:inline">{tool.label}</span>
                       </>
                     )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Color Picker - Responsive */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
-            <div className="flex items-center space-x-2">
-              <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
-              <div className="flex space-x-1 md:space-x-2">
-                {colors.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
-                      selectedColor === color
-                        ? 'border-gray-800 scale-110'
-                        : 'border-gray-300 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
+                  </button>
                 ))}
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs md:text-sm text-gray-600">Selected:</span>
-              <div 
-                className="w-6 h-6 rounded border border-gray-300"
-                style={{ backgroundColor: selectedColor }}
-              />
-            </div>
-          </div>
-
-          {/* Animation Controls - Mobile Responsive */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
-              <h3 className="font-semibold text-blue-900 text-sm md:text-base">Animation Controls</h3>
-              <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs md:text-sm text-blue-700">Frame Rate:</span>
-                  <select 
-                    value={frameRate} 
-                    onChange={(e) => setFrameRate(Number(e.target.value))}
-                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
+                
+                {/* Player Tool with Dropdown */}
+                <div className="relative player-dropdown">
+                  <button
+                    onClick={() => {
+                      setSelectedTool('player')
+                      setShowPlayerDropdown(!showPlayerDropdown)
+                    }}
+                    className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                      selectedTool === 'player'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                    }`}
                   >
-                    <option value={2}>2 FPS</option>
-                    <option value={3}>3 FPS</option>
-                    <option value={4}>4 FPS</option>
-                    <option value={5}>5 FPS</option>
-                    <option value={6}>6 FPS</option>
-                    <option value={7}>7 FPS</option>
-                    <option value={8}>8 FPS</option>
-                    <option value={9}>9 FPS</option>
-                    <option value={10}>10 FPS</option>
-                  </select>
+                    <span className="text-base md:text-lg mr-1 md:mr-2">🏒</span>
+                    <span className="hidden md:inline">Player</span>
+                    <span className="ml-1">▼</span>
+                  </button>
+                  
+                  {/* Player Dropdown */}
+                  {showPlayerDropdown && (
+                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
+                      {isLoadingPlayers ? (
+                        <div className="px-4 py-2 text-sm text-gray-500">Loading players...</div>
+                      ) : (
+                        <>
+                          <div className="px-4 py-2 text-sm text-gray-500">Debug: {dynamicPlayerTools.length} players loaded</div>
+                          {dynamicPlayerTools.map((player) => (
+                            <button
+                              key={player.id}
+                              onClick={() => {
+                                setSelectedPlayer(player.id)
+                                setSelectedTool('player')
+                                setShowPlayerDropdown(false)
+                              }}
+                              className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
+                                selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                              }`}
+                            >
+                              {player.image ? (
+                                <img 
+                                  src={player.image.src} 
+                                  alt={player.label} 
+                                  className="w-6 h-6"
+                                />
+                              ) : (
+                                <span className="text-lg">{player.icon}</span>
+                              )}
+                              <span className="text-sm">{player.label}</span>
+                              {selectedPlayer === player.id && (
+                                <span className="ml-auto text-blue-600">✓</span>
+                              )}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Color Picker Section - Only show on larger screens */}
+              <div className="hidden lg:flex lg:items-center lg:space-x-4">
+                <div className="flex items-center space-x-2">
+                  <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
+                  <div className="flex space-x-1 md:space-x-2">
+                    {colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
+                          selectedColor === color
+                            ? 'border-gray-800 scale-110'
+                            : 'border-gray-300 hover:scale-105'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs md:text-sm text-blue-700">Export Format:</span>
-                  <select 
-                    value={exportFormat} 
-                    onChange={(e) => setExportFormat(e.target.value)}
-                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
-                  >
-                    <option value="webm">WebM Video</option>
-                    <option value="zip">ZIP (Frames)</option>
-                    <option value="image">Still Image</option>
-                  </select>
+                  <span className="text-xs md:text-sm text-gray-600">Selected:</span>
+                  <div 
+                    className="w-6 h-6 rounded border border-gray-300"
+                    style={{ backgroundColor: selectedColor }}
+                  />
                 </div>
               </div>
             </div>
-            
-            <div className="flex flex-wrap gap-2 mb-3">
-              <button
-                onClick={captureFrame}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                📸 Capture Frame ({frames.length + 1})
-              </button>
-              <button
-                onClick={playAnimation}
-                disabled={frames.length === 0 || isPlaying}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                ▶️ Play
-              </button>
-              <button
-                onClick={stopAnimation}
-                disabled={!isPlaying}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                ⏹️ Stop
-              </button>
-              <button
-                onClick={exportAnimation}
-                disabled={frames.length === 0 || isExporting}
-                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                {isExporting ? '⏳ Exporting...' : `📦 Export ${exportFormat.toUpperCase()}`}
-              </button>
-              <button
-                onClick={openSaveDialog}
-                disabled={frames.length === 0}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                💾 Save to Drill/Session
-              </button>
-            </div>
 
-            {/* Audio Recording Controls */}
-            <div className="border-t border-blue-200 pt-3 mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium text-blue-800">Audio Commentary</h4>
-                {audioBlob && (
-                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                    ✓ Audio recorded
-                  </span>
-                )}
+            {/* Color Picker - Mobile/Tablet (below tools) */}
+            <div className="lg:hidden flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-center space-x-2">
+                <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
+                <div className="flex space-x-1 md:space-x-2">
+                  {colors.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
+                        selectedColor === color
+                          ? 'border-gray-800 scale-110'
+                          : 'border-gray-300 hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={isRecordingAudio ? stopAudioRecording : startAudioRecording}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    isRecordingAudio
-                      ? 'bg-red-600 hover:bg-red-700 text-white'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {isRecordingAudio ? '🔴 Stop Recording' : '🎤 Start Recording'}
-                </button>
-                {audioBlob && (
-                  <>
-                    <button
-                      onClick={clearAudioRecording}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm"
-                    >
-                      🗑️ Clear Audio
-                    </button>
-                    <span className="text-xs text-blue-600">
-                      Audio will be included in video export
-                    </span>
-                  </>
-                )}
+                <span className="text-xs md:text-sm text-gray-600">Selected:</span>
+                <div 
+                  className="w-6 h-6 rounded border border-gray-300"
+                  style={{ backgroundColor: selectedColor }}
+                />
               </div>
-              {isRecordingAudio && (
-                <div className="mt-2 text-xs text-red-600 animate-pulse">
-                  🔴 Recording audio... Speak clearly into your microphone
-                </div>
-              )}
             </div>
+          </div>
+
+          {/* Tweening and Frame Management */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
 
             {/* Tweening Controls */}
             <div className="border-t border-blue-200 pt-3 mb-3">
@@ -2191,34 +2462,146 @@ const DrillDesigner = () => {
                   <span className="text-xs text-blue-600">
                     Current: {currentFrameIndex >= 0 ? currentFrameIndex + 1 : 'None'}
                   </span>
+                  <span className="text-xs text-gray-500 ml-auto">
+                    💡 Drag to reorder • Click to select • Use buttons to duplicate/delete
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2 overflow-y-auto max-h-32 pb-2">
                   {frames.map((frame, index) => (
-                    <button
+                    <div
                       key={frame.id}
-                      onClick={() => loadFrame(index)}
-                      className={`flex-shrink-0 px-3 py-2 rounded border-2 text-xs font-medium transition-colors ${
+                      draggable
+                      onDragStart={(e) => handleFrameDragStart(e, index)}
+                      onDragOver={(e) => handleFrameDragOver(e, index)}
+                      onDragLeave={handleFrameDragLeave}
+                      onDrop={(e) => handleFrameDrop(e, index)}
+                      onDragEnd={handleFrameDragEnd}
+                      className={`flex-shrink-0 px-3 py-2 rounded border-2 text-xs font-medium transition-colors flex items-center cursor-move ${
                         currentFrameIndex === index
                           ? 'border-blue-500 bg-blue-100 text-blue-700'
+                          : draggedFrameIndex === index
+                          ? 'border-purple-500 bg-purple-100 text-purple-700 opacity-50'
+                          : dragOverFrameIndex === index
+                          ? 'border-green-500 bg-green-100 text-green-700'
                           : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                       }`}
+                      title={`Frame ${frame.frameNumber} - Drag to reorder`}
                     >
-                      {frame.frameNumber}
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteFrame(index)
-                        }}
-                        className="ml-2 text-red-500 hover:text-red-700"
-                        title="Delete frame"
+                        onClick={() => loadFrame(index)}
+                        className="flex-1 text-left"
+                        title="Load this frame"
                       >
-                        ×
+                        {frame.frameNumber}
                       </button>
-                    </button>
+                      <div className="flex items-center space-x-1 ml-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            duplicateFrame(index)
+                          }}
+                          className="text-blue-500 hover:text-blue-700"
+                          title="Duplicate frame"
+                        >
+                          📋
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deleteFrame(index)
+                          }}
+                          className="text-red-500 hover:text-red-700"
+                          title="Delete frame"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Animation Controls */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200`}>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-blue-800 text-sm md:text-base">🎬 Animation Controls</h4>
+              <span className="text-xs text-blue-600">
+                {frames.length > 0 ? `Frame ${currentFrameIndex + 1} of ${frames.length}` : 'No frames yet'}
+              </span>
+            </div>
+            
+            {/* Combined Playback and Frame Navigation Controls */}
+            <div className="flex items-center space-x-2">
+              {/* Capture Frame Button - Left Aligned */}
+              <button
+                onClick={captureFrame}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                title="Capture current frame"
+              >
+                📸 Capture Frame ({frames.length + 1})
+              </button>
+              
+              {/* Centered Navigation and Playback Controls */}
+              <div className="flex-1 flex items-center justify-center space-x-2">
+                <button
+                  onClick={goToFirstFrame}
+                  disabled={frames.length === 0 || currentFrameIndex === 0}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                  title="Go to first frame (Home)"
+                >
+                  ⏮️ First
+                </button>
+                <button
+                  onClick={goToPreviousFrame}
+                  disabled={frames.length === 0}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                  title="Previous frame (←)"
+                >
+                  ⏪ Previous
+                </button>
+                <button
+                  onClick={playAnimation}
+                  disabled={frames.length === 0 || isPlaying}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  title="Play animation (Spacebar)"
+                >
+                  ▶️ Play
+                </button>
+                <button
+                  onClick={stopAnimation}
+                  disabled={!isPlaying}
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  title="Stop animation (Spacebar)"
+                >
+                  ⏹️ Stop
+                </button>
+                <button
+                  onClick={goToNextFrame}
+                  disabled={frames.length === 0}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                  title="Next frame (→)"
+                >
+                  Next ⏩
+                </button>
+                <button
+                  onClick={goToLastFrame}
+                  disabled={frames.length === 0 || currentFrameIndex === frames.length - 1}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                  title="Go to last frame (End)"
+                >
+                  Last ⏭️
+                </button>
+              </div>
+            </div>
+            
+            {/* Frame Counter Display */}
+            <div className="flex justify-center mt-2">
+              <div className="px-4 py-2 bg-white border border-blue-300 rounded-md text-sm font-medium text-blue-700 min-w-[80px] text-center">
+                {frames.length > 0 ? currentFrameIndex + 1 : '0'}
+              </div>
+            </div>
           </div>
 
           {/* Canvas - Responsive */}
@@ -2569,6 +2952,110 @@ const DrillDesigner = () => {
             </div>
           </div>
 
+          {/* Audio Commentary Panel - Moved here for better accessibility */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-green-50 rounded-lg border border-green-200`}>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-medium text-green-800 text-sm md:text-base">🎤 Audio Commentary</h4>
+              {audioBlob && (
+                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                  ✓ Audio recorded
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={isRecordingAudio ? stopAudioRecording : startAudioRecording}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${
+                  isRecordingAudio
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
+              >
+                {isRecordingAudio ? '🔴 Stop Recording' : '🎤 Start Recording'}
+              </button>
+              {audioBlob && (
+                <>
+                  <button
+                    onClick={clearAudioRecording}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm"
+                  >
+                    🗑️ Clear Audio
+                  </button>
+                  <span className="text-xs text-green-600">
+                    Audio will be included in video export
+                  </span>
+                </>
+              )}
+            </div>
+            {isRecordingAudio && (
+              <div className="mt-2 text-xs text-red-600 animate-pulse">
+                🔴 Recording audio... Speak clearly into your microphone
+              </div>
+            )}
+          </div>
+
+          {/* Save and Export */}
+          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
+              <h3 className="font-semibold text-blue-900 text-sm md:text-base">Save and Export</h3>
+              <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs md:text-sm text-blue-700">Frame Rate:</span>
+                  <select 
+                    value={frameRate} 
+                    onChange={(e) => setFrameRate(Number(e.target.value))}
+                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
+                  >
+                    <option value={2}>2 FPS</option>
+                    <option value={3}>3 FPS</option>
+                    <option value={4}>4 FPS</option>
+                    <option value={5}>5 FPS</option>
+                    <option value={6}>6 FPS</option>
+                    <option value={7}>7 FPS</option>
+                    <option value={8}>8 FPS</option>
+                    <option value={9}>9 FPS</option>
+                    <option value={10}>10 FPS</option>
+                  </select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs md:text-sm text-blue-700">Export Format:</span>
+                  <select 
+                    value={exportFormat} 
+                    onChange={(e) => setExportFormat(e.target.value)}
+                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
+                  >
+                    <option value="webm">WebM Video</option>
+                    <option value="zip">ZIP (Frames)</option>
+                    <option value="image">Still Image</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mb-3">
+              <button
+                onClick={exportAnimation}
+                disabled={frames.length === 0 || isExporting}
+                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+              >
+                {isExporting ? '⏳ Exporting...' : `📦 Export ${exportFormat.toUpperCase()}`}
+              </button>
+              <button
+                onClick={openSaveDialog}
+                disabled={frames.length === 0}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+              >
+                💾 Save to Drill/Session
+              </button>
+              <button
+                onClick={clearAllData}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+              >
+                🗑️ Clear All
+              </button>
+            </div>
+          </div>
+
           {/* Text Edit Overlay */}
           {editingText && (
             <div 
@@ -2626,6 +3113,9 @@ const DrillDesigner = () => {
               <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
               <li>• <strong>Use the Flip button to flip selected players horizontally</strong></li>
               <li>• Use the Delete Selected button to remove elements</li>
+              <li>• <strong>Frame Timeline:</strong> Drag frames to reorder, use 📋 to duplicate, × to delete</li>
+              <li>• <strong>Frame Navigation:</strong> Use ⏮️⏪⏩⏭️ buttons or keyboard shortcuts (←→ Home End)</li>
+              <li>• <strong>Playback:</strong> Press Spacebar to play/pause animation</li>
               <li>• Use the Export button to save your drill as an image</li>
               {isMobile && (
                 <li>• <strong>Mobile:</strong> Use touch gestures to interact with the canvas</li>

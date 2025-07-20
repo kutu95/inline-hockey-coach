@@ -151,14 +151,20 @@ const Drills = () => {
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
       if (error) {
-        console.error('Error creating signed URL:', error)
-        return url // Fallback to original URL
+        // Only log the error if it's not a "not found" error to reduce console noise
+        if (!error.message?.includes('Object not found')) {
+          console.error('Error creating signed URL:', error)
+        }
+        return null // Return null for missing files instead of the original URL
       }
       
-      return data?.signedUrl || url // Use signed URL if available, otherwise fallback
+      return data?.signedUrl || null // Use signed URL if available, otherwise return null
     } catch (err) {
-      console.error('Error getting signed URL:', err)
-      return url // Fallback to original URL
+      // Only log the error if it's not a "not found" error to reduce console noise
+      if (!err.message?.includes('Object not found')) {
+        console.error('Error getting signed URL:', err)
+      }
+      return null // Return null for missing files
     }
   }
 
