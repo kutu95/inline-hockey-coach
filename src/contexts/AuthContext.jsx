@@ -32,11 +32,6 @@ export function AuthProvider({ children }) {
     try {
       console.log('Fetching roles for user:', userId)
       
-      // Reduce timeout to 1 second for faster loading
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Role fetch timeout')), 1000)
-      })
-
       const fetchPromise = async () => {
         console.log('Starting user_roles query...')
         const startTime = Date.now()
@@ -91,7 +86,8 @@ export function AuthProvider({ children }) {
         }
       }
 
-      const roles = await Promise.race([fetchPromise(), timeoutPromise])
+      // Run without timeout to prevent hanging
+      const roles = await fetchPromise()
       
       // Cache the result
       setRoleCache(prev => new Map(prev).set(userId, roles))
