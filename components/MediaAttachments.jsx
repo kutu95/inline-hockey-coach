@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
+import DrillPlayer from './DrillPlayer'
 
 const MediaAttachments = ({ type, itemId, title }) => {
   const [media, setMedia] = useState([])
@@ -63,6 +64,7 @@ const MediaAttachments = ({ type, itemId, title }) => {
         duration_seconds: item.media_attachments?.duration_seconds || item.duration_seconds,
         frame_count: item.media_attachments?.frame_count || item.frame_count,
         frame_rate: item.media_attachments?.frame_rate || item.frame_rate,
+        is_editable: item.media_attachments?.is_editable || false,
         created_at: item.media_attachments?.created_at || item.created_at
       }))
 
@@ -251,29 +253,40 @@ const MediaAttachments = ({ type, itemId, title }) => {
         )
       
       case 'animation':
-        // For animations, we'll show a download link since they're typically ZIP files
-        return (
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <span className="text-blue-600">📦</span>
-              <span className="text-blue-800 font-medium">Animation Package</span>
+        // Check if this is an editable animation
+        if (media.is_editable) {
+          return (
+            <DrillPlayer
+              mediaId={media.media_id}
+              title={media.title}
+              description={media.description}
+            />
+          )
+        } else {
+          // For non-editable animations, show a download link
+          return (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <span className="text-blue-600">📦</span>
+                <span className="text-blue-800 font-medium">Animation Package</span>
+              </div>
+              <p className="text-blue-600 text-sm mt-1">
+                This is an animation package containing frames and metadata.
+              </p>
+              <button
+                onClick={() => {
+                  const link = document.createElement('a')
+                  link.href = signedUrl
+                  link.download = media.file_name
+                  link.click()
+                }}
+                className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition duration-150 ease-in-out"
+              >
+                Download Animation
+              </button>
             </div>
-            <p className="text-blue-600 text-sm mt-1">
-              This is an animation package containing frames and metadata.
-            </p>
-            <button
-              onClick={() => {
-                const link = document.createElement('a')
-                link.href = signedUrl
-                link.download = media.file_name
-                link.click()
-              }}
-              className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition duration-150 ease-in-out"
-            >
-              Download Animation
-            </button>
-          </div>
-        )
+          )
+        }
       
       default:
         return (

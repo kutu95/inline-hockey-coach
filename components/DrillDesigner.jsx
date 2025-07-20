@@ -37,6 +37,14 @@ const DrillDesigner = () => {
   const [availableSessions, setAvailableSessions] = useState([])
   const [isSaving, setIsSaving] = useState(false)
   
+  // Load dialog state
+  const [showLoadDialog, setShowLoadDialog] = useState(false)
+  const [loadType, setLoadType] = useState('drill')
+  const [selectedLoadDrillId, setSelectedLoadDrillId] = useState('')
+  const [selectedLoadSessionId, setSelectedLoadSessionId] = useState('')
+  const [availableAnimations, setAvailableAnimations] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  
   // Mobile responsiveness state
   const [isMobile, setIsMobile] = useState(false)
   const [canvasScale, setCanvasScale] = useState(1)
@@ -1631,6 +1639,56 @@ const DrillDesigner = () => {
     }
   }
 
+  const loadAvailableAnimations = async () => {
+    try {
+      setIsLoading(true)
+      
+      let query = supabase
+        .from('media_attachments')
+        .select(`
+          id,
+          title,
+          description,
+          frame_count,
+          frame_rate,
+          is_editable,
+          created_at,
+          drill_media!inner(drill_id),
+          session_media!inner(session_id)
+        `)
+        .eq('is_editable', true)
+        .order('created_at', { ascending: false })
+
+      const { data, error } = await query
+      if (error) throw error
+      
+      // Filter animations based on selected type
+      let filteredAnimations = data || []
+      
+      if (loadType === 'drill' && selectedLoadDrillId) {
+        filteredAnimations = filteredAnimations.filter(anim => 
+          anim.drill_media && anim.drill_media.drill_id === selectedLoadDrillId
+        )
+      } else if (loadType === 'session' && selectedLoadSessionId) {
+        filteredAnimations = filteredAnimations.filter(anim => 
+          anim.session_media && anim.session_media.session_id === selectedLoadSessionId
+        )
+      }
+      
+      setAvailableAnimations(filteredAnimations)
+    } catch (err) {
+      console.error('Error loading animations:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const openLoadDialog = async () => {
+    await loadAvailableDrills()
+    await loadAvailableSessions()
+    setShowLoadDialog(true)
+  }
+
   // Save animation to drill or session
   const saveAnimationToDrillOrSession = async (mediaBlob, mediaType, fileName) => {
     if (!saveTitle.trim()) {
@@ -1656,13 +1714,34 @@ const DrillDesigner = () => {
       console.log('Media type:', mediaType)
       console.log('File name:', fileName)
       
-      // Upload file to Supabase Storage
-      const filePath = `media/${Date.now()}_${fileName}`
-      console.log('Uploading to path:', filePath)
+      // Create complete animation data for restoration
+      const animationData = {
+        frames: frames,
+        frameRate: frameRate,
+        canvasWidth: canvasWidth,
+        canvasHeight: canvasHeight,
+        audioBlob: audioBlob,
+        metadata: {
+          title: saveTitle,
+          description: saveDescription,
+          created_at: new Date().toISOString(),
+          total_frames: frames.length,
+          duration_seconds: Math.round(frames.length / frameRate)
+        }
+      }
+      
+      // Create JSON blob for animation data
+      const animationJsonBlob = new Blob([JSON.stringify(animationData, null, 2)], {
+        type: 'application/json'
+      })
+      
+      // Upload media file to Supabase Storage
+      const mediaFilePath = `media/${Date.now()}_${fileName}`
+      console.log('Uploading media to path:', mediaFilePath)
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('media')
-        .upload(filePath, mediaBlob, {
+        .upload(mediaFilePath, mediaBlob, {
           contentType: mediaBlob.type,
           cacheControl: '3600'
         })
@@ -1672,12 +1751,34 @@ const DrillDesigner = () => {
         throw new Error(`Upload failed: ${uploadError.message}`)
       }
 
-      console.log('File uploaded successfully')
+      console.log('Media file uploaded successfully')
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
+      // Upload animation data JSON
+      const animationFilePath = `animations/${Date.now()}_animation_data.json`
+      console.log('Uploading animation data to path:', animationFilePath)
+      
+      const { data: animationUploadData, error: animationUploadError } = await supabase.storage
         .from('media')
-        .getPublicUrl(filePath)
+        .upload(animationFilePath, animationJsonBlob, {
+          contentType: 'application/json',
+          cacheControl: '3600'
+        })
+
+      if (animationUploadError) {
+        console.error('Animation data upload error:', animationUploadError)
+        throw new Error(`Animation data upload failed: ${animationUploadError.message}`)
+      }
+
+      console.log('Animation data uploaded successfully')
+
+      // Get public URLs
+      const { data: mediaUrlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(mediaFilePath)
+
+      const { data: animationUrlData } = supabase.storage
+        .from('media')
+        .getPublicUrl(animationFilePath)
 
       // Create media attachment record
       const mediaData = {
@@ -1687,10 +1788,12 @@ const DrillDesigner = () => {
         file_name: fileName,
         file_size: mediaBlob.size,
         mime_type: mediaBlob.type,
-        storage_path: filePath,
+        storage_path: mediaFilePath,
+        animation_data_path: animationFilePath, // Store path to animation data
         duration_seconds: mediaType === 'video' || mediaType === 'audio' ? Math.round(frames.length / frameRate) : null,
-        frame_count: mediaType === 'animation' ? frames.length : null,
-        frame_rate: mediaType === 'animation' ? frameRate : null
+        frame_count: frames.length,
+        frame_rate: frameRate,
+        is_editable: true // Flag to indicate this can be loaded for editing
       }
 
       console.log('Creating media attachment record:', mediaData)
@@ -1738,7 +1841,7 @@ const DrillDesigner = () => {
       }
 
       console.log('Save completed successfully')
-      alert(`Animation saved successfully to ${saveType}!`)
+      alert(`Animation saved successfully to ${saveType}! You can now load and edit this animation later.`)
       setShowSaveDialog(false)
       setSaveTitle('')
       setSaveDescription('')
@@ -1764,6 +1867,83 @@ const DrillDesigner = () => {
     await loadAvailableDrills()
     await loadAvailableSessions()
     setShowSaveDialog(true)
+  }
+
+  // Load animation data from saved animation
+  const loadAnimationData = async (animationDataPath) => {
+    try {
+      console.log('Loading animation data from:', animationDataPath)
+      
+      // Download the animation data JSON file
+      const { data, error } = await supabase.storage
+        .from('media')
+        .download(animationDataPath)
+
+      if (error) {
+        console.error('Error downloading animation data:', error)
+        throw new Error(`Failed to download animation data: ${error.message}`)
+      }
+
+      // Parse the JSON data
+      const text = await data.text()
+      const animationData = JSON.parse(text)
+      
+      console.log('Loaded animation data:', animationData)
+
+      // Restore the animation state
+      setFrames(animationData.frames || [])
+      setFrameRate(animationData.frameRate || 5)
+      setCurrentFrameIndex(-1) // Start with no frame selected
+      setIsPlaying(false)
+      setHasUnsavedChanges(false)
+      
+      // Restore audio if it exists
+      if (animationData.audioBlob) {
+        setAudioBlob(animationData.audioBlob)
+      }
+      
+      // Load the first frame if frames exist
+      if (animationData.frames && animationData.frames.length > 0) {
+        loadFrame(0)
+      }
+
+      console.log('Animation loaded successfully')
+      alert(`Animation "${animationData.metadata?.title || 'Untitled'}" loaded successfully!`)
+      
+    } catch (error) {
+      console.error('Error loading animation:', error)
+      alert(`Error loading animation: ${error.message}`)
+    }
+  }
+
+  // Load animation from media attachment
+  const loadAnimationFromMedia = async (mediaId) => {
+    try {
+      console.log('Loading animation from media ID:', mediaId)
+      
+      // Get the media attachment record
+      const { data: mediaRecord, error: mediaError } = await supabase
+        .from('media_attachments')
+        .select('*')
+        .eq('id', mediaId)
+        .single()
+
+      if (mediaError) {
+        console.error('Error fetching media record:', mediaError)
+        throw new Error(`Failed to fetch media record: ${mediaError.message}`)
+      }
+
+      if (!mediaRecord.animation_data_path) {
+        throw new Error('This media does not contain editable animation data')
+      }
+
+      // Load the animation data
+      await loadAnimationData(mediaRecord.animation_data_path)
+      
+    } catch (error) {
+      console.error('Error loading animation from media:', error)
+      alert(`Error loading animation: ${error.message}`)
+    }
   }
 
   // Helper functions to create media blobs
@@ -3118,6 +3298,12 @@ const DrillDesigner = () => {
                 💾 Save to Drill/Session
               </button>
               <button
+                onClick={openLoadDialog}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+              >
+                📂 Load Animation
+              </button>
+              <button
                 onClick={clearAllData}
                 className="bg-gray-600 hover:bg-gray-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
               >
@@ -3327,6 +3513,158 @@ const DrillDesigner = () => {
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
               >
                 {isSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Load Dialog Modal */}
+      {showLoadDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Load Animation</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Load from
+                </label>
+                <select
+                  value={loadType}
+                  onChange={(e) => {
+                    setLoadType(e.target.value)
+                    setSelectedLoadDrillId('')
+                    setSelectedLoadSessionId('')
+                    setAvailableAnimations([])
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="drill">Drill</option>
+                  <option value="session">Session</option>
+                </select>
+              </div>
+
+              {loadType === 'drill' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Drill
+                  </label>
+                  <select
+                    value={selectedLoadDrillId}
+                    onChange={(e) => {
+                      setSelectedLoadDrillId(e.target.value)
+                      if (e.target.value) {
+                        loadAvailableAnimations()
+                      } else {
+                        setAvailableAnimations([])
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Choose a drill...</option>
+                    {availableDrills.map(drill => (
+                      <option key={drill.id} value={drill.id}>
+                        {drill.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {loadType === 'session' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Session
+                  </label>
+                  <select
+                    value={selectedLoadSessionId}
+                    onChange={(e) => {
+                      setSelectedLoadSessionId(e.target.value)
+                      if (e.target.value) {
+                        loadAvailableAnimations()
+                      } else {
+                        setAvailableAnimations([])
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Choose a session...</option>
+                    {availableSessions.map(session => (
+                      <option key={session.id} value={session.id}>
+                        {session.title} - {new Date(session.date).toLocaleDateString()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Available Animations List */}
+              {availableAnimations.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Available Animations ({availableAnimations.length})
+                  </label>
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {availableAnimations.map(animation => (
+                      <div
+                        key={animation.id}
+                        className="p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
+                        onClick={() => loadAnimationFromMedia(animation.id)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{animation.title}</h4>
+                            {animation.description && (
+                              <p className="text-sm text-gray-600 mt-1">{animation.description}</p>
+                            )}
+                            <div className="flex space-x-4 mt-2 text-xs text-gray-500">
+                              <span>📊 {animation.frame_count} frames</span>
+                              <span>🎬 {animation.frame_rate} FPS</span>
+                              <span>📅 {new Date(animation.created_at).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              loadAnimationFromMedia(animation.id)
+                            }}
+                            className="ml-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                          >
+                            Load
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {isLoading && (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className="text-sm text-gray-600 mt-2">Loading animations...</p>
+                </div>
+              )}
+
+              {!isLoading && availableAnimations.length === 0 && (selectedLoadDrillId || selectedLoadSessionId) && (
+                <div className="text-center py-4">
+                  <p className="text-gray-500">No editable animations found for this {loadType}.</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowLoadDialog(false)
+                  setSelectedLoadDrillId('')
+                  setSelectedLoadSessionId('')
+                  setAvailableAnimations([])
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
               </button>
             </div>
           </div>
