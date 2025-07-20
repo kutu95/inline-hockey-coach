@@ -714,6 +714,10 @@ const DrillDesigner = () => {
       // Load the frame to edit
       loadFrame(frameIndex)
       console.log('Editing frame:', frameIndex)
+      
+      // Show visual feedback that we're in edit mode
+      setFrameSavedMessage(`Now editing frame ${frameIndex + 1} - Make changes and click "Save Frame"`)
+      setTimeout(() => setFrameSavedMessage(''), 3000)
     }
   }
 
@@ -2709,10 +2713,13 @@ const DrillDesigner = () => {
                     >
                       <button
                         onClick={() => loadFrame(index)}
-                        className="flex-1 text-left"
+                        className={`flex-1 text-left ${currentFrameIndex === index ? 'bg-blue-100 text-blue-800 font-medium' : ''}`}
                         title="Load this frame"
                       >
                         {frame.frameNumber}
+                        {currentFrameIndex === index && (
+                          <span className="ml-1 text-xs">(editing)</span>
+                        )}
                       </button>
                       <div className="flex items-center space-x-1 ml-2">
                         <button
@@ -2720,8 +2727,8 @@ const DrillDesigner = () => {
                             e.stopPropagation()
                             editFrame(index)
                           }}
-                          className="text-green-500 hover:text-green-700"
-                          title="Edit frame"
+                          className={`${currentFrameIndex === index ? 'text-blue-600 bg-blue-100 rounded px-1' : 'text-green-500 hover:text-green-700'}`}
+                          title={currentFrameIndex === index ? "Currently editing this frame" : "Edit frame"}
                         >
                           ✏️
                         </button>
@@ -2757,9 +2764,16 @@ const DrillDesigner = () => {
           <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200`}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-medium text-blue-800 text-sm md:text-base">🎬 Animation Controls</h4>
-              <span className="text-xs text-blue-600">
-                {frames.length > 0 ? `Frame ${currentFrameIndex + 1} of ${frames.length}` : 'No frames yet'}
-              </span>
+              <div className="flex items-center space-x-2">
+                {currentFrameIndex >= 0 && frames.length > 0 && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                    ✏️ Editing Frame {currentFrameIndex + 1}
+                  </span>
+                )}
+                <span className="text-xs text-blue-600">
+                  {frames.length > 0 ? `Frame ${currentFrameIndex + 1} of ${frames.length}` : 'No frames yet'}
+                </span>
+              </div>
             </div>
             
             {/* Combined Playback and Frame Navigation Controls */}
