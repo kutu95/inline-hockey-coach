@@ -120,7 +120,7 @@ const Drills = () => {
     'agility', 'back-checking', 'break outs', 'defense', 'face-offs', 
     'fitness', 'fore-checking', 'fun', 'goalie', 'Offensive cycling', 
     'off-ice', 'passing', 'penalty kills', 'power plays', 'puck handling', 'shooting', 
-    'Warm down', 'Warm up'
+    'skating', 'Warm down', 'Warm up'
   ]
 
   const [imageUrls, setImageUrls] = useState({})

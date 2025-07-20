@@ -49,6 +49,7 @@ const DrillDesigner = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [draggedFrameIndex, setDraggedFrameIndex] = useState(null)
   const [dragOverFrameIndex, setDragOverFrameIndex] = useState(null)
+  const [frameSavedMessage, setFrameSavedMessage] = useState('')
   
   const stageRef = useRef()
   const animationRef = useRef()
@@ -129,6 +130,14 @@ const DrillDesigner = () => {
             stopAnimation()
           } else {
             playAnimation()
+          }
+          break
+        case 's':
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault()
+            if (currentFrameIndex >= 0 && frames.length > 0) {
+              saveFrameChanges()
+            }
           }
           break
       }
@@ -689,6 +698,37 @@ const DrillDesigner = () => {
       
       setFrames(newFrames)
       setHasUnsavedChanges(true)
+    }
+  }
+
+  const editFrame = (frameIndex) => {
+    if (frameIndex >= 0 && frameIndex < frames.length) {
+      // Load the frame to edit
+      loadFrame(frameIndex)
+      console.log('Editing frame:', frameIndex)
+    }
+  }
+
+  const saveFrameChanges = () => {
+    if (currentFrameIndex >= 0 && currentFrameIndex < frames.length) {
+      // Create a deep copy of current elements
+      const updatedElements = JSON.parse(JSON.stringify(elements))
+      
+      // Update the frame with current elements
+      const updatedFrames = [...frames]
+      updatedFrames[currentFrameIndex] = {
+        ...updatedFrames[currentFrameIndex],
+        elements: updatedElements,
+        timestamp: Date.now()
+      }
+      
+      setFrames(updatedFrames)
+      setHasUnsavedChanges(true)
+      console.log('Frame changes saved:', currentFrameIndex + 1)
+      
+      // Show success message
+      setFrameSavedMessage(`Frame ${currentFrameIndex + 1} saved!`)
+      setTimeout(() => setFrameSavedMessage(''), 2000)
     }
   }
 
@@ -2463,7 +2503,7 @@ const DrillDesigner = () => {
                     Current: {currentFrameIndex >= 0 ? currentFrameIndex + 1 : 'None'}
                   </span>
                   <span className="text-xs text-gray-500 ml-auto">
-                    💡 Drag to reorder • Click to select • Use buttons to duplicate/delete
+                    💡 Drag to reorder • Click to select • ✏️ edit • 📋 duplicate • × delete
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2 overflow-y-auto max-h-32 pb-2">
@@ -2495,6 +2535,16 @@ const DrillDesigner = () => {
                         {frame.frameNumber}
                       </button>
                       <div className="flex items-center space-x-1 ml-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            editFrame(index)
+                          }}
+                          className="text-green-500 hover:text-green-700"
+                          title="Edit frame"
+                        >
+                          ✏️
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
@@ -2542,6 +2592,17 @@ const DrillDesigner = () => {
               >
                 📸 Capture Frame ({frames.length + 1})
               </button>
+              
+              {/* Save Frame Changes Button - Only show when a frame is selected */}
+              {currentFrameIndex >= 0 && frames.length > 0 && (
+                <button
+                  onClick={saveFrameChanges}
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                  title="Save changes to current frame (Ctrl+S)"
+                >
+                  💾 Save Frame
+                </button>
+              )}
               
               {/* Centered Navigation and Playback Controls */}
               <div className="flex-1 flex items-center justify-center space-x-2">
@@ -2602,6 +2663,15 @@ const DrillDesigner = () => {
                 {frames.length > 0 ? currentFrameIndex + 1 : '0'}
               </div>
             </div>
+            
+            {/* Frame Saved Message */}
+            {frameSavedMessage && (
+              <div className="flex justify-center mt-2">
+                <div className="px-3 py-1 bg-green-100 border border-green-300 rounded-md text-sm font-medium text-green-700">
+                  {frameSavedMessage}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Canvas - Responsive */}
@@ -3113,7 +3183,7 @@ const DrillDesigner = () => {
               <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
               <li>• <strong>Use the Flip button to flip selected players horizontally</strong></li>
               <li>• Use the Delete Selected button to remove elements</li>
-              <li>• <strong>Frame Timeline:</strong> Drag frames to reorder, use 📋 to duplicate, × to delete</li>
+                              <li>• <strong>Frame Timeline:</strong> Drag frames to reorder, use ✏️ to edit, 📋 to duplicate, × to delete</li>
               <li>• <strong>Frame Navigation:</strong> Use ⏮️⏪⏩⏭️ buttons or keyboard shortcuts (←→ Home End)</li>
               <li>• <strong>Playback:</strong> Press Spacebar to play/pause animation</li>
               <li>• Use the Export button to save your drill as an image</li>
