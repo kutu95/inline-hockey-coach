@@ -1558,6 +1558,54 @@ const DrillDesigner = () => {
     setEndFrameIndex(null)
   }
 
+  const smoothAnimation = () => {
+    if (frames.length < 2) {
+      alert('Need at least 2 frames to smooth the animation!')
+      return
+    }
+
+    console.log('Smoothing animation with', frames.length, 'frames')
+    
+    const newFrames = []
+    
+    // Go through each pair of consecutive frames and create an intermediate frame
+    for (let i = 0; i < frames.length - 1; i++) {
+      const currentFrame = frames[i]
+      const nextFrame = frames[i + 1]
+      
+      // Add the current frame as is
+      newFrames.push({
+        ...currentFrame,
+        id: currentFrame.id,
+        frameNumber: currentFrame.frameNumber
+      })
+      
+      // Create intermediate frame between current and next
+      const intermediateElements = interpolateElements(currentFrame.elements, nextFrame.elements, 0.5)
+      
+      const intermediateFrame = {
+        id: Date.now() + i + 1000, // Unique ID for intermediate frames
+        elements: intermediateElements,
+        timestamp: Date.now() + i + 1000,
+        frameNumber: `${currentFrame.frameNumber} → ${nextFrame.frameNumber}`
+      }
+      
+      newFrames.push(intermediateFrame)
+    }
+    
+    // Add the last frame
+    newFrames.push({
+      ...frames[frames.length - 1],
+      id: frames[frames.length - 1].id,
+      frameNumber: frames[frames.length - 1].frameNumber
+    })
+    
+    setFrames(newFrames)
+    setHasUnsavedChanges(true)
+    
+    console.log('Smoothed animation: added', frames.length - 1, 'intermediate frames. Total frames:', newFrames.length)
+  }
+
   // Audio recording functions
   const startAudioRecording = async () => {
     try {
@@ -2657,6 +2705,19 @@ const DrillDesigner = () => {
                   className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
                 >
                   🗑️ Clear
+                </button>
+                
+                {/* Separator */}
+                <div className="w-px h-6 bg-blue-300 mx-2"></div>
+                
+                {/* Smooth Animation Button */}
+                <button
+                  onClick={smoothAnimation}
+                  disabled={frames.length < 2}
+                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  title="Add intermediate frames between all existing frames to smooth the animation"
+                >
+                  🌊 Smooth Animation
                 </button>
                 
                 {/* Separator */}
