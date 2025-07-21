@@ -53,16 +53,42 @@ const DrillDesigner = () => {
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
   const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
   const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
-  const [flippedPlayers, setFlippedPlayers] = useState(new Set())
+
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [draggedFrameIndex, setDraggedFrameIndex] = useState(null)
   const [dragOverFrameIndex, setDragOverFrameIndex] = useState(null)
   const [frameSavedMessage, setFrameSavedMessage] = useState('')
+  const [drillTitle, setDrillTitle] = useState('')
+  const [backNavigation, setBackNavigation] = useState({ type: 'organisation', url: '' })
+  const [flipHistory, setFlipHistory] = useState({}) // { playerId: [frameNumbers] }
   
   const stageRef = useRef()
   const animationRef = useRef()
   const audioChunksRef = useRef([])
   const isPlayingRef = useRef(false)
+
+  // Helper function to calculate if a player is flipped at a given frame
+  const isPlayerFlippedAtFrame = (playerId, frameIndex) => {
+    const flipFrames = flipHistory[playerId] || []
+    
+    // Handle the case where no frames have been captured yet
+    let effectiveFrameIndex = frameIndex
+    if (frameIndex < 0 && frames.length === 0) {
+      // No frames captured yet, use frame 0 for calculations
+      effectiveFrameIndex = 0
+    }
+    
+    // Count how many flips occurred before or at this frame
+    const flipCount = flipFrames.filter(frameNum => frameNum <= effectiveFrameIndex).length
+    // Player is flipped if there's an odd number of flips
+    return flipCount % 2 === 1
+  }
+
+  // Helper function to get current flip state for a player
+  const getCurrentPlayerFlipState = (playerId) => {
+    if (currentFrameIndex < 0) return false
+    return isPlayerFlippedAtFrame(playerId, currentFrameIndex)
+  }
   
 
 
@@ -71,12 +97,57 @@ const DrillDesigner = () => {
     loadDynamicPlayers()
   }, [])
 
-  // Load existing animation data if drillId is provided
+  // Load drill title and existing animation data if drillId is provided
   useEffect(() => {
     if (drillId) {
+      loadDrillTitle()
       loadExistingAnimationForDrill()
     }
   }, [drillId])
+
+  // Determine back navigation based on URL parameters and referrer
+  useEffect(() => {
+    const determineBackNavigation = () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const fromParam = urlParams.get('from')
+      
+      if (fromParam === 'drills') {
+        setBackNavigation({ type: 'drills', url: `/organisations/${orgId}/drills` })
+      } else if (fromParam === 'drill-details' && drillId) {
+        setBackNavigation({ type: 'drill-details', url: `/organisations/${orgId}/drills/${drillId}` })
+      } else if (drillId) {
+        // If editing an existing drill but no specific source, default to drill details
+        setBackNavigation({ type: 'drill-details', url: `/organisations/${orgId}/drills/${drillId}` })
+      } else {
+        // Default to organisation
+        setBackNavigation({ type: 'organisation', url: `/organisations/${orgId}` })
+      }
+    }
+    
+    determineBackNavigation()
+  }, [orgId, drillId])
+
+  // Function to load drill title
+  const loadDrillTitle = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('drills')
+        .select('title')
+        .eq('id', drillId)
+        .single()
+
+      if (error) {
+        console.error('Error loading drill title:', error)
+        return
+      }
+
+      if (data) {
+        setDrillTitle(data.title)
+      }
+    } catch (err) {
+      console.error('Error loading drill title:', err)
+    }
+  }
 
   // Mobile detection effect
   useEffect(() => {
@@ -617,15 +688,48 @@ const DrillDesigner = () => {
   }
 
   const flipSelectedElement = () => {
+    console.log('Flip button clicked!')
+    console.log('Selected element:', selectedElement)
+    console.log('Selected element type:', selectedElement?.type)
+    
     if (selectedElement && selectedElement.type.startsWith('dynamic-player-')) {
-      const newFlippedPlayers = new Set(flippedPlayers)
-      if (newFlippedPlayers.has(selectedElement.id)) {
-        newFlippedPlayers.delete(selectedElement.id)
+      const playerId = selectedElement.id
+      
+      // Handle the case where no frames have been captured yet
+      let currentFrame
+      if (currentFrameIndex >= 0) {
+        // We're editing an existing frame
+        currentFrame = currentFrameIndex
+      } else if (frames.length > 0) {
+        // We have frames but none selected, use the last frame
+        currentFrame = frames.length - 1
       } else {
-        newFlippedPlayers.add(selectedElement.id)
+        // No frames captured yet, use frame 0 (will be the first frame)
+        currentFrame = 0
       }
-      setFlippedPlayers(newFlippedPlayers)
+      
+      console.log('Flipping player:', playerId, 'at frame:', currentFrame)
+      
+      // Add flip event to history
+      setFlipHistory(prev => {
+        const playerFlipFrames = prev[playerId] || []
+        const newFlipFrames = [...playerFlipFrames, currentFrame]
+        const newHistory = {
+          ...prev,
+          [playerId]: newFlipFrames
+        }
+        console.log('New flip history:', newHistory)
+        return newHistory
+      })
+      
       setHasUnsavedChanges(true)
+      console.log(`Player ${playerId} flipped at frame ${currentFrame}`)
+      
+      // Force a re-render by updating elements state
+      // This ensures the visual flip is immediately visible
+      setElements(prev => [...prev])
+    } else {
+      console.log('No dynamic player selected or invalid element type')
     }
   }
 
@@ -649,6 +753,7 @@ const DrillDesigner = () => {
     const newFrame = {
       id: Date.now(),
       elements: JSON.parse(JSON.stringify(elements)), // Deep copy
+      flipHistory: JSON.parse(JSON.stringify(flipHistory)), // Include flip history
       timestamp: Date.now(),
       frameNumber: frames.length + 1
     }
@@ -688,6 +793,10 @@ const DrillDesigner = () => {
         return acc
       }, {}))
       setElements(frameElements)
+      
+      // Don't overwrite flip history when loading frames - it should persist across all frames
+      // The flip history is already restored when loading the animation
+      
       setCurrentFrameIndex(frameIndex)
       setSelectedElement(null)
     }
@@ -1371,7 +1480,7 @@ const DrillDesigner = () => {
           // Find the corresponding player in dynamicPlayerTools
           const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
           const currentPlayerImage = dynamicPlayer?.image
-          const isFlipped = flippedPlayers.has(element.id)
+          const isFlipped = isPlayerFlippedAtFrame(element.id, currentFrameIndex)
           
           if (currentPlayerImage) {
             // Draw the player image
@@ -1382,7 +1491,8 @@ const DrillDesigner = () => {
             ctx.translate(element.x, element.y)
             if (isFlipped) {
               ctx.scale(-1, 1)
-              ctx.translate(-imageWidth, 0)
+              // Adjust x position to center the flipped image (same as Konva logic)
+              ctx.translate(imageWidth / 2, 0)
             }
             ctx.drawImage(
               currentPlayerImage,
@@ -1679,8 +1789,9 @@ const DrillDesigner = () => {
       setCurrentFrameIndex(-1)
       setSelectedElement(null)
       setAudioBlob(null)
+      setFlipHistory({})
       setHasUnsavedChanges(false)
-      setFlippedPlayers(new Set())
+
     }
   }
 
@@ -1723,6 +1834,7 @@ const DrillDesigner = () => {
           id,
           title,
           description,
+          file_type,
           frame_count,
           frame_rate,
           is_editable,
@@ -1775,7 +1887,7 @@ const DrillDesigner = () => {
           drill_media!inner(drill_id)
         `)
         .eq('drill_media.drill_id', drillId)
-        .eq('media_type', 'animation')
+        .eq('file_type', 'animation')
         .eq('is_editable', true)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -1837,6 +1949,7 @@ const DrillDesigner = () => {
         canvasWidth: canvasWidth,
         canvasHeight: canvasHeight,
         audioBlob: audioBlob,
+        flipHistory: flipHistory, // Include the complete flip history
         metadata: {
           title: saveTitle,
           description: saveDescription,
@@ -1851,26 +1964,28 @@ const DrillDesigner = () => {
         type: 'application/json'
       })
       
-      // Upload media file to Supabase Storage
-      const mediaFilePath = `media/${Date.now()}_${fileName}`
-      console.log('Uploading media to path:', mediaFilePath)
+      const timestamp = Date.now()
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      // Upload WebM video file to Supabase Storage
+      const videoFilePath = `media/${timestamp}_${fileName}`
+      console.log('Uploading WebM video to path:', videoFilePath)
+      
+      const { data: videoUploadData, error: videoUploadError } = await supabase.storage
         .from('media')
-        .upload(mediaFilePath, mediaBlob, {
+        .upload(videoFilePath, mediaBlob, {
           contentType: mediaBlob.type,
           cacheControl: '3600'
         })
 
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-        throw new Error(`Upload failed: ${uploadError.message}`)
+      if (videoUploadError) {
+        console.error('Video upload error:', videoUploadError)
+        throw new Error(`Video upload failed: ${videoUploadError.message}`)
       }
 
-      console.log('Media file uploaded successfully')
+      console.log('WebM video uploaded successfully')
 
       // Upload animation data JSON
-      const animationFilePath = `animations/${Date.now()}_animation_data.json`
+      const animationFilePath = `animations/${timestamp}_animation_data.json`
       console.log('Uploading animation data to path:', animationFilePath)
       
       const { data: animationUploadData, error: animationUploadError } = await supabase.storage
@@ -1887,77 +2002,130 @@ const DrillDesigner = () => {
 
       console.log('Animation data uploaded successfully')
 
-      // Get public URLs
-      const { data: mediaUrlData } = supabase.storage
-        .from('media')
-        .getPublicUrl(mediaFilePath)
-
-      const { data: animationUrlData } = supabase.storage
-        .from('media')
-        .getPublicUrl(animationFilePath)
-
-      // Create media attachment record
-      const mediaData = {
-        title: saveTitle,
-        description: saveDescription,
-        file_type: mediaType,
+      // Create TWO separate media attachment records
+      
+      // 1. WebM Video Record
+      const videoMediaData = {
+        title: `${saveTitle} (Video)`,
+        description: `${saveDescription} - WebM video file`,
+        file_type: 'video',
         file_name: fileName,
         file_size: mediaBlob.size,
         mime_type: mediaBlob.type,
-        storage_path: mediaFilePath,
-        animation_data_path: animationFilePath, // Store path to animation data
-        duration_seconds: mediaType === 'video' || mediaType === 'audio' ? Math.round(frames.length / frameRate) : null,
+        storage_path: videoFilePath,
+        duration_seconds: Math.round(frames.length / frameRate),
         frame_count: frames.length,
         frame_rate: frameRate,
-        is_editable: true // Flag to indicate this can be loaded for editing
+        is_editable: false // Video files are not editable
       }
 
-      console.log('Creating media attachment record:', mediaData)
+      console.log('Creating WebM video media record:', videoMediaData)
 
-      const { data: mediaRecord, error: mediaError } = await supabase
+      const { data: videoMediaRecord, error: videoMediaError } = await supabase
         .from('media_attachments')
-        .insert(mediaData)
+        .insert(videoMediaData)
         .select()
         .single()
 
-      if (mediaError) {
-        console.error('Media record creation error:', mediaError)
-        throw new Error(`Media record creation failed: ${mediaError.message}`)
+      if (videoMediaError) {
+        console.error('Video media record creation error:', videoMediaError)
+        throw new Error(`Video media record creation failed: ${videoMediaError.message}`)
       }
 
-      console.log('Media record created:', mediaRecord)
+      console.log('WebM video media record created:', videoMediaRecord)
 
-      // Link media to drill or session
+      // 2. Animation Data Record
+      const animationMediaData = {
+        title: `${saveTitle} (Animation Data)`,
+        description: `${saveDescription} - Editable animation data`,
+        file_type: 'animation',
+        file_name: 'animation_data.json',
+        file_size: animationJsonBlob.size,
+        mime_type: 'application/json',
+        storage_path: animationFilePath,
+        animation_data_path: animationFilePath,
+        duration_seconds: Math.round(frames.length / frameRate),
+        frame_count: frames.length,
+        frame_rate: frameRate,
+        is_editable: true // Animation data is editable
+      }
+
+      console.log('Creating animation data media record:', animationMediaData)
+
+      const { data: animationMediaRecord, error: animationMediaError } = await supabase
+        .from('media_attachments')
+        .insert(animationMediaData)
+        .select()
+        .single()
+
+      if (animationMediaError) {
+        console.error('Animation media record creation error:', animationMediaError)
+        throw new Error(`Animation media record creation failed: ${animationMediaError.message}`)
+      }
+
+      console.log('Animation data media record created:', animationMediaRecord)
+
+      // Link BOTH media records to drill or session
       if (saveType === 'drill') {
-        console.log('Linking to drill:', selectedDrillId)
-        const { error: linkError } = await supabase
+        console.log('Linking both media records to drill:', selectedDrillId)
+        
+        // Link video
+        const { error: videoLinkError } = await supabase
           .from('drill_media')
           .insert({
             drill_id: selectedDrillId,
-            media_id: mediaRecord.id
+            media_id: videoMediaRecord.id
           })
 
-        if (linkError) {
-          console.error('Drill link error:', linkError)
-          throw new Error(`Drill linking failed: ${linkError.message}`)
+        if (videoLinkError) {
+          console.error('Video drill link error:', videoLinkError)
+          throw new Error(`Video drill linking failed: ${videoLinkError.message}`)
+        }
+
+        // Link animation data
+        const { error: animationLinkError } = await supabase
+          .from('drill_media')
+          .insert({
+            drill_id: selectedDrillId,
+            media_id: animationMediaRecord.id
+          })
+
+        if (animationLinkError) {
+          console.error('Animation drill link error:', animationLinkError)
+          throw new Error(`Animation drill linking failed: ${animationLinkError.message}`)
         }
       } else {
-        console.log('Linking to session:', selectedSessionId)
-        const { error: linkError } = await supabase
+        console.log('Linking both media records to session:', selectedSessionId)
+        
+        // Link video
+        const { error: videoLinkError } = await supabase
           .from('session_media')
           .insert({
             session_id: selectedSessionId,
-            media_id: mediaRecord.id
+            media_id: videoMediaRecord.id
           })
 
-        if (linkError) {
-          console.error('Session link error:', linkError)
-          throw new Error(`Session linking failed: ${linkError.message}`)
+        if (videoLinkError) {
+          console.error('Video session link error:', videoLinkError)
+          throw new Error(`Video session linking failed: ${videoLinkError.message}`)
+        }
+
+        // Link animation data
+        const { error: animationLinkError } = await supabase
+          .from('session_media')
+          .insert({
+            session_id: selectedSessionId,
+            media_id: animationMediaRecord.id
+          })
+
+        if (animationLinkError) {
+          console.error('Animation session link error:', animationLinkError)
+          throw new Error(`Animation session linking failed: ${animationLinkError.message}`)
         }
       }
 
-      console.log('Save completed successfully')
-      alert(`Animation saved successfully to ${saveType}! You can now load and edit this animation later.`)
+      console.log('Save completed successfully - both WebM video and animation data saved!')
+      alert(`Animation saved successfully to ${saveType}! Both WebM video and editable animation data have been saved.`)
       setShowSaveDialog(false)
       setSaveTitle('')
       setSaveDescription('')
@@ -2016,7 +2184,6 @@ const DrillDesigner = () => {
       // Restore the animation state
       setFrames(animationData.frames || [])
       setFrameRate(animationData.frameRate || 5)
-      setCurrentFrameIndex(-1) // Start with no frame selected
       setIsPlaying(false)
       setHasUnsavedChanges(false)
       
@@ -2025,13 +2192,33 @@ const DrillDesigner = () => {
         setAudioBlob(animationData.audioBlob)
       }
       
-      // Load the first frame if frames exist
+      // Restore flip history - first check animation level, then fall back to frame level
+      if (animationData.flipHistory) {
+        // Use flip history stored at animation level (newer format)
+        setFlipHistory(animationData.flipHistory)
+        console.log('Restored flip history from animation level:', animationData.flipHistory)
+      } else if (animationData.frames && animationData.frames.length > 0) {
+        // Fall back to finding the most recent frame with flip history (older format)
+        let latestFlipHistory = {}
+        for (let i = animationData.frames.length - 1; i >= 0; i--) {
+          if (animationData.frames[i].flipHistory) {
+            latestFlipHistory = animationData.frames[i].flipHistory
+            break
+          }
+        }
+        setFlipHistory(latestFlipHistory)
+        console.log('Restored flip history from frame level:', latestFlipHistory)
+      }
+      
+      // Load and focus the first frame if frames exist
       if (animationData.frames && animationData.frames.length > 0) {
+        setCurrentFrameIndex(0) // Set current frame to first frame
         loadFrame(0)
+      } else {
+        setCurrentFrameIndex(-1) // No frames, start with no frame selected
       }
 
       console.log('Animation loaded successfully')
-      alert(`Animation "${animationData.metadata?.title || 'Untitled'}" loaded successfully!`)
       
     } catch (error) {
       console.error('Error loading animation:', error)
@@ -2520,6 +2707,12 @@ const DrillDesigner = () => {
                   </span>
                 )}
               </div>
+              {drillTitle && (
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-500">→</span>
+                  <h2 className="text-base md:text-lg font-semibold text-gray-700">{drillTitle}</h2>
+                </div>
+              )}
             </div>
             
             {orgId && (
@@ -2530,16 +2723,20 @@ const DrillDesigner = () => {
                       'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
                     )
                     if (confirmed) {
-                      navigate(`/organisations/${orgId}`)
+                      navigate(backNavigation.url)
                     }
                   } else {
-                    navigate(`/organisations/${orgId}`)
+                    navigate(backNavigation.url)
                   }
                 }}
                 className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1 text-sm md:text-base"
               >
                 <span>←</span>
-                <span>Back to Organisation</span>
+                <span>
+                  {backNavigation.type === 'drills' && 'Back to Drills'}
+                  {backNavigation.type === 'drill-details' && 'Back to Drill'}
+                  {backNavigation.type === 'organisation' && 'Back to Organisation'}
+                </span>
               </button>
             )}
           </div>
@@ -2789,8 +2986,9 @@ const DrillDesigner = () => {
                 </button>
                 <button
                   onClick={flipSelectedElement}
-                  disabled={!selectedElement || !selectedElement.type.startsWith('dynamic-player-')}
+                  disabled={!selectedElement}
                   className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  title={selectedElement ? `Flip ${selectedElement.type}` : 'Select a player to flip'}
                 >
                   🔄 Flip
                 </button>
@@ -3303,7 +3501,7 @@ const DrillDesigner = () => {
                           // Find the corresponding player in dynamicPlayerTools
                           const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
                           const currentPlayerImage = dynamicPlayer?.image
-                          const isFlipped = flippedPlayers.has(element.id)
+                          const isFlipped = isPlayerFlippedAtFrame(element.id, currentFrameIndex)
                           
                           return (
                             <Group
@@ -3659,7 +3857,7 @@ const DrillDesigner = () => {
                     // For now, we'll save the video without audio due to browser limitations
                     // In a real implementation, you'd want to combine them server-side
                     mediaBlob = await createVideoBlob()
-                    mediaType = 'video'
+                    mediaType = 'animation' // Changed from 'video' to 'animation'
                     fileName = 'drill-animation.webm'
                   } else if (exportFormat === 'zip') {
                     mediaBlob = await createZipBlob()
@@ -3778,7 +3976,16 @@ const DrillDesigner = () => {
                       >
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h4 className="font-medium text-gray-900">{animation.title}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium text-gray-900">{animation.title}</h4>
+                              <span className={`px-2 py-1 text-xs rounded-full ${
+                                animation.file_type === 'animation' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {animation.file_type === 'animation' ? '🎨 Editable' : '🎥 Video'}
+                              </span>
+                            </div>
                             {animation.description && (
                               <p className="text-sm text-gray-600 mt-1">{animation.description}</p>
                             )}

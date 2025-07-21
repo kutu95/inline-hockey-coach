@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../src/lib/supabase'
 import DrillPlayer from './DrillPlayer'
 
-const MediaAttachments = ({ type, itemId, title }) => {
+const MediaAttachments = ({ type, itemId, title, userRoles = [] }) => {
   const [media, setMedia] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [editingTitle, setEditingTitle] = useState(null)
+  const [editingTitleValue, setEditingTitleValue] = useState('')
 
   useEffect(() => {
     if (itemId) {
@@ -68,13 +70,66 @@ const MediaAttachments = ({ type, itemId, title }) => {
         created_at: item.media_attachments?.created_at || item.created_at
       }))
 
+      // Sort by creation date (oldest first) to show versions chronologically
+      const sortedData = transformedData.sort((a, b) => 
+        new Date(a.created_at) - new Date(b.created_at)
+      )
+      
+      const filteredData = sortedData
+
       console.log('🔄 Transformed media data:', transformedData)
-      setMedia(transformedData)
+      console.log('🔄 Filtered media data (most recent per type):', filteredData)
+      setMedia(filteredData)
     } catch (err) {
       console.error('💥 Error in loadMedia:', err)
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const updateMediaTitle = async (mediaId, newTitle) => {
+    try {
+      const { error } = await supabase
+        .from('media_attachments')
+        .update({ title: newTitle.trim() })
+        .eq('id', mediaId)
+
+      if (error) {
+        console.error('Error updating media title:', error)
+        throw error
+      }
+
+      // Update local state
+      setMedia(prev => prev.map(item => 
+        item.media_id === mediaId 
+          ? { ...item, title: newTitle.trim() }
+          : item
+      ))
+
+      setEditingTitle(null)
+      setEditingTitleValue('')
+    } catch (err) {
+      console.error('Failed to update media title:', err)
+      alert('Failed to update media title')
+    }
+  }
+
+  const startEditingTitle = (mediaId, currentTitle) => {
+    setEditingTitle(mediaId)
+    setEditingTitleValue(currentTitle)
+  }
+
+  const cancelEditingTitle = () => {
+    setEditingTitle(null)
+    setEditingTitleValue('')
+  }
+
+  const saveEditingTitle = (mediaId) => {
+    if (editingTitleValue.trim()) {
+      updateMediaTitle(mediaId, editingTitleValue)
+    } else {
+      cancelEditingTitle()
     }
   }
 
@@ -351,7 +406,58 @@ const MediaAttachments = ({ type, itemId, title }) => {
                   <div className="flex items-start space-x-3 flex-1">
                     <div className="text-2xl">{getMediaIcon(item.file_type)}</div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 truncate">{item.title}</h4>
+                      {editingTitle === item.media_id ? (
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={editingTitleValue}
+                            onChange={(e) => setEditingTitleValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                saveEditingTitle(item.media_id)
+                              } else if (e.key === 'Escape') {
+                                cancelEditingTitle()
+                              }
+                            }}
+                            onBlur={() => saveEditingTitle(item.media_id)}
+                            className="font-medium text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => saveEditingTitle(item.media_id)}
+                            className="text-green-600 hover:text-green-800 text-sm"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={cancelEditingTitle}
+                            className="text-red-600 hover:text-red-800 text-sm"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <h4 
+                          className="font-medium text-gray-900 truncate cursor-pointer hover:text-indigo-600 transition-colors group"
+                          onClick={() => startEditingTitle(item.media_id, item.title)}
+                          title="Click to edit title"
+                        >
+                          {item.title}
+                          <span className="ml-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs">
+                            ✏️
+                          </span>
+                          {media.filter(m => m.file_type === item.file_type).indexOf(item) > 0 && (
+                            <span className="ml-2 text-sm text-gray-500">
+                              (Version {media.filter(m => m.file_type === item.file_type).indexOf(item) + 1})
+                            </span>
+                          )}
+                          {media.filter(m => m.file_type === item.file_type).indexOf(item) === media.filter(m => m.file_type === item.file_type).length - 1 && (
+                            <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                              Latest
+                            </span>
+                          )}
+                        </h4>
+                      )}
                       {item.description && (
                         <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                       )}
@@ -367,6 +473,9 @@ const MediaAttachments = ({ type, itemId, title }) => {
                         {item.frame_rate && (
                           <span>{item.frame_rate} FPS</span>
                         )}
+                        <span className="bg-gray-200 px-2 py-1 rounded text-xs">
+                          {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -387,12 +496,14 @@ const MediaAttachments = ({ type, itemId, title }) => {
                     >
                       Download
                     </button>
-                    <button
-                      onClick={() => deleteMedia(item.media_id)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
-                    >
-                      Delete
-                    </button>
+                    {(userRoles.includes('superadmin') || userRoles.includes('admin') || userRoles.includes('coach')) && (
+                      <button
+                        onClick={() => deleteMedia(item.media_id)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -10,7 +10,7 @@ const ViewDrill = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [imageUrl, setImageUrl] = useState(null)
-  const { user, hasRole } = useAuth()
+  const { user, hasRole, userRoles } = useAuth()
   const { id, orgId } = useParams()
 
   useEffect(() => {
@@ -77,7 +77,9 @@ const ViewDrill = () => {
   }
 
   const formatPlayerCount = (min, max) => {
+    if (!min) return 'No minimum'
     if (min === max) return `${min} players`
+    if (!max) return `${min} up players`
     return `${min}-${max} players`
   }
 
@@ -137,7 +139,7 @@ const ViewDrill = () => {
                      Edit Drill
                    </Link>
                    <Link
-                     to={orgId ? `/organisations/${orgId}/drill-designer/${drill.id}` : "#"}
+                     to={orgId ? `/organisations/${orgId}/drill-designer/${drill.id}?from=drill-details` : "#"}
                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                    >
                      Edit Animation
@@ -253,7 +255,8 @@ const ViewDrill = () => {
           <div className="mt-6">
             <MediaAttachments 
               type="drill" 
-              itemId={drill.id} 
+              itemId={drill.id}
+              userRoles={userRoles || []}
             />
           </div>
         </div>
