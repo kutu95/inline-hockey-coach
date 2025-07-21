@@ -3,6 +3,8 @@ import { Stage, Layer, Rect, Circle, Line, Text, Arrow, Shape, Image, Group } fr
 import JSZip from 'jszip'
 import { supabase } from '../src/lib/supabase'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import AIGeneratorPanel from './AIGeneratorPanel'
+import { generateHockeyAnimation } from '../src/lib/ai'
 
 const DrillDesigner = () => {
   const { orgId, drillId } = useParams()
@@ -66,6 +68,16 @@ const DrillDesigner = () => {
   const animationRef = useRef()
   const audioChunksRef = useRef([])
   const isPlayingRef = useRef(false)
+  const [showAIPanel, setShowAIPanel] = useState(false)
+  
+  // Path drawing state
+  const [isPathDrawingMode, setIsPathDrawingMode] = useState(false)
+  const [pathPoints, setPathPoints] = useState([])
+  const [selectedPathPlayer, setSelectedPathPlayer] = useState(null)
+  const [pathFrames, setPathFrames] = useState(10)
+  const [showPathPanel, setShowPathPanel] = useState(false)
+  const [isDrawingPath, setIsDrawingPath] = useState(false)
+  const [pathInsertMode, setPathInsertMode] = useState('append') // 'append', 'insert', 'replace', 'merge'
 
   // Helper function to calculate if a player is flipped at a given frame
   const isPlayerFlippedAtFrame = (playerId, frameIndex) => {
@@ -192,6 +204,12 @@ const DrillDesigner = () => {
     const handleKeyDown = (e) => {
       // Only handle keyboard shortcuts when not editing text
       if (editingText) return
+      
+      // Don't handle shortcuts if user is typing in an input or textarea
+      const target = e.target
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+        return
+      }
       
       switch (e.key) {
         case 'ArrowLeft':
@@ -502,7 +520,8 @@ const DrillDesigner = () => {
     { id: 'puck', label: 'Puck', icon: '●' },
     { id: 'arrow', label: 'Arrow', icon: '→' },
     { id: 'text', label: 'Text', icon: 'T' },
-    { id: 'draw', label: 'Draw', icon: '✏️' }
+    { id: 'draw', label: 'Draw', icon: '✏️' },
+    { id: 'path', label: 'Path', icon: '🛤️' }
   ]
 
 
@@ -572,7 +591,8 @@ const DrillDesigner = () => {
 
   const handleStageClick = (e) => {
     // Only add element if clicking on the stage itself, not on elements
-    if (e.target === e.target.getStage()) {
+    // Don't add elements when path tool is active
+    if (e.target === e.target.getStage() && selectedTool !== 'path') {
       const pos = e.target.getStage().getPointerPosition()
       console.log('Adding element:', selectedTool, 'at position:', pos)
       
@@ -590,14 +610,18 @@ const DrillDesigner = () => {
       setIsDrawing(true)
       const pos = e.target.getStage().getPointerPosition()
       setDrawingPoints([pos.x, pos.y])
+    } else if (selectedTool === 'path' && selectedPathPlayer) {
+      handlePathMouseDown(e)
     }
   }
 
   const handleMouseMove = (e) => {
-    if (!isDrawing || selectedTool !== 'draw') return
-
-    const pos = e.target.getStage().getPointerPosition()
-    setDrawingPoints([...drawingPoints, pos.x, pos.y])
+    if (isDrawing && selectedTool === 'draw') {
+      const pos = e.target.getStage().getPointerPosition()
+      setDrawingPoints([...drawingPoints, pos.x, pos.y])
+    } else if (selectedTool === 'path' && selectedPathPlayer) {
+      handlePathMouseMove(e)
+    }
   }
 
   const handleMouseUp = () => {
@@ -617,10 +641,20 @@ const DrillDesigner = () => {
     }
     setIsDrawing(false)
     setDrawingPoints([])
+    
+    // Stop path drawing
+    if (selectedTool === 'path' && isDrawingPath) {
+      setIsDrawingPath(false)
+    }
   }
 
   const handleElementClick = (element) => {
     setSelectedElement(element)
+    
+    // Handle path drawing player selection
+    if (selectedTool === 'path') {
+      handlePathPlayerSelect(element)
+    }
   }
 
   const handleTextDoubleClick = (element) => {
@@ -661,8 +695,345 @@ const DrillDesigner = () => {
     )
     
     console.log('Updated elements:', updatedElements)
+    
     setElements(updatedElements)
     setHasUnsavedChanges(true)
+  }
+
+  // Path drawing functions
+  const startPathDrawing = () => {
+    setIsPathDrawingMode(true)
+    setPathPoints([])
+    setSelectedPathPlayer(null)
+    setShowPathPanel(true)
+    setSelectedTool('path') // Set the tool to path mode
+  }
+
+  const stopPathDrawing = () => {
+    setIsPathDrawingMode(false)
+    setPathPoints([])
+    setSelectedPathPlayer(null)
+    setShowPathPanel(false)
+    setIsDrawingPath(false)
+    setSelectedTool('puck') // Reset to default tool
+  }
+
+  const handlePathPlayerSelect = (element) => {
+    if (selectedTool !== 'path') return
+    
+    // Check if element is a player or puck
+    if (element.type && (element.type.startsWith('player') || element.type.startsWith('dynamic-player') || element.type === 'puck')) {
+      setSelectedPathPlayer(element)
+      setPathPoints([{ x: element.x, y: element.y }])
+      console.log('Selected element for path:', element)
+    }
+  }
+
+  const handlePathMouseMove = (e) => {
+    if (selectedTool !== 'path' || !selectedPathPlayer || !isDrawingPath) return
+    
+    // For pucks, don't add points during mouse move - only on clicks
+    if (selectedPathPlayer.type === 'puck') return
+    
+    const pos = e.target.getStage().getPointerPosition()
+    // Add new point during drag for curved path (with throttling to avoid too many points)
+    setPathPoints(prev => {
+      // Only add point if it's significantly different from the last one (to avoid too many points)
+      if (prev.length === 0) {
+        return [{ x: pos.x, y: pos.y }]
+      }
+      const lastPoint = prev[prev.length - 1]
+      const distance = Math.sqrt((pos.x - lastPoint.x) ** 2 + (pos.y - lastPoint.y) ** 2)
+      
+      // Only add point if it's at least 5 pixels away from the last point
+      if (distance > 5) {
+        return [...prev, { x: pos.x, y: pos.y }]
+      }
+      return prev
+    })
+  }
+
+  const handlePathMouseDown = (e) => {
+    if (selectedTool !== 'path' || !selectedPathPlayer) return
+    
+    const pos = e.target.getStage().getPointerPosition()
+    setIsDrawingPath(true)
+    
+    // For pucks, add a new point on each click
+    if (selectedPathPlayer.type === 'puck') {
+      setPathPoints(prev => [...prev, { x: pos.x, y: pos.y }])
+    } else {
+      // For players, start the path
+      setPathPoints([...pathPoints, { x: pos.x, y: pos.y }])
+    }
+  }
+
+  const clearPath = () => {
+    setPathPoints([])
+    setSelectedPathPlayer(null)
+    setIsDrawingPath(false)
+  }
+
+  const generatePathAnimation = () => {
+    if (pathPoints.length < 2 || !selectedPathPlayer) {
+      alert('Please draw a path with at least 2 points')
+      return
+    }
+
+    // Generate path points - smooth for players, straight for pucks
+    const path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
+    
+    // Create frames for the animation
+    const newFrames = []
+    for (let i = 0; i < pathFrames; i++) {
+      const progress = i / (pathFrames - 1)
+      const position = interpolateAlongPath(path, progress)
+      
+      // Create frame elements with player at new position
+      const frameElements = elements.map(element => {
+        if (element.id === selectedPathPlayer.id) {
+          return { ...element, x: position.x, y: position.y }
+        }
+        return element
+      })
+      
+      newFrames.push({
+        id: Date.now() + i,
+        elements: JSON.parse(JSON.stringify(frameElements)), // Deep copy
+        flipHistory: JSON.parse(JSON.stringify(flipHistory)), // Include flip history
+        timestamp: Date.now() + i,
+        frameNumber: 0 // Will be set based on insertion mode
+      })
+    }
+    
+    // Insert frames based on mode
+    let updatedFrames = [...frames]
+    
+    if (pathInsertMode === 'append') {
+      // Add to end (current behavior)
+      newFrames.forEach((frame, index) => {
+        frame.frameNumber = frames.length + index + 1
+      })
+      updatedFrames = [...frames, ...newFrames]
+    } else if (pathInsertMode === 'insert') {
+      // Insert at current frame position
+      const insertIndex = currentFrameIndex >= 0 ? currentFrameIndex : 0
+      newFrames.forEach((frame, index) => {
+        frame.frameNumber = insertIndex + index + 1
+      })
+      
+      // Update frame numbers for existing frames after insertion point
+      const framesAfterInsert = frames.slice(insertIndex).map((frame, index) => ({
+        ...frame,
+        frameNumber: insertIndex + pathFrames + index + 1
+      }))
+      
+      updatedFrames = [
+        ...frames.slice(0, insertIndex),
+        ...newFrames,
+        ...framesAfterInsert
+      ]
+    } else if (pathInsertMode === 'replace') {
+      // Replace frames starting from current position
+      const replaceIndex = currentFrameIndex >= 0 ? currentFrameIndex : 0
+      const framesToReplace = Math.min(pathFrames, frames.length - replaceIndex)
+      
+      newFrames.forEach((frame, index) => {
+        frame.frameNumber = replaceIndex + index + 1
+      })
+      
+      // Update frame numbers for remaining frames
+      const remainingFrames = frames.slice(replaceIndex + framesToReplace).map((frame, index) => ({
+        ...frame,
+        frameNumber: replaceIndex + pathFrames + index + 1
+      }))
+      
+      updatedFrames = [
+        ...frames.slice(0, replaceIndex),
+        ...newFrames,
+        ...remainingFrames
+      ]
+    } else if (pathInsertMode === 'merge') {
+      // Merge path animation with existing frames
+      const mergeIndex = currentFrameIndex >= 0 ? currentFrameIndex : 0
+      const framesToMerge = Math.min(pathFrames, frames.length - mergeIndex)
+      
+      // Create merged frames by combining path animation with existing frame elements
+      const mergedFrames = []
+      
+      // Always use current canvas state as the base for merging
+      // This ensures any new elements added to the current frame are included
+      const currentCanvasElements = elements
+      
+      // Handle case where we have existing frames to merge with
+      if (framesToMerge > 0) {
+        for (let i = 0; i < framesToMerge; i++) {
+          const progress = i / (framesToMerge - 1)
+          const position = interpolateAlongPath(path, progress)
+          
+          // Get the existing frame at merge position
+          const existingFrame = frames[mergeIndex + i]
+          
+          // Start with current canvas state, then merge with existing frame data
+          let baseElements = [...currentCanvasElements]
+          
+          // If there's an existing frame, merge its elements with current canvas state
+          if (existingFrame) {
+            // Create a map of existing frame elements by ID for quick lookup
+            const existingElementsMap = {}
+            existingFrame.elements.forEach(el => {
+              existingElementsMap[el.id] = el
+            })
+            
+            // Update base elements with existing frame data, but keep current canvas elements
+            baseElements = baseElements.map(element => {
+              // If this element exists in the existing frame, use its position
+              if (existingElementsMap[element.id]) {
+                return { ...element, ...existingElementsMap[element.id] }
+              }
+              return element
+            })
+          }
+          
+          // Create merged elements: update selected player position, keep others as they are
+          const mergedElements = baseElements.map(element => {
+            if (element.id === selectedPathPlayer.id) {
+              return { ...element, x: position.x, y: position.y }
+            }
+            return element
+          })
+          
+          mergedFrames.push({
+            id: Date.now() + i,
+            elements: JSON.parse(JSON.stringify(mergedElements)),
+            flipHistory: existingFrame ? JSON.parse(JSON.stringify(existingFrame.flipHistory)) : JSON.parse(JSON.stringify(flipHistory)),
+            timestamp: Date.now() + i,
+            frameNumber: mergeIndex + i + 1
+          })
+        }
+      }
+      
+      // If we have more path frames than existing frames, add the remaining path frames
+      if (pathFrames > framesToMerge) {
+        for (let i = framesToMerge; i < pathFrames; i++) {
+          const progress = i / (pathFrames - 1)
+          const position = interpolateAlongPath(path, progress)
+          
+          // Use current canvas state as base for remaining frames to include any new elements
+          const baseElements = elements
+          
+          const remainingElements = baseElements.map(element => {
+            if (element.id === selectedPathPlayer.id) {
+              return { ...element, x: position.x, y: position.y }
+            }
+            return element
+          })
+          
+          mergedFrames.push({
+            id: Date.now() + i,
+            elements: JSON.parse(JSON.stringify(remainingElements)),
+            flipHistory: JSON.parse(JSON.stringify(flipHistory)),
+            timestamp: Date.now() + i,
+            frameNumber: mergeIndex + i + 1
+          })
+        }
+      }
+      
+      // If no frames to merge with, create all frames from current elements
+      if (framesToMerge === 0) {
+        for (let i = 0; i < pathFrames; i++) {
+          const progress = i / (pathFrames - 1)
+          const position = interpolateAlongPath(path, progress)
+          
+          const mergedElements = elements.map(element => {
+            if (element.id === selectedPathPlayer.id) {
+              return { ...element, x: position.x, y: position.y }
+            }
+            return element
+          })
+          
+          mergedFrames.push({
+            id: Date.now() + i,
+            elements: JSON.parse(JSON.stringify(mergedElements)),
+            flipHistory: JSON.parse(JSON.stringify(flipHistory)),
+            timestamp: Date.now() + i,
+            frameNumber: mergeIndex + i + 1
+          })
+        }
+      }
+      
+      // Update frame numbers for frames after the merge
+      const framesAfterMerge = frames.slice(mergeIndex + framesToMerge).map((frame, index) => ({
+        ...frame,
+        frameNumber: mergeIndex + mergedFrames.length + index + 1
+      }))
+      
+      updatedFrames = [
+        ...frames.slice(0, mergeIndex),
+        ...mergedFrames,
+        ...framesAfterMerge
+      ]
+    }
+    
+    setFrames(updatedFrames)
+    setHasUnsavedChanges(true)
+    
+    // Clear path and exit drawing mode
+    stopPathDrawing()
+    setSelectedTool('puck') // Ensure we're back to default tool
+    
+    console.log(`Generated ${pathFrames} frames for path animation in ${pathInsertMode} mode`)
+  }
+
+  const generateSmoothPath = (points) => {
+    if (points.length < 2) return points
+    
+    const smoothPoints = []
+    const tension = 0.5
+    
+    for (let i = 0; i < points.length - 1; i++) {
+      const current = points[i]
+      const next = points[i + 1]
+      
+      // Add current point
+      smoothPoints.push(current)
+      
+      // Add intermediate points for smoothness
+      if (i < points.length - 2) {
+        const nextNext = points[i + 2]
+        for (let j = 1; j <= 5; j++) {
+          const t = j / 6
+          const x = current.x + (next.x - current.x) * t + 
+                   (nextNext.x - current.x) * tension * t * (1 - t)
+          const y = current.y + (next.y - current.y) * t + 
+                   (nextNext.y - current.y) * tension * t * (1 - t)
+          smoothPoints.push({ x, y })
+        }
+      }
+    }
+    
+    // Add last point
+    smoothPoints.push(points[points.length - 1])
+    
+    return smoothPoints
+  }
+
+  const interpolateAlongPath = (path, progress) => {
+    if (path.length < 2) return path[0] || { x: 0, y: 0 }
+    
+    const totalLength = path.length - 1
+    const targetIndex = progress * totalLength
+    const index1 = Math.floor(targetIndex)
+    const index2 = Math.min(index1 + 1, path.length - 1)
+    const t = targetIndex - index1
+    
+    const point1 = path[index1]
+    const point2 = path[index2]
+    
+        return {
+      x: point1.x + (point2.x - point1.x) * t,
+      y: point1.y + (point2.y - point1.y) * t
+    }
   }
 
   const deleteSelectedElement = () => {
@@ -2686,167 +3057,323 @@ const DrillDesigner = () => {
     return new Promise(resolve => canvas.toBlob(resolve))
   }
 
+  // Handler for AI generation
+  const handleAIGenerate = async (description) => {
+    try {
+      console.log('Generating animation for:', description)
+      
+      // Generate animation using AI
+      const animationData = await generateHockeyAnimation(description)
+      console.log('AI generated animation:', animationData)
+      
+      // Determine mode (default to replace if not specified)
+      const mode = animationData.mode || 'replace'
+      console.log('Animation mode:', mode)
+      
+      // Set frame rate
+      setFrameRate(animationData.frameRate || 5)
+      
+      // Convert AI frames to our format
+      const newFrames = animationData.frames.map((frame, index) => ({
+        id: Date.now() + index,
+        frameNumber: index + 1,
+        elements: [
+          // Add puck
+          ...(frame.puck ? [{
+            id: `puck-${index}`,
+            type: 'puck',
+            x: frame.puck.x,
+            y: frame.puck.y,
+            fill: '#000000',
+            radius: 8
+          }] : []),
+          // Add players
+          ...frame.players.map(player => ({
+            id: player.id,
+            type: player.type,
+            x: player.x,
+            y: player.y,
+            fill: player.color,
+            stroke: '#ffffff',
+            strokeWidth: 2,
+            text: player.text
+          }))
+        ],
+        flipHistory: {},
+        timestamp: Date.now() + index
+      }))
+      
+      let updatedFrames = []
+      
+      if (mode === 'replace') {
+        // Clear existing data and replace
+        setFrames([])
+        setElements([])
+        setFlipHistory({})
+        setCurrentFrameIndex(-1)
+        updatedFrames = newFrames
+        console.log('Replacing animation with', newFrames.length, 'frames')
+      } else if (mode === 'append') {
+        // Append to existing frames
+        const existingFrames = frames
+        const startFrameNumber = existingFrames.length + 1
+        const framesWithUpdatedNumbers = newFrames.map((frame, index) => ({
+          ...frame,
+          frameNumber: startFrameNumber + index
+        }))
+        updatedFrames = [...existingFrames, ...framesWithUpdatedNumbers]
+        console.log('Appending', newFrames.length, 'frames to existing', existingFrames.length, 'frames')
+      } else if (mode === 'insert') {
+        // Insert at current frame position
+        const existingFrames = frames
+        const insertPosition = Math.max(0, currentFrameIndex)
+        const beforeInsert = existingFrames.slice(0, insertPosition)
+        const afterInsert = existingFrames.slice(insertPosition)
+        
+        const framesWithUpdatedNumbers = newFrames.map((frame, index) => ({
+          ...frame,
+          frameNumber: insertPosition + index + 1
+        }))
+        
+        // Update frame numbers for frames after insertion
+        const updatedAfterInsert = afterInsert.map((frame, index) => ({
+          ...frame,
+          frameNumber: insertPosition + newFrames.length + index + 1
+        }))
+        
+        updatedFrames = [...beforeInsert, ...framesWithUpdatedNumbers, ...updatedAfterInsert]
+        console.log('Inserting', newFrames.length, 'frames at position', insertPosition)
+      }
+      
+      // Set frames
+      setFrames(updatedFrames)
+      
+      // Load appropriate frame
+      if (updatedFrames.length > 0) {
+        if (mode === 'append') {
+          // Load the first new frame (after existing frames)
+          const firstNewFrameIndex = frames.length
+          setCurrentFrameIndex(firstNewFrameIndex)
+          setElements(updatedFrames[firstNewFrameIndex].elements)
+        } else if (mode === 'insert') {
+          // Load the first inserted frame
+          const insertPosition = Math.max(0, currentFrameIndex)
+          setCurrentFrameIndex(insertPosition)
+          setElements(updatedFrames[insertPosition].elements)
+        } else {
+          // Replace mode - load first frame
+          setCurrentFrameIndex(0)
+          setElements(updatedFrames[0].elements)
+        }
+      }
+      
+      setHasUnsavedChanges(true)
+      console.log('Animation loaded successfully!')
+      
+    } catch (error) {
+      console.error('Error generating animation:', error)
+      alert(`Failed to generate animation: ${error.message}`)
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 p-2 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-3 md:p-6">
-          {/* Header with Logo and Navigation */}
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6 space-y-2 md:space-y-0">
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <img 
-                src="/Backcheck_small.png" 
-                alt="Backcheck Logo" 
-                className="h-8 md:h-12 w-auto"
-              />
-              <div className="flex items-center space-x-2">
-                <h1 className="text-lg md:text-2xl font-bold text-gray-900">Drill Designer</h1>
-                {hasUnsavedChanges && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    <span className="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
-                    Unsaved
-                  </span>
-                )}
-              </div>
-              {drillTitle && (
+    <div className="relative min-h-screen">
+      <div className="min-h-screen bg-gray-100 p-2 md:p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-3 md:p-6">
+            {/* Header with Logo and Navigation */}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 md:mb-6 space-y-2 md:space-y-0">
+              <div className="flex items-center space-x-2 md:space-x-4">
+                <img 
+                  src="/Backcheck_small.png" 
+                  alt="Backcheck Logo" 
+                  className="h-8 md:h-12 w-auto"
+                />
                 <div className="flex items-center space-x-2">
-                  <span className="text-gray-500">→</span>
-                  <h2 className="text-base md:text-lg font-semibold text-gray-700">{drillTitle}</h2>
-                </div>
-              )}
-            </div>
-            
-            {orgId && (
-              <button
-                onClick={() => {
-                  if (hasUnsavedChanges) {
-                    const confirmed = window.confirm(
-                      'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
-                    )
-                    if (confirmed) {
-                      navigate(backNavigation.url)
-                    }
-                  } else {
-                    navigate(backNavigation.url)
-                  }
-                }}
-                className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1 text-sm md:text-base"
-              >
-                <span>←</span>
-                <span>
-                  {backNavigation.type === 'drills' && 'Back to Drills'}
-                  {backNavigation.type === 'drill-details' && 'Back to Drill'}
-                  {backNavigation.type === 'organisation' && 'Back to Organisation'}
-                </span>
-              </button>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          {isMobile && (
-            <div className="mb-4">
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
-              >
-                <span>{showMobileMenu ? '▼' : '▲'}</span>
-                <span>{showMobileMenu ? 'Hide Controls' : 'Show Controls'}</span>
-              </button>
-            </div>
-          )}
-
-          {/* Toolbar and Color Picker - Responsive */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
-              {/* Tools Section */}
-              <div className="flex flex-wrap gap-2 md:gap-2">
-                {tools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    onClick={() => setSelectedTool(tool.id)}
-                    className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
-                      selectedTool === tool.id
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                    }`}
-                  >
-                    {tool.image ? (
-                      <img 
-                        src={tool.image.src} 
-                        alt={tool.label} 
-                        className="w-6 h-6 md:w-8 md:h-8"
-                        style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
-                      />
-                    ) : (
-                      <>
-                        <span className="text-base md:text-lg mr-1 md:mr-2">{tool.icon}</span>
-                        <span className="hidden md:inline">{tool.label}</span>
-                      </>
-                    )}
-                  </button>
-                ))}
-                
-                {/* Player Tool with Dropdown */}
-                <div className="relative player-dropdown">
-                  <button
-                    onClick={() => {
-                      setSelectedTool('player')
-                      setShowPlayerDropdown(!showPlayerDropdown)
-                    }}
-                    className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
-                      selectedTool === 'player'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                    }`}
-                  >
-                    <span className="text-base md:text-lg mr-1 md:mr-2">🏒</span>
-                    <span className="hidden md:inline">Player</span>
-                    <span className="ml-1">▼</span>
-                  </button>
-                  
-                  {/* Player Dropdown */}
-                  {showPlayerDropdown && (
-                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
-                      {isLoadingPlayers ? (
-                        <div className="px-4 py-2 text-sm text-gray-500">Loading players...</div>
-                      ) : (
-                        <>
-                          <div className="px-4 py-2 text-sm text-gray-500">Debug: {dynamicPlayerTools.length} players loaded</div>
-                          {dynamicPlayerTools.map((player) => (
-                            <button
-                              key={player.id}
-                              onClick={() => {
-                                setSelectedPlayer(player.id)
-                                setSelectedTool('player')
-                                setShowPlayerDropdown(false)
-                              }}
-                              className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
-                                selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                              }`}
-                            >
-                              {player.image ? (
-                                <img 
-                                  src={player.image.src} 
-                                  alt={player.label} 
-                                  className="w-6 h-6"
-                                />
-                              ) : (
-                                <span className="text-lg">{player.icon}</span>
-                              )}
-                              <span className="text-sm">{player.label}</span>
-                              {selectedPlayer === player.id && (
-                                <span className="ml-auto text-blue-600">✓</span>
-                              )}
-                            </button>
-                          ))}
-                        </>
-                      )}
-                    </div>
+                  <h1 className="text-lg md:text-2xl font-bold text-gray-900">Drill Designer</h1>
+                  {hasUnsavedChanges && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="w-2 h-2 bg-yellow-400 rounded-full mr-1"></span>
+                      Unsaved
+                    </span>
                   )}
                 </div>
+                {drillTitle && (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-gray-500">→</span>
+                    <h2 className="text-base md:text-lg font-semibold text-gray-700">{drillTitle}</h2>
+                  </div>
+                )}
+              </div>
+              
+              {orgId && (
+                <button
+                  onClick={() => {
+                    if (hasUnsavedChanges) {
+                      const confirmed = window.confirm(
+                        'You have unsaved changes. Are you sure you want to leave? All work will be lost.'
+                      )
+                      if (confirmed) {
+                        navigate(backNavigation.url)
+                      }
+                    } else {
+                      navigate(backNavigation.url)
+                    }
+                  }}
+                  className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center space-x-1 text-sm md:text-base"
+                >
+                  <span>←</span>
+                  <span>
+                    {backNavigation.type === 'drills' && 'Back to Drills'}
+                    {backNavigation.type === 'drill-details' && 'Back to Drill'}
+                    {backNavigation.type === 'organisation' && 'Back to Organisation'}
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            {isMobile && (
+              <div className="mb-4">
+                <button
+                  onClick={() => setShowMobileMenu(!showMobileMenu)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
+                >
+                  <span>{showMobileMenu ? '▼' : '▲'}</span>
+                  <span>{showMobileMenu ? 'Hide Controls' : 'Show Controls'}</span>
+                </button>
+              </div>
+            )}
+
+            {/* Toolbar and Color Picker - Responsive */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-gray-50 rounded-lg`}>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+                {/* Tools Section */}
+                <div className="flex flex-wrap gap-2 md:gap-2">
+                  {tools.map((tool) => (
+                    <button
+                      key={tool.id}
+                      onClick={() => {
+                        if (tool.id === 'path') {
+                          startPathDrawing()
+                        } else {
+                          setSelectedTool(tool.id)
+                        }
+                      }}
+                      className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                        selectedTool === tool.id || (tool.id === 'path' && isPathDrawingMode)
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      {tool.image ? (
+                        <img 
+                          src={tool.image.src} 
+                          alt={tool.label} 
+                          className="w-6 h-6 md:w-8 md:h-8"
+                          style={{ filter: selectedTool === tool.id ? 'brightness(1.2)' : 'none' }}
+                        />
+                      ) : (
+                        <>
+                          <span className="text-base md:text-lg mr-1 md:mr-2">{tool.icon}</span>
+                          <span className="hidden md:inline">{tool.label}</span>
+                        </>
+                      )}
+                    </button>
+                  ))}
+                  
+                  {/* Player Tool with Dropdown */}
+                  <div className="relative player-dropdown">
+                    <button
+                      onClick={() => {
+                        setSelectedTool('player')
+                        setShowPlayerDropdown(!showPlayerDropdown)
+                      }}
+                      className={`px-3 md:px-4 py-3 md:py-2 rounded-md border-2 transition-colors text-sm md:text-base ${
+                        selectedTool === 'player'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      <span className="text-base md:text-lg mr-1 md:mr-2">🏒</span>
+                      <span className="hidden md:inline">Player</span>
+                      <span className="ml-1">▼</span>
+                    </button>
+                    
+                    {/* Player Dropdown */}
+                    {showPlayerDropdown && (
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 min-w-48">
+                        {isLoadingPlayers ? (
+                          <div className="px-4 py-2 text-sm text-gray-500">Loading players...</div>
+                        ) : (
+                          <>
+                            <div className="px-4 py-2 text-sm text-gray-500">Debug: {dynamicPlayerTools.length} players loaded</div>
+                            {dynamicPlayerTools.map((player) => (
+                              <button
+                                key={player.id}
+                                onClick={() => {
+                                  setSelectedPlayer(player.id)
+                                  setSelectedTool('player')
+                                  setShowPlayerDropdown(false)
+                                }}
+                                className={`w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center space-x-2 ${
+                                  selectedPlayer === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                                }`}
+                              >
+                                {player.image ? (
+                                  <img 
+                                    src={player.image.src} 
+                                    alt={player.label} 
+                                    className="w-6 h-6"
+                                  />
+                                ) : (
+                                  <span className="text-lg">{player.icon}</span>
+                                )}
+                                <span className="text-sm">{player.label}</span>
+                                {selectedPlayer === player.id && (
+                                  <span className="ml-auto text-blue-600">✓</span>
+                                )}
+                              </button>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Color Picker Section - Only show on larger screens */}
+                <div className="hidden lg:flex lg:items-center lg:space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
+                    <div className="flex space-x-1 md:space-x-2">
+                      {colors.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setSelectedColor(color)}
+                          className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
+                            selectedColor === color
+                              ? 'border-gray-800 scale-110'
+                              : 'border-gray-300 hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs md:text-sm text-gray-600">Selected:</span>
+                    <div 
+                      className="w-6 h-6 rounded border border-gray-300"
+                      style={{ backgroundColor: selectedColor }}
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Color Picker Section - Only show on larger screens */}
-              <div className="hidden lg:flex lg:items-center lg:space-x-4">
+              {/* Color Picker - Mobile/Tablet (below tools) */}
+              <div className="lg:hidden flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mt-3 pt-3 border-t border-gray-200">
                 <div className="flex items-center space-x-2">
                   <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
                   <div className="flex space-x-1 md:space-x-2">
@@ -2875,870 +3402,872 @@ const DrillDesigner = () => {
               </div>
             </div>
 
-            {/* Color Picker - Mobile/Tablet (below tools) */}
-            <div className="lg:hidden flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mt-3 pt-3 border-t border-gray-200">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-700 text-sm md:text-base">Color:</span>
-                <div className="flex space-x-1 md:space-x-2">
-                  {colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-8 h-8 md:w-8 md:h-8 rounded-full border-2 transition-all ${
-                        selectedColor === color
-                          ? 'border-gray-800 scale-110'
-                          : 'border-gray-300 hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: color }}
-                      title={color}
+            {/* Tweening and Frame Management */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+
+              {/* Tweening Controls */}
+              <div className="border-t border-blue-200 pt-3 mb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium text-blue-800">Auto Tweening</h4>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-blue-700">Frames:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={tweenFrames}
+                      onChange={(e) => setTweenFrames(Number(e.target.value))}
+                      className="w-16 px-2 py-1 border border-blue-300 rounded text-sm"
                     />
-                  ))}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs md:text-sm text-gray-600">Selected:</span>
-                <div 
-                  className="w-6 h-6 rounded border border-gray-300"
-                  style={{ backgroundColor: selectedColor }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Tweening and Frame Management */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
-
-            {/* Tweening Controls */}
-            <div className="border-t border-blue-200 pt-3 mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium text-blue-800">Auto Tweening</h4>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-blue-700">Frames:</span>
-                  <input
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={tweenFrames}
-                    onChange={(e) => setTweenFrames(Number(e.target.value))}
-                    className="w-16 px-2 py-1 border border-blue-300 rounded text-sm"
-                  />
+                  <button
+                    onClick={captureStartFrame}
+                    className={`px-3 py-1 rounded text-xs font-medium ${
+                      startFrameIndex !== null 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {startFrameIndex !== null ? `✓ Start: Frame ${startFrameIndex + 1}` : '🎯 Set Start'}
+                  </button>
+                  <button
+                    onClick={captureEndFrame}
+                    className={`px-3 py-1 rounded text-xs font-medium ${
+                      endFrameIndex !== null 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {endFrameIndex !== null ? `✓ End: Frame ${endFrameIndex + 1}` : '🎯 Set End'}
+                  </button>
+                  <button
+                    onClick={generateTweenFrames}
+                    disabled={startFrameIndex === null || endFrameIndex === null}
+                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    ✨ Generate Tween
+                  </button>
+                  <button
+                    onClick={clearTweenFrames}
+                    disabled={startFrameIndex === null && endFrameIndex === null}
+                    className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    🗑️ Clear
+                  </button>
+                  
+                  {/* Separator */}
+                  <div className="w-px h-6 bg-blue-300 mx-2"></div>
+                  
+                  {/* Smooth Animation Button */}
+                  <button
+                    onClick={smoothAnimation}
+                    disabled={frames.length < 2}
+                    className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                    title="Add intermediate frames between all existing frames to smooth the animation"
+                  >
+                    🌊 Smooth Animation
+                  </button>
+                  
+                  {/* Separator */}
+                  <div className="w-px h-6 bg-blue-300 mx-2"></div>
+                  
+                  {/* Element Controls */}
+                  <button
+                    onClick={duplicateSelectedElement}
+                    disabled={!selectedElement}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    📋 Duplicate
+                  </button>
+                  <button
+                    onClick={flipSelectedElement}
+                    disabled={!selectedElement}
+                    className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                    title={selectedElement ? `Flip ${selectedElement.type}` : 'Select a player to flip'}
+                  >
+                    🔄 Flip
+                  </button>
+                  <button
+                    onClick={deleteSelectedElement}
+                    disabled={!selectedElement}
+                    className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    🗑️ Delete
+                  </button>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={captureStartFrame}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
-                    startFrameIndex !== null 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {startFrameIndex !== null ? `✓ Start: Frame ${startFrameIndex + 1}` : '🎯 Set Start'}
-                </button>
-                <button
-                  onClick={captureEndFrame}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
-                    endFrameIndex !== null 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {endFrameIndex !== null ? `✓ End: Frame ${endFrameIndex + 1}` : '🎯 Set End'}
-                </button>
-                <button
-                  onClick={generateTweenFrames}
-                  disabled={startFrameIndex === null || endFrameIndex === null}
-                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                >
-                  ✨ Generate Tween
-                </button>
-                <button
-                  onClick={clearTweenFrames}
-                  disabled={startFrameIndex === null && endFrameIndex === null}
-                  className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                >
-                  🗑️ Clear
-                </button>
-                
-                {/* Separator */}
-                <div className="w-px h-6 bg-blue-300 mx-2"></div>
-                
-                {/* Smooth Animation Button */}
-                <button
-                  onClick={smoothAnimation}
-                  disabled={frames.length < 2}
-                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                  title="Add intermediate frames between all existing frames to smooth the animation"
-                >
-                  🌊 Smooth Animation
-                </button>
-                
-                {/* Separator */}
-                <div className="w-px h-6 bg-blue-300 mx-2"></div>
-                
-                {/* Element Controls */}
-                <button
-                  onClick={duplicateSelectedElement}
-                  disabled={!selectedElement}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                >
-                  📋 Duplicate
-                </button>
-                <button
-                  onClick={flipSelectedElement}
-                  disabled={!selectedElement}
-                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                  title={selectedElement ? `Flip ${selectedElement.type}` : 'Select a player to flip'}
-                >
-                  🔄 Flip
-                </button>
-                <button
-                  onClick={deleteSelectedElement}
-                  disabled={!selectedElement}
-                  className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                >
-                  🗑️ Delete
-                </button>
-              </div>
-              {(startFrameIndex !== null || endFrameIndex !== null) && (
-                <div className="mt-2 text-xs text-blue-600">
-                  {startFrameIndex !== null && (
-                    <span className="mr-3">
-                      Start Frame {startFrameIndex + 1}: {frames[startFrameIndex]?.elements?.length || 0} elements
-                    </span>
-                  )}
-                  {endFrameIndex !== null && (
-                    <span>
-                      End Frame {endFrameIndex + 1}: {frames[endFrameIndex]?.elements?.length || 0} elements
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Frame Timeline */}
-            {frames.length > 0 && (
-              <div className="border-t border-blue-200 pt-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-sm font-medium text-blue-700">Frames ({frames.length}):</span>
-                  <span className="text-xs text-blue-600">
-                    Current: {currentFrameIndex >= 0 ? currentFrameIndex + 1 : 'None'}
-                  </span>
-                  <span className="text-xs text-gray-500 ml-auto">
-                    💡 Drag to reorder • Click to select • ✏️ edit • 📋 duplicate • × delete
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2 overflow-y-auto max-h-32 pb-2">
-                  {frames.map((frame, index) => (
-                    <div
-                      key={frame.id}
-                      draggable
-                      onDragStart={(e) => handleFrameDragStart(e, index)}
-                      onDragOver={(e) => handleFrameDragOver(e, index)}
-                      onDragLeave={handleFrameDragLeave}
-                      onDrop={(e) => handleFrameDrop(e, index)}
-                      onDragEnd={handleFrameDragEnd}
-                      className={`flex-shrink-0 px-3 py-2 rounded border-2 text-xs font-medium transition-colors flex items-center cursor-move ${
-                        currentFrameIndex === index
-                          ? 'border-blue-500 bg-blue-100 text-blue-700'
-                          : startFrameIndex === index
-                          ? 'border-green-500 bg-green-100 text-green-700'
-                          : endFrameIndex === index
-                          ? 'border-purple-500 bg-purple-100 text-purple-700'
-                          : draggedFrameIndex === index
-                          ? 'border-purple-500 bg-purple-100 text-purple-700 opacity-50'
-                          : dragOverFrameIndex === index
-                          ? 'border-green-500 bg-green-100 text-green-700'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                      }`}
-                      title={`Frame ${frame.frameNumber} - Drag to reorder`}
-                    >
-                      <button
-                        onClick={() => loadFrame(index)}
-                        className={`flex-1 text-left ${currentFrameIndex === index ? 'bg-blue-100 text-blue-800 font-medium' : ''}`}
-                        title="Load this frame"
-                      >
-                        {frame.frameNumber}
-                        {currentFrameIndex === index && (
-                          <span className="ml-1 text-xs">(editing)</span>
-                        )}
-                        {startFrameIndex === index && (
-                          <span className="ml-1 text-xs text-green-600">(start)</span>
-                        )}
-                        {endFrameIndex === index && (
-                          <span className="ml-1 text-xs text-purple-600">(end)</span>
-                        )}
-                      </button>
-                      <div className="flex items-center space-x-1 ml-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            editFrame(index)
-                          }}
-                          className={`${currentFrameIndex === index ? 'text-blue-600 bg-blue-100 rounded px-1' : 'text-green-500 hover:text-green-700'}`}
-                          title={currentFrameIndex === index ? "Currently editing this frame" : "Edit frame"}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            duplicateFrame(index)
-                          }}
-                          className="text-blue-500 hover:text-blue-700"
-                          title="Duplicate frame"
-                        >
-                          📋
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            deleteFrame(index)
-                          }}
-                          className="text-red-500 hover:text-red-700"
-                          title="Delete frame"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Animation Controls */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200`}>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-blue-800 text-sm md:text-base">🎬 Animation Controls</h4>
-              <div className="flex items-center space-x-2">
-                {currentFrameIndex >= 0 && frames.length > 0 && (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                    ✏️ Editing Frame {currentFrameIndex + 1}
-                  </span>
+                {(startFrameIndex !== null || endFrameIndex !== null) && (
+                  <div className="mt-2 text-xs text-blue-600">
+                    {startFrameIndex !== null && (
+                      <span className="mr-3">
+                        Start Frame {startFrameIndex + 1}: {frames[startFrameIndex]?.elements?.length || 0} elements
+                      </span>
+                    )}
+                    {endFrameIndex !== null && (
+                      <span>
+                        End Frame {endFrameIndex + 1}: {frames[endFrameIndex]?.elements?.length || 0} elements
+                      </span>
+                    )}
+                  </div>
                 )}
-                <span className="text-xs text-blue-600">
-                  {frames.length > 0 ? `Frame ${currentFrameIndex + 1} of ${frames.length}` : 'No frames yet'}
-                </span>
               </div>
-            </div>
-            
-            {/* Combined Playback and Frame Navigation Controls */}
-            <div className="flex items-center space-x-2">
-              {/* Capture Frame Button - Left Aligned */}
-              <button
-                onClick={captureFrame}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-sm font-medium"
-                title="Capture current frame"
-              >
-                📸 Capture Frame ({frames.length + 1})
-              </button>
-              
-              {/* Save Frame Changes Button - Only show when a frame is selected */}
-              {currentFrameIndex >= 0 && frames.length > 0 && (
-                <button
-                  onClick={saveFrameChanges}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium"
-                  title="Save changes to current frame (Ctrl+S)"
-                >
-                  💾 Save Frame
-                </button>
+
+              {/* Frame Timeline */}
+              {frames.length > 0 && (
+                <div className="border-t border-blue-200 pt-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-sm font-medium text-blue-700">Frames ({frames.length}):</span>
+                    <span className="text-xs text-blue-600">
+                      Current: {currentFrameIndex >= 0 ? currentFrameIndex + 1 : 'None'}
+                    </span>
+                    <span className="text-xs text-gray-500 ml-auto">
+                      💡 Drag to reorder • Click to select • ✏️ edit • 📋 duplicate • × delete
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 overflow-y-auto max-h-32 pb-2">
+                    {frames.map((frame, index) => (
+                      <div
+                        key={frame.id}
+                        draggable
+                        onDragStart={(e) => handleFrameDragStart(e, index)}
+                        onDragOver={(e) => handleFrameDragOver(e, index)}
+                        onDragLeave={handleFrameDragLeave}
+                        onDrop={(e) => handleFrameDrop(e, index)}
+                        onDragEnd={handleFrameDragEnd}
+                        className={`flex-shrink-0 px-3 py-2 rounded border-2 text-xs font-medium transition-colors flex items-center cursor-move ${
+                          currentFrameIndex === index
+                            ? 'border-blue-500 bg-blue-100 text-blue-700'
+                            : startFrameIndex === index
+                            ? 'border-green-500 bg-green-100 text-green-700'
+                            : endFrameIndex === index
+                            ? 'border-purple-500 bg-purple-100 text-purple-700'
+                            : draggedFrameIndex === index
+                            ? 'border-purple-500 bg-purple-100 text-purple-700 opacity-50'
+                            : dragOverFrameIndex === index
+                            ? 'border-green-500 bg-green-100 text-green-700'
+                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                        }`}
+                        title={`Frame ${frame.frameNumber} - Drag to reorder`}
+                      >
+                        <button
+                          onClick={() => loadFrame(index)}
+                          className={`flex-1 text-left ${currentFrameIndex === index ? 'bg-blue-100 text-blue-800 font-medium' : ''}`}
+                          title="Load this frame"
+                        >
+                          {frame.frameNumber}
+                          {currentFrameIndex === index && (
+                            <span className="ml-1 text-xs">(editing)</span>
+                          )}
+                          {startFrameIndex === index && (
+                            <span className="ml-1 text-xs text-green-600">(start)</span>
+                          )}
+                          {endFrameIndex === index && (
+                            <span className="ml-1 text-xs text-purple-600">(end)</span>
+                          )}
+                        </button>
+                        <div className="flex items-center space-x-1 ml-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              editFrame(index)
+                            }}
+                            className={`${currentFrameIndex === index ? 'text-blue-600 bg-blue-100 rounded px-1' : 'text-green-500 hover:text-green-700'}`}
+                            title={currentFrameIndex === index ? "Currently editing this frame" : "Edit frame"}
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              duplicateFrame(index)
+                            }}
+                            className="text-blue-500 hover:text-blue-700"
+                            title="Duplicate frame"
+                          >
+                            📋
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              deleteFrame(index)
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                            title="Delete frame"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
-              
-              {/* Centered Navigation and Playback Controls */}
-              <div className="flex-1 flex items-center justify-center space-x-2">
-                <button
-                  onClick={goToFirstFrame}
-                  disabled={frames.length === 0 || currentFrameIndex === 0}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
-                  title="Go to first frame (Home)"
-                >
-                  ⏮️ First
-                </button>
-                <button
-                  onClick={goToPreviousFrame}
-                  disabled={frames.length === 0}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
-                  title="Previous frame (←)"
-                >
-                  ⏪ Previous
-                </button>
-                <button
-                  onClick={playAnimation}
-                  disabled={frames.length === 0 || isPlaying}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
-                  title="Play animation (Spacebar)"
-                >
-                  ▶️ Play
-                </button>
-                <button
-                  onClick={stopAnimation}
-                  disabled={!isPlaying}
-                  className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
-                  title="Stop animation (Spacebar)"
-                >
-                  ⏹️ Stop
-                </button>
-                <button
-                  onClick={goToNextFrame}
-                  disabled={frames.length === 0}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
-                  title="Next frame (→)"
-                >
-                  Next ⏩
-                </button>
-                <button
-                  onClick={goToLastFrame}
-                  disabled={frames.length === 0 || currentFrameIndex === frames.length - 1}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
-                  title="Go to last frame (End)"
-                >
-                  Last ⏭️
-                </button>
-              </div>
             </div>
-            
-            {/* Frame Counter Display */}
-            <div className="flex justify-center mt-2">
-              <div className="px-4 py-2 bg-white border border-blue-300 rounded-md text-sm font-medium text-blue-700 min-w-[80px] text-center">
-                {frames.length > 0 ? currentFrameIndex + 1 : '0'}
-              </div>
-            </div>
-            
-            {/* Frame Saved Message */}
-            {frameSavedMessage && (
-              <div className="flex justify-center mt-2">
-                <div className="px-3 py-1 bg-green-100 border border-green-300 rounded-md text-sm font-medium text-green-700">
-                  {frameSavedMessage}
+
+            {/* Animation Controls */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg border border-blue-200`}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-blue-800 text-sm md:text-base">🎬 Animation Controls</h4>
+                <div className="flex items-center space-x-2">
+                  {currentFrameIndex >= 0 && frames.length > 0 && (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                      ✏️ Editing Frame {currentFrameIndex + 1}
+                    </span>
+                  )}
+                  <span className="text-xs text-blue-600">
+                    {frames.length > 0 ? `Frame ${currentFrameIndex + 1} of ${frames.length}` : 'No frames yet'}
+                  </span>
                 </div>
               </div>
-            )}
-          </div>
+              
+              {/* Combined Playback and Frame Navigation Controls */}
+              <div className="flex items-center space-x-2">
+                {/* Capture Frame Button - Left Aligned */}
+                <button
+                  onClick={captureFrame}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                  title="Capture current frame"
+                >
+                  📸 Capture Frame ({frames.length + 1})
+                </button>
+                
+                {/* Save Frame Changes Button - Only show when a frame is selected */}
+                {currentFrameIndex >= 0 && frames.length > 0 && (
+                  <button
+                    onClick={saveFrameChanges}
+                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                    title="Save changes to current frame (Ctrl+S)"
+                  >
+                    💾 Save Frame
+                  </button>
+                )}
+                
+                {/* Centered Navigation and Playback Controls */}
+                <div className="flex-1 flex items-center justify-center space-x-2">
+                  <button
+                    onClick={goToFirstFrame}
+                    disabled={frames.length === 0 || currentFrameIndex === 0}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                    title="Go to first frame (Home)"
+                  >
+                    ⏮️ First
+                  </button>
+                  <button
+                    onClick={goToPreviousFrame}
+                    disabled={frames.length === 0}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                    title="Previous frame (←)"
+                  >
+                    ⏪ Previous
+                  </button>
+                  <button
+                    onClick={playAnimation}
+                    disabled={frames.length === 0 || isPlaying}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    title="Play animation (Spacebar)"
+                  >
+                    ▶️ Play
+                  </button>
+                  <button
+                    onClick={stopAnimation}
+                    disabled={!isPlaying}
+                    className="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    title="Stop animation (Spacebar)"
+                  >
+                    ⏹️ Stop
+                  </button>
+                  <button
+                    onClick={goToNextFrame}
+                    disabled={frames.length === 0}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                    title="Next frame (→)"
+                  >
+                    Next ⏩
+                  </button>
+                  <button
+                    onClick={goToLastFrame}
+                    disabled={frames.length === 0 || currentFrameIndex === frames.length - 1}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded-md text-sm"
+                    title="Go to last frame (End)"
+                  >
+                    Last ⏭️
+                  </button>
+                </div>
+              </div>
+              
+              {/* Frame Counter Display */}
+              <div className="flex justify-center mt-2">
+                <div className="px-4 py-2 bg-white border border-blue-300 rounded-md text-sm font-medium text-blue-700 min-w-[80px] text-center">
+                  {frames.length > 0 ? currentFrameIndex + 1 : '0'}
+                </div>
+              </div>
+              
+              {/* Frame Saved Message */}
+              {frameSavedMessage && (
+                <div className="flex justify-center mt-2">
+                  <div className="px-3 py-1 bg-green-100 border border-green-300 rounded-md text-sm font-medium text-green-700">
+                    {frameSavedMessage}
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {/* Canvas - Responsive */}
-          <div className="border-2 border-gray-300 rounded-lg overflow-hidden relative mb-4">
-            <div className="flex justify-center">
-              <Stage
-                ref={stageRef}
-                width={canvasWidth}
-                height={canvasHeight}
-                onClick={handleStageClick}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onTouchStart={handleMouseDown}
-                onTouchMove={handleMouseMove}
-                onTouchEnd={handleMouseUp}
-                style={{ 
-                  maxWidth: '100%', 
-                  height: 'auto',
-                  touchAction: 'none' // Prevents default touch behaviors
-                }}
-              >
-                <Layer>
-                  {/* Rink Background - only inside the rounded border */}
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                    fill={rinkColor}
-                    cornerRadius={mToPx(cornerRadius)}
-                    listening={false}
-                  />
+            {/* Canvas - Responsive */}
+            <div className="border-2 border-gray-300 rounded-lg overflow-hidden relative mb-4">
+              <div className="flex justify-center">
+                <Stage
+                  ref={stageRef}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  onClick={handleStageClick}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onTouchStart={handleMouseDown}
+                  onTouchMove={handleMouseMove}
+                  onTouchEnd={handleMouseUp}
+                  style={{ 
+                    maxWidth: '100%', 
+                    height: 'auto',
+                    touchAction: 'none' // Prevents default touch behaviors
+                  }}
+                >
+                  <Layer>
+                    {/* Rink Background - only inside the rounded border */}
+                    <Rect
+                      x={0}
+                      y={0}
+                      width={canvasWidth}
+                      height={canvasHeight}
+                      fill={rinkColor}
+                      cornerRadius={mToPx(cornerRadius)}
+                      listening={false}
+                    />
 
-                  {/* Rink Border - single clean border */}
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                    stroke={borderColor}
-                    strokeWidth={3}
-                    fill="transparent"
-                    cornerRadius={mToPx(cornerRadius)}
-                    listening={false}
-                  />
+                    {/* Rink Border - single clean border */}
+                    <Rect
+                      x={0}
+                      y={0}
+                      width={canvasWidth}
+                      height={canvasHeight}
+                      stroke={borderColor}
+                      strokeWidth={3}
+                      fill="transparent"
+                      cornerRadius={mToPx(cornerRadius)}
+                      listening={false}
+                    />
 
-                  {/* Center Line */}
-                  <Line
-                    points={[canvasWidth / 2, 0, canvasWidth / 2, canvasHeight]}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
+                    {/* Center Line */}
+                    <Line
+                      points={[canvasWidth / 2, 0, canvasWidth / 2, canvasHeight]}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
 
-                  {/* Face-off Circles */}
-                  <Circle
-                    x={canvasWidth / 2}
-                    y={canvasHeight / 2}
-                    radius={mToPx(2.25)}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
-                  <Circle
-                    x={mToPx(14)}
-                    y={mToPxY(7)}
-                    radius={mToPx(2.25)}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
-                  <Circle
-                    x={canvasWidth - mToPx(14)}
-                    y={mToPxY(7)}
-                    radius={mToPx(2.25)}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
-                  <Circle
-                    x={mToPx(14)}
-                    y={canvasHeight - mToPxY(7)}
-                    radius={mToPx(2.25)}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
-                  <Circle
-                    x={canvasWidth - mToPx(14)}
-                    y={canvasHeight - mToPxY(7)}
-                    radius={mToPx(2.25)}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
+                    {/* Face-off Circles */}
+                    <Circle
+                      x={canvasWidth / 2}
+                      y={canvasHeight / 2}
+                      radius={mToPx(2.25)}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
+                    <Circle
+                      x={mToPx(14)}
+                      y={mToPxY(7)}
+                      radius={mToPx(2.25)}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
+                    <Circle
+                      x={canvasWidth - mToPx(14)}
+                      y={mToPxY(7)}
+                      radius={mToPx(2.25)}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
+                    <Circle
+                      x={mToPx(14)}
+                      y={canvasHeight - mToPxY(7)}
+                      radius={mToPx(2.25)}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
+                    <Circle
+                      x={canvasWidth - mToPx(14)}
+                      y={canvasHeight - mToPxY(7)}
+                      radius={mToPx(2.25)}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
 
-                  {/* Hash Marks at Face-off Circles */}
-                  {/* Top Left Face-off Circle */}
-                  <Rect
-                    x={mToPx(14) - mToPx(0.3)}
-                    y={mToPxY(7) - mToPxY(0.3)}
-                    width={mToPx(0.6)}
-                    height={mToPxY(0.6)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Hash Marks at Face-off Circles */}
+                    {/* Top Left Face-off Circle */}
+                    <Rect
+                      x={mToPx(14) - mToPx(0.3)}
+                      y={mToPxY(7) - mToPxY(0.3)}
+                      width={mToPx(0.6)}
+                      height={mToPxY(0.6)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Top Right Face-off Circle */}
-                  <Rect
-                    x={canvasWidth - mToPx(14) - mToPx(0.3)}
-                    y={mToPxY(7) - mToPxY(0.3)}
-                    width={mToPx(0.6)}
-                    height={mToPxY(0.6)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Top Right Face-off Circle */}
+                    <Rect
+                      x={canvasWidth - mToPx(14) - mToPx(0.3)}
+                      y={mToPxY(7) - mToPxY(0.3)}
+                      width={mToPx(0.6)}
+                      height={mToPxY(0.6)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Bottom Left Face-off Circle */}
-                  <Rect
-                    x={mToPx(14) - mToPx(0.3)}
-                    y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
-                    width={mToPx(0.6)}
-                    height={mToPxY(0.6)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Bottom Left Face-off Circle */}
+                    <Rect
+                      x={mToPx(14) - mToPx(0.3)}
+                      y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
+                      width={mToPx(0.6)}
+                      height={mToPxY(0.6)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Bottom Right Face-off Circle */}
-                  <Rect
-                    x={canvasWidth - mToPx(14) - mToPx(0.3)}
-                    y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
-                    width={mToPx(0.6)}
-                    height={mToPxY(0.6)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Bottom Right Face-off Circle */}
+                    <Rect
+                      x={canvasWidth - mToPx(14) - mToPx(0.3)}
+                      y={canvasHeight - mToPxY(7) - mToPxY(0.3)}
+                      width={mToPx(0.6)}
+                      height={mToPxY(0.6)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Center Ice Hash Mark */}
-                  <Rect
-                    x={canvasWidth / 2 - mToPx(0.3)}
-                    y={canvasHeight / 2 - mToPxY(0.3)}
-                    width={mToPx(0.6)}
-                    height={mToPxY(0.6)}
-                    fill="#0000FF"
-                    listening={false}
-                  />
+                    {/* Center Ice Hash Mark */}
+                    <Rect
+                      x={canvasWidth / 2 - mToPx(0.3)}
+                      y={canvasHeight / 2 - mToPxY(0.3)}
+                      width={mToPx(0.6)}
+                      height={mToPxY(0.6)}
+                      fill="#0000FF"
+                      listening={false}
+                    />
 
-                  {/* Goal Lines */}
-                  <Line
-                    points={[mToPx(4.5), 10, mToPx(4.5), canvasHeight - 10]}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
-                  <Line
-                    points={[canvasWidth - mToPx(4.5), 10, canvasWidth - mToPx(4.5), canvasHeight - 10]}
-                    stroke={lineColor}
-                    strokeWidth={3}
-                    listening={false}
-                  />
+                    {/* Goal Lines */}
+                    <Line
+                      points={[mToPx(4.5), 10, mToPx(4.5), canvasHeight - 10]}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
+                    <Line
+                      points={[canvasWidth - mToPx(4.5), 10, canvasWidth - mToPx(4.5), canvasHeight - 10]}
+                      stroke={lineColor}
+                      strokeWidth={3}
+                      listening={false}
+                    />
 
-                  {/* Goals */}
-                  {/* Left Goal */}
-                  <Rect
-                    x={mToPx(4.5) - mToPxY(1.5)}
-                    y={canvasHeight / 2 - mToPx(1.35)}
-                    width={mToPxY(1.5)}
-                    height={mToPx(2.7)}
-                    fill="#FFFFFF"
-                    stroke="#000000"
-                    strokeWidth={2}
-                    listening={false}
-                  />
+                    {/* Goals */}
+                    {/* Left Goal */}
+                    <Rect
+                      x={mToPx(4.5) - mToPxY(1.5)}
+                      y={canvasHeight / 2 - mToPx(1.35)}
+                      width={mToPxY(1.5)}
+                      height={mToPx(2.7)}
+                      fill="#FFFFFF"
+                      stroke="#000000"
+                      strokeWidth={2}
+                      listening={false}
+                    />
 
-                  {/* Right Goal */}
-                  <Rect
-                    x={canvasWidth - mToPx(4.5)}
-                    y={canvasHeight / 2 - mToPx(1.35)}
-                    width={mToPxY(1.5)}
-                    height={mToPx(2.7)}
-                    fill="#FFFFFF"
-                    stroke="#000000"
-                    strokeWidth={2}
-                    listening={false}
-                  />
+                    {/* Right Goal */}
+                    <Rect
+                      x={canvasWidth - mToPx(4.5)}
+                      y={canvasHeight / 2 - mToPx(1.35)}
+                      width={mToPxY(1.5)}
+                      height={mToPx(2.7)}
+                      fill="#FFFFFF"
+                      stroke="#000000"
+                      strokeWidth={2}
+                      listening={false}
+                    />
 
-                  {/* Neutral Zone Dots */}
-                  <Circle
-                    x={canvasWidth / 2}
-                    y={mToPxY(3)}
-                    radius={mToPx(0.3)}
-                    fill={lineColor}
-                    listening={false}
-                  />
-                  <Circle
-                    x={canvasWidth / 2}
-                    y={canvasHeight - mToPxY(3)}
-                    radius={mToPx(0.3)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Neutral Zone Dots */}
+                    <Circle
+                      x={canvasWidth / 2}
+                      y={mToPxY(3)}
+                      radius={mToPx(0.3)}
+                      fill={lineColor}
+                      listening={false}
+                    />
+                    <Circle
+                      x={canvasWidth / 2}
+                      y={canvasHeight - mToPxY(3)}
+                      radius={mToPx(0.3)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Center Ice Dot */}
-                  <Circle
-                    x={canvasWidth / 2}
-                    y={canvasHeight / 2}
-                    radius={mToPx(0.3)}
-                    fill={lineColor}
-                    listening={false}
-                  />
+                    {/* Center Ice Dot */}
+                    <Circle
+                      x={canvasWidth / 2}
+                      y={canvasHeight / 2}
+                      radius={mToPx(0.3)}
+                      fill={lineColor}
+                      listening={false}
+                    />
 
-                  {/* Draw Elements */}
-                  {elements.map((element) => {
-                    const isSelected = selectedElement?.id === element.id
-                    
-                    switch (element.type) {
-                      case 'puck':
-                        return (
-                          <Circle
-                            key={element.id}
-                            x={element.x}
-                            y={element.y}
-                            radius={element.radius}
-                            fill={element.fill}
-                            stroke={isSelected ? '#00ff00' : 'transparent'}
-                            strokeWidth={isSelected ? 3 : 0}
-                            onClick={() => handleElementClick(element)}
-                            onDragEnd={(e) => handleDragEnd(e, element.id)}
-                            draggable
-                          />
-                        )
-                      case 'arrow':
-                        return (
-                          <Arrow
-                            key={element.id}
-                            x={element.x}
-                            y={element.y}
-                            points={element.points}
-                            stroke={isSelected ? '#00ff00' : element.stroke}
-                            strokeWidth={isSelected ? 5 : element.strokeWidth}
-                            fill={element.fill}
-                            onClick={() => handleElementClick(element)}
-                            onDragEnd={(e) => handleDragEnd(e, element.id)}
-                            draggable
-                          />
-                        )
-                      case 'text':
-                        return (
-                          <Text
-                            key={element.id}
-                            x={element.x}
-                            y={element.y}
-                            text={element.text}
-                            fontSize={element.fontSize}
-                            fill={element.fill}
-                            fontFamily={element.fontFamily}
-                            stroke={isSelected ? '#00ff00' : 'transparent'}
-                            strokeWidth={isSelected ? 1 : 0}
-                            onClick={() => handleElementClick(element)}
-                            onDblClick={() => handleTextDoubleClick(element)}
-                            onDragEnd={(e) => handleDragEnd(e, element.id)}
-                            draggable
-                          />
-                        )
-
-                      case 'draw':
-                        return (
-                          <Line
-                            key={element.id}
-                            points={element.points}
-                            stroke={isSelected ? '#00ff00' : element.stroke}
-                            strokeWidth={isSelected ? 5 : element.strokeWidth}
-                            tension={element.tension}
-                            lineCap={element.lineCap}
-                            lineJoin={element.lineJoin}
-                            onClick={() => handleElementClick(element)}
-                            onDragEnd={(e) => handleDragEnd(e, element.id)}
-                            draggable
-                          />
-                        )
-                      default:
-                        // Handle dynamic player IDs (they start with 'dynamic-player-')
-                        if (element.type.startsWith('dynamic-player-')) {
-                          // Find the corresponding player in dynamicPlayerTools
-                          const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
-                          const currentPlayerImage = dynamicPlayer?.image
-                          const isFlipped = isPlayerFlippedAtFrame(element.id, currentFrameIndex)
-                          
+                    {/* Draw Elements */}
+                    {elements.map((element) => {
+                      const isSelected = selectedElement?.id === element.id
+                      
+                      switch (element.type) {
+                        case 'puck':
                           return (
-                            <Group
+                            <Circle
                               key={element.id}
                               x={element.x}
                               y={element.y}
+                              radius={element.radius}
+                              fill={element.fill}
+                              stroke={isSelected ? '#00ff00' : 'transparent'}
+                              strokeWidth={isSelected ? 3 : 0}
                               onClick={() => handleElementClick(element)}
-                              onDragStart={(e) => {
-                                console.log('Dynamic player drag start:', e.target.position())
-                              }}
-                              onDragMove={(e) => {
-                                console.log('Dynamic player drag move:', e.target.position())
-                              }}
                               onDragEnd={(e) => {
-                                console.log('Dynamic player drag end:', e.target.position())
-                                handleDragEnd(e, element.id)
+                                if (selectedTool !== 'path') {
+                                  handleDragEnd(e, element.id)
+                                }
                               }}
-                              draggable={true}
-                            >
-                              {currentPlayerImage && (
-                                <Image
-                                  image={currentPlayerImage}
-                                  x={isFlipped ? currentPlayerImage.width / 2 : -currentPlayerImage.width / 2}
-                                  y={-currentPlayerImage.height / 2}
-                                  width={currentPlayerImage.width}
-                                  height={currentPlayerImage.height}
-                                  scaleX={isFlipped ? -1 : 1}
-                                />
-                              )}
-                              {isSelected && (
-                                <Circle
-                                  x={0}
-                                  y={0}
-                                  radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
-                                  fill="transparent"
-                                  stroke="#00ff00"
-                                  strokeWidth={4}
-                                />
-                              )}
-                            </Group>
+                              draggable={selectedTool !== 'path'}
+                            />
                           )
-                        }
-                        return null
-                    }
-                  })}
+                        case 'arrow':
+                          return (
+                            <Arrow
+                              key={element.id}
+                              x={element.x}
+                              y={element.y}
+                              points={element.points}
+                              stroke={isSelected ? '#00ff00' : element.stroke}
+                              strokeWidth={isSelected ? 5 : element.strokeWidth}
+                              fill={element.fill}
+                              onClick={() => handleElementClick(element)}
+                              onDragEnd={(e) => {
+                                if (selectedTool !== 'path') {
+                                  handleDragEnd(e, element.id)
+                                }
+                              }}
+                              draggable={selectedTool !== 'path'}
+                            />
+                          )
+                        case 'text':
+                          return (
+                            <Text
+                              key={element.id}
+                              x={element.x}
+                              y={element.y}
+                              text={element.text}
+                              fontSize={element.fontSize}
+                              fill={element.fill}
+                              fontFamily={element.fontFamily}
+                              stroke={isSelected ? '#00ff00' : 'transparent'}
+                              strokeWidth={isSelected ? 1 : 0}
+                              onClick={() => handleElementClick(element)}
+                              onDblClick={() => handleTextDoubleClick(element)}
+                              onDragEnd={(e) => {
+                                if (selectedTool !== 'path') {
+                                  handleDragEnd(e, element.id)
+                                }
+                              }}
+                              draggable={selectedTool !== 'path'}
+                            />
+                          )
 
-                  {/* Current drawing line */}
-                  {isDrawing && drawingPoints.length > 2 && (
-                    <Line
-                      points={drawingPoints}
-                      stroke={selectedColor}
-                      strokeWidth={3}
-                      tension={0.5}
-                      lineCap="round"
-                      lineJoin="round"
-                    />
-                  )}
-                </Layer>
-              </Stage>
-            </div>
-          </div>
+                        case 'draw':
+                          return (
+                            <Line
+                              key={element.id}
+                              points={element.points}
+                              stroke={isSelected ? '#00ff00' : element.stroke}
+                              strokeWidth={isSelected ? 5 : element.strokeWidth}
+                              tension={element.tension}
+                              lineCap={element.lineCap}
+                              lineJoin={element.lineJoin}
+                              onClick={() => handleElementClick(element)}
+                              onDragEnd={(e) => {
+                                if (selectedTool !== 'path') {
+                                  handleDragEnd(e, element.id)
+                                }
+                              }}
+                              draggable={selectedTool !== 'path'}
+                            />
+                          )
+                        default:
+                          // Handle dynamic player IDs (they start with 'dynamic-player-')
+                          if (element.type.startsWith('dynamic-player-')) {
+                            // Find the corresponding player in dynamicPlayerTools
+                            const dynamicPlayer = dynamicPlayerTools.find(p => p.id === element.type)
+                            const currentPlayerImage = dynamicPlayer?.image
+                            const isFlipped = isPlayerFlippedAtFrame(element.id, currentFrameIndex)
+                            
+                            return (
+                              <Group
+                                key={element.id}
+                                x={element.x}
+                                y={element.y}
+                                onClick={() => handleElementClick(element)}
+                                onDragStart={(e) => {
+                                  console.log('Dynamic player drag start:', e.target.position())
+                                }}
+                                onDragMove={(e) => {
+                                  console.log('Dynamic player drag move:', e.target.position())
+                                }}
+                                onDragEnd={(e) => {
+                                  if (selectedTool !== 'path') {
+                                    console.log('Dynamic player drag end:', e.target.position())
+                                    handleDragEnd(e, element.id)
+                                  }
+                                }}
+                                draggable={selectedTool !== 'path'}
+                              >
+                                {currentPlayerImage && (
+                                  <Image
+                                    image={currentPlayerImage}
+                                    x={isFlipped ? currentPlayerImage.width / 2 : -currentPlayerImage.width / 2}
+                                    y={-currentPlayerImage.height / 2}
+                                    width={currentPlayerImage.width}
+                                    height={currentPlayerImage.height}
+                                    scaleX={isFlipped ? -1 : 1}
+                                  />
+                                )}
+                                {isSelected && (
+                                  <Circle
+                                    x={0}
+                                    y={0}
+                                    radius={Math.max(currentPlayerImage ? currentPlayerImage.width / 2 : 25, 25)}
+                                    fill="transparent"
+                                    stroke="#00ff00"
+                                    strokeWidth={4}
+                                  />
+                                )}
+                              </Group>
+                            )
+                          }
+                          return null
+                      }
+                    })}
 
-          {/* Audio Commentary Panel - Moved here for better accessibility */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-green-50 rounded-lg border border-green-200`}>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="font-medium text-green-800 text-sm md:text-base">🎤 Audio Commentary</h4>
-              {audioBlob && (
-                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
-                  ✓ Audio recorded
-                </span>
-              )}
+                    {/* Current drawing line */}
+                    {isDrawing && drawingPoints.length > 2 && (
+                      <Line
+                        points={drawingPoints}
+                        stroke={selectedColor}
+                        strokeWidth={3}
+                        tension={0.5}
+                        lineCap="round"
+                        lineJoin="round"
+                      />
+                    )}
+
+                    {/* Path drawing line */}
+                    {selectedTool === 'path' && pathPoints.length > 1 && (
+                      <Line
+                        points={pathPoints.flatMap(point => [point.x, point.y])}
+                        stroke="#00ff00"
+                        strokeWidth={4}
+                        tension={selectedPathPlayer?.type === 'puck' ? 0 : 0.5}
+                        lineCap="round"
+                        lineJoin="round"
+                        dash={[10, 5]}
+                      />
+                    )}
+                  </Layer>
+                </Stage>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                onClick={isRecordingAudio ? stopAudioRecording : startAudioRecording}
-                className={`px-4 py-2 rounded-md text-sm font-medium ${
-                  isRecordingAudio
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
-                {isRecordingAudio ? '🔴 Stop Recording' : '🎤 Start Recording'}
-              </button>
-              {audioBlob && (
-                <>
-                  <button
-                    onClick={clearAudioRecording}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm"
-                  >
-                    🗑️ Clear Audio
-                  </button>
-                  <span className="text-xs text-green-600">
-                    Audio will be included in video export
+
+            {/* Audio Commentary Panel - Moved here for better accessibility */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-green-50 rounded-lg border border-green-200`}>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-green-800 text-sm md:text-base">🎤 Audio Commentary</h4>
+                {audioBlob && (
+                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                    ✓ Audio recorded
                   </span>
-                </>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={isRecordingAudio ? stopAudioRecording : startAudioRecording}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    isRecordingAudio
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
+                >
+                  {isRecordingAudio ? '🔴 Stop Recording' : '🎤 Start Recording'}
+                </button>
+                {audioBlob && (
+                  <>
+                    <button
+                      onClick={clearAudioRecording}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm"
+                    >
+                      🗑️ Clear Audio
+                    </button>
+                    <span className="text-xs text-green-600">
+                      Audio will be included in video export
+                    </span>
+                  </>
+                )}
+              </div>
+              {isRecordingAudio && (
+                <div className="mt-2 text-xs text-red-600 animate-pulse">
+                  🔴 Recording audio... Speak clearly into your microphone
+                </div>
               )}
             </div>
-            {isRecordingAudio && (
-              <div className="mt-2 text-xs text-red-600 animate-pulse">
-                🔴 Recording audio... Speak clearly into your microphone
+
+            {/* Save and Export */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
+                <h3 className="font-semibold text-blue-900 text-sm md:text-base">Save and Export</h3>
+                <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs md:text-sm text-blue-700">Frame Rate:</span>
+                    <select 
+                      value={frameRate} 
+                      onChange={(e) => setFrameRate(Number(e.target.value))}
+                      className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
+                    >
+                      <option value={2}>2 FPS</option>
+                      <option value={3}>3 FPS</option>
+                      <option value={4}>4 FPS</option>
+                      <option value={5}>5 FPS</option>
+                      <option value={6}>6 FPS</option>
+                      <option value={7}>7 FPS</option>
+                      <option value={8}>8 FPS</option>
+                      <option value={9}>9 FPS</option>
+                      <option value={10}>10 FPS</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs md:text-sm text-blue-700">Export Format:</span>
+                    <select 
+                      value={exportFormat} 
+                      onChange={(e) => setExportFormat(e.target.value)}
+                      className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
+                    >
+                      <option value="webm">WebM Video</option>
+                      <option value="zip">ZIP (Frames)</option>
+                      <option value="image">Still Image</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                <button
+                  onClick={exportAnimation}
+                  disabled={frames.length === 0 || isExporting}
+                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                >
+                  {isExporting ? '⏳ Exporting...' : `📦 Export ${exportFormat.toUpperCase()}`}
+                </button>
+                <button
+                  onClick={openSaveDialog}
+                  disabled={frames.length === 0}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                >
+                  💾 Save to Drill/Session
+                </button>
+                <button
+                  onClick={openLoadDialog}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                >
+                  📂 Load Animation
+                </button>
+                <button
+                  onClick={clearAllData}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                >
+                  🗑️ Clear All
+                </button>
+              </div>
+            </div>
+
+            {/* Text Edit Overlay */}
+            {editingText && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    setEditingText(null)
+                    setEditTextValue('')
+                  }
+                }}
+              >
+                <div className="bg-white p-4 rounded-lg shadow-lg">
+                  <h3 className="text-lg font-semibold mb-2">Edit Text</h3>
+                  <input
+                    type="text"
+                    value={editTextValue}
+                    onChange={(e) => setEditTextValue(e.target.value)}
+                    onKeyDown={handleTextEditKeyDown}
+                    onBlur={handleTextEdit}
+                    className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    autoFocus
+                  />
+                  <div className="mt-3 flex space-x-2">
+                    <button
+                      onClick={handleTextEdit}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingText(null)
+                        setEditTextValue('')
+                      }}
+                      className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
-          </div>
 
-          {/* Save and Export */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mb-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-3 space-y-2 md:space-y-0">
-              <h3 className="font-semibold text-blue-900 text-sm md:text-base">Save and Export</h3>
-              <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs md:text-sm text-blue-700">Frame Rate:</span>
-                  <select 
-                    value={frameRate} 
-                    onChange={(e) => setFrameRate(Number(e.target.value))}
-                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
-                  >
-                    <option value={2}>2 FPS</option>
-                    <option value={3}>3 FPS</option>
-                    <option value={4}>4 FPS</option>
-                    <option value={5}>5 FPS</option>
-                    <option value={6}>6 FPS</option>
-                    <option value={7}>7 FPS</option>
-                    <option value={8}>8 FPS</option>
-                    <option value={9}>9 FPS</option>
-                    <option value={10}>10 FPS</option>
-                  </select>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs md:text-sm text-blue-700">Export Format:</span>
-                  <select 
-                    value={exportFormat} 
-                    onChange={(e) => setExportFormat(e.target.value)}
-                    className="px-2 py-1 border border-blue-300 rounded text-xs md:text-sm"
-                  >
-                    <option value="webm">WebM Video</option>
-                    <option value="zip">ZIP (Frames)</option>
-                    <option value="image">Still Image</option>
-                  </select>
-                </div>
-              </div>
+            {/* Instructions - Mobile Responsive */}
+            <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mt-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
+              <h3 className="font-semibold text-blue-900 mb-2 text-sm md:text-base">How to Use:</h3>
+              <ul className="text-xs md:text-sm text-blue-800 space-y-1">
+                <li>• Select a tool from the toolbar above (Puck, Arrow, Text, Player, or Draw)</li>
+                <li>• Choose a color from the color picker (affects Puck, Text, and Player colors)</li>
+                <li>• Click on empty space on the rink to add elements (except for Draw tool)</li>
+                <li>• <strong>For freehand drawing:</strong> Select the Draw tool, then click and drag to draw</li>
+                <li>• Click and drag elements to reposition them</li>
+                <li>• Click on elements to select them (green outline)</li>
+                <li>• <strong>Double-click on text elements to edit them</strong></li>
+                <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
+                <li>• <strong>Use the Flip button to flip selected players horizontally</strong></li>
+                <li>• Use the Delete Selected button to remove elements</li>
+                <li>• <strong>Frame Timeline:</strong> Drag frames to reorder, use ✏️ to edit, �� to duplicate, × to delete</li>
+                <li>• <strong>Frame Navigation:</strong> Use ⏮️⏪⏩⏭️ buttons or keyboard shortcuts (←→ Home End)</li>
+                <li>• <strong>Playback:</strong> Press Spacebar to play/pause animation</li>
+                <li>• Use the Export button to save your drill as an image</li>
+                {isMobile && (
+                  <li>• <strong>Mobile:</strong> Use touch gestures to interact with the canvas</li>
+                )}
+              </ul>
             </div>
-            
-            <div className="flex flex-wrap gap-2 mb-3">
-              <button
-                onClick={exportAnimation}
-                disabled={frames.length === 0 || isExporting}
-                className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                {isExporting ? '⏳ Exporting...' : `📦 Export ${exportFormat.toUpperCase()}`}
-              </button>
-              <button
-                onClick={openSaveDialog}
-                disabled={frames.length === 0}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                💾 Save to Drill/Session
-              </button>
-              <button
-                onClick={openLoadDialog}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                📂 Load Animation
-              </button>
-              <button
-                onClick={clearAllData}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
-              >
-                🗑️ Clear All
-              </button>
-            </div>
-          </div>
-
-          {/* Text Edit Overlay */}
-          {editingText && (
-            <div 
-              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setEditingText(null)
-                  setEditTextValue('')
-                }
-              }}
-            >
-              <div className="bg-white p-4 rounded-lg shadow-lg">
-                <h3 className="text-lg font-semibold mb-2">Edit Text</h3>
-                <input
-                  type="text"
-                  value={editTextValue}
-                  onChange={(e) => setEditTextValue(e.target.value)}
-                  onKeyDown={handleTextEditKeyDown}
-                  onBlur={handleTextEdit}
-                  className="w-64 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  autoFocus
-                />
-                <div className="mt-3 flex space-x-2">
-                  <button
-                    onClick={handleTextEdit}
-                    className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingText(null)
-                      setEditTextValue('')
-                    }}
-                    className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Instructions - Mobile Responsive */}
-          <div className={`${isMobile && !showMobileMenu ? 'hidden' : ''} mt-4 p-3 md:p-4 bg-blue-50 rounded-lg`}>
-            <h3 className="font-semibold text-blue-900 mb-2 text-sm md:text-base">How to Use:</h3>
-            <ul className="text-xs md:text-sm text-blue-800 space-y-1">
-              <li>• Select a tool from the toolbar above (Puck, Arrow, Text, Player, or Draw)</li>
-              <li>• Choose a color from the color picker (affects Puck, Text, and Player colors)</li>
-              <li>• Click on empty space on the rink to add elements (except for Draw tool)</li>
-              <li>• <strong>For freehand drawing:</strong> Select the Draw tool, then click and drag to draw</li>
-              <li>• Click and drag elements to reposition them</li>
-              <li>• Click on elements to select them (green outline)</li>
-              <li>• <strong>Double-click on text elements to edit them</strong></li>
-              <li>• <strong>Use the Duplicate button to copy selected elements</strong></li>
-              <li>• <strong>Use the Flip button to flip selected players horizontally</strong></li>
-              <li>• Use the Delete Selected button to remove elements</li>
-                              <li>• <strong>Frame Timeline:</strong> Drag frames to reorder, use ✏️ to edit, 📋 to duplicate, × to delete</li>
-              <li>• <strong>Frame Navigation:</strong> Use ⏮️⏪⏩⏭️ buttons or keyboard shortcuts (←→ Home End)</li>
-              <li>• <strong>Playback:</strong> Press Spacebar to play/pause animation</li>
-              <li>• Use the Export button to save your drill as an image</li>
-              {isMobile && (
-                <li>• <strong>Mobile:</strong> Use touch gestures to interact with the canvas</li>
-              )}
-            </ul>
           </div>
         </div>
       </div>
@@ -4041,6 +4570,167 @@ const DrillDesigner = () => {
           </div>
         </div>
       )}
+
+      {/* Floating Path Drawing Button */}
+      <button
+        className="fixed bottom-6 right-20 z-50 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-lg p-4 text-2xl focus:outline-none focus:ring-2 focus:ring-green-400"
+        title="Open Path Drawing Tool"
+        onClick={() => {
+          console.log('Path button clicked!')
+          startPathDrawing()
+        }}
+        style={{ 
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+          position: 'fixed',
+          bottom: '24px',
+          right: '96px',
+          zIndex: 9999
+        }}
+      >
+        🛤️
+      </button>
+
+      {/* Path Drawing Panel */}
+      {showPathPanel && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4 border border-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Path Drawing Tool</h3>
+              <button
+                onClick={stopPathDrawing}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="text-sm text-gray-600">
+                {!selectedPathPlayer ? (
+                  <p>1. Click on a player or puck to select them for path animation</p>
+                ) : (
+                  <p>✅ Element selected: {selectedPathPlayer.type}</p>
+                )}
+                {selectedPathPlayer && pathPoints.length === 1 && (
+                  <p>2. {selectedPathPlayer.type === 'puck' ? 'Click to add path points' : 'Click and drag to draw the path'}</p>
+                )}
+                {pathPoints.length > 1 && (
+                  <p>✅ Path drawn with {pathPoints.length} points</p>
+                )}
+                {pathInsertMode === 'insert' && (
+                  <p>💡 Path will be inserted at frame {currentFrameIndex + 1}</p>
+                )}
+                {pathInsertMode === 'replace' && (
+                  <p>💡 Path will replace frames starting from frame {currentFrameIndex + 1}</p>
+                )}
+                {pathInsertMode === 'merge' && (
+                  <p>💡 Path will merge with existing frames starting from frame {currentFrameIndex + 1}</p>
+                )}
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Frames:</label>
+                <input
+                  type="number"
+                  min="2"
+                  max="50"
+                  value={pathFrames}
+                  onChange={(e) => setPathFrames(parseInt(e.target.value) || 10)}
+                  className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Insert Mode:</label>
+                <div className="space-y-1">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      value="append"
+                      checked={pathInsertMode === 'append'}
+                      onChange={(e) => setPathInsertMode(e.target.value)}
+                      className="text-blue-600"
+                    />
+                    <span className="text-sm">Append to end</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      value="insert"
+                      checked={pathInsertMode === 'insert'}
+                      onChange={(e) => setPathInsertMode(e.target.value)}
+                      className="text-blue-600"
+                    />
+                    <span className="text-sm">Insert at current frame</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      value="replace"
+                      checked={pathInsertMode === 'replace'}
+                      onChange={(e) => setPathInsertMode(e.target.value)}
+                      className="text-blue-600"
+                    />
+                    <span className="text-sm">Replace from current frame</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      value="merge"
+                      checked={pathInsertMode === 'merge'}
+                      onChange={(e) => setPathInsertMode(e.target.value)}
+                      className="text-blue-600"
+                    />
+                    <span className="text-sm">Merge with existing frames</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button
+                  onClick={clearPath}
+                  className="flex-1 px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                >
+                  Clear Path
+                </button>
+                <button
+                  onClick={generatePathAnimation}
+                  disabled={pathPoints.length < 2 || !selectedPathPlayer}
+                  className="flex-1 px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400 text-sm"
+                >
+                  Generate Animation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating AI Button */}
+      <button
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-4 text-2xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+        title="Open AI Animation Generator"
+        onClick={() => {
+          console.log('AI button clicked!')
+          setShowAIPanel(true)
+        }}
+        style={{ 
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 9999
+        }}
+      >
+        🤖
+      </button>
+
+      {/* AI Generator Floating Panel */}
+      <AIGeneratorPanel
+        open={showAIPanel}
+        onClose={() => setShowAIPanel(false)}
+        onGenerate={handleAIGenerate}
+      />
     </div>
   )
 }
