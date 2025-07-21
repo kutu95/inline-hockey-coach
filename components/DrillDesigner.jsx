@@ -79,6 +79,47 @@ const DrillDesigner = () => {
   const [isDrawingPath, setIsDrawingPath] = useState(false)
   const [pathInsertMode, setPathInsertMode] = useState('append') // 'append', 'insert', 'replace', 'merge'
 
+  // Helper function to filter out unwanted elements (like path artifacts)
+  const filterValidElements = (elements) => {
+    if (!Array.isArray(elements)) return []
+    
+    return elements.filter(element => {
+      // Only allow valid element types
+      const validTypes = [
+        'puck',
+        'arrow', 
+        'text',
+        'draw',
+        'player',
+        'dynamic-player-0',
+        'dynamic-player-1', 
+        'dynamic-player-2',
+        'dynamic-player-3',
+        'dynamic-player-4',
+        'dynamic-player-5',
+        'dynamic-player-6',
+        'dynamic-player-7',
+        'dynamic-player-8',
+        'dynamic-player-9',
+        'dynamic-player-10',
+        'dynamic-player-11',
+        'dynamic-player-12'
+      ]
+      
+      // Check if element type is valid
+      const isValidType = validTypes.includes(element.type) || 
+                         (element.type && element.type.startsWith('dynamic-player-'))
+      
+      // Additional validation: ensure element has required properties
+      const hasRequiredProps = element && 
+                              typeof element.x === 'number' && 
+                              typeof element.y === 'number' &&
+                              element.id
+      
+      return isValidType && hasRequiredProps
+    })
+  }
+
   // Helper function to calculate if a player is flipped at a given frame
   const isPlayerFlippedAtFrame = (playerId, frameIndex) => {
     const flipFrames = flipHistory[playerId] || []
@@ -797,9 +838,12 @@ const DrillDesigner = () => {
         return element
       })
       
+      // Filter out unwanted elements before saving
+      const filteredElements = filterValidElements(frameElements)
+      
       newFrames.push({
         id: Date.now() + i,
-        elements: JSON.parse(JSON.stringify(frameElements)), // Deep copy
+        elements: JSON.parse(JSON.stringify(filteredElements)), // Deep copy of filtered elements
         flipHistory: JSON.parse(JSON.stringify(flipHistory)), // Include flip history
         timestamp: Date.now() + i,
         frameNumber: 0 // Will be set based on insertion mode
@@ -903,9 +947,12 @@ const DrillDesigner = () => {
             return element
           })
           
+          // Filter out unwanted elements before saving
+          const filteredMergedElements = filterValidElements(mergedElements)
+          
           mergedFrames.push({
             id: Date.now() + i,
-            elements: JSON.parse(JSON.stringify(mergedElements)),
+            elements: JSON.parse(JSON.stringify(filteredMergedElements)),
             flipHistory: existingFrame ? JSON.parse(JSON.stringify(existingFrame.flipHistory)) : JSON.parse(JSON.stringify(flipHistory)),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
@@ -929,9 +976,12 @@ const DrillDesigner = () => {
             return element
           })
           
+          // Filter out unwanted elements before saving
+          const filteredRemainingElements = filterValidElements(remainingElements)
+          
           mergedFrames.push({
             id: Date.now() + i,
-            elements: JSON.parse(JSON.stringify(remainingElements)),
+            elements: JSON.parse(JSON.stringify(filteredRemainingElements)),
             flipHistory: JSON.parse(JSON.stringify(flipHistory)),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
@@ -952,9 +1002,12 @@ const DrillDesigner = () => {
             return element
           })
           
+          // Filter out unwanted elements before saving
+          const filteredMergedElements = filterValidElements(mergedElements)
+          
           mergedFrames.push({
             id: Date.now() + i,
-            elements: JSON.parse(JSON.stringify(mergedElements)),
+            elements: JSON.parse(JSON.stringify(filteredMergedElements)),
             flipHistory: JSON.parse(JSON.stringify(flipHistory)),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
@@ -1121,9 +1174,12 @@ const DrillDesigner = () => {
     }, {}))
     console.log('All elements:', elements)
     
+    // Filter out unwanted elements before saving
+    const filteredElements = filterValidElements(elements)
+    
     const newFrame = {
       id: Date.now(),
-      elements: JSON.parse(JSON.stringify(elements)), // Deep copy
+      elements: JSON.parse(JSON.stringify(filteredElements)), // Deep copy of filtered elements
       flipHistory: JSON.parse(JSON.stringify(flipHistory)), // Include flip history
       timestamp: Date.now(),
       frameNumber: frames.length + 1
@@ -1159,11 +1215,15 @@ const DrillDesigner = () => {
     if (frameIndex >= 0 && frameIndex < frames.length) {
       console.log('Loading frame:', frameIndex, 'Elements:', frames[frameIndex].elements)
       const frameElements = JSON.parse(JSON.stringify(frames[frameIndex].elements))
-      console.log('Frame elements by type:', frameElements.reduce((acc, el) => {
+      
+      // Filter out unwanted elements (like path artifacts)
+      const filteredElements = filterValidElements(frameElements)
+      
+      console.log('Frame elements by type:', filteredElements.reduce((acc, el) => {
         acc[el.type] = (acc[el.type] || 0) + 1
         return acc
       }, {}))
-      setElements(frameElements)
+      setElements(filteredElements)
       
       // Don't overwrite flip history when loading frames - it should persist across all frames
       // The flip history is already restored when loading the animation
@@ -1210,14 +1270,15 @@ const DrillDesigner = () => {
 
   const saveFrameChanges = () => {
     if (currentFrameIndex >= 0 && currentFrameIndex < frames.length) {
-      // Create a deep copy of current elements
+      // Create a deep copy of current elements and filter out unwanted ones
       const updatedElements = JSON.parse(JSON.stringify(elements))
+      const filteredElements = filterValidElements(updatedElements)
       
-      // Update the frame with current elements
+      // Update the frame with filtered elements
       const updatedFrames = [...frames]
       updatedFrames[currentFrameIndex] = {
         ...updatedFrames[currentFrameIndex],
-        elements: updatedElements,
+        elements: filteredElements,
         timestamp: Date.now()
       }
       
@@ -1320,7 +1381,11 @@ const DrillDesigner = () => {
       // Load frame without triggering unsaved changes during playback
       if (frameIndex >= 0 && frameIndex < frames.length) {
         const frameElements = JSON.parse(JSON.stringify(frames[frameIndex].elements))
-        setElements(frameElements)
+        
+        // Filter out unwanted elements (like path artifacts)
+        const filteredElements = filterValidElements(frameElements)
+        
+        setElements(filteredElements)
         setCurrentFrameIndex(frameIndex)
         setSelectedElement(null)
       }
