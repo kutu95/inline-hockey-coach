@@ -22,8 +22,8 @@ const DrillDesigner = () => {
   const [audioBlob, setAudioBlob] = useState(null)
   const [isRecordingAudio, setIsRecordingAudio] = useState(false)
   const [mediaRecorder, setMediaRecorder] = useState(null)
-  const [startFrame, setStartFrame] = useState(null)
-  const [endFrame, setEndFrame] = useState(null)
+  const [startFrameIndex, setStartFrameIndex] = useState(null)
+  const [endFrameIndex, setEndFrameIndex] = useState(null)
   const [tweenFrames, setTweenFrames] = useState(5)
   const [editingText, setEditingText] = useState(null)
   const [editTextValue, setEditTextValue] = useState('')
@@ -1435,40 +1435,49 @@ const DrillDesigner = () => {
 
   // Tweening functions
   const captureStartFrame = () => {
-    const newStartFrame = {
-      id: Date.now(),
-      elements: JSON.parse(JSON.stringify(elements)),
-      timestamp: Date.now(),
-      frameNumber: 'Start'
+    // Capture the current frame as the start frame
+    const startFrameIndex = currentFrameIndex >= 0 ? currentFrameIndex : frames.length - 1
+    if (startFrameIndex < 0) {
+      alert('Please create at least one frame first!')
+      return
     }
-    setStartFrame(newStartFrame)
-    console.log('Start frame set with', elements.length, 'elements')
+    
+    setStartFrameIndex(startFrameIndex)
+    console.log('Start frame set to frame', startFrameIndex + 1)
   }
 
   const captureEndFrame = () => {
-    const newEndFrame = {
-      id: Date.now(),
-      elements: JSON.parse(JSON.stringify(elements)),
-      timestamp: Date.now(),
-      frameNumber: 'End'
+    // Capture the current frame as the end frame
+    const endFrameIndex = currentFrameIndex >= 0 ? currentFrameIndex : frames.length - 1
+    if (endFrameIndex < 0) {
+      alert('Please create at least one frame first!')
+      return
     }
-    setEndFrame(newEndFrame)
-    console.log('End frame set with', elements.length, 'elements')
+    
+    setEndFrameIndex(endFrameIndex)
+    console.log('End frame set to frame', endFrameIndex + 1)
   }
 
   const generateTweenFrames = () => {
-    if (!startFrame || !endFrame) {
+    if (startFrameIndex === null || endFrameIndex === null) {
       alert('Please set both start and end frames first!')
       return
     }
 
-    console.log('Generating', tweenFrames, 'tween frames between start and end')
+    if (startFrameIndex === endFrameIndex) {
+      alert('Start and end frames must be different!')
+      return
+    }
+
+    console.log('Generating', tweenFrames, 'tween frames between frames', startFrameIndex + 1, 'and', endFrameIndex + 1)
     
     const newFrames = []
+    const startElements = frames[startFrameIndex].elements
+    const endElements = frames[endFrameIndex].elements
     
     for (let i = 1; i <= tweenFrames; i++) {
       const progress = i / (tweenFrames + 1) // Progress from 0 to 1
-      const tweenedElements = interpolateElements(startFrame.elements, endFrame.elements, progress)
+      const tweenedElements = interpolateElements(startElements, endElements, progress)
       
       const newFrame = {
         id: Date.now() + i,
@@ -1480,11 +1489,17 @@ const DrillDesigner = () => {
       newFrames.push(newFrame)
     }
     
-    // Insert the new frames between start and end
-    const updatedFrames = [...frames, ...newFrames]
-    setFrames(updatedFrames)
+    // Insert the new frames between start and end frames
+    const minIndex = Math.min(startFrameIndex, endFrameIndex)
+    const maxIndex = Math.max(startFrameIndex, endFrameIndex)
     
-    console.log('Generated', newFrames.length, 'tween frames')
+    const updatedFrames = [...frames]
+    updatedFrames.splice(maxIndex, 0, ...newFrames)
+    
+    setFrames(updatedFrames)
+    setHasUnsavedChanges(true)
+    
+    console.log('Generated', newFrames.length, 'tween frames inserted between frames', minIndex + 1, 'and', maxIndex + 1)
   }
 
   const interpolateElements = (startElements, endElements, progress) => {
@@ -1539,8 +1554,8 @@ const DrillDesigner = () => {
   }
 
   const clearTweenFrames = () => {
-    setStartFrame(null)
-    setEndFrame(null)
+    setStartFrameIndex(null)
+    setEndFrameIndex(null)
   }
 
   // Audio recording functions
@@ -2612,33 +2627,33 @@ const DrillDesigner = () => {
                 <button
                   onClick={captureStartFrame}
                   className={`px-3 py-1 rounded text-xs font-medium ${
-                    startFrame 
+                    startFrameIndex !== null 
                       ? 'bg-green-600 text-white' 
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
                 >
-                  {startFrame ? '✓ Start Set' : '🎯 Set Start'}
+                  {startFrameIndex !== null ? `✓ Start: Frame ${startFrameIndex + 1}` : '🎯 Set Start'}
                 </button>
                 <button
                   onClick={captureEndFrame}
                   className={`px-3 py-1 rounded text-xs font-medium ${
-                    endFrame 
+                    endFrameIndex !== null 
                       ? 'bg-green-600 text-white' 
                       : 'bg-blue-600 hover:bg-blue-700 text-white'
                   }`}
                 >
-                  {endFrame ? '✓ End Set' : '🎯 Set End'}
+                  {endFrameIndex !== null ? `✓ End: Frame ${endFrameIndex + 1}` : '🎯 Set End'}
                 </button>
                 <button
                   onClick={generateTweenFrames}
-                  disabled={!startFrame || !endFrame}
+                  disabled={startFrameIndex === null || endFrameIndex === null}
                   className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
                 >
                   ✨ Generate Tween
                 </button>
                 <button
                   onClick={clearTweenFrames}
-                  disabled={!startFrame && !endFrame}
+                  disabled={startFrameIndex === null && endFrameIndex === null}
                   className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
                 >
                   🗑️ Clear
@@ -2670,10 +2685,18 @@ const DrillDesigner = () => {
                   🗑️ Delete
                 </button>
               </div>
-              {(startFrame || endFrame) && (
+              {(startFrameIndex !== null || endFrameIndex !== null) && (
                 <div className="mt-2 text-xs text-blue-600">
-                  {startFrame && <span className="mr-3">Start: {startFrame.elements.length} elements</span>}
-                  {endFrame && <span>End: {endFrame.elements.length} elements</span>}
+                  {startFrameIndex !== null && (
+                    <span className="mr-3">
+                      Start Frame {startFrameIndex + 1}: {frames[startFrameIndex]?.elements?.length || 0} elements
+                    </span>
+                  )}
+                  {endFrameIndex !== null && (
+                    <span>
+                      End Frame {endFrameIndex + 1}: {frames[endFrameIndex]?.elements?.length || 0} elements
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -2703,6 +2726,10 @@ const DrillDesigner = () => {
                       className={`flex-shrink-0 px-3 py-2 rounded border-2 text-xs font-medium transition-colors flex items-center cursor-move ${
                         currentFrameIndex === index
                           ? 'border-blue-500 bg-blue-100 text-blue-700'
+                          : startFrameIndex === index
+                          ? 'border-green-500 bg-green-100 text-green-700'
+                          : endFrameIndex === index
+                          ? 'border-purple-500 bg-purple-100 text-purple-700'
                           : draggedFrameIndex === index
                           ? 'border-purple-500 bg-purple-100 text-purple-700 opacity-50'
                           : dragOverFrameIndex === index
@@ -2719,6 +2746,12 @@ const DrillDesigner = () => {
                         {frame.frameNumber}
                         {currentFrameIndex === index && (
                           <span className="ml-1 text-xs">(editing)</span>
+                        )}
+                        {startFrameIndex === index && (
+                          <span className="ml-1 text-xs text-green-600">(start)</span>
+                        )}
+                        {endFrameIndex === index && (
+                          <span className="ml-1 text-xs text-purple-600">(end)</span>
                         )}
                       </button>
                       <div className="flex items-center space-x-1 ml-2">
