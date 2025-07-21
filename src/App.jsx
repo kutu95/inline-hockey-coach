@@ -508,7 +508,7 @@ function App() {
             
             {/* Organization-scoped Drill Designer - restricted to admin, superadmin, and coach */}
             <Route 
-              path="/organisations/:orgId/drill-designer" 
+              path="/organisations/:orgId/drill-designer/:drillId?" 
               element={
                 <RoleProtectedRoute requiredRoles={['admin', 'superadmin', 'coach']}>
                   <DrillDesigner />

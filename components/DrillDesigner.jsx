@@ -5,7 +5,7 @@ import { supabase } from '../src/lib/supabase'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 
 const DrillDesigner = () => {
-  const { orgId } = useParams()
+  const { orgId, drillId } = useParams()
   const navigate = useNavigate()
   const [selectedTool, setSelectedTool] = useState('puck')
   const [selectedColor, setSelectedColor] = useState('#ff0000')
@@ -70,6 +70,13 @@ const DrillDesigner = () => {
   useEffect(() => {
     loadDynamicPlayers()
   }, [])
+
+  // Load existing animation data if drillId is provided
+  useEffect(() => {
+    if (drillId) {
+      loadExistingAnimationForDrill()
+    }
+  }, [drillId])
 
   // Mobile detection effect
   useEffect(() => {
@@ -1756,6 +1763,43 @@ const DrillDesigner = () => {
     setShowLoadDialog(true)
   }
 
+  const loadExistingAnimationForDrill = async () => {
+    try {
+      console.log('Loading existing animation for drill:', drillId)
+      
+      // Find animation media attachment for this drill
+      let query = supabase
+        .from('media_attachments')
+        .select('*')
+        .eq('drill_id', drillId)
+        .eq('media_type', 'animation')
+        .eq('is_editable', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      const { data, error } = await query
+
+      if (error) throw error
+      
+      if (data && data.length > 0) {
+        const animationMedia = data[0]
+        console.log('Found existing animation:', animationMedia)
+        
+        // Load the animation data
+        if (animationMedia.animation_data_path) {
+          await loadAnimationData(animationMedia.animation_data_path)
+          console.log('Successfully loaded existing animation data')
+        } else {
+          console.log('No animation data path found, starting fresh')
+        }
+      } else {
+        console.log('No existing animation found for this drill, starting fresh')
+      }
+    } catch (err) {
+      console.error('Error loading existing animation for drill:', err)
+    }
+  }
+
   // Save animation to drill or session
   const saveAnimationToDrillOrSession = async (mediaBlob, mediaType, fileName) => {
     if (!saveTitle.trim()) {
@@ -1933,6 +1977,13 @@ const DrillDesigner = () => {
 
     await loadAvailableDrills()
     await loadAvailableSessions()
+    
+    // If we're editing an existing drill's animation, pre-select that drill
+    if (drillId) {
+      setSaveType('drill')
+      setSelectedDrillId(drillId)
+    }
+    
     setShowSaveDialog(true)
   }
 

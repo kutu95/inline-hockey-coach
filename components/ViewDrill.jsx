@@ -137,10 +137,10 @@ const ViewDrill = () => {
                      Edit Drill
                    </Link>
                    <Link
-                     to={orgId ? `/organisations/${orgId}/drill-designer` : "#"}
+                     to={orgId ? `/organisations/${orgId}/drill-designer/${drill.id}` : "#"}
                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                    >
-                     Design Animation
+                     Edit Animation
                    </Link>
                  </div>
                )}
