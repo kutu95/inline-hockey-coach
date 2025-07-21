@@ -1767,11 +1767,14 @@ const DrillDesigner = () => {
     try {
       console.log('Loading existing animation for drill:', drillId)
       
-      // Find animation media attachment for this drill
+      // Find animation media attachment for this drill through drill_media relationship
       let query = supabase
         .from('media_attachments')
-        .select('*')
-        .eq('drill_id', drillId)
+        .select(`
+          *,
+          drill_media!inner(drill_id)
+        `)
+        .eq('drill_media.drill_id', drillId)
         .eq('media_type', 'animation')
         .eq('is_editable', true)
         .order('created_at', { ascending: false })
@@ -1780,6 +1783,8 @@ const DrillDesigner = () => {
       const { data, error } = await query
 
       if (error) throw error
+      
+      console.log('Query result:', data)
       
       if (data && data.length > 0) {
         const animationMedia = data[0]
