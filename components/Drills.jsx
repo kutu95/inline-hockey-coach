@@ -328,10 +328,10 @@ const Drills = () => {
   }
 
   const formatPlayerCount = (min, max) => {
-    if (max) {
-      return `${min}-${max} players`
-    }
-    return `${min}+ players`
+    if (!min) return 'No minimum'
+    if (min === max) return `${min} players`
+    if (!max) return `${min} up players`
+    return `${min}-${max} players`
   }
 
   const getVisibilityText = (drill) => {
@@ -444,7 +444,7 @@ const Drills = () => {
                         Add Drill
                       </Link>
                       <Link
-                        to={`/organisations/${orgId}/drill-designer`}
+                        to={`/organisations/${orgId}/drill-designer?from=drills`}
                         className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                       >
                         Design Animation
