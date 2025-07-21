@@ -1365,6 +1365,16 @@ const DrillDesigner = () => {
       return
     }
     
+    // Clean up all frames before playing to remove any existing red dots
+    const cleanedFrames = frames.map(frame => ({
+      ...frame,
+      elements: filterValidElements(frame.elements)
+    }))
+    
+    // Update frames with cleaned data
+    setFrames(cleanedFrames)
+    setHasUnsavedChanges(true)
+    
     console.log('Starting animation with frameRate:', frameRate)
     setIsPlaying(true)
     isPlayingRef.current = true
@@ -1379,8 +1389,8 @@ const DrillDesigner = () => {
       
       console.log('Loading frame:', frameIndex)
       // Load frame without triggering unsaved changes during playback
-      if (frameIndex >= 0 && frameIndex < frames.length) {
-        const frameElements = JSON.parse(JSON.stringify(frames[frameIndex].elements))
+      if (frameIndex >= 0 && frameIndex < cleanedFrames.length) {
+        const frameElements = JSON.parse(JSON.stringify(cleanedFrames[frameIndex].elements))
         
         // Filter out unwanted elements (like path artifacts)
         const filteredElements = filterValidElements(frameElements)
@@ -1389,7 +1399,7 @@ const DrillDesigner = () => {
         setCurrentFrameIndex(frameIndex)
         setSelectedElement(null)
       }
-      frameIndex = (frameIndex + 1) % frames.length
+      frameIndex = (frameIndex + 1) % cleanedFrames.length
       
       setTimeout(playNextFrame, 1000 / frameRate)
     }
@@ -2229,6 +2239,28 @@ const DrillDesigner = () => {
       setHasUnsavedChanges(false)
 
     }
+  }
+
+  const cleanAnimationData = () => {
+    if (frames.length === 0) {
+      alert('No animation data to clean')
+      return
+    }
+    
+    // Clean up all frames to remove any red dots or invalid elements
+    const cleanedFrames = frames.map(frame => ({
+      ...frame,
+      elements: filterValidElements(frame.elements)
+    }))
+    
+    setFrames(cleanedFrames)
+    setHasUnsavedChanges(true)
+    
+    // Show success message
+    setFrameSavedMessage('Animation data cleaned - red dots removed!')
+    setTimeout(() => setFrameSavedMessage(''), 3000)
+    
+    console.log('Animation data cleaned, removed invalid elements from', frames.length, 'frames')
   }
 
   // Load available drills and sessions
@@ -4257,6 +4289,12 @@ const DrillDesigner = () => {
                   className="bg-blue-600 hover:bg-blue-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
                 >
                   📂 Load Animation
+                </button>
+                <button
+                  onClick={cleanAnimationData}
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                >
+                  🧹 Clean Animation
                 </button>
                 <button
                   onClick={clearAllData}
