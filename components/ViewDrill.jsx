@@ -87,6 +87,33 @@ const ViewDrill = () => {
     return drill.is_public ? 'Public' : 'Private'
   }
 
+  const convertUrlsToLinks = (text) => {
+    if (!text) return text
+    
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    
+    // Split the text by URLs and create an array of text and link elements
+    const parts = text.split(urlRegex)
+    
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            {part}
+          </a>
+        )
+      }
+      return part
+    })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -184,14 +211,18 @@ const ViewDrill = () => {
                   {drill.description && (
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-                      <div className="text-gray-700 whitespace-pre-wrap">{drill.description}</div>
+                      <div className="text-gray-700 whitespace-pre-wrap">
+                        {convertUrlsToLinks(drill.description)}
+                      </div>
                     </div>
                   )}
 
                   {drill.instructions && (
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Instructions</h3>
-                      <div className="text-gray-700 whitespace-pre-wrap">{drill.instructions}</div>
+                      <div className="text-gray-700 whitespace-pre-wrap">
+                        {convertUrlsToLinks(drill.instructions)}
+                      </div>
                     </div>
                   )}
 
