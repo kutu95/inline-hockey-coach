@@ -65,7 +65,7 @@ const DrillDesigner = () => {
   const [flipHistory, setFlipHistory] = useState({}) // { playerId: [frameNumbers] }
   
   // Track deleted elements for persistence across frames
-  const [deletedElements, setDeletedElements] = useState(new Set()) // Set of element IDs that have been deleted
+ // Set of element IDs that have been deleted
   
   const stageRef = useRef()
   const animationRef = useRef()
@@ -1144,15 +1144,12 @@ const DrillDesigner = () => {
 
   const deleteSelectedElement = () => {
     if (selectedElement) {
-      // Add the element ID to the deleted elements set for persistence
-      setDeletedElements(prev => new Set([...prev, selectedElement.id]))
-      
-      // Remove from current frame
+      // Remove from current frame only
       setElements(elements.filter(el => el.id !== selectedElement.id))
       setSelectedElement(null)
       setHasUnsavedChanges(true)
       
-      console.log(`Element ${selectedElement.id} deleted and added to persistence tracking`)
+      console.log(`Element ${selectedElement.id} deleted from current frame`)
     }
   }
 
@@ -1278,16 +1275,11 @@ const DrillDesigner = () => {
       // Filter out unwanted elements (like path artifacts)
       const filteredElements = filterValidElements(frameElements)
       
-      // Filter out deleted elements for persistence
-      const elementsWithoutDeleted = filteredElements.filter(el => !deletedElements.has(el.id))
-      
-      console.log('Frame elements by type:', elementsWithoutDeleted.reduce((acc, el) => {
+      console.log('Frame elements by type:', filteredElements.reduce((acc, el) => {
         acc[el.type] = (acc[el.type] || 0) + 1
         return acc
       }, {}))
-      console.log('Deleted elements tracking:', Array.from(deletedElements))
-      console.log('Elements filtered out:', filteredElements.filter(el => deletedElements.has(el.id)).map(el => ({ id: el.id, type: el.type })))
-      setElements(elementsWithoutDeleted)
+      setElements(filteredElements)
       
       // Don't overwrite flip history when loading frames - it should persist across all frames
       // The flip history is already restored when loading the animation
@@ -1338,21 +1330,17 @@ const DrillDesigner = () => {
       const updatedElements = JSON.parse(JSON.stringify(elements))
       const filteredElements = filterValidElements(updatedElements)
       
-      // Filter out deleted elements for persistence
-      const elementsWithoutDeleted = filteredElements.filter(el => !deletedElements.has(el.id))
-      
       // Update the frame with filtered elements
       const updatedFrames = [...frames]
       updatedFrames[currentFrameIndex] = {
         ...updatedFrames[currentFrameIndex],
-        elements: elementsWithoutDeleted,
+        elements: filteredElements,
         timestamp: Date.now()
       }
       
       setFrames(updatedFrames)
       setHasUnsavedChanges(true)
       console.log('Frame changes saved:', currentFrameIndex + 1)
-      console.log('Deleted elements persisted:', Array.from(deletedElements))
       
       // Show success message
       setFrameSavedMessage(`Frame ${currentFrameIndex + 1} saved!`)
@@ -2304,7 +2292,7 @@ const DrillDesigner = () => {
       setSelectedElement(null)
       setAudioBlob(null)
       setFlipHistory({})
-      setDeletedElements(new Set()) // Clear deleted elements tracking
+
       setHasUnsavedChanges(false)
     }
   }
@@ -2331,26 +2319,7 @@ const DrillDesigner = () => {
     console.log('Animation data cleaned, removed invalid elements from', frames.length, 'frames')
   }
 
-  // Function to restore deleted elements (remove from tracking)
-  const restoreDeletedElements = () => {
-    if (deletedElements.size === 0) {
-      alert('No deleted elements to restore')
-      return
-    }
-    
-    setDeletedElements(new Set())
-    setHasUnsavedChanges(true)
-    
-    // Reload current frame to show restored elements
-    if (currentFrameIndex >= 0) {
-      loadFrame(currentFrameIndex)
-    }
-    
-    setFrameSavedMessage(`Restored ${deletedElements.size} deleted elements!`)
-    setTimeout(() => setFrameSavedMessage(''), 3000)
-    
-    console.log('Deleted elements restored:', Array.from(deletedElements))
-  }
+
 
   // Load available drills and sessions
   const loadAvailableDrills = async () => {
@@ -2767,8 +2736,7 @@ const DrillDesigner = () => {
         console.log('Restored flip history from frame level:', latestFlipHistory)
       }
       
-      // Reset deleted elements tracking for new animation
-      setDeletedElements(new Set())
+
       
       // Load and focus the first frame if frames exist
       if (animationData.frames && animationData.frames.length > 0) {
