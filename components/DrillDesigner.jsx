@@ -865,6 +865,7 @@ const DrillDesigner = () => {
         // For append mode, we need 3 movements for 3 frames
         // Frame 0: 33.33% progress, Frame 1: 66.67% progress, Frame 2: 100% progress
         progress = (i + 1) / pathFrames
+        console.log(`Append mode - Frame ${i}: progress = ${progress.toFixed(3)} (${(progress * 100).toFixed(1)}%)`)
       } else if (pathInsertMode === 'merge') {
         // For merge mode, consider the total sequence length
         // Total frames = existing frame + new frames = 1 + pathFrames
@@ -876,6 +877,7 @@ const DrillDesigner = () => {
       }
       
       const position = interpolateAlongPath(path, progress)
+      console.log(`Frame ${i}: position = (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`)
       
       // Create frame elements with player at new position
       const frameElements = elements.map(element => {
