@@ -838,9 +838,10 @@ const DrillDesigner = () => {
     for (let i = 0; i < pathFrames; i++) {
       let progress
       if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
-        // For append and merge modes, use normal proportional progress
-        // This ensures each frame represents an equal portion of the movement
-        progress = i / (pathFrames - 1)
+        // For append and merge modes, consider the total sequence length
+        // Total frames = existing frame + new frames = 1 + pathFrames
+        const totalFrames = 1 + pathFrames
+        progress = i / (totalFrames - 1)
       } else {
         // For insert and replace modes, use normal progress
         progress = i / (pathFrames - 1)
@@ -932,7 +933,8 @@ const DrillDesigner = () => {
       if (framesToMerge > 0) {
         for (let i = 0; i < framesToMerge; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          const progress = i / (pathFrames - 1)
+          const totalFrames = 1 + pathFrames
+          const progress = i / (totalFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           // Get the existing frame at merge position
@@ -984,7 +986,8 @@ const DrillDesigner = () => {
       if (pathFrames > framesToMerge) {
         for (let i = framesToMerge; i < pathFrames; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          const progress = i / (pathFrames - 1)
+          const totalFrames = 1 + pathFrames
+          const progress = i / (totalFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           // Use current canvas state as base for remaining frames to include any new elements
@@ -1014,7 +1017,8 @@ const DrillDesigner = () => {
       if (framesToMerge === 0) {
         for (let i = 0; i < pathFrames; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          const progress = i / (pathFrames - 1)
+          const totalFrames = 1 + pathFrames
+          const progress = i / (totalFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           const mergedElements = elements.map(element => {
