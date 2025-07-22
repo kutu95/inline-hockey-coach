@@ -826,8 +826,22 @@ const DrillDesigner = () => {
   }
 
   const generatePathAnimation = () => {
+    console.log('Starting path animation generation:')
+    console.log('- Selected player:', selectedPathPlayer)
+    console.log('- Path points:', pathPoints.length)
+    console.log('- Frames to generate:', pathFrames)
+    console.log('- Insert mode:', pathInsertMode)
+    console.log('- Current frame index:', currentFrameIndex)
+    console.log('- Total frames:', frames.length)
+    console.log('- Flip history:', flipHistory)
+    
     if (pathPoints.length < 2 || !selectedPathPlayer) {
       alert('Please draw a path with at least 2 points')
+      return
+    }
+
+    if (!pathFrames || pathFrames < 1) {
+      alert('Please specify the number of frames (minimum 1)')
       return
     }
 
@@ -986,7 +1000,7 @@ const DrillDesigner = () => {
           mergedFrames.push({
             id: Date.now() + i,
             elements: JSON.parse(JSON.stringify(filteredMergedElements)),
-            flipHistory: existingFrame ? JSON.parse(JSON.stringify(existingFrame.flipHistory)) : JSON.parse(JSON.stringify(flipHistory)),
+            flipHistory: existingFrame && existingFrame.flipHistory ? JSON.parse(JSON.stringify(existingFrame.flipHistory)) : JSON.parse(JSON.stringify(flipHistory)),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
           })
@@ -1018,7 +1032,7 @@ const DrillDesigner = () => {
           mergedFrames.push({
             id: Date.now() + i,
             elements: JSON.parse(JSON.stringify(filteredRemainingElements)),
-            flipHistory: JSON.parse(JSON.stringify(flipHistory)),
+            flipHistory: JSON.parse(JSON.stringify(flipHistory || {})),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
           })
@@ -1047,7 +1061,7 @@ const DrillDesigner = () => {
           mergedFrames.push({
             id: Date.now() + i,
             elements: JSON.parse(JSON.stringify(filteredMergedElements)),
-            flipHistory: JSON.parse(JSON.stringify(flipHistory)),
+            flipHistory: JSON.parse(JSON.stringify(flipHistory || {})),
             timestamp: Date.now() + i,
             frameNumber: mergeIndex + i + 1
           })
