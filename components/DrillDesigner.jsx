@@ -256,6 +256,13 @@ const DrillDesigner = () => {
       }
       
       switch (e.key) {
+        case 'Delete':
+        case 'Backspace':
+          e.preventDefault()
+          if (selectedElement) {
+            deleteSelectedElement()
+          }
+          break
         case 'ArrowLeft':
           e.preventDefault()
           goToPreviousFrame()
@@ -1264,7 +1271,8 @@ const DrillDesigner = () => {
         acc[el.type] = (acc[el.type] || 0) + 1
         return acc
       }, {}))
-      console.log('Deleted elements filtered out:', Array.from(deletedElements))
+      console.log('Deleted elements tracking:', Array.from(deletedElements))
+      console.log('Elements filtered out:', filteredElements.filter(el => deletedElements.has(el.id)).map(el => ({ id: el.id, type: el.type })))
       setElements(elementsWithoutDeleted)
       
       // Don't overwrite flip history when loading frames - it should persist across all frames
