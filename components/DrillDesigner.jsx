@@ -838,16 +838,9 @@ const DrillDesigner = () => {
     for (let i = 0; i < pathFrames; i++) {
       let progress
       if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
-        // For append and merge modes, ensure first frame shows movement
-        // Use normal progress but ensure first frame has some movement
-        if (pathFrames === 1) {
-          progress = 1 // Single frame goes to end
-        } else {
-          // For multiple frames, start with a small progress and distribute evenly
-          const smallInitialProgress = 0.1 // 10% initial movement
-          const remainingProgress = 1 - smallInitialProgress
-          progress = smallInitialProgress + (i * remainingProgress) / (pathFrames - 1)
-        }
+        // For append and merge modes, use normal proportional progress
+        // This ensures each frame represents an equal portion of the movement
+        progress = i / (pathFrames - 1)
       } else {
         // For insert and replace modes, use normal progress
         progress = i / (pathFrames - 1)
@@ -939,15 +932,7 @@ const DrillDesigner = () => {
       if (framesToMerge > 0) {
         for (let i = 0; i < framesToMerge; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          let progress
-          if (pathFrames === 1) {
-            progress = 1 // Single frame goes to end
-          } else {
-            // For multiple frames, start with a small progress and distribute evenly
-            const smallInitialProgress = 0.1 // 10% initial movement
-            const remainingProgress = 1 - smallInitialProgress
-            progress = smallInitialProgress + (i * remainingProgress) / (pathFrames - 1)
-          }
+          const progress = i / (pathFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           // Get the existing frame at merge position
@@ -999,15 +984,7 @@ const DrillDesigner = () => {
       if (pathFrames > framesToMerge) {
         for (let i = framesToMerge; i < pathFrames; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          let progress
-          if (pathFrames === 1) {
-            progress = 1 // Single frame goes to end
-          } else {
-            // For multiple frames, start with a small progress and distribute evenly
-            const smallInitialProgress = 0.1 // 10% initial movement
-            const remainingProgress = 1 - smallInitialProgress
-            progress = smallInitialProgress + (i * remainingProgress) / (pathFrames - 1)
-          }
+          const progress = i / (pathFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           // Use current canvas state as base for remaining frames to include any new elements
@@ -1037,15 +1014,7 @@ const DrillDesigner = () => {
       if (framesToMerge === 0) {
         for (let i = 0; i < pathFrames; i++) {
           // Use the same progress calculation as append mode for consistent behavior
-          let progress
-          if (pathFrames === 1) {
-            progress = 1 // Single frame goes to end
-          } else {
-            // For multiple frames, start with a small progress and distribute evenly
-            const smallInitialProgress = 0.1 // 10% initial movement
-            const remainingProgress = 1 - smallInitialProgress
-            progress = smallInitialProgress + (i * remainingProgress) / (pathFrames - 1)
-          }
+          const progress = i / (pathFrames - 1)
           const position = interpolateAlongPath(path, progress)
           
           const mergedElements = elements.map(element => {
