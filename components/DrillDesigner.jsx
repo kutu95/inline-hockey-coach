@@ -852,6 +852,9 @@ const DrillDesigner = () => {
       const currentPosition = { x: selectedPathPlayer.x, y: selectedPathPlayer.y }
       const pathWithStart = [currentPosition, ...pathPoints]
       path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
+      console.log('Path for append/merge:', path)
+      console.log('Path points:', pathPoints)
+      console.log('Current position:', currentPosition)
     } else {
       // For insert and replace modes, use the drawn path as is
       path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
