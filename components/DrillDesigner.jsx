@@ -865,9 +865,9 @@ const DrillDesigner = () => {
     for (let i = 0; i < pathFrames; i++) {
       let progress
       if (pathInsertMode === 'append') {
-        // Use the same progress calculation as merge mode for consistent behavior
+        // Use the exact same progress calculation as merge mode
         const totalFrames = 1 + pathFrames
-        progress = (i + 1) / (totalFrames - 1)
+        progress = i / (totalFrames - 1)
         console.log(`Append mode - Frame ${i}: progress = ${progress.toFixed(3)} (${(progress * 100).toFixed(1)}%)`)
       } else if (pathInsertMode === 'merge') {
         // For merge mode, consider the total sequence length
