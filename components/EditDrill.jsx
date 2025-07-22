@@ -222,11 +222,11 @@ const EditDrill = () => {
 
       if (error) throw error
 
-      // Navigate back to drills list
+      // Navigate back to view drill page
       if (orgId) {
-        navigate(`/organisations/${orgId}/drills`)
+        navigate(`/organisations/${orgId}/drills/${drillId}`)
       } else {
-        navigate('/drills')
+        navigate(`/drills/${drillId}`)
       }
     } catch (err) {
       setError('Failed to update drill')
@@ -237,11 +237,11 @@ const EditDrill = () => {
   }
 
   const handleCancel = () => {
-    // Navigate back to drills list
+    // Navigate back to view drill page
     if (orgId) {
-      navigate(`/organisations/${orgId}/drills`)
+      navigate(`/organisations/${orgId}/drills/${drillId}`)
     } else {
-      navigate('/drills')
+      navigate(`/drills/${drillId}`)
     }
   }
 
