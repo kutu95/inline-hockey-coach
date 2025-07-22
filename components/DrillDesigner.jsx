@@ -824,10 +824,29 @@ const DrillDesigner = () => {
     // Generate path points - smooth for players, straight for pucks
     let path
     if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
-      // For append and merge modes, include the player's current position as the starting point
+      // For append and merge modes, create a path that starts movement immediately
       const currentPosition = { x: selectedPathPlayer.x, y: selectedPathPlayer.y }
-      const pathWithStart = [currentPosition, ...pathPoints]
-      path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
+      
+      // If we have path points, create a starting position that's slightly toward the first point
+      if (pathPoints.length > 0) {
+        const firstPoint = pathPoints[0]
+        const dx = firstPoint.x - currentPosition.x
+        const dy = firstPoint.y - currentPosition.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        
+        // Create a starting position that's 10% of the way toward the first point
+        const startProgress = 0.1
+        const startPosition = {
+          x: currentPosition.x + dx * startProgress,
+          y: currentPosition.y + dy * startProgress
+        }
+        
+        const pathWithStart = [startPosition, ...pathPoints]
+        path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
+      } else {
+        // Fallback to current position if no path points
+        path = [currentPosition]
+      }
     } else {
       // For insert and replace modes, use the drawn path as is
       path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
