@@ -2208,6 +2208,7 @@ const DrillDesigner = () => {
     console.log('Smoothing animation with', frames.length, 'frames')
     
     const newFrames = []
+    const updatedFlipHistory = {}
     
     // Go through each pair of consecutive frames and create an intermediate frame
     for (let i = 0; i < frames.length - 1; i++) {
@@ -2241,10 +2242,27 @@ const DrillDesigner = () => {
       frameNumber: frames[frames.length - 1].frameNumber
     })
     
+    // Update flip history to account for new frame positions
+    // Each original frame now has an intermediate frame after it
+    Object.keys(flipHistory).forEach(playerId => {
+      const originalFlipFrames = flipHistory[playerId]
+      const updatedFlipFrames = []
+      
+      originalFlipFrames.forEach(originalFrameIndex => {
+        // Calculate new frame index: original frame + number of intermediate frames added before it
+        const newFrameIndex = originalFrameIndex + originalFrameIndex
+        updatedFlipFrames.push(newFrameIndex)
+      })
+      
+      updatedFlipHistory[playerId] = updatedFlipFrames
+    })
+    
     setFrames(newFrames)
+    setFlipHistory(updatedFlipHistory)
     setHasUnsavedChanges(true)
     
     console.log('Smoothed animation: added', frames.length - 1, 'intermediate frames. Total frames:', newFrames.length)
+    console.log('Updated flip history:', updatedFlipHistory)
   }
 
   // Audio recording functions
