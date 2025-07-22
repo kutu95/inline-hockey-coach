@@ -1145,10 +1145,16 @@ const DrillDesigner = () => {
     const point1 = path[index1]
     const point2 = path[index2]
     
-        return {
+    console.log(`Interpolation debug: progress=${progress}, totalLength=${totalLength}, targetIndex=${targetIndex}, index1=${index1}, index2=${index2}, t=${t}`)
+    console.log(`Point1: (${point1.x}, ${point1.y}), Point2: (${point2.x}, ${point2.y})`)
+    
+    const result = {
       x: point1.x + (point2.x - point1.x) * t,
       y: point1.y + (point2.y - point1.y) * t
     }
+    
+    console.log(`Interpolated result: (${result.x}, ${result.y})`)
+    return result
   }
 
   const deleteSelectedElement = () => {
