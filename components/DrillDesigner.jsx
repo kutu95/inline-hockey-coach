@@ -822,7 +822,16 @@ const DrillDesigner = () => {
     }
 
     // Generate path points - smooth for players, straight for pucks
-    const path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
+    let path
+    if (pathInsertMode === 'append') {
+      // For append mode, include the player's current position as the starting point
+      const currentPosition = { x: selectedPathPlayer.x, y: selectedPathPlayer.y }
+      const pathWithStart = [currentPosition, ...pathPoints]
+      path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
+    } else {
+      // For other modes, use the drawn path as is
+      path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
+    }
     
     // Create frames for the animation
     const newFrames = []
