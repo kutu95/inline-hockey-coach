@@ -861,8 +861,12 @@ const DrillDesigner = () => {
     const newFrames = []
     for (let i = 0; i < pathFrames; i++) {
       let progress
-      if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
-        // For append and merge modes, consider the total sequence length
+      if (pathInsertMode === 'append') {
+        // For append mode, the new frames should start moving immediately
+        // Each appended frame represents a step along the path
+        progress = i / (pathFrames - 1)
+      } else if (pathInsertMode === 'merge') {
+        // For merge mode, consider the total sequence length
         // Total frames = existing frame + new frames = 1 + pathFrames
         const totalFrames = 1 + pathFrames
         progress = i / (totalFrames - 1)
