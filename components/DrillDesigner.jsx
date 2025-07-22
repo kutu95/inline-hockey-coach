@@ -824,29 +824,10 @@ const DrillDesigner = () => {
     // Generate path points - smooth for players, straight for pucks
     let path
     if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
-      // For append and merge modes, create a path that starts movement immediately
+      // For append and merge modes, include the player's current position as the starting point
       const currentPosition = { x: selectedPathPlayer.x, y: selectedPathPlayer.y }
-      
-      // If we have path points, create a starting position that's slightly toward the first point
-      if (pathPoints.length > 0) {
-        const firstPoint = pathPoints[0]
-        const dx = firstPoint.x - currentPosition.x
-        const dy = firstPoint.y - currentPosition.y
-        const distance = Math.sqrt(dx * dx + dy * dy)
-        
-        // Create a starting position that's 10% of the way toward the first point
-        const startProgress = 0.1
-        const startPosition = {
-          x: currentPosition.x + dx * startProgress,
-          y: currentPosition.y + dy * startProgress
-        }
-        
-        const pathWithStart = [startPosition, ...pathPoints]
-        path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
-      } else {
-        // Fallback to current position if no path points
-        path = [currentPosition]
-      }
+      const pathWithStart = [currentPosition, ...pathPoints]
+      path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
     } else {
       // For insert and replace modes, use the drawn path as is
       path = selectedPathPlayer.type === 'puck' ? pathPoints : generateSmoothPath(pathPoints)
@@ -855,7 +836,17 @@ const DrillDesigner = () => {
     // Create frames for the animation
     const newFrames = []
     for (let i = 0; i < pathFrames; i++) {
-      const progress = i / (pathFrames - 1)
+      let progress
+      if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
+        // For append and merge modes, ensure first frame shows movement
+        // Calculate a small initial progress to show movement in first frame
+        const initialProgress = 1 / pathFrames // One frame's worth of progress
+        progress = (i * (1 - initialProgress)) / (pathFrames - 1) + initialProgress
+      } else {
+        // For insert and replace modes, use normal progress
+        progress = i / (pathFrames - 1)
+      }
+      
       const position = interpolateAlongPath(path, progress)
       
       // Create frame elements with player at new position
