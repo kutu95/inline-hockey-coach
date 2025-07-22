@@ -918,7 +918,8 @@ const DrillDesigner = () => {
       ]
     } else if (pathInsertMode === 'merge') {
       // Merge path animation with existing frames
-      const mergeIndex = currentFrameIndex >= 0 ? currentFrameIndex : 0
+      // Start from the next frame after the current one
+      const mergeIndex = currentFrameIndex >= 0 ? currentFrameIndex + 1 : 0
       const framesToMerge = Math.min(pathFrames, frames.length - mergeIndex)
       
       // Create merged frames by combining path animation with existing frame elements
