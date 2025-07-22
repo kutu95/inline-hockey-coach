@@ -850,10 +850,17 @@ const DrillDesigner = () => {
     if (pathInsertMode === 'append' || pathInsertMode === 'merge') {
       // For append and merge modes, include the player's current position as the starting point
       const currentPosition = { x: selectedPathPlayer.x, y: selectedPathPlayer.y }
-      const pathWithStart = [currentPosition, ...pathPoints]
+      
+      // Filter out duplicate points to avoid interpolation issues
+      const filteredPathPoints = pathPoints.filter(point => 
+        !(Math.abs(point.x - currentPosition.x) < 1 && Math.abs(point.y - currentPosition.y) < 1)
+      )
+      
+      const pathWithStart = [currentPosition, ...filteredPathPoints]
       path = selectedPathPlayer.type === 'puck' ? pathWithStart : generateSmoothPath(pathWithStart)
       console.log('Path for append/merge:', path)
       console.log('Path points:', pathPoints)
+      console.log('Filtered path points:', filteredPathPoints)
       console.log('Current position:', currentPosition)
     } else {
       // For insert and replace modes, use the drawn path as is
