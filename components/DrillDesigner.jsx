@@ -931,7 +931,9 @@ const DrillDesigner = () => {
       // Handle case where we have existing frames to merge with
       if (framesToMerge > 0) {
         for (let i = 0; i < framesToMerge; i++) {
-          const progress = i / (framesToMerge - 1)
+          // Use the same progress calculation as append mode for consistent behavior
+          const initialProgress = 1 / pathFrames // One frame's worth of progress
+          const progress = (i * (1 - initialProgress)) / (pathFrames - 1) + initialProgress
           const position = interpolateAlongPath(path, progress)
           
           // Get the existing frame at merge position
@@ -982,7 +984,9 @@ const DrillDesigner = () => {
       // If we have more path frames than existing frames, add the remaining path frames
       if (pathFrames > framesToMerge) {
         for (let i = framesToMerge; i < pathFrames; i++) {
-          const progress = i / (pathFrames - 1)
+          // Use the same progress calculation as append mode for consistent behavior
+          const initialProgress = 1 / pathFrames // One frame's worth of progress
+          const progress = (i * (1 - initialProgress)) / (pathFrames - 1) + initialProgress
           const position = interpolateAlongPath(path, progress)
           
           // Use current canvas state as base for remaining frames to include any new elements
@@ -1011,7 +1015,9 @@ const DrillDesigner = () => {
       // If no frames to merge with, create all frames from current elements
       if (framesToMerge === 0) {
         for (let i = 0; i < pathFrames; i++) {
-          const progress = i / (pathFrames - 1)
+          // Use the same progress calculation as append mode for consistent behavior
+          const initialProgress = 1 / pathFrames // One frame's worth of progress
+          const progress = (i * (1 - initialProgress)) / (pathFrames - 1) + initialProgress
           const position = interpolateAlongPath(path, progress)
           
           const mergedElements = elements.map(element => {
