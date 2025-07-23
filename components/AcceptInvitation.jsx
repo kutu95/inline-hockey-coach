@@ -9,6 +9,7 @@ const AcceptInvitation = () => {
   const { signIn, user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [invitation, setInvitation] = useState(null)
   const [player, setPlayer] = useState(null)
   const [password, setPassword] = useState('')
@@ -92,6 +93,7 @@ const AcceptInvitation = () => {
     e.preventDefault()
     setSettingPassword(true)
     setError('')
+    setSuccess('')
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -106,10 +108,13 @@ const AcceptInvitation = () => {
     }
 
     try {
-      // Create user account
+      // Create user account without email confirmation requirement
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: player.email,
-        password: password
+        password: password,
+        options: {
+          emailConfirm: false
+        }
       })
 
       if (authError) {
@@ -168,9 +173,9 @@ const AcceptInvitation = () => {
         const { error: signInError } = await signIn(player.email, password)
         if (signInError) {
           console.error('Sign in error:', signInError)
-          // If sign in fails due to email confirmation, show a helpful message
+          // If sign in fails, show a helpful message
           if (signInError.message.includes('Email not confirmed')) {
-            setError('Account created successfully! Please check your email for a confirmation link, or try signing in again.')
+            setSuccess('Account created successfully! Please try signing in again.')
           } else {
             throw signInError
           }
@@ -195,7 +200,7 @@ const AcceptInvitation = () => {
     )
   }
 
-  if (error) {
+  if (error && !success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -287,11 +292,25 @@ const AcceptInvitation = () => {
                 <div className="text-sm text-red-700">{error}</div>
               </div>
             )}
+            
+            {success && (
+              <div className="rounded-md bg-green-50 p-4">
+                <div className="text-sm text-green-700">{success}</div>
+                <div className="mt-2">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Go to Login
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div>
               <button
                 type="submit"
-                disabled={settingPassword}
+                disabled={settingPassword || success}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {settingPassword ? (
