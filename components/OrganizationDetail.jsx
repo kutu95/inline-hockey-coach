@@ -69,6 +69,18 @@ const OrganisationDetail = () => {
 
       if (error) {
         console.error('Error fetching player profile:', error)
+        
+        // If user has admin/coach role but no player record, create a minimal profile
+        if (hasRole('admin') || hasRole('coach')) {
+          console.log('Creating minimal profile for admin/coach without player record')
+          setPlayerProfile({
+            id: null,
+            organization_id: orgId,
+            first_name: user.email?.split('@')[0] || 'Admin',
+            last_name: '',
+            photo_url: null
+          })
+        }
         return
       }
 
@@ -134,6 +146,14 @@ const OrganisationDetail = () => {
 
       if (error) {
         console.error('Error checking user access:', error)
+        
+        // If user has admin/coach role but no player record, they might be an admin
+        // who was created without a player profile. Allow access for now.
+        if (hasRole('admin') || hasRole('coach')) {
+          console.log('User has admin/coach role but no player record - allowing access')
+          return true
+        }
+        
         return false
       }
 
