@@ -1,0 +1,81 @@
+# Database Migration Guidelines
+
+## Critical Rules
+- **NEVER suggest database resets** - always use migrations
+- **Always double-check with user before executing migrations**
+- **Test migrations on development environment first**
+- **Backup production data before applying migrations**
+
+## Migration File Structure
+- Place migrations in [supabase/migrations/](mdc:supabase/migrations/)
+- Use timestamped filenames: `YYYYMMDDHHMMSS_description.sql`
+- Include descriptive names that explain the change
+- One logical change per migration file
+
+## Migration Best Practices
+```sql
+-- Example migration structure
+-- Migration: 20250117000000_add_user_roles_table.sql
+
+-- Add new table
+CREATE TABLE user_roles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add indexes
+CREATE INDEX idx_user_roles_user_id ON user_roles(user_id);
+CREATE INDEX idx_user_roles_role_id ON user_roles(role_id);
+
+-- Enable RLS
+ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+
+-- Add RLS policies
+CREATE POLICY "Users can view their own roles" ON user_roles
+  FOR SELECT USING (auth.uid() = user_id);
+```
+
+## Common Migration Patterns
+
+### Adding Tables
+- Always include primary key with UUID
+- Add created_at/updated_at timestamps
+- Enable RLS immediately
+- Add appropriate indexes
+- Include foreign key constraints
+
+### Modifying Tables
+- Use ALTER TABLE for schema changes
+- Add columns with appropriate defaults
+- Consider data migration for existing records
+- Update RLS policies if needed
+
+### RLS Policies
+- Always test policies thoroughly
+- Use organization-based filtering
+- Consider role-based access
+- Handle super admin access appropriately
+
+## Testing Migrations
+- Test on development database first
+- Verify RLS policies work correctly
+- Check that existing data is preserved
+- Test rollback procedures
+
+## Deployment
+- Apply migrations in order
+- Monitor for errors during deployment
+- Have rollback plan ready
+- Communicate changes to team
+
+## Common Issues to Avoid
+- Don't drop tables without backup
+- Don't modify production data directly
+- Don't skip testing on development
+- Don't forget to update RLS policies
+description:
+globs:
+alwaysApply: false
+---

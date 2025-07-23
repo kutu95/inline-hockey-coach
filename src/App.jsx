@@ -36,6 +36,9 @@ import PlayerEditRoute from '../components/PlayerEditRoute'
 import OrganizationPlayerEditRoute from '../components/OrganizationPlayerEditRoute'
 import DrillDesigner from '../components/DrillDesigner'
 import ViewDrill from '../components/ViewDrill'
+import SessionTemplatesList from '../components/SessionTemplatesList'
+import SessionTemplateEditor from '../components/SessionTemplateEditor'
+import SessionTemplateView from '../components/SessionTemplateView'
 import './App.css'
 
 // Protected Route Component
@@ -294,6 +297,38 @@ function App() {
               } 
             />
             <Route 
+              path="/organisations/:orgId/session-templates" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionTemplatesList />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/session-templates/new" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionTemplateEditor />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/session-templates/:templateId" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionTemplateView />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/session-templates/:templateId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach']}>
+                  <SessionTemplateEditor />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
               path="/organisations/:orgId/sessions/calendar" 
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
@@ -462,6 +497,38 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <SessionPlanner />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/session-templates" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionTemplatesList />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/session-templates/new" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionTemplateEditor />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/session-templates/:templateId" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionTemplateView />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/session-templates/:templateId/edit" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SessionTemplateEditor />
                 </RoleProtectedRoute>
               } 
             />

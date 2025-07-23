@@ -15,6 +15,8 @@ const Sessions = () => {
   const [selectedSquads, setSelectedSquads] = useState([])
   const [playerProfile, setPlayerProfile] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const [templates, setTemplates] = useState([])
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const { user, hasRole } = useAuth()
   
   // Determine user permissions
@@ -65,6 +67,7 @@ const Sessions = () => {
       fetchSessions()
       fetchSquads()
       fetchLocations()
+      fetchTemplates()
       fetchPlayerProfile()
     }
   }, [orgId])
@@ -212,12 +215,53 @@ const Sessions = () => {
     }
   }
 
+  const fetchTemplates = async () => {
+    try {
+      let query = supabase
+        .from('session_templates')
+        .select('*')
+        .order('title', { ascending: true })
+
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        query = query.eq('author_id', user.id)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setTemplates(data || [])
+    } catch (err) {
+      console.error('Error fetching templates:', err)
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
+  }
+
+  const importTemplate = async (template) => {
+    try {
+      // Import template data into the form
+      setFormData(prev => ({
+        ...prev,
+        title: template.title,
+        description: template.description || '',
+        duration_minutes: template.duration_minutes.toString(),
+        notes: '' // Keep notes empty as they're session-specific
+      }))
+      
+      setShowTemplateSelector(false)
+      setError('') // Clear any existing errors
+    } catch (err) {
+      console.error('Error importing template:', err)
+      setError('Failed to import template')
+    }
   }
 
   const handleSquadToggle = (squadId) => {
@@ -487,6 +531,12 @@ const Sessions = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Link
+                      to="/session-templates"
+                      className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    >
+                      Templates
+                    </Link>
+                    <Link
                       to="/sessions/calendar"
                       className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
@@ -505,6 +555,12 @@ const Sessions = () => {
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end space-x-2">
+                  <Link
+                    to={`/organisations/${orgId}/session-templates`}
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  >
+                    Templates
+                  </Link>
                   <Link
                     to={`/organisations/${orgId}/sessions/calendar`}
                     className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
@@ -688,20 +744,29 @@ const Sessions = () => {
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
+                    <div className="flex flex-col sm:flex-row sm:justify-between space-y-3 sm:space-y-0 sm:space-x-4 mt-8">
                       <button
                         type="button"
-                        onClick={resetForm}
-                        className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        onClick={() => setShowTemplateSelector(true)}
+                        className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       >
-                        Cancel
+                        Import Template
                       </button>
-                      <button
-                        type="submit"
-                        className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      >
-                        {editingSession ? 'Update Session' : 'Add Session'}
-                      </button>
+                      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          {editingSession ? 'Update Session' : 'Add Session'}
+                        </button>
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -721,7 +786,12 @@ const Sessions = () => {
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                           <div className="flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-2">
-                              <h3 className="text-xl font-semibold text-gray-900">{session.title}</h3>
+                              <Link
+                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}` : `/sessions/${session.id}`}
+                                className="text-xl font-semibold text-gray-900 hover:text-indigo-600 transition-colors duration-200"
+                              >
+                                {session.title}
+                              </Link>
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start sm:self-auto">
                                 {formatDate(session.date)}
                               </span>
@@ -812,6 +882,67 @@ const Sessions = () => {
           </div>
         </div>
       </div>
+
+      {/* Template Selector Modal */}
+      {showTemplateSelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Select a Template</h3>
+              <button
+                onClick={() => setShowTemplateSelector(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-2">
+              {templates.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 text-lg mb-2">No templates available</div>
+                  <p className="text-gray-400 text-sm">
+                    {orgId ? (
+                      <Link to={`/organisations/${orgId}/session-templates/new`} className="text-indigo-600 hover:text-indigo-800">
+                        Create a template first
+                      </Link>
+                    ) : (
+                      <Link to="/session-templates/new" className="text-indigo-600 hover:text-indigo-800">
+                        Create a template first
+                      </Link>
+                    )}
+                  </p>
+                </div>
+              ) : (
+                templates.map(template => (
+                  <div
+                    key={template.id}
+                    onClick={() => importTemplate(template)}
+                    className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 mb-1">{template.title}</h4>
+                        {template.description && (
+                          <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                        )}
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                            {template.duration_minutes} minutes
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800">
+                            Created by {template.author_id === user.id ? 'you' : 'another user'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { useAuth } from '../src/contexts/AuthContext'
 const AcceptInvitation = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { signIn } = useAuth()
+  const { signIn, user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [invitation, setInvitation] = useState(null)
@@ -23,6 +23,13 @@ const AcceptInvitation = () => {
   }
 
   useEffect(() => {
+    // If user is already authenticated, redirect to dashboard
+    if (!authLoading && user) {
+      console.log('AcceptInvitation: User already authenticated, redirecting to dashboard')
+      navigate('/dashboard')
+      return
+    }
+
     // Debugging for mobile issues
     console.log('AcceptInvitation: Token from URL params:', token)
     console.log('AcceptInvitation: Full URL:', window.location.href)
@@ -34,7 +41,7 @@ const AcceptInvitation = () => {
       setError('Invalid invitation link - no token found')
       setLoading(false)
     }
-  }, [token])
+  }, [token, user, authLoading, navigate])
 
   const validateInvitation = async () => {
     try {
@@ -99,14 +106,10 @@ const AcceptInvitation = () => {
     }
 
     try {
-      // Create user account with email confirmation disabled
-      // Since the invitation was already sent to their verified email, no need for additional confirmation
+      // Create user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: player.email,
-        password: password,
-        options: {
-          emailConfirm: false // Disable email confirmation for invited users
-        }
+        password: password
       })
 
       if (authError) {
@@ -115,6 +118,13 @@ const AcceptInvitation = () => {
 
       if (!authData.user) {
         throw new Error('Failed to create user account')
+      }
+
+      // If we have a session, the user is already signed in
+      if (authData.session) {
+        console.log('User signed up and signed in successfully')
+      } else {
+        console.log('User signed up but needs email confirmation')
       }
 
       // Update player record with user_id
@@ -153,10 +163,20 @@ const AcceptInvitation = () => {
         console.error('Error updating invitation:', invitationError)
       }
 
-      // Sign in the user
-      const { error: signInError } = await signIn(player.email, password)
-      if (signInError) {
-        throw signInError
+      // If we don't have a session, try to sign in
+      if (!authData.session) {
+        const { error: signInError } = await signIn(player.email, password)
+        if (signInError) {
+          console.error('Sign in error:', signInError)
+          // If sign in fails due to email confirmation, show a helpful message
+          if (signInError.message.includes('Email not confirmed')) {
+            setError('Account created successfully! Please check your email for a confirmation link, or try signing in again.')
+          } else {
+            throw signInError
+          }
+          setSettingPassword(false)
+          return
+        }
       }
 
       // Redirect to dashboard
@@ -167,7 +187,7 @@ const AcceptInvitation = () => {
     }
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -241,6 +261,7 @@ const AcceptInvitation = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Enter your password"
+                autoComplete="new-password"
               />
             </div>
 
@@ -257,6 +278,7 @@ const AcceptInvitation = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm your password"
+                autoComplete="new-password"
               />
             </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 
@@ -16,6 +16,8 @@ const SessionPlanner = () => {
   const [showDrillSelector, setShowDrillSelector] = useState(false)
   const [selectedDrill, setSelectedDrill] = useState(null)
   const [insertPosition, setInsertPosition] = useState(0)
+  const [templates, setTemplates] = useState([])
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   
   // Filter state for drill selector
   const [drillFilters, setDrillFilters] = useState({
@@ -34,18 +36,28 @@ const SessionPlanner = () => {
   const { user } = useAuth()
   const params = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const sessionId = params.sessionId
   const orgId = params.orgId
+  const templateId = searchParams.get('template')
 
   useEffect(() => {
     if (sessionId) {
       fetchSessionData()
       fetchDrills()
+      fetchTemplates()
       if (orgId) {
         fetchOrganization()
       }
     }
   }, [sessionId, orgId])
+
+  // Import template if specified in URL
+  useEffect(() => {
+    if (templateId && sessionId) {
+      importTemplate(templateId)
+    }
+  }, [templateId, sessionId])
 
   const fetchOrganization = async () => {
     try {
@@ -102,6 +114,61 @@ const SessionPlanner = () => {
       setDrills(data || [])
     } catch (err) {
       console.error('Error fetching drills:', err)
+    }
+  }
+
+  const fetchTemplates = async () => {
+    try {
+      let query = supabase
+        .from('session_templates')
+        .select('*')
+        .order('title', { ascending: true })
+
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      } else {
+        query = query.eq('author_id', user.id)
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setTemplates(data || [])
+    } catch (err) {
+      console.error('Error fetching templates:', err)
+    }
+  }
+
+  const importTemplate = async (templateId) => {
+    try {
+      const { data, error } = await supabase.rpc('get_template_with_blocks', {
+        template_uuid: templateId
+      })
+
+      if (error) throw error
+
+      if (data && data.length > 0 && data[0].template_blocks) {
+        // Convert template blocks to session notes blocks
+        const importedBlocks = data[0].template_blocks.map((block, index) => ({
+          id: `temp-${Date.now()}-${index}`,
+          block_type: block.block_type,
+          content: block.content,
+          drill_id: block.drill_id,
+          order_index: index,
+          isEditing: false
+        }))
+
+        setNotesBlocks(importedBlocks)
+        setSuccess(`Template "${data[0].template.title}" imported successfully!`)
+        
+        // Clear the template parameter from URL
+        const newSearchParams = new URLSearchParams(searchParams)
+        newSearchParams.delete('template')
+        navigate(`${window.location.pathname}?${newSearchParams.toString()}`, { replace: true })
+      }
+    } catch (err) {
+      console.error('Error importing template:', err)
+      setError('Failed to import template')
     }
   }
 
@@ -172,6 +239,15 @@ const SessionPlanner = () => {
     setNotesBlocks(updatedBlocks)
     setShowDrillSelector(false)
     setSelectedDrill(null)
+  }
+
+  const selectTemplate = async (template) => {
+    try {
+      await importTemplate(template.id)
+      setShowTemplateSelector(false)
+    } catch (err) {
+      console.error('Error selecting template:', err)
+    }
   }
 
   const updateBlockContent = (blockId, content) => {
@@ -633,13 +709,21 @@ const SessionPlanner = () => {
             <div className="px-6 py-4">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">Session Plan</h3>
-                <button
-                  onClick={saveSessionPlan}
-                  disabled={saving}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save Plan'}
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setShowTemplateSelector(true)}
+                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  >
+                    Import Template
+                  </button>
+                  <button
+                    onClick={saveSessionPlan}
+                    disabled={saving}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+                  >
+                    {saving ? 'Saving...' : 'Save Plan'}
+                  </button>
+                </div>
               </div>
 
               {/* Add buttons at the top */}
@@ -828,6 +912,67 @@ const SessionPlanner = () => {
                   ))
                 )
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Template Selector Modal */}
+      {showTemplateSelector && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Select a Template</h3>
+              <button
+                onClick={() => setShowTemplateSelector(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-2">
+              {templates.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 text-lg mb-2">No templates available</div>
+                  <p className="text-gray-400 text-sm">
+                    {orgId ? (
+                      <Link to={`/organisations/${orgId}/session-templates/new`} className="text-indigo-600 hover:text-indigo-800">
+                        Create a template first
+                      </Link>
+                    ) : (
+                      <Link to="/session-templates/new" className="text-indigo-600 hover:text-indigo-800">
+                        Create a template first
+                      </Link>
+                    )}
+                  </p>
+                </div>
+              ) : (
+                templates.map(template => (
+                  <div
+                    key={template.id}
+                    onClick={() => selectTemplate(template)}
+                    className="p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 mb-1">{template.title}</h4>
+                        {template.description && (
+                          <p className="text-sm text-gray-600 mb-2">{template.description}</p>
+                        )}
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                            {template.duration_minutes} minutes
+                          </span>
+                          <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800">
+                            Created by {template.author_id === user.id ? 'you' : 'another user'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

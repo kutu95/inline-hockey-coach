@@ -1,0 +1,80 @@
+# Component Patterns
+
+## Component Organization
+- All components in [components/](mdc:components/) directory
+- Use PascalCase naming: `ComponentName.jsx`
+- Group related components together
+- Export components as default exports
+
+## Common Component Patterns
+
+### Protected Components
+```jsx
+import { useAuth } from '../contexts/AuthContext'
+
+function ProtectedComponent() {
+  const { user, hasRole } = useAuth()
+  
+  if (!user) return <Navigate to="/login" />
+  if (!hasRole('admin')) return <div>Access denied</div>
+  
+  return <div>Protected content</div>
+}
+```
+
+### Data Fetching Components
+```jsx
+const [data, setData] = useState([])
+const [loading, setLoading] = useState(true)
+const [error, setError] = useState(null)
+
+useEffect(() => {
+  fetchData()
+}, [])
+
+const fetchData = async () => {
+  try {
+    setLoading(true)
+    const { data, error } = await supabase.from('table').select('*')
+    if (error) throw error
+    setData(data)
+  } catch (err) {
+    setError(err.message)
+  } finally {
+    setLoading(false)
+  }
+}
+```
+
+### Form Components
+- Use controlled components with useState
+- Implement proper validation
+- Show loading states during submission
+- Handle errors gracefully
+- Use Tailwind classes for styling
+
+### List Components
+- Implement pagination for large datasets
+- Use loading skeletons
+- Handle empty states
+- Implement search/filter functionality
+
+## Component Categories
+- **Auth**: Login, AcceptInvitation
+- **Dashboard**: Dashboard, Reports
+- **Players**: PlayerList, PlayerProfile, AddPlayer, EditPlayer, ViewPlayer
+- **Sessions**: Sessions, SessionPlanner, SessionAttendance, ViewSession
+- **Drills**: Drills, DrillDesigner, AddDrill, EditDrill, ViewDrill
+- **Organizations**: Organisations, OrganizationDetail, UserAdmin
+- **Admin**: AdminPanel, UserRoleManagement
+
+## Styling Conventions
+- Use Tailwind CSS classes
+- Follow responsive design patterns
+- Use consistent spacing (p-4, m-2, etc.)
+- Implement dark mode considerations
+- Use semantic color classes (text-gray-600, bg-blue-500)
+description:
+globs:
+alwaysApply: false
+---

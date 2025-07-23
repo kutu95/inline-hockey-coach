@@ -1,0 +1,56 @@
+# Supabase Database Patterns
+
+## Database Client Usage
+- Import Supabase client: `import { supabase } from '../lib/supabase'`
+- Always handle errors from Supabase queries
+- Use RLS (Row Level Security) policies for data access control
+- Environment variables must be set: `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+
+## Query Patterns
+```javascript
+// Standard query pattern
+const { data, error } = await supabase
+  .from('table_name')
+  .select('column1, column2')
+  .eq('column', value)
+
+if (error) {
+  console.error('Query error:', error)
+  return
+}
+```
+
+## Database Schema
+- **Organizations**: Multi-tenant structure with RLS policies
+- **Users**: Supabase Auth with custom user_roles table
+- **Players**: Linked to organizations and users
+- **Sessions**: Training sessions with attendance tracking
+- **Drills**: Reusable training exercises with visual data
+- **Squads**: Group players for session planning
+
+## RLS (Row Level Security)
+- All tables have RLS enabled
+- Policies control access based on user roles and organization membership
+- Super admins can access all data
+- Regular users only see their organization's data
+- Check [supabase/migrations/](mdc:supabase/migrations/) for policy definitions
+
+## Edge Functions
+- Server-side logic in [supabase/functions/](mdc:supabase/functions/)
+- Use for email sending, complex operations, and auth-required functions
+- Deploy with `supabase functions deploy function-name`
+
+## Migrations
+- Database changes go in [supabase/migrations/](mdc:supabase/migrations/)
+- Use timestamped migration files
+- Test migrations before applying to production
+- Never reset the database - use migrations for schema changes
+
+## Storage
+- Media attachments stored in Supabase Storage
+- Use organization-based bucket structure
+- Implement proper access controls for file uploads/downloads
+description:
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,67 @@
+# Development Workflow
+
+## Development Environment Setup
+- Use Vite dev server: `npm run dev`
+- Ensure `.env` file is configured with Supabase credentials
+- Use Supabase CLI for local development
+- Test with local Supabase instance when possible
+
+## Code Organization
+- **Components**: [components/](mdc:components/) - React components
+- **Contexts**: [src/contexts/](mdc:src/contexts/) - React contexts
+- **Lib**: [src/lib/](mdc:src/lib/) - Utility functions and configurations
+- **Utils**: [src/utils/](mdc:src/utils/) - Helper functions
+- **Database**: [supabase/migrations/](mdc:supabase/migrations/) - Schema changes
+- **Functions**: [supabase/functions/](mdc:supabase/functions/) - Edge functions
+
+## Testing Strategy
+- Test components in isolation
+- Test database queries with proper error handling
+- Test authentication flows
+- Test role-based access control
+- Test edge functions locally before deployment
+
+## Code Quality
+- Use ESLint for code linting
+- Follow consistent naming conventions
+- Add proper error handling
+- Include loading states
+- Use TypeScript-like patterns with JSDoc comments
+
+## Git Workflow
+- **Don't push to GitHub until code has been tested**
+- Use descriptive commit messages
+- Test changes locally before committing
+- Review database migrations carefully
+- Never commit `.env` files
+
+## Deployment Process
+- Test on development environment first
+- Deploy edge functions: `supabase functions deploy`
+- Apply database migrations carefully
+- Monitor for errors after deployment
+- Test production functionality
+
+## Debugging
+- Use browser dev tools for frontend issues
+- Check Supabase logs for database issues
+- Use console.log for debugging (remove before production)
+- Test edge functions with `supabase functions serve`
+
+## Performance Considerations
+- Optimize database queries with proper indexes
+- Use React.memo for expensive components
+- Implement pagination for large datasets
+- Cache frequently accessed data
+- Optimize images and media files
+
+## Security Checklist
+- Verify RLS policies are working
+- Test authentication flows
+- Check authorization on all protected routes
+- Validate user inputs
+- Ensure secrets are not exposed in client code
+description:
+globs:
+alwaysApply: false
+---

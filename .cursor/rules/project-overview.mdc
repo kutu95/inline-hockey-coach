@@ -1,0 +1,40 @@
+# Inline Hockey Coach Application Overview
+
+This is a React-based inline hockey coaching application built with Vite, Supabase, and Tailwind CSS. The app manages hockey clubs, players, sessions, drills, and provides role-based access control.
+
+## Key Technologies
+- **Frontend**: React 18 with Vite, React Router DOM
+- **Styling**: Tailwind CSS with PostCSS
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **Email**: Resend for invitation emails
+- **PDF Generation**: jsPDF for session reports
+- **Canvas**: Konva/React-Konva for drill designer
+- **Image Processing**: Sharp for image optimization
+
+## Project Structure
+- **Entry Point**: [src/main.jsx](mdc:src/main.jsx) → [src/App.jsx](mdc:src/App.jsx)
+- **Authentication**: [src/contexts/AuthContext.jsx](mdc:src/contexts/AuthContext.jsx)
+- **Database Client**: [src/lib/supabase.js](mdc:src/lib/supabase.js)
+- **Components**: [components/](mdc:components/) directory
+- **Database**: [supabase/migrations/](mdc:supabase/migrations/) for schema changes
+- **Edge Functions**: [supabase/functions/](mdc:supabase/functions/) for server-side logic
+
+## Core Features
+- Multi-tenant organization system
+- Role-based access control (Super Admin, Admin, Coach, Player)
+- Player management and profiles
+- Session planning and attendance tracking
+- Drill library with visual designer
+- PDF session reports
+- Email invitations system
+- Media attachments and storage
+
+## Environment Variables
+Required in `.env`:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `RESEND_API_KEY` (for email functionality)
+description:
+globs:
+alwaysApply: false
+---

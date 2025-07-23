@@ -1,0 +1,48 @@
+# Security Guidelines
+
+## Critical Security Rules
+- **NEVER delete the .env file** - it contains secret variables
+- **NEVER suggest database resets** - use migrations instead
+- **Always call auth functions server-side** - never on the client
+- **Double-check with user before executing database migrations**
+- **Don't push to GitHub until code has been tested**
+
+## Environment Variables
+- Keep `.env` file secure and never commit to version control
+- Required secrets: Supabase URL/keys, Resend API key
+- Use `import.meta.env.VITE_*` for client-side variables
+- Server-side variables use `process.env.*`
+
+## Authentication & Authorization
+- Use Supabase Auth for user management
+- Implement role-based access control (RBAC)
+- Check user roles before rendering sensitive content
+- Use RLS policies for database-level security
+- Super admin role has access to all organizations
+
+## Data Access Control
+- All database queries respect RLS policies
+- Users can only access their organization's data
+- Super admins can access cross-organization data
+- Implement proper error handling for unauthorized access
+
+## API Security
+- Use edge functions for sensitive operations
+- Validate all user inputs
+- Implement rate limiting for API endpoints
+- Use HTTPS for all external communications
+
+## File Upload Security
+- Validate file types and sizes
+- Store files in organization-specific buckets
+- Implement proper access controls for file downloads
+- Use signed URLs for secure file access
+
+## Error Handling
+- Don't expose sensitive information in error messages
+- Log errors appropriately without exposing secrets
+- Use generic error messages for authentication failures
+description:
+globs:
+alwaysApply: false
+---

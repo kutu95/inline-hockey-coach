@@ -19,9 +19,9 @@ app.use(cors({
 app.use(express.json())
 
 // Initialize Resend with API key validation - exactly like Farm Cashbook
-const resendApiKey = process.env.RESEND_API_KEY
+const resendApiKey = process.env.VITE_RESEND_API_KEY
 if (!resendApiKey) {
-  console.error('RESEND_API_KEY is not set in environment variables')
+  console.error('VITE_RESEND_API_KEY is not set in environment variables')
 }
 const resend = resendApiKey ? new Resend(resendApiKey) : null
 
@@ -54,7 +54,7 @@ app.post('/api/send-invitation', async (req, res) => {
 
     // Check if Resend is properly initialized - exactly like Farm Cashbook
     if (!resend) {
-      console.error('Resend API key:', process.env.RESEND_API_KEY ? 'Present' : 'Missing')
+      console.error('Resend API key:', process.env.VITE_RESEND_API_KEY ? 'Present' : 'Missing')
       return res.status(500).json({ error: 'Email service is not configured' })
     }
 

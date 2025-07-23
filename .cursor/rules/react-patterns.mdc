@@ -1,0 +1,39 @@
+# React Development Patterns
+
+## Component Structure
+- Use functional components with hooks
+- Import Supabase client from [src/lib/supabase.js](mdc:src/lib/supabase.js)
+- Use authentication context: `import { useAuth } from '../contexts/AuthContext'`
+- Follow the component naming pattern: `ComponentName.jsx`
+
+## Authentication & Authorization
+- Always use `useAuth()` hook for user state and roles
+- Check roles before rendering protected content: `hasRole('admin')`, `hasAnyRole(['admin', 'coach'])`
+- Use `RoleProtectedRoute` component for route-level protection
+- Server-side auth functions should be called from edge functions, not client-side
+
+## State Management
+- Use React hooks (useState, useEffect, useContext) for local state
+- Supabase real-time subscriptions for live data updates
+- Cache user roles in AuthContext to avoid repeated database calls
+
+## Error Handling
+- Always handle Supabase query errors: `if (error) console.error(error)`
+- Show user-friendly error messages with loading states
+- Use try-catch blocks for async operations
+
+## Routing
+- Use React Router DOM v6 patterns
+- Protected routes should check authentication and roles
+- Use `Navigate` component for redirects
+- Route components are in [components/](mdc:components/) directory
+
+## Styling
+- Use Tailwind CSS classes exclusively
+- Follow responsive design patterns
+- Use consistent spacing and color schemes
+- Component-specific styles in `App.css` or inline Tailwind classes
+description:
+globs:
+alwaysApply: false
+---

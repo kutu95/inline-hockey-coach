@@ -707,7 +707,9 @@ const PlayerList = () => {
                                   }}
                                   onLoad={(e) => {
                                     // Hide the fallback when image loads successfully
-                                    e.target.nextSibling.style.display = 'none'
+                                    if (e.target.nextSibling) {
+                                      e.target.nextSibling.style.display = 'none'
+                                    }
                                   }}
                                 />
                               ) : (
@@ -779,7 +781,7 @@ const PlayerList = () => {
                                           e.target.style.display = 'none'
                                         }}
                                         onLoad={(e) => {
-                                          // Image loaded successfully
+                                          // Image loaded successfully - no action needed
                                         }}
                                         style={{ display: 'block' }}
                                       />
