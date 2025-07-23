@@ -134,7 +134,7 @@ const NotificationSettings = () => {
               Push Notifications
             </h2>
                          <p className="text-gray-600">
-               Get notified when someone accepts your invitation (Admin only)
+               Get notified when new players join your organization (Admin only)
              </p>
           </div>
 
@@ -235,7 +235,7 @@ const NotificationSettings = () => {
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
               <h3 className="font-medium text-blue-900 mb-2">How it works:</h3>
                              <ul className="text-sm text-blue-800 space-y-1">
-                 <li>• Admins will receive notifications when someone accepts their invitation</li>
+                 <li>• All admins in your organization will be notified when new players join</li>
                  <li>• Notifications work even when the app is closed</li>
                  <li>• Click on notifications to open the app</li>
                  <li>• You can disable notifications anytime</li>

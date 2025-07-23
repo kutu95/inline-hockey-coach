@@ -168,52 +168,72 @@ const AcceptInvitation = () => {
         console.error('Error updating invitation:', invitationError)
       }
 
-      // Send push notification to the person who sent the invitation (only if they're an admin)
+      // Send push notification to ALL admins in the organization
       try {
-        const { data: inviterData } = await supabase
+        // Get the organization ID for the new player
+        const { data: playerOrgData } = await supabase
           .from('players')
-          .select('user_id, first_name, last_name')
-          .eq('id', invitation.invited_by)
+          .select('organization_id')
+          .eq('id', player.id)
           .single()
 
-        if (inviterData?.user_id) {
-          // Check if the inviter has admin privileges
-          const { data: userRoles, error: rolesError } = await supabase.rpc('get_user_roles_safe', {
-            user_uuid: inviterData.user_id
-          })
+        if (playerOrgData?.organization_id) {
+          // Get all users in the organization with admin roles
+          const { data: adminUsers, error: adminError } = await supabase
+            .from('players')
+            .select(`
+              user_id,
+              first_name,
+              last_name,
+              user_roles!inner(
+                roles!inner(name)
+              )
+            `)
+            .eq('organization_id', playerOrgData.organization_id)
+            .not('user_id', 'is', null)
 
-          if (!rolesError && userRoles && Array.isArray(userRoles)) {
-            const hasAdminRole = userRoles.some(role => 
-              role === 'admin' || role === 'superadmin' || role === 'coach'
-            )
+          if (!adminError && adminUsers) {
+            // Filter to only include users with admin roles
+            const adminsToNotify = adminUsers.filter(user => {
+              return user.user_roles && user.user_roles.some(ur => 
+                ur.roles && ['admin', 'superadmin', 'coach'].includes(ur.roles.name)
+              )
+            })
 
-            if (hasAdminRole) {
-              // Only send notification to admins
-              const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
-                body: {
-                  targetUserId: inviterData.user_id,
-                  title: 'Invitation Accepted!',
-                  body: `${player.first_name} ${player.last_name} has accepted your invitation to join Backcheck.`,
-                  data: {
-                    type: 'invitation_accepted',
-                    playerId: player.id,
-                    playerName: `${player.first_name} ${player.last_name}`
+            // Send notification to each admin
+            for (const admin of adminsToNotify) {
+              if (admin.user_id) {
+                const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
+                  body: {
+                    targetUserId: admin.user_id,
+                    title: 'New Player Joined!',
+                    body: `${player.first_name} ${player.last_name} has joined your organization.`,
+                    data: {
+                      type: 'invitation_accepted',
+                      playerId: player.id,
+                      playerName: `${player.first_name} ${player.last_name}`,
+                      organizationId: playerOrgData.organization_id
+                    }
                   }
-                }
-              })
+                })
 
-              if (notificationError) {
-                console.error('Error sending push notification:', notificationError)
+                if (notificationError) {
+                  console.error(`Error sending push notification to admin ${admin.user_id}:`, notificationError)
+                } else {
+                  console.log(`Notification sent to admin: ${admin.first_name} ${admin.last_name}`)
+                }
               }
-            } else {
-              console.log('Inviter does not have admin privileges, skipping notification')
             }
+
+            console.log(`Sent notifications to ${adminsToNotify.length} admins in organization`)
           } else {
-            console.error('Error checking user roles:', rolesError)
+            console.error('Error fetching admin users:', adminError)
           }
+        } else {
+          console.log('Player has no organization, skipping admin notifications')
         }
       } catch (error) {
-        console.error('Error sending notification:', error)
+        console.error('Error sending admin notifications:', error)
       }
 
       // If we don't have a session, try to sign in
