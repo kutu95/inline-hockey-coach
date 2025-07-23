@@ -168,6 +168,37 @@ const AcceptInvitation = () => {
         console.error('Error updating invitation:', invitationError)
       }
 
+      // Send push notification to the person who sent the invitation
+      try {
+        const { data: inviterData } = await supabase
+          .from('players')
+          .select('user_id, first_name, last_name')
+          .eq('id', invitation.invited_by)
+          .single()
+
+        if (inviterData?.user_id) {
+          // Call the edge function to send push notification
+          const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
+            body: {
+              targetUserId: inviterData.user_id,
+              title: 'Invitation Accepted!',
+              body: `${player.first_name} ${player.last_name} has accepted your invitation to join Backcheck.`,
+              data: {
+                type: 'invitation_accepted',
+                playerId: player.id,
+                playerName: `${player.first_name} ${player.last_name}`
+              }
+            }
+          })
+
+          if (notificationError) {
+            console.error('Error sending push notification:', notificationError)
+          }
+        }
+      } catch (error) {
+        console.error('Error sending notification:', error)
+      }
+
       // If we don't have a session, try to sign in
       if (!authData.session) {
         const { error: signInError } = await signIn(player.email, password)
