@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [roleCache, setRoleCache] = useState(new Map())
   const [fetchingRoles, setFetchingRoles] = useState(false)
+  const [authError, setAuthError] = useState(null)
   const previousUserRef = useRef(null)
 
   const fetchUserRoles = async (userId) => {
@@ -49,7 +50,16 @@ export function AuthProvider({ children }) {
           
           if (userRolesError) {
             console.error('User roles query failed:', userRolesError)
-            // Return empty array instead of throwing
+            
+            // Check if this is an auth-related error
+            if (userRolesError.code === 'PGRST116' || 
+                userRolesError.message?.includes('unauthorized') ||
+                userRolesError.message?.includes('forbidden')) {
+              setAuthError(userRolesError)
+              throw new Error('User access denied - account may have been deleted')
+            }
+            
+            // Return empty array instead of throwing for other errors
             return []
           }
           
@@ -73,7 +83,16 @@ export function AuthProvider({ children }) {
           
           if (rolesError) {
             console.error('Roles query failed:', rolesError)
-            // Return empty array instead of throwing
+            
+            // Check if this is an auth-related error
+            if (rolesError.code === 'PGRST116' || 
+                rolesError.message?.includes('unauthorized') ||
+                rolesError.message?.includes('forbidden')) {
+              setAuthError(rolesError)
+              throw new Error('User access denied - account may have been deleted')
+            }
+            
+            // Return empty array instead of throwing for other errors
             return []
           }
           
@@ -82,6 +101,12 @@ export function AuthProvider({ children }) {
           return roles
         } catch (error) {
           console.error('Unexpected error in fetchUserRoles:', error)
+          
+          // Re-throw auth errors
+          if (error.message?.includes('User access denied')) {
+            throw error
+          }
+          
           return []
         }
       }
@@ -95,6 +120,12 @@ export function AuthProvider({ children }) {
       
     } catch (err) {
       console.error('Error fetching user roles:', err)
+      
+      // If it's an auth error, re-throw it
+      if (err.message?.includes('User access denied')) {
+        throw err
+      }
+      
       // Return empty array if no roles found or error occurred
       const emptyRoles = []
       setRoleCache(prev => new Map(prev).set(userId, emptyRoles))
@@ -122,6 +153,33 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true
 
+    // Global error handler for unhandled promise rejections
+    const handleUnhandledRejection = (event) => {
+      console.error('Unhandled promise rejection:', event.reason)
+      
+      // Check if this is an auth-related error
+      const error = event.reason
+      if (error?.message?.includes('auth') || 
+          error?.message?.includes('unauthorized') ||
+          error?.message?.includes('forbidden') ||
+          error?.message?.includes('access denied') ||
+          error?.message?.includes('user not found') ||
+          error?.message?.includes('invalid token') ||
+          error?.message?.includes('expired') ||
+          error?.code === 'PGRST116' ||
+          error?.status === 401 ||
+          error?.status === 403 ||
+          error?.status === 406) {
+        
+        console.log('Auth error detected in unhandled rejection, handling...')
+        handleAuthError(error)
+        event.preventDefault() // Prevent default browser error handling
+      }
+    }
+
+    // Add global error handler
+    window.addEventListener('unhandledrejection', handleUnhandledRejection)
+
     const initializeAuth = async () => {
       try {
         // Get initial session
@@ -144,16 +202,22 @@ export function AuthProvider({ children }) {
         if (currentUser) {
           // Set loading to false immediately to allow UI to render
           setLoading(false)
-          // Start role fetching in background without waiting
-          fetchUserRoles(currentUser.id).then(roles => {
-            if (mounted) {
-              setUserRoles(roles)
-            }
-          }).catch(err => {
-            if (mounted) {
-              console.log('Role fetch failed, keeping empty roles')
-            }
-          })
+                      // Start role fetching in background without waiting
+            fetchUserRoles(currentUser.id).then(roles => {
+              if (mounted) {
+                setUserRoles(roles)
+              }
+            }).catch(err => {
+              if (mounted) {
+                console.log('Role fetch failed:', err)
+                // If it's an auth error, handle it
+                if (err.message?.includes('User access denied')) {
+                  handleAuthError(err)
+                } else {
+                  console.log('Role fetch failed, keeping empty roles')
+                }
+              }
+            })
         } else {
           if (mounted) {
             setUserRoles([])
@@ -198,7 +262,13 @@ export function AuthProvider({ children }) {
               }
             }).catch(err => {
               if (mounted) {
-                console.log('Role fetch failed, keeping empty roles')
+                console.log('Role fetch failed:', err)
+                // If it's an auth error, handle it
+                if (err.message?.includes('User access denied')) {
+                  handleAuthError(err)
+                } else {
+                  console.log('Role fetch failed, keeping empty roles')
+                }
               }
             })
           }
@@ -231,6 +301,7 @@ export function AuthProvider({ children }) {
       mounted = false
       subscription.unsubscribe()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection)
     }
   }, []) // Add user to dependencies to track changes
 
@@ -271,10 +342,29 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const clearAuthError = () => {
+    setAuthError(null)
+  }
+
+  const handleAuthError = (error) => {
+    console.error('Auth error detected:', error)
+    setAuthError(error)
+    
+    // Clear user state
+    setUser(null)
+    setUserRoles([])
+    setRoleCache(new Map())
+    
+    // Clear any cached auth data
+    localStorage.removeItem('supabase.auth.token')
+    sessionStorage.removeItem('supabase.auth.token')
+  }
+
   const value = {
     user,
     userRoles,
     loading,
+    authError,
     signIn,
     signOut,
     resetPassword,
@@ -282,6 +372,8 @@ export function AuthProvider({ children }) {
     hasAnyRole,
     hasAllRoles,
     refreshUserRoles,
+    clearAuthError,
+    handleAuthError
   }
 
   return (

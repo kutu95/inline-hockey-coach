@@ -39,13 +39,24 @@ import ViewDrill from '../components/ViewDrill'
 import SessionTemplatesList from '../components/SessionTemplatesList'
 import SessionTemplateEditor from '../components/SessionTemplateEditor'
 import SessionTemplateView from '../components/SessionTemplateView'
+import AuthErrorBoundary from '../components/AuthErrorBoundary'
+import AuthErrorHandler from '../components/AuthErrorHandler'
 import './App.css'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth()
+  const { user, loading, authError } = useAuth()
   
   if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+  
+  // If there's an auth error, let the AuthErrorHandler deal with it
+  if (authError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -58,12 +69,21 @@ const ProtectedRoute = ({ children }) => {
 
 // Public Route Component (redirects based on user role if already logged in)
 const PublicRoute = ({ children }) => {
-  const { user, userRoles, loading } = useAuth()
+  const { user, userRoles, loading, authError } = useAuth()
   
   console.log('PublicRoute: user:', !!user, 'userRoles:', userRoles, 'loading:', loading)
   
   if (loading) {
     console.log('PublicRoute: Still loading, showing spinner')
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+  
+  // If there's an auth error, let the AuthErrorHandler deal with it
+  if (authError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -101,9 +121,11 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App">
-          <Routes>
+      <AuthErrorBoundary>
+        <Router>
+          <div className="App">
+            <AuthErrorHandler />
+            <Routes>
             <Route 
               path="/login" 
               element={
@@ -587,6 +609,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+        </AuthErrorBoundary>
     </AuthProvider>
   )
 }
