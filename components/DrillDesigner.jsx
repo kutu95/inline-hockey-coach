@@ -5,6 +5,7 @@ import { supabase } from '../src/lib/supabase'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import AIGeneratorPanel from './AIGeneratorPanel'
 import { generateHockeyAnimation } from '../src/lib/ai'
+import { useAuth } from '../src/contexts/AuthContext'
 
 const DrillDesigner = () => {
   const { orgId, drillId } = useParams()
@@ -81,6 +82,10 @@ const DrillDesigner = () => {
   const [showPathPanel, setShowPathPanel] = useState(false)
   const [isDrawingPath, setIsDrawingPath] = useState(false)
   const [pathInsertMode, setPathInsertMode] = useState('append') // 'append', 'insert', 'replace', 'merge'
+
+  // Get user roles for permission checking
+  const { hasRole } = useAuth()
+  const canSaveToDrill = hasRole('superadmin') || hasRole('admin') || hasRole('coach')
 
   // Helper function to filter out unwanted elements (like path artifacts)
   const filterValidElements = (elements) => {
@@ -4379,8 +4384,13 @@ const DrillDesigner = () => {
                 </button>
                 <button
                   onClick={openSaveDialog}
-                  disabled={frames.length === 0}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none"
+                  disabled={frames.length === 0 || !canSaveToDrill}
+                  className={`px-3 md:px-4 py-2 md:py-2 rounded-md text-xs md:text-sm flex-1 md:flex-none ${
+                    canSaveToDrill 
+                      ? 'bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white' 
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  title={!canSaveToDrill ? 'Only coaches, admins, and superadmins can save animations' : ''}
                 >
                   💾 Save to Drill/Session
                 </button>

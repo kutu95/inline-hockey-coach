@@ -435,7 +435,7 @@ const Drills = () => {
               )}
               {orgId && (
                 <div className="mt-4 flex justify-end space-x-2">
-                  {(hasRole('superadmin') || hasRole('admin') || hasRole('coach')) && (
+                  {(hasRole('superadmin') || hasRole('admin') || hasRole('coach') || hasRole('player')) && (
                     <>
                       <Link
                         to={`/organisations/${orgId}/drills/add`}

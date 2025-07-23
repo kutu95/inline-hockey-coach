@@ -65,7 +65,8 @@ const UserAdmin = () => {
             // We don't have full user info, so create a minimal user object
             userMap.set(userId, {
               id: userId,
-              email: `User ${userId.slice(0, 8)}...`,
+              email: userRole.user_email || `User ${userId.slice(0, 8)}...`,
+              name: userRole.user_name || `User ${userId.slice(0, 8)}...`,
               created_at: new Date().toISOString()
             })
           }
@@ -218,9 +219,12 @@ const UserAdmin = () => {
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {user.email}
+                          {user.name}
                         </div>
                         <div className="text-sm text-gray-500">
+                          {user.email}
+                        </div>
+                        <div className="text-sm text-gray-400">
                           ID: {user.id.slice(0, 8)}...
                         </div>
                       </td>

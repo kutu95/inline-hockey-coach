@@ -47,7 +47,7 @@ const UserRoleManagement = () => {
       // and construct a basic user object
       const { data: playerData, error: playerError } = await supabase
         .from('players')
-        .select('email, user_id, created_at')
+        .select('email, user_id, created_at, first_name, last_name')
         .eq('user_id', userId)
         .single()
       
@@ -62,7 +62,9 @@ const UserRoleManagement = () => {
         id: userId,
         email: playerData.email,
         created_at: playerData.created_at,
-        last_sign_in_at: null // We don't have this info without admin access
+        last_sign_in_at: null, // We don't have this info without admin access
+        first_name: playerData.first_name,
+        last_name: playerData.last_name
       }
       
       setTargetUser(userInfo)
@@ -244,6 +246,10 @@ const UserRoleManagement = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">User Information</h2>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-gray-600">Name:</span>
+                      <span className="font-medium ml-2">{targetUser.first_name} {targetUser.last_name}</span>
+                    </div>
                     <div>
                       <span className="text-gray-600">Email:</span>
                       <span className="font-medium ml-2">{targetUser.email}</span>

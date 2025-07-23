@@ -22,13 +22,21 @@ CREATE OR REPLACE FUNCTION get_all_user_roles()
 RETURNS TABLE(
     user_id UUID,
     role_name TEXT,
-    role_description TEXT
+    role_description TEXT,
+    user_email TEXT,
+    user_name TEXT
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT ur.user_id, r.name, r.description
+    SELECT 
+        ur.user_id, 
+        r.name, 
+        r.description,
+        p.email,
+        CONCAT(p.first_name, ' ', p.last_name) as user_name
     FROM user_roles ur
     JOIN roles r ON ur.role_id = r.id
+    LEFT JOIN players p ON ur.user_id = p.user_id
     ORDER BY ur.user_id, r.name;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
