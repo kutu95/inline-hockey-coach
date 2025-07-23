@@ -133,9 +133,9 @@ const NotificationSettings = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Push Notifications
             </h2>
-            <p className="text-gray-600">
-              Get notified when someone accepts your invitation
-            </p>
+                         <p className="text-gray-600">
+               Get notified when someone accepts your invitation (Admin only)
+             </p>
           </div>
 
           {error && (
@@ -234,12 +234,12 @@ const NotificationSettings = () => {
             {/* Instructions */}
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
               <h3 className="font-medium text-blue-900 mb-2">How it works:</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>• You'll receive notifications when someone accepts your invitation</li>
-                <li>• Notifications work even when the app is closed</li>
-                <li>• Click on notifications to open the app</li>
-                <li>• You can disable notifications anytime</li>
-              </ul>
+                             <ul className="text-sm text-blue-800 space-y-1">
+                 <li>• Admins will receive notifications when someone accepts their invitation</li>
+                 <li>• Notifications work even when the app is closed</li>
+                 <li>• Click on notifications to open the app</li>
+                 <li>• You can disable notifications anytime</li>
+               </ul>
             </div>
           </div>
         </div>

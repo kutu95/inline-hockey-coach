@@ -168,7 +168,7 @@ const AcceptInvitation = () => {
         console.error('Error updating invitation:', invitationError)
       }
 
-      // Send push notification to the person who sent the invitation
+      // Send push notification to the person who sent the invitation (only if they're an admin)
       try {
         const { data: inviterData } = await supabase
           .from('players')
@@ -177,22 +177,39 @@ const AcceptInvitation = () => {
           .single()
 
         if (inviterData?.user_id) {
-          // Call the edge function to send push notification
-          const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
-            body: {
-              targetUserId: inviterData.user_id,
-              title: 'Invitation Accepted!',
-              body: `${player.first_name} ${player.last_name} has accepted your invitation to join Backcheck.`,
-              data: {
-                type: 'invitation_accepted',
-                playerId: player.id,
-                playerName: `${player.first_name} ${player.last_name}`
-              }
-            }
+          // Check if the inviter has admin privileges
+          const { data: userRoles, error: rolesError } = await supabase.rpc('get_user_roles_safe', {
+            user_uuid: inviterData.user_id
           })
 
-          if (notificationError) {
-            console.error('Error sending push notification:', notificationError)
+          if (!rolesError && userRoles && Array.isArray(userRoles)) {
+            const hasAdminRole = userRoles.some(role => 
+              role === 'admin' || role === 'superadmin' || role === 'coach'
+            )
+
+            if (hasAdminRole) {
+              // Only send notification to admins
+              const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
+                body: {
+                  targetUserId: inviterData.user_id,
+                  title: 'Invitation Accepted!',
+                  body: `${player.first_name} ${player.last_name} has accepted your invitation to join Backcheck.`,
+                  data: {
+                    type: 'invitation_accepted',
+                    playerId: player.id,
+                    playerName: `${player.first_name} ${player.last_name}`
+                  }
+                }
+              })
+
+              if (notificationError) {
+                console.error('Error sending push notification:', notificationError)
+              }
+            } else {
+              console.log('Inviter does not have admin privileges, skipping notification')
+            }
+          } else {
+            console.error('Error checking user roles:', rolesError)
           }
         }
       } catch (error) {
