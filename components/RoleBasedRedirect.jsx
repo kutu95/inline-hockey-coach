@@ -21,57 +21,18 @@ const RoleBasedRedirect = () => {
             return
           }
           
-          // First try to get organization via RPC function
-          const { data: orgId, error } = await supabase.rpc('get_user_organization', {
-            user_uuid: user.id
-          })
-
-          if (error) {
-            console.error('Error fetching user organization via RPC:', error)
-            // Fallback: try direct query to players table
-            const { data: playerData, error: playerError } = await supabase
-              .from('players')
-              .select('organization_id')
-              .eq('user_id', user.id)
-              .single()
-            
-            if (playerError) {
-              console.error('Error fetching player data:', playerError)
-            } else if (playerData?.organization_id) {
-              // Validate that the organization actually exists and user has access
-              console.log('Validating organization ID:', playerData.organization_id)
-              const { data: orgData, error: orgError } = await supabase
-                .from('organizations')
-                .select('id')
-                .eq('id', playerData.organization_id)
-                .single()
-              
-              if (orgError || !orgData) {
-                console.error('User has invalid organization ID:', playerData.organization_id, 'Error:', orgError)
-                // Don't set organization if it doesn't exist
-              } else {
-                console.log('Organization validation successful, setting organization:', playerData.organization_id)
-                setUserOrganization(playerData.organization_id)
-              }
-            }
-          } else {
-            // Validate that the organization actually exists
-            if (orgId) {
-              console.log('Validating organization ID from RPC:', orgId)
-              const { data: orgData, error: orgError } = await supabase
-                .from('organizations')
-                .select('id')
-                .eq('id', orgId)
-                .single()
-              
-              if (orgError || !orgData) {
-                console.error('User has invalid organization ID from RPC:', orgId, 'Error:', orgError)
-                // Don't set organization if it doesn't exist
-              } else {
-                console.log('Organization validation successful from RPC, setting organization:', orgId)
-                setUserOrganization(orgId)
-              }
-            }
+          // Simple approach: just get the organization ID without complex validation
+          const { data: playerData, error: playerError } = await supabase
+            .from('players')
+            .select('organization_id')
+            .eq('user_id', user.id)
+            .single()
+          
+          if (playerError) {
+            console.error('Error fetching player data:', playerError)
+          } else if (playerData?.organization_id) {
+            console.log('Setting user organization:', playerData.organization_id)
+            setUserOrganization(playerData.organization_id)
           }
         } catch (err) {
           console.error('Error fetching user organization:', err)
@@ -82,19 +43,10 @@ const RoleBasedRedirect = () => {
     }
 
     fetchUserOrganization()
-  }, [user, userRoles]) // Add userRoles back to dependencies
+  }, [user, userRoles])
 
   // Show loading while determining user roles or fetching organization
   if (loading || (fetchingOrg && !userRoles.includes('superadmin'))) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-      </div>
-    )
-  }
-  
-  // If we have a user but no organization yet, and they're not superadmin, show loading
-  if (user && userOrganization === null && !fetchingOrg && !userRoles.includes('superadmin')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -107,21 +59,19 @@ const RoleBasedRedirect = () => {
     return <Navigate to="/login" replace />
   }
 
-  // Determine redirect based on user roles and organization
-  console.log('RoleBasedRedirect: userRoles:', userRoles, 'userOrganization:', userOrganization, 'loading:', loading, 'fetchingOrg:', fetchingOrg)
+  // Simple redirect logic based on user roles
+  console.log('RoleBasedRedirect: userRoles:', userRoles, 'userOrganization:', userOrganization)
   
   if (userRoles.includes('superadmin')) {
     console.log('RoleBasedRedirect: Redirecting superadmin to dashboard')
-    // Superadmin goes to dashboard to see all organizations
     return <Navigate to="/dashboard" replace />
   } else if (userOrganization) {
     console.log('RoleBasedRedirect: Redirecting user to organization:', userOrganization)
-    // Non-superadmin users go directly to their organization page
     return <Navigate to={`/organisations/${userOrganization}`} replace />
   } else {
-    // If no organization found, show access denied with proper navigation
-    console.error('User has no organization and is not superadmin')
-    return <Navigate to="/access-denied" replace />
+    // If no organization found, redirect to dashboard (let the dashboard handle access)
+    console.log('RoleBasedRedirect: No organization found, redirecting to dashboard')
+    return <Navigate to="/dashboard" replace />
   }
 }
 
