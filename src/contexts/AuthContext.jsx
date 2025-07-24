@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const [roleCache, setRoleCache] = useState(new Map())
   const [fetchingRoles, setFetchingRoles] = useState(false)
   const [authError, setAuthError] = useState(null)
+  const [logoutInProgress, setLogoutInProgress] = useState(false)
   const previousUserRef = useRef(null)
 
   const fetchUserRoles = async (userId) => {
@@ -64,7 +65,18 @@ export function AuthProvider({ children }) {
           }
           
           if (!userRolesData || userRolesData.length === 0) {
-            console.log('No roles found for user')
+            console.log('No roles found for user - this may indicate the user record was deleted')
+            
+            // If we have a user but no roles, and we're not in the middle of loading,
+            // this likely means the user's auth record was deleted
+            if (userId && !fetchingRoles && !logoutInProgress) {
+              console.log('User has no roles - triggering automatic logout')
+              // Set a flag to trigger logout after this function completes
+              setTimeout(() => {
+                handleAuthError(new Error('User account no longer exists'))
+              }, 100)
+            }
+            
             return []
           }
           
@@ -180,6 +192,18 @@ export function AuthProvider({ children }) {
     // Add global error handler
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
 
+    // Periodic check for user validity (every 5 minutes)
+    const periodicUserCheck = setInterval(() => {
+      if (user && !logoutInProgress) {
+        supabase.auth.getUser().then(({ data: userData, error: userError }) => {
+          if (userError || !userData?.user) {
+            console.log('Periodic check: User account no longer exists - logging out')
+            handleAuthError(new Error('User account no longer exists'))
+          }
+        })
+      }
+    }, 5 * 60 * 1000) // Check every 5 minutes
+
     const initializeAuth = async () => {
       try {
         // Get initial session
@@ -259,6 +283,18 @@ export function AuthProvider({ children }) {
             fetchUserRoles(currentUser.id).then(roles => {
               if (mounted) {
                 setUserRoles(roles)
+                
+                // If we have a user but no roles, this might indicate the user was deleted
+                if (roles.length === 0 && currentUser && !logoutInProgress) {
+                  console.log('User has no roles after fetch - checking if account exists')
+                  // Double-check by trying to get user info from Supabase
+                  supabase.auth.getUser().then(({ data: userData, error: userError }) => {
+                    if (userError || !userData?.user) {
+                      console.log('User account no longer exists - logging out')
+                      handleAuthError(new Error('User account no longer exists'))
+                    }
+                  })
+                }
               }
             }).catch(err => {
               if (mounted) {
@@ -302,8 +338,9 @@ export function AuthProvider({ children }) {
       subscription.unsubscribe()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+      clearInterval(periodicUserCheck)
     }
-  }, []) // Add user to dependencies to track changes
+  }, [logoutInProgress]) // Add logoutInProgress to dependencies
 
   const signIn = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -348,6 +385,14 @@ export function AuthProvider({ children }) {
 
   const handleAuthError = (error) => {
     console.error('Auth error detected:', error)
+    
+    // Prevent multiple logout attempts
+    if (logoutInProgress) {
+      console.log('Logout already in progress, skipping')
+      return
+    }
+    
+    setLogoutInProgress(true)
     setAuthError(error)
     
     // Clear user state
@@ -358,6 +403,18 @@ export function AuthProvider({ children }) {
     // Clear any cached auth data
     localStorage.removeItem('supabase.auth.token')
     sessionStorage.removeItem('supabase.auth.token')
+    
+    // Sign out from Supabase
+    supabase.auth.signOut().then(() => {
+      console.log('User automatically logged out due to auth error')
+      // Reset logout flag after a delay
+      setTimeout(() => {
+        setLogoutInProgress(false)
+      }, 1000)
+    }).catch((signOutError) => {
+      console.error('Error during automatic logout:', signOutError)
+      setLogoutInProgress(false)
+    })
   }
 
   const value = {
