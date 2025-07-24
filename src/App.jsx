@@ -41,6 +41,7 @@ import SessionTemplateEditor from '../components/SessionTemplateEditor'
 import SessionTemplateView from '../components/SessionTemplateView'
 import AuthErrorBoundary from '../components/AuthErrorBoundary'
 import AuthErrorHandler from '../components/AuthErrorHandler'
+import AccessDenied from '../components/AccessDenied'
 import './App.css'
 
 // Protected Route Component
@@ -614,6 +615,7 @@ function App() {
               } 
             />
             
+            <Route path="/access-denied" element={<AccessDenied />} />
             <Route path="/" element={<RoleBasedRedirect />} />
           </Routes>
         </div>

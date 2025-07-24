@@ -38,10 +38,36 @@ const RoleBasedRedirect = () => {
             if (playerError) {
               console.error('Error fetching player data:', playerError)
             } else if (playerData?.organization_id) {
-              setUserOrganization(playerData.organization_id)
+              // Validate that the organization actually exists and user has access
+              const { data: orgData, error: orgError } = await supabase
+                .from('organizations')
+                .select('id')
+                .eq('id', playerData.organization_id)
+                .single()
+              
+              if (orgError || !orgData) {
+                console.error('User has invalid organization ID:', playerData.organization_id)
+                // Don't set organization if it doesn't exist
+              } else {
+                setUserOrganization(playerData.organization_id)
+              }
             }
           } else {
-            setUserOrganization(orgId)
+            // Validate that the organization actually exists
+            if (orgId) {
+              const { data: orgData, error: orgError } = await supabase
+                .from('organizations')
+                .select('id')
+                .eq('id', orgId)
+                .single()
+              
+              if (orgError || !orgData) {
+                console.error('User has invalid organization ID from RPC:', orgId)
+                // Don't set organization if it doesn't exist
+              } else {
+                setUserOrganization(orgId)
+              }
+            }
           }
         } catch (err) {
           console.error('Error fetching user organization:', err)
@@ -89,9 +115,9 @@ const RoleBasedRedirect = () => {
     // Non-superadmin users go directly to their organization page
     return <Navigate to={`/organisations/${userOrganization}`} replace />
   } else {
-    // If no organization found, redirect to login (user shouldn't be here)
+    // If no organization found, show access denied with proper navigation
     console.error('User has no organization and is not superadmin')
-    return <Navigate to="/login" replace />
+    return <Navigate to="/access-denied" replace />
   }
 }
 
