@@ -23,7 +23,7 @@ let buildInfoContent = fs.readFileSync(buildInfoPath, 'utf8')
 
 // Replace the build time and date
 buildInfoContent = buildInfoContent.replace(
-  /buildTime: process\.env\.BUILD_TIME \|\| new Date\(\)\.toISOString\(\)/,
+  /buildTime: getBuildTimeFromEnv\(\)/,
   `buildTime: '${buildTime}'`
 )
 
@@ -34,7 +34,7 @@ buildInfoContent = buildInfoContent.replace(
 
 // Replace the version
 buildInfoContent = buildInfoContent.replace(
-  /version: process\.env\.VERSION \|\| process\.env\.npm_package_version \|\| '.*?'/,
+  /version: '.*?'/,
   `version: '${currentVersion}'`
 )
 
