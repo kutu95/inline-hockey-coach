@@ -12,6 +12,11 @@ const now = new Date()
 const buildTime = now.toISOString()
 const buildDate = now.toLocaleDateString()
 
+// Read package.json to get current version
+const packageJsonPath = path.join(__dirname, '../package.json')
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+const currentVersion = packageJson.version
+
 // Read the build info file
 const buildInfoPath = path.join(__dirname, '../src/utils/buildInfo.js')
 let buildInfoContent = fs.readFileSync(buildInfoPath, 'utf8')
@@ -23,11 +28,17 @@ buildInfoContent = buildInfoContent.replace(
 )
 
 buildInfoContent = buildInfoContent.replace(
-  /buildDate: process\.env\.BUILD_DATE \|\| new Date\(\)\.toLocaleDateString\(\)/,
+  /buildDate: '.*?'/,
   `buildDate: '${buildDate}'`
+)
+
+// Replace the version
+buildInfoContent = buildInfoContent.replace(
+  /version: process\.env\.VERSION \|\| process\.env\.npm_package_version \|\| '.*?'/,
+  `version: '${currentVersion}'`
 )
 
 // Write the updated content back
 fs.writeFileSync(buildInfoPath, buildInfoContent)
 
-console.log(`✅ Build info updated: ${buildTime}`) 
+console.log(`✅ Build info updated: ${buildTime} | Version: ${currentVersion}`) 

@@ -15,9 +15,13 @@ try {
   console.log('📦 Incrementing version...')
   execSync('npm run increment-version', { stdio: 'inherit' })
   
-  // Add the updated package.json to the current commit
-  console.log('📝 Adding updated package.json to commit...')
-  execSync('git add package.json', { stdio: 'inherit' })
+  // Update build info with new version
+  console.log('🔧 Updating build info...')
+  execSync('npm run update-build-info', { stdio: 'inherit' })
+  
+  // Add the updated files to the current commit
+  console.log('📝 Adding updated files to commit...')
+  execSync('git add package.json src/utils/buildInfo.js', { stdio: 'inherit' })
   
   console.log('✅ Pre-commit hook completed successfully!')
   

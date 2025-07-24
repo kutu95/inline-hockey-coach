@@ -14,7 +14,7 @@ const getBuildTimeFromEnv = () => {
 export const BUILD_INFO = {
   buildTime: getBuildTimeFromEnv(),
   buildDate: '7/24/2025',
-  version: process.env.VERSION || process.env.npm_package_version || '1.0.0',
+  version: '1.0.2',
   environment: process.env.NODE_ENV || 'development',
   commitHash: process.env.VERCEL_GIT_COMMIT_SHA || 
               process.env.NETLIFY_COMMIT_REF || 
