@@ -24,10 +24,10 @@ const AcceptInvitation = () => {
   }
 
   useEffect(() => {
-    // If user is already authenticated, redirect to dashboard
+    // If user is already authenticated, redirect to home (let RoleBasedRedirect handle it)
     if (!authLoading && user) {
-      console.log('AcceptInvitation: User already authenticated, redirecting to dashboard')
-      navigate('/dashboard')
+      console.log('AcceptInvitation: User already authenticated, redirecting to home')
+      navigate('/')
       return
     }
 
@@ -86,6 +86,95 @@ const AcceptInvitation = () => {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const sendAdminNotifications = async (player, invitationId) => {
+    try {
+      // Get the organization ID for the new player
+      const { data: playerOrgData } = await supabase
+        .from('players')
+        .select('organization_id')
+        .eq('id', player.id)
+        .single()
+
+      if (playerOrgData?.organization_id) {
+        // Get all users in the organization with admin roles
+        // First get all players in the organization
+        const { data: orgPlayers, error: playersError } = await supabase
+          .from('players')
+          .select('user_id, first_name, last_name')
+          .eq('organization_id', playerOrgData.organization_id)
+          .not('user_id', 'is', null)
+
+        if (playersError) {
+          console.error('Error fetching organization players:', playersError)
+          return
+        }
+
+        if (!orgPlayers || orgPlayers.length === 0) {
+          console.log('No players found in organization')
+          return
+        }
+
+        // Get user roles for all players
+        const userIds = orgPlayers.map(p => p.user_id).filter(Boolean)
+        const { data: userRolesData, error: userRolesError } = await supabase
+          .from('user_roles')
+          .select(`
+            user_id,
+            roles(name)
+          `)
+          .in('user_id', userIds)
+
+        if (userRolesError) {
+          console.error('Error fetching user roles:', userRolesError)
+          return
+        }
+
+        // Filter to only include users with admin roles
+        const adminsToNotify = orgPlayers.filter(player => {
+          const userRoles = userRolesData?.filter(ur => ur.user_id === player.user_id) || []
+          return userRoles.some(ur => 
+            ur.roles && ['admin', 'superadmin', 'coach'].includes(ur.roles.name)
+          )
+        })
+
+        // Send notification to each admin
+        for (const admin of adminsToNotify) {
+          if (admin.user_id) {
+            try {
+              const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
+                body: {
+                  targetUserId: admin.user_id,
+                  title: 'New Player Joined!',
+                  body: `${player.first_name} ${player.last_name} has joined your organization.`,
+                  data: {
+                    type: 'invitation_accepted',
+                    playerId: player.id,
+                    playerName: `${player.first_name} ${player.last_name}`,
+                    organizationId: playerOrgData.organization_id
+                  }
+                }
+              })
+
+              if (notificationError) {
+                console.error(`Error sending push notification to admin ${admin.user_id}:`, notificationError)
+              } else {
+                console.log(`Notification sent to admin: ${admin.first_name} ${admin.last_name}`)
+              }
+            } catch (error) {
+              console.error(`Error sending push notification to admin ${admin.user_id}:`, error)
+            }
+          }
+        }
+
+        console.log(`Sent notifications to ${adminsToNotify.length} admins in organization`)
+      } else {
+        console.log('Player has no organization, skipping admin notifications')
+      }
+    } catch (error) {
+      console.error('Error sending admin notifications:', error)
     }
   }
 
@@ -186,89 +275,11 @@ const AcceptInvitation = () => {
         console.error('Error updating invitation:', invitationError)
       }
 
-      // Send push notification to ALL admins in the organization
-      try {
-        // Get the organization ID for the new player
-        const { data: playerOrgData } = await supabase
-          .from('players')
-          .select('organization_id')
-          .eq('id', player.id)
-          .single()
-
-        if (playerOrgData?.organization_id) {
-          // Get all users in the organization with admin roles
-          // First get all players in the organization
-          const { data: orgPlayers, error: playersError } = await supabase
-            .from('players')
-            .select('user_id, first_name, last_name')
-            .eq('organization_id', playerOrgData.organization_id)
-            .not('user_id', 'is', null)
-
-          if (playersError) {
-            console.error('Error fetching organization players:', playersError)
-            return
-          }
-
-          if (!orgPlayers || orgPlayers.length === 0) {
-            console.log('No players found in organization')
-            return
-          }
-
-          // Get user roles for all players
-          const userIds = orgPlayers.map(p => p.user_id).filter(Boolean)
-          const { data: userRolesData, error: userRolesError } = await supabase
-            .from('user_roles')
-            .select(`
-              user_id,
-              roles(name)
-            `)
-            .in('user_id', userIds)
-
-          if (userRolesError) {
-            console.error('Error fetching user roles:', userRolesError)
-            return
-          }
-
-          // Filter to only include users with admin roles
-          const adminsToNotify = orgPlayers.filter(player => {
-            const userRoles = userRolesData?.filter(ur => ur.user_id === player.user_id) || []
-            return userRoles.some(ur => 
-              ur.roles && ['admin', 'superadmin', 'coach'].includes(ur.roles.name)
-            )
-          })
-
-          // Send notification to each admin
-          for (const admin of adminsToNotify) {
-              if (admin.user_id) {
-                const { error: notificationError } = await supabase.functions.invoke('send-push-notification', {
-                  body: {
-                    targetUserId: admin.user_id,
-                    title: 'New Player Joined!',
-                    body: `${player.first_name} ${player.last_name} has joined your organization.`,
-                    data: {
-                      type: 'invitation_accepted',
-                      playerId: player.id,
-                      playerName: `${player.first_name} ${player.last_name}`,
-                      organizationId: playerOrgData.organization_id
-                    }
-                  }
-                })
-
-                if (notificationError) {
-                  console.error(`Error sending push notification to admin ${admin.user_id}:`, notificationError)
-                } else {
-                  console.log(`Notification sent to admin: ${admin.first_name} ${admin.last_name}`)
-                }
-              }
-            }
-
-            console.log(`Sent notifications to ${adminsToNotify.length} admins in organization`)
-        } else {
-          console.log('Player has no organization, skipping admin notifications')
-        }
-      } catch (error) {
-        console.error('Error sending admin notifications:', error)
-      }
+            // Send push notification to ALL admins in the organization (non-blocking)
+      // Don't await this - let it run in the background
+      sendAdminNotifications(player, invitation.id).catch(error => {
+        console.error('Background notification error:', error)
+      })
 
       // If we don't have a session, try to sign in
       if (!authData.session) {
@@ -288,6 +299,14 @@ const AcceptInvitation = () => {
 
       // Redirect to home page (which will handle role-based redirects)
       navigate('/')
+      
+      // Fallback redirect in case the main redirect doesn't work
+      setTimeout(() => {
+        if (window.location.pathname === '/accept-invitation') {
+          console.log('Fallback redirect to home')
+          navigate('/')
+        }
+      }, 2000)
     } catch (err) {
       setError(err.message || 'Failed to set up account')
       setSettingPassword(false)
