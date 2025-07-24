@@ -1,12 +1,56 @@
-# React + Vite
+# Inline Hockey Coach App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive web application for managing inline hockey teams, players, sessions, and drills.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Team Management**: Create and manage teams, squads, and players
+- **Session Planning**: Plan and track training sessions with detailed drills
+- **Drill Library**: Extensive library of hockey drills with animations
+- **Attendance Tracking**: Track player attendance and performance
+- **Role-Based Access**: Multi-tenant system with role-based permissions
+- **AI Integration**: AI-powered drill generation and session planning
+- **PDF Export**: Generate session reports and player profiles
 
-## Expanding the ESLint configuration
+## Version Management
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This project includes automatic version incrementing. Every time you commit and push to GitHub, the minor version number is automatically incremented.
+
+### How it works:
+- **Pre-commit hook**: Automatically runs before each commit
+- **Version increment**: Minor version number is incremented (e.g., 1.0.0 → 1.1.0)
+- **Automatic commit**: Updated package.json is automatically added to the commit
+
+### Manual version increment:
+```bash
+npm run increment-version
+```
+
+### Current version: 0.2.0
+
+## Development
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- Supabase account and project
+
+### Setup
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (see `.env.example`)
+4. Run development server: `npm run dev`
+
+### Build
+```bash
+npm run build
+```
+
+## Technology Stack
+
+- **Frontend**: React 18, Vite, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **UI Components**: Custom components with Konva for animations
+- **PDF Generation**: jsPDF with AutoTable
+- **Email**: Resend API
+- **AI**: OpenAI API integration

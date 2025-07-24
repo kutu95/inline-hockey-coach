@@ -1,13 +1,14 @@
 {
   "name": "inline-hockey-app",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "node scripts/update-build-info.js && vite build",
     "preview": "vite preview",
-    "update-build-info": "node scripts/update-build-info.js"
+    "update-build-info": "node scripts/update-build-info.js",
+    "increment-version": "node scripts/increment-version.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.3",
