@@ -412,10 +412,14 @@ const OrganisationDetail = () => {
                           className="w-10 h-10 object-cover rounded-full border border-gray-300"
                           onError={(e) => {
                             e.target.style.display = 'none'
-                            e.target.nextSibling.style.display = 'flex'
+                            if (e.target.nextSibling) {
+                              e.target.nextSibling.style.display = 'flex'
+                            }
                           }}
                           onLoad={(e) => {
-                            e.target.nextSibling.style.display = 'none'
+                            if (e.target.nextSibling) {
+                              e.target.nextSibling.style.display = 'none'
+                            }
                           }}
                         />
                       ) : (
