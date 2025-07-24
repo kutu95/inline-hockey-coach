@@ -326,23 +326,23 @@ const Organisations = () => {
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
             <div className="px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
                     to="/dashboard"
-                    className="text-gray-600 hover:text-gray-800 font-medium"
+                    className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                   >
                     ← Back to Dashboard
                   </Link>
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Organisations</h1>
-                    <p className="text-gray-600 mt-1">Manage hockey organisations</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Organisations</h1>
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">Manage hockey organisations</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center justify-between sm:justify-end space-x-3">
                   <button
                     onClick={() => setShowCreateForm(true)}
-                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out text-sm sm:text-base"
                   >
                     Add Organisation
                   </button>
