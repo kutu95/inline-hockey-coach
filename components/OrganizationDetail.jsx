@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import NotificationBanner from './NotificationBanner'
 
 const OrganisationDetail = () => {
   const params = useParams()
@@ -436,6 +437,9 @@ const OrganisationDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Notification Banner */}
+          <NotificationBanner />
 
           {/* Navigation Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

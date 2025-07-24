@@ -160,11 +160,13 @@ const AcceptInvitation = () => {
 
               if (notificationError) {
                 console.error(`Error sending push notification to admin ${admin.user_id}:`, notificationError)
+                // Continue with other admins even if one fails
               } else {
                 console.log(`Notification sent to admin: ${admin.first_name} ${admin.last_name}`)
               }
             } catch (error) {
               console.error(`Error sending push notification to admin ${admin.user_id}:`, error)
+              // Continue with other admins even if one fails
             }
           }
         }
@@ -305,6 +307,8 @@ const AcceptInvitation = () => {
       // Don't await this - let it run in the background
       sendAdminNotifications(player, invitation.id).catch(error => {
         console.error('Background notification error:', error)
+        // Log the error but don't fail the invitation process
+        // Push notifications are optional and can fail without breaking the flow
       })
 
       // If we don't have a session, try to sign in
