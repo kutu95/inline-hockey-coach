@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import { getFormattedBuildTime, getRelativeBuildTime, getBuildInfo } from '../src/utils/buildInfo'
 
 const Dashboard = () => {
   const [organizations, setOrganizations] = useState([])
@@ -132,6 +133,42 @@ const Dashboard = () => {
                 ))}
               </div>
             )}
+            
+            {/* Build Information */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Last updated: {getRelativeBuildTime()}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span title={getFormattedBuildTime()}>
+                    {getFormattedBuildTime()}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Detailed Build Info (expandable) */}
+              <details className="mt-2">
+                <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">
+                  <svg className="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  Build Details
+                </summary>
+                <div className="mt-2 text-xs text-gray-400 space-y-1">
+                  <div>Version: {getBuildInfo().version}</div>
+                  <div>Environment: {getBuildInfo().environment}</div>
+                  <div>Branch: {getBuildInfo().branch}</div>
+                  <div>Commit: {getBuildInfo().commitHash.substring(0, 8)}</div>
+                </div>
+              </details>
+            </div>
           </div>
 
           {/* Organizations Section */}
