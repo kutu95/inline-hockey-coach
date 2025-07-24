@@ -262,8 +262,34 @@ const AcceptInvitation = () => {
         throw new Error('Player role not found')
       }
 
-      // Small delay to ensure role assignment is processed
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Verify role assignment was successful with retries
+      let roleVerified = false
+      let retryCount = 0
+      const maxRetries = 5
+      
+      while (!roleVerified && retryCount < maxRetries) {
+        console.log(`Verifying role assignment (attempt ${retryCount + 1}/${maxRetries})`)
+        
+        const { data: verifyRoleData, error: verifyRoleError } = await supabase
+          .from('user_roles')
+          .select('id')
+          .eq('user_id', authData.user.id)
+          .eq('role_id', roleData.id)
+          .single()
+        
+        if (verifyRoleError || !verifyRoleData) {
+          console.log(`Role verification failed (attempt ${retryCount + 1}), retrying...`)
+          retryCount++
+          await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1 second between retries
+        } else {
+          console.log('Role assignment verified successfully')
+          roleVerified = true
+        }
+      }
+      
+      if (!roleVerified) {
+        throw new Error('Role assignment verification failed after multiple attempts')
+      }
 
       // Mark invitation as accepted
       const { error: invitationError } = await supabase

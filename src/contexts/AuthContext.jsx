@@ -20,9 +20,10 @@ export function AuthProvider({ children }) {
   const [fetchingRoles, setFetchingRoles] = useState(false)
   const [authError, setAuthError] = useState(null)
   const [logoutInProgress, setLogoutInProgress] = useState(false)
+  const [newlyCreatedUser, setNewlyCreatedUser] = useState(false)
   const previousUserRef = useRef(null)
 
-  const fetchUserRoles = async (userId) => {
+  const fetchUserRoles = async (userId, retryCount = 0) => {
     // Check cache first
     const cachedRoles = roleCache.get(userId)
     if (cachedRoles) {
@@ -32,7 +33,7 @@ export function AuthProvider({ children }) {
     setFetchingRoles(true)
     
     try {
-      console.log('Fetching roles for user:', userId)
+      console.log('Fetching roles for user:', userId, retryCount > 0 ? `(retry ${retryCount})` : '')
       
       const fetchPromise = async () => {
         console.log('Starting user_roles query...')
@@ -66,6 +67,16 @@ export function AuthProvider({ children }) {
           
           if (!userRolesData || userRolesData.length === 0) {
             console.log('No roles found for user - this may indicate the user record was deleted')
+            
+            // For newly created users, retry more times and wait longer
+            const maxRetries = newlyCreatedUser ? 5 : 3
+            const retryDelay = newlyCreatedUser ? 3000 : 2000
+            
+            if (retryCount < maxRetries) {
+              console.log(`No roles found, retrying in ${retryDelay/1000} seconds... (attempt ${retryCount + 1}/${maxRetries})`)
+              await new Promise(resolve => setTimeout(resolve, retryDelay))
+              return fetchUserRoles(userId, retryCount + 1)
+            }
             
             // If we have a user but no roles, and we're not in the middle of loading,
             // this likely means the user's auth record was deleted
@@ -277,12 +288,27 @@ export function AuthProvider({ children }) {
             setUserRoles([])
             setLoading(false)
           } else {
+            // Check if this is a newly created user (created within last 5 minutes)
+            const userCreatedAt = new Date(currentUser.created_at)
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+            const isNewlyCreated = userCreatedAt > fiveMinutesAgo
+            
+            if (isNewlyCreated) {
+              console.log('Detected newly created user, will give extra time for role assignment')
+              setNewlyCreatedUser(true)
+            }
+            
             // Set loading to false immediately to allow UI to render
             setLoading(false)
             // Start role fetching in background without waiting
             fetchUserRoles(currentUser.id).then(roles => {
               if (mounted) {
                 setUserRoles(roles)
+                
+                // Reset newly created user flag after successful role fetch
+                if (roles.length > 0) {
+                  setNewlyCreatedUser(false)
+                }
                 
                 // If we have a user but no roles, this might indicate the user was deleted
                 if (roles.length === 0 && currentUser && !logoutInProgress) {
