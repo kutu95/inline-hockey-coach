@@ -39,6 +39,7 @@ const RoleBasedRedirect = () => {
               console.error('Error fetching player data:', playerError)
             } else if (playerData?.organization_id) {
               // Validate that the organization actually exists and user has access
+              console.log('Validating organization ID:', playerData.organization_id)
               const { data: orgData, error: orgError } = await supabase
                 .from('organizations')
                 .select('id')
@@ -46,15 +47,17 @@ const RoleBasedRedirect = () => {
                 .single()
               
               if (orgError || !orgData) {
-                console.error('User has invalid organization ID:', playerData.organization_id)
+                console.error('User has invalid organization ID:', playerData.organization_id, 'Error:', orgError)
                 // Don't set organization if it doesn't exist
               } else {
+                console.log('Organization validation successful, setting organization:', playerData.organization_id)
                 setUserOrganization(playerData.organization_id)
               }
             }
           } else {
             // Validate that the organization actually exists
             if (orgId) {
+              console.log('Validating organization ID from RPC:', orgId)
               const { data: orgData, error: orgError } = await supabase
                 .from('organizations')
                 .select('id')
@@ -62,9 +65,10 @@ const RoleBasedRedirect = () => {
                 .single()
               
               if (orgError || !orgData) {
-                console.error('User has invalid organization ID from RPC:', orgId)
+                console.error('User has invalid organization ID from RPC:', orgId, 'Error:', orgError)
                 // Don't set organization if it doesn't exist
               } else {
+                console.log('Organization validation successful from RPC, setting organization:', orgId)
                 setUserOrganization(orgId)
               }
             }
@@ -104,7 +108,7 @@ const RoleBasedRedirect = () => {
   }
 
   // Determine redirect based on user roles and organization
-  console.log('RoleBasedRedirect: userRoles:', userRoles, 'userOrganization:', userOrganization)
+  console.log('RoleBasedRedirect: userRoles:', userRoles, 'userOrganization:', userOrganization, 'loading:', loading, 'fetchingOrg:', fetchingOrg)
   
   if (userRoles.includes('superadmin')) {
     console.log('RoleBasedRedirect: Redirecting superadmin to dashboard')
