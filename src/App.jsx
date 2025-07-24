@@ -45,7 +45,7 @@ import './App.css'
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, authError } = useAuth()
+  const { user, loading, authError, userRoles, hasRole } = useAuth()
   
   if (loading) {
     return (
@@ -64,7 +64,16 @@ const ProtectedRoute = ({ children }) => {
     )
   }
   
-  return user ? children : <Navigate to="/login" replace />
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  // Special handling for dashboard route - only superadmin should access it
+  if (window.location.pathname === '/dashboard' && userRoles.length > 0 && !hasRole('superadmin')) {
+    return <Navigate to="/" replace />
+  }
+  
+  return children
 }
 
 // Public Route Component (redirects based on user role if already logged in)

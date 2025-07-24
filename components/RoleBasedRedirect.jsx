@@ -73,13 +73,15 @@ const RoleBasedRedirect = () => {
 
   // Determine redirect based on user roles and organization
   if (userRoles.includes('superadmin')) {
+    // Superadmin goes to dashboard to see all organizations
     return <Navigate to="/dashboard" replace />
   } else if (userOrganization) {
-    // If we have an organization, redirect there
+    // Non-superadmin users go directly to their organization page
     return <Navigate to={`/organisations/${userOrganization}`} replace />
   } else {
-    // Fallback to dashboard if no organization found
-    return <Navigate to="/dashboard" replace />
+    // If no organization found, redirect to login (user shouldn't be here)
+    console.error('User has no organization and is not superadmin')
+    return <Navigate to="/login" replace />
   }
 }
 
