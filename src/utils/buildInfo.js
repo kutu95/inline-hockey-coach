@@ -4,25 +4,30 @@
 // Try to get build time from environment variables first (for deployment platforms)
 const getBuildTimeFromEnv = () => {
   // Check for various environment variable formats
-  return process.env.BUILD_TIME || 
-         process.env.VERCEL_BUILD_TIME || 
-         process.env.NETLIFY_BUILD_TIME ||
-         process.env.BUILD_TIMESTAMP ||
+  return (typeof process !== 'undefined' && process.env?.BUILD_TIME) || 
+         (typeof process !== 'undefined' && process.env?.VERCEL_BUILD_TIME) || 
+         (typeof process !== 'undefined' && process.env?.NETLIFY_BUILD_TIME) ||
+         (typeof process !== 'undefined' && process.env?.BUILD_TIMESTAMP) ||
          new Date().toISOString()
+}
+
+// Safe environment variable access for browser compatibility
+const getEnvVar = (varName, fallback = 'unknown') => {
+  return (typeof process !== 'undefined' && process.env?.[varName]) || fallback
 }
 
 export const BUILD_INFO = {
   buildTime: '2025-07-24T03:12:12.424Z',
   buildDate: '7/24/2025',
-  version: '1.0.6',
-  environment: process.env.NODE_ENV || 'development',
-  commitHash: process.env.VERCEL_GIT_COMMIT_SHA || 
-              process.env.NETLIFY_COMMIT_REF || 
-              process.env.GIT_COMMIT_SHA || 
+  version: '1.0.7',
+  environment: getEnvVar('NODE_ENV', 'development'),
+  commitHash: getEnvVar('VERCEL_GIT_COMMIT_SHA') || 
+              getEnvVar('NETLIFY_COMMIT_REF') || 
+              getEnvVar('GIT_COMMIT_SHA') || 
               'unknown',
-  branch: process.env.VERCEL_GIT_COMMIT_REF || 
-          process.env.NETLIFY_BRANCH || 
-          process.env.GIT_BRANCH || 
+  branch: getEnvVar('VERCEL_GIT_COMMIT_REF') || 
+          getEnvVar('NETLIFY_BRANCH') || 
+          getEnvVar('GIT_BRANCH') || 
           'unknown'
 }
 
