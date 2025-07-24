@@ -18,7 +18,7 @@ This project includes automatic version incrementing. Every time you commit and 
 
 ### How it works:
 - **Pre-commit hook**: Automatically runs before each commit
-- **Version increment**: Minor version number is incremented (e.g., 1.0.0 → 1.1.0)
+- **Version increment**: Patch version number is incremented (e.g., 1.0.0 → 1.0.1)
 - **Automatic commit**: Updated package.json is automatically added to the commit
 
 ### Manual version increment:
@@ -26,7 +26,7 @@ This project includes automatic version incrementing. Every time you commit and 
 npm run increment-version
 ```
 
-### Current version: 0.2.0
+### Current version: 1.0.0
 
 ## Development
 

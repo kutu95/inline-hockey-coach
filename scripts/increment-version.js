@@ -20,9 +20,9 @@ try {
   const minor = parseInt(versionParts[1])
   const patch = parseInt(versionParts[2])
   
-  // Increment minor version
-  const newMinor = minor + 1
-  const newVersion = `${major}.${newMinor}.${patch}`
+  // Increment patch version
+  const newPatch = patch + 1
+  const newVersion = `${major}.${minor}.${newPatch}`
   
   // Update version in package.json
   packageJson.version = newVersion
