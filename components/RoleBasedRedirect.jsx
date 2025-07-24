@@ -15,6 +15,12 @@ const RoleBasedRedirect = () => {
         try {
           setFetchingOrg(true)
           
+          // For superadmins, we don't need to fetch organization
+          if (userRoles.includes('superadmin')) {
+            setFetchingOrg(false)
+            return
+          }
+          
           // First try to get organization via RPC function
           const { data: orgId, error } = await supabase.rpc('get_user_organization', {
             user_uuid: user.id
@@ -46,10 +52,10 @@ const RoleBasedRedirect = () => {
     }
 
     fetchUserOrganization()
-  }, [user]) // Remove userRoles dependency to avoid waiting for roles
+  }, [user, userRoles]) // Add userRoles back to dependencies
 
   // Show loading while determining user roles or fetching organization
-  if (loading || fetchingOrg) {
+  if (loading || (fetchingOrg && !userRoles.includes('superadmin'))) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -57,8 +63,8 @@ const RoleBasedRedirect = () => {
     )
   }
   
-  // If we have a user but no organization yet, show loading
-  if (user && userOrganization === null && !fetchingOrg) {
+  // If we have a user but no organization yet, and they're not superadmin, show loading
+  if (user && userOrganization === null && !fetchingOrg && !userRoles.includes('superadmin')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
@@ -72,10 +78,14 @@ const RoleBasedRedirect = () => {
   }
 
   // Determine redirect based on user roles and organization
+  console.log('RoleBasedRedirect: userRoles:', userRoles, 'userOrganization:', userOrganization)
+  
   if (userRoles.includes('superadmin')) {
+    console.log('RoleBasedRedirect: Redirecting superadmin to dashboard')
     // Superadmin goes to dashboard to see all organizations
     return <Navigate to="/dashboard" replace />
   } else if (userOrganization) {
+    console.log('RoleBasedRedirect: Redirecting user to organization:', userOrganization)
     // Non-superadmin users go directly to their organization page
     return <Navigate to={`/organisations/${userOrganization}`} replace />
   } else {
