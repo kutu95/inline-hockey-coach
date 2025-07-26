@@ -111,14 +111,6 @@ const DrillDesignerV2 = () => {
       console.log('Loaded players:', loadedPlayers)
       setDynamicPlayerTools(loadedPlayers)
       
-      // Set the first player as default if we have any
-      if (loadedPlayers.length > 0) {
-        const defaultPlayerId = loadedPlayers[0].id
-        setCurrentPlayerType(defaultPlayerId)
-        console.log('Set default player:', defaultPlayerId)
-        console.log('Current player type after set:', defaultPlayerId)
-      }
-      
     } catch (error) {
       console.error('Error loading dynamic players:', error)
     } finally {
@@ -171,6 +163,15 @@ const DrillDesignerV2 = () => {
       canvas.removeEventListener('mouseup', handleMouseUp)
     }
   }, [])
+
+  // Ensure currentPlayerType is set when dynamicPlayerTools loads
+  useEffect(() => {
+    if (dynamicPlayerTools.length > 0 && !currentPlayerType) {
+      const defaultPlayerId = dynamicPlayerTools[0].id
+      setCurrentPlayerType(defaultPlayerId)
+      console.log('Setting default player from useEffect:', defaultPlayerId)
+    }
+  }, [dynamicPlayerTools, currentPlayerType])
 
   // Redraw canvas when paths change
   useEffect(() => {
