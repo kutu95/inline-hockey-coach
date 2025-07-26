@@ -8,6 +8,8 @@ const DrillDesignerV2 = () => {
   const { orgId, drillId } = useParams()
   const { user } = useAuth()
   const canvasRef = useRef(null)
+  const dynamicPlayerToolsRef = useRef([])
+  const currentPlayerTypeRef = useRef(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPath, setCurrentPath] = useState([])
   const [paths, setPaths] = useState([])
@@ -163,6 +165,15 @@ const DrillDesignerV2 = () => {
       canvas.removeEventListener('mouseup', handleMouseUp)
     }
   }, [])
+
+  // Update refs when state changes
+  useEffect(() => {
+    dynamicPlayerToolsRef.current = dynamicPlayerTools
+  }, [dynamicPlayerTools])
+
+  useEffect(() => {
+    currentPlayerTypeRef.current = currentPlayerType
+  }, [currentPlayerType])
 
   // Ensure currentPlayerType is set when dynamicPlayerTools loads
   useEffect(() => {
@@ -573,17 +584,25 @@ const DrillDesignerV2 = () => {
     const x = (e.clientX - rect.left) * scaleX
     const y = (e.clientY - rect.top) * scaleY
 
-    console.log('Canvas click:', { x, y, tool, currentPlayerType, dynamicPlayerToolsLength: dynamicPlayerTools.length })
+    // Use refs to get current values (avoid closure issues)
+    const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
+    const currentPlayerTypeValue = currentPlayerTypeRef.current
+
+    console.log('Canvas click:', { 
+      x, y, tool, 
+      currentPlayerType: currentPlayerTypeValue, 
+      dynamicPlayerToolsLength: currentDynamicPlayerTools.length 
+    })
 
     if (tool === 'add') {
       // Check if player data is loaded and a player is selected
-      if (dynamicPlayerTools.length === 0) {
+      if (currentDynamicPlayerTools.length === 0) {
         console.log('Player data not loaded yet, please wait...')
         return
       }
       
-      // Get the current player type from the state
-      const currentPlayer = currentPlayerType || dynamicPlayerTools[0]?.id
+      // Get the current player type from the refs
+      const currentPlayer = currentPlayerTypeValue || currentDynamicPlayerTools[0]?.id
       if (!currentPlayer) {
         console.log('No player selected, please select a player first')
         return
