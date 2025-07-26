@@ -20,7 +20,7 @@ const DrillDesignerV2 = () => {
   const [selectedElement, setSelectedElement] = useState(null)
   const [elements, setElements] = useState([])
   const [selectedPathElement, setSelectedPathElement] = useState(null)
-  const [currentPlayerType, setCurrentPlayerType] = useState('player')
+  const [currentPlayerType, setCurrentPlayerType] = useState(null)
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
   const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
   const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
@@ -565,6 +565,11 @@ const DrillDesignerV2 = () => {
     console.log('Canvas click:', { x, y, tool, currentPlayerType })
 
     if (tool === 'add') {
+      // Check if player data is loaded
+      if (dynamicPlayerTools.length === 0) {
+        console.log('Player data not loaded yet, please wait...')
+        return
+      }
       // Add a player at click position
       addElement('player', x, y)
     } else if (tool === 'add-puck') {
@@ -712,33 +717,39 @@ const DrillDesignerV2 = () => {
                     {/* Player Selection Dropdown */}
                     {tool === 'add' && (
                       <div className="relative player-dropdown">
-                        <button
-                          type="button"
-                          onClick={() => setShowPlayerDropdown(!showPlayerDropdown)}
-                          className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          {(() => {
-                            const selectedPlayerData = dynamicPlayerTools.find(p => p.id === currentPlayerType)
-                            return selectedPlayerData && selectedPlayerData.image ? (
-                              <img 
-                                src={selectedPlayerData.image.src} 
-                                alt={selectedPlayerData.label}
-                                className="w-6 h-6 object-contain"
-                              />
-                            ) : (
-                              <span>🏒</span>
-                            )
-                          })()}
-                          <span>
-                            {dynamicPlayerTools.find(p => p.id === currentPlayerType)?.label || 'Select Player'}
-                          </span>
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
+                        {isLoadingPlayers ? (
+                          <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-500">
+                            <span>Loading players...</span>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setShowPlayerDropdown(!showPlayerDropdown)}
+                            className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {(() => {
+                              const selectedPlayerData = dynamicPlayerTools.find(p => p.id === currentPlayerType)
+                              return selectedPlayerData && selectedPlayerData.image ? (
+                                <img 
+                                  src={selectedPlayerData.image.src} 
+                                  alt={selectedPlayerData.label}
+                                  className="w-6 h-6 object-contain"
+                                />
+                              ) : (
+                                <span>🏒</span>
+                              )
+                            })()}
+                            <span>
+                              {dynamicPlayerTools.find(p => p.id === currentPlayerType)?.label || 'Select Player'}
+                            </span>
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        )}
                         
                         {/* Player Dropdown */}
-                        {showPlayerDropdown && (
+                        {showPlayerDropdown && !isLoadingPlayers && (
                           <div className="absolute z-10 mt-1 w-56 bg-white shadow-lg border border-gray-200 rounded-md max-h-60 overflow-y-auto">
                             {dynamicPlayerTools.map((player) => (
                               <button
