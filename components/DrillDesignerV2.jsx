@@ -483,34 +483,41 @@ const DrillDesignerV2 = () => {
                   />
                 </div>
                 
-                <div className="mt-4 flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="add"
-                      name="tool"
-                      value="add"
-                      checked={tool === 'add'}
-                      onChange={(e) => setTool(e.target.value)}
-                      className="text-blue-600"
-                    />
-                    <label htmlFor="add" className="text-sm font-medium text-gray-700">
-                      Add Players
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      id="path"
-                      name="tool"
-                      value="path"
-                      checked={tool === 'path'}
-                      onChange={(e) => setTool(e.target.value)}
-                      className="text-blue-600"
-                    />
-                    <label htmlFor="path" className="text-sm font-medium text-gray-700">
-                      Draw Paths
-                    </label>
+                {/* Toolbar */}
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg border">
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Tools</h3>
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="add"
+                        name="tool"
+                        value="add"
+                        checked={tool === 'add'}
+                        onChange={(e) => setTool(e.target.value)}
+                        className="text-blue-600"
+                      />
+                      <label htmlFor="add" className="text-sm font-medium text-gray-700">
+                        Add Players
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="path"
+                        name="tool"
+                        value="path"
+                        checked={tool === 'path'}
+                        onChange={(e) => setTool(e.target.value)}
+                        className="text-blue-600"
+                      />
+                      <label htmlFor="path" className="text-sm font-medium text-gray-700">
+                        Draw Paths
+                      </label>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Current tool: <span className="font-medium">{tool}</span>
+                    </div>
                   </div>
                 </div>
               </div>
