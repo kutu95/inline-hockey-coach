@@ -113,8 +113,10 @@ const DrillDesignerV2 = () => {
       
       // Set the first player as default if we have any
       if (loadedPlayers.length > 0) {
-        setCurrentPlayerType(loadedPlayers[0].id)
-        console.log('Set default player:', loadedPlayers[0].id)
+        const defaultPlayerId = loadedPlayers[0].id
+        setCurrentPlayerType(defaultPlayerId)
+        console.log('Set default player:', defaultPlayerId)
+        console.log('Current player type after set:', defaultPlayerId)
       }
       
     } catch (error) {
@@ -137,6 +139,11 @@ const DrillDesignerV2 = () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [showPlayerDropdown])
+
+  // Debug currentPlayerType changes
+  useEffect(() => {
+    console.log('currentPlayerType changed to:', currentPlayerType)
+  }, [currentPlayerType])
 
   // Initialize canvas
   useEffect(() => {
@@ -565,9 +572,13 @@ const DrillDesignerV2 = () => {
     console.log('Canvas click:', { x, y, tool, currentPlayerType })
 
     if (tool === 'add') {
-      // Check if player data is loaded
+      // Check if player data is loaded and a player is selected
       if (dynamicPlayerTools.length === 0) {
         console.log('Player data not loaded yet, please wait...')
+        return
+      }
+      if (!currentPlayerType) {
+        console.log('No player selected, please select a player first')
         return
       }
       // Add a player at click position
