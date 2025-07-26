@@ -213,8 +213,8 @@ const DrillDesignerV2 = () => {
       console.log('Selected player data:', selectedPlayerData)
       
       if (selectedPlayerData && selectedPlayerData.image) {
-        // Calculate image dimensions (same as V1)
-        const imageSize = 30 // pixels
+        // Calculate image dimensions (doubled from V1 for better visibility)
+        const imageSize = 60 // pixels
         const halfSize = imageSize / 2
         
         console.log('Drawing player image at:', element.x - halfSize, element.y - halfSize)
@@ -617,9 +617,13 @@ const DrillDesignerV2 = () => {
     } else if (tool === 'path') {
       // Check if clicking on an element to select it for path drawing
       const clickedElement = findElementAtPosition(x, y)
+      console.log('Path tool - clicked element:', clickedElement)
       if (clickedElement) {
+        console.log('Setting selected path element:', clickedElement)
         setSelectedPathElement(clickedElement)
         setCurrentPath([{ x: clickedElement.x, y: clickedElement.y, time: 0 }])
+      } else {
+        console.log('No element found at click position for path drawing')
       }
     }
   }
@@ -627,7 +631,16 @@ const DrillDesignerV2 = () => {
   const findElementAtPosition = (x, y) => {
     return elements.find(element => {
       const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
-      return distance <= element.radius
+      
+      // Use appropriate radius based on element type
+      let detectionRadius = element.radius
+      
+      if (element.type === 'player') {
+        // For players, use the image size for better click detection
+        detectionRadius = 30 // Half of the 60px image size
+      }
+      
+      return distance <= detectionRadius
     })
   }
 
