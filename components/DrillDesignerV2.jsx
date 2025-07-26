@@ -171,6 +171,8 @@ const DrillDesignerV2 = () => {
   }, [paths, currentPath, isPlaying, currentTime, elements])
 
   const drawElement = (ctx, element) => {
+    console.log('Drawing element:', element)
+    
     if (element.type === 'puck') {
       // Draw puck as a black circle
       ctx.beginPath()
@@ -189,10 +191,14 @@ const DrillDesignerV2 = () => {
     } else if (element.type === 'player' && element.playerType) {
       // Draw player using the selected player image
       const selectedPlayerData = dynamicPlayerTools.find(p => p.id === element.playerType)
+      console.log('Selected player data:', selectedPlayerData)
+      
       if (selectedPlayerData && selectedPlayerData.image) {
         // Calculate image dimensions (same as V1)
         const imageSize = 30 // pixels
         const halfSize = imageSize / 2
+        
+        console.log('Drawing player image at:', element.x - halfSize, element.y - halfSize)
         
         // Draw the player image
         ctx.save()
@@ -205,6 +211,7 @@ const DrillDesignerV2 = () => {
         )
         ctx.restore()
       } else {
+        console.log('No player image found, using fallback')
         // Fallback to red circle if image not found
         ctx.beginPath()
         ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
@@ -215,6 +222,7 @@ const DrillDesignerV2 = () => {
         ctx.stroke()
       }
     } else {
+      console.log('Unknown element type:', element.type)
       // Fallback for unknown element types
       ctx.beginPath()
       ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
@@ -536,6 +544,9 @@ const DrillDesignerV2 = () => {
       radius: type === 'puck' ? 8 : 15,
       playerType: type === 'player' ? currentPlayerType : type
     }
+    console.log('Adding element:', newElement)
+    console.log('Current player type:', currentPlayerType)
+    console.log('Dynamic player tools:', dynamicPlayerTools)
     setElements([...elements, newElement])
   }
 
@@ -544,8 +555,14 @@ const DrillDesignerV2 = () => {
     if (!canvas) return
 
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    // Calculate the scale factor between CSS pixels and canvas pixels
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+
+    console.log('Canvas click:', { x, y, tool, currentPlayerType })
 
     if (tool === 'add') {
       // Add a player at click position
