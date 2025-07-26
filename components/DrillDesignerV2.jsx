@@ -208,8 +208,9 @@ const DrillDesignerV2 = () => {
       ctx.textAlign = 'center'
       ctx.fillText('P', element.x, element.y + 4)
     } else if (element.type === 'player' && element.playerType) {
-      // Draw player using the selected player image
-      const selectedPlayerData = dynamicPlayerTools.find(p => p.id === element.playerType)
+      // Draw player using the selected player image (use refs to avoid closure issues)
+      const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
+      const selectedPlayerData = currentDynamicPlayerTools.find(p => p.id === element.playerType)
       console.log('Selected player data:', selectedPlayerData)
       
       if (selectedPlayerData && selectedPlayerData.image) {
@@ -554,8 +555,10 @@ const DrillDesignerV2 = () => {
   }
 
   const addElement = (type, x, y, playerTypeOverride = null) => {
-    // Get the player type to use
-    const playerType = playerTypeOverride || currentPlayerType || dynamicPlayerTools[0]?.id
+    // Get the player type to use (use refs to avoid closure issues)
+    const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
+    const currentPlayerTypeValue = currentPlayerTypeRef.current
+    const playerType = playerTypeOverride || currentPlayerTypeValue || currentDynamicPlayerTools[0]?.id
     
     const newElement = {
       id: Date.now() + Math.random(),
@@ -568,7 +571,7 @@ const DrillDesignerV2 = () => {
     }
     console.log('Adding element:', newElement)
     console.log('Using player type:', playerType)
-    console.log('Dynamic player tools:', dynamicPlayerTools)
+    console.log('Dynamic player tools length:', currentDynamicPlayerTools.length)
     setElements([...elements, newElement])
   }
 
@@ -629,7 +632,9 @@ const DrillDesignerV2 = () => {
   }
 
   const findElementAtPosition = (x, y) => {
-    return elements.find(element => {
+    console.log('Finding element at position:', { x, y, elementsCount: elements.length })
+    
+    const foundElement = elements.find(element => {
       const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
       
       // Use appropriate radius based on element type
@@ -640,8 +645,20 @@ const DrillDesignerV2 = () => {
         detectionRadius = 30 // Half of the 60px image size
       }
       
-      return distance <= detectionRadius
+      const isWithinRadius = distance <= detectionRadius
+      console.log('Checking element:', { 
+        elementId: element.id, 
+        elementType: element.type, 
+        distance: distance.toFixed(2), 
+        detectionRadius, 
+        isWithinRadius 
+      })
+      
+      return isWithinRadius
     })
+    
+    console.log('Found element:', foundElement)
+    return foundElement
   }
 
   const selectPath = (index) => {
