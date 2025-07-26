@@ -35,6 +35,7 @@ import UserRoleManagement from '../components/UserRoleManagement'
 import PlayerEditRoute from '../components/PlayerEditRoute'
 import OrganizationPlayerEditRoute from '../components/OrganizationPlayerEditRoute'
 import DrillDesigner from '../components/DrillDesigner'
+import DrillDesignerV2 from '../components/DrillDesignerV2'
 import ViewDrill from '../components/ViewDrill'
 import SessionTemplatesList from '../components/SessionTemplatesList'
 import SessionTemplateEditor from '../components/SessionTemplateEditor'
@@ -611,6 +612,16 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['admin', 'superadmin', 'coach']}>
                   <DrillDesigner />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Organization-scoped Drill Designer V2 - restricted to admin, superadmin, and coach */}
+            <Route 
+              path="/organisations/:orgId/drill-designer-v2/:drillId?" 
+              element={
+                <RoleProtectedRoute requiredRoles={['admin', 'superadmin', 'coach']}>
+                  <DrillDesignerV2 />
                 </RoleProtectedRoute>
               } 
             />
