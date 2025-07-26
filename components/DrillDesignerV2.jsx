@@ -542,7 +542,10 @@ const DrillDesignerV2 = () => {
     }
   }
 
-  const addElement = (type, x, y) => {
+  const addElement = (type, x, y, playerTypeOverride = null) => {
+    // Get the player type to use
+    const playerType = playerTypeOverride || currentPlayerType || dynamicPlayerTools[0]?.id
+    
     const newElement = {
       id: Date.now() + Math.random(),
       type: type,
@@ -550,10 +553,10 @@ const DrillDesignerV2 = () => {
       y: y,
       fill: type === 'puck' ? '#000000' : '#ff0000',
       radius: type === 'puck' ? 8 : 15,
-      playerType: type === 'player' ? currentPlayerType : type
+      playerType: type === 'player' ? playerType : type
     }
     console.log('Adding element:', newElement)
-    console.log('Current player type:', currentPlayerType)
+    console.log('Using player type:', playerType)
     console.log('Dynamic player tools:', dynamicPlayerTools)
     setElements([...elements, newElement])
   }
@@ -570,7 +573,7 @@ const DrillDesignerV2 = () => {
     const x = (e.clientX - rect.left) * scaleX
     const y = (e.clientY - rect.top) * scaleY
 
-    console.log('Canvas click:', { x, y, tool, currentPlayerType })
+    console.log('Canvas click:', { x, y, tool, currentPlayerType, dynamicPlayerToolsLength: dynamicPlayerTools.length })
 
     if (tool === 'add') {
       // Check if player data is loaded and a player is selected
@@ -578,12 +581,17 @@ const DrillDesignerV2 = () => {
         console.log('Player data not loaded yet, please wait...')
         return
       }
-      if (!currentPlayerType) {
+      
+      // Get the current player type from the state
+      const currentPlayer = currentPlayerType || dynamicPlayerTools[0]?.id
+      if (!currentPlayer) {
         console.log('No player selected, please select a player first')
         return
       }
+      
+      console.log('Adding player with type:', currentPlayer)
       // Add a player at click position
-      addElement('player', x, y)
+      addElement('player', x, y, currentPlayer)
     } else if (tool === 'add-puck') {
       // Add a puck at click position
       addElement('puck', x, y)
