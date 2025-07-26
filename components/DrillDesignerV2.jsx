@@ -16,7 +16,10 @@ const DrillDesignerV2 = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [animationDuration, setAnimationDuration] = useState(10) // seconds
-  const [tool, setTool] = useState('draw') // 'draw', 'select', 'move'
+  const [tool, setTool] = useState('add') // 'add', 'path', 'select'
+  const [selectedElement, setSelectedElement] = useState(null)
+  const [elements, setElements] = useState([])
+  const [selectedPathElement, setSelectedPathElement] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -31,11 +34,13 @@ const DrillDesignerV2 = () => {
     canvas.height = 600
 
     // Add event listeners
+    canvas.addEventListener('click', handleCanvasClick)
     canvas.addEventListener('mousedown', handleMouseDown)
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseup', handleMouseUp)
 
     return () => {
+      canvas.removeEventListener('click', handleCanvasClick)
       canvas.removeEventListener('mousedown', handleMouseDown)
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseup', handleMouseUp)
@@ -45,7 +50,23 @@ const DrillDesignerV2 = () => {
   // Redraw canvas when paths change
   useEffect(() => {
     redrawCanvas()
-  }, [paths, currentPath, isPlaying, currentTime])
+  }, [paths, currentPath, isPlaying, currentTime, elements])
+
+  const drawElement = (ctx, element) => {
+    ctx.beginPath()
+    ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
+    ctx.fillStyle = element.fill
+    ctx.fill()
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    // Draw element type label
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 12px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText(element.type === 'puck' ? 'P' : 'P', element.x, element.y + 4)
+  }
 
   const drawRinkBackground = (ctx) => {
     const canvas = ctx.canvas
@@ -181,6 +202,11 @@ const DrillDesignerV2 = () => {
     // Draw rink background (same as V1)
     drawRinkBackground(ctx)
     
+    // Draw all elements (players, pucks)
+    elements.forEach(element => {
+      drawElement(ctx, element)
+    })
+    
     // Draw all completed paths
     paths.forEach((path, index) => {
       drawPath(ctx, path, index === selectedPlayer)
@@ -275,7 +301,7 @@ const DrillDesignerV2 = () => {
   }
 
   const handleMouseDown = (e) => {
-    if (tool !== 'draw') return
+    if (tool !== 'path' || !selectedPathElement) return
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
@@ -283,11 +309,11 @@ const DrillDesignerV2 = () => {
     const y = e.clientY - rect.top
     
     setIsDrawing(true)
-    setCurrentPath([{ x, y, time: 0 }])
+    setCurrentPath([{ x: selectedPathElement.x, y: selectedPathElement.y, time: 0 }])
   }
 
   const handleMouseMove = (e) => {
-    if (!isDrawing || tool !== 'draw') return
+    if (!isDrawing || tool !== 'path' || !selectedPathElement) return
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
@@ -340,6 +366,46 @@ const DrillDesignerV2 = () => {
       setPaths(prev => prev.filter((_, index) => index !== selectedPlayer))
       setSelectedPlayer(null)
     }
+  }
+
+  const addElement = (type, x, y) => {
+    const newElement = {
+      id: Date.now() + Math.random(),
+      type: type,
+      x: x,
+      y: y,
+      fill: type === 'puck' ? '#000000' : '#ff0000',
+      radius: type === 'puck' ? 8 : 15
+    }
+    setElements([...elements, newElement])
+  }
+
+  const handleCanvasClick = (e) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    if (tool === 'add') {
+      // Add a player at click position
+      addElement('player', x, y)
+    } else if (tool === 'path') {
+      // Check if clicking on an element to select it for path drawing
+      const clickedElement = findElementAtPosition(x, y)
+      if (clickedElement) {
+        setSelectedPathElement(clickedElement)
+        setCurrentPath([{ x: clickedElement.x, y: clickedElement.y, time: 0 }])
+      }
+    }
+  }
+
+  const findElementAtPosition = (x, y) => {
+    return elements.find(element => {
+      const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
+      return distance <= element.radius
+    })
   }
 
   const selectPath = (index) => {
@@ -421,29 +487,29 @@ const DrillDesignerV2 = () => {
                   <div className="flex items-center space-x-2">
                     <input
                       type="radio"
-                      id="draw"
+                      id="add"
                       name="tool"
-                      value="draw"
-                      checked={tool === 'draw'}
+                      value="add"
+                      checked={tool === 'add'}
                       onChange={(e) => setTool(e.target.value)}
                       className="text-blue-600"
                     />
-                    <label htmlFor="draw" className="text-sm font-medium text-gray-700">
-                      Draw Path
+                    <label htmlFor="add" className="text-sm font-medium text-gray-700">
+                      Add Players
                     </label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
                       type="radio"
-                      id="select"
+                      id="path"
                       name="tool"
-                      value="select"
-                      checked={tool === 'select'}
+                      value="path"
+                      checked={tool === 'path'}
                       onChange={(e) => setTool(e.target.value)}
                       className="text-blue-600"
                     />
-                    <label htmlFor="select" className="text-sm font-medium text-gray-700">
-                      Select Path
+                    <label htmlFor="path" className="text-sm font-medium text-gray-700">
+                      Draw Paths
                     </label>
                   </div>
                 </div>
@@ -504,11 +570,12 @@ const DrillDesignerV2 = () => {
                 <div className="mt-6 p-4 bg-blue-50 rounded-md">
                   <h4 className="text-sm font-medium text-blue-900 mb-2">How to Use:</h4>
                   <ul className="text-xs text-blue-800 space-y-1">
-                    <li>• Select "Draw Path" tool</li>
-                    <li>• Click and drag to draw player movement</li>
-                    <li>• Each point represents 0.5 seconds</li>
+                    <li>• Select "Add Players" tool</li>
+                    <li>• Click on the rink to add players</li>
+                    <li>• Select "Draw Paths" tool</li>
+                    <li>• Click on a player to select it</li>
+                    <li>• Click and drag to draw movement path</li>
                     <li>• Click "Play" to see animation</li>
-                    <li>• Select paths to edit or delete</li>
                   </ul>
                 </div>
               </div>
