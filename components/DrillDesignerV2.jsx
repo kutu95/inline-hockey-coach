@@ -10,6 +10,7 @@ const DrillDesignerV2 = () => {
   const canvasRef = useRef(null)
   const dynamicPlayerToolsRef = useRef([])
   const currentPlayerTypeRef = useRef(null)
+  const toolRef = useRef('add')
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPath, setCurrentPath] = useState([])
   const [paths, setPaths] = useState([])
@@ -174,6 +175,10 @@ const DrillDesignerV2 = () => {
   useEffect(() => {
     currentPlayerTypeRef.current = currentPlayerType
   }, [currentPlayerType])
+
+  useEffect(() => {
+    toolRef.current = tool
+  }, [tool])
 
   // Ensure currentPlayerType is set when dynamicPlayerTools loads
   useEffect(() => {
@@ -590,15 +595,16 @@ const DrillDesignerV2 = () => {
     // Use refs to get current values (avoid closure issues)
     const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
     const currentPlayerTypeValue = currentPlayerTypeRef.current
+    const currentTool = toolRef.current
 
     console.log('Canvas click:', { 
-      x, y, tool, 
+      x, y, tool: currentTool, 
       currentPlayerType: currentPlayerTypeValue, 
       dynamicPlayerToolsLength: currentDynamicPlayerTools.length 
     })
-    console.log('Current tool is:', tool)
+    console.log('Current tool is:', currentTool)
 
-    if (tool === 'add') {
+    if (currentTool === 'add') {
       // Check if player data is loaded and a player is selected
       if (currentDynamicPlayerTools.length === 0) {
         console.log('Player data not loaded yet, please wait...')
@@ -615,10 +621,10 @@ const DrillDesignerV2 = () => {
       console.log('Adding player with type:', currentPlayer)
       // Add a player at click position
       addElement('player', x, y, currentPlayer)
-    } else if (tool === 'add-puck') {
+    } else if (currentTool === 'add-puck') {
       // Add a puck at click position
       addElement('puck', x, y)
-    } else if (tool === 'path') {
+    } else if (currentTool === 'path') {
       // Check if clicking on an element to select it for path drawing
       const clickedElement = findElementAtPosition(x, y)
       console.log('Path tool - clicked element:', clickedElement)
