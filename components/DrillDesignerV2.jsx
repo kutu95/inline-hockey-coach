@@ -20,8 +20,123 @@ const DrillDesignerV2 = () => {
   const [selectedElement, setSelectedElement] = useState(null)
   const [elements, setElements] = useState([])
   const [selectedPathElement, setSelectedPathElement] = useState(null)
+  const [currentPlayerType, setCurrentPlayerType] = useState('player')
+  const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
+  const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Load dynamic players (same as V1)
+  const loadDynamicPlayers = async () => {
+    try {
+      setIsLoadingPlayers(true)
+      
+      // Dynamic file discovery - try to load files with common naming patterns
+      const playerFiles = []
+      
+      // Try to discover player files (player-silhouette.png, player-silhouette2.png, etc.)
+      for (let i = 1; i <= 50; i++) {
+        const fileName = i === 1 ? 'player-silhouette.png' : `player-silhouette${i}.png`
+        playerFiles.push(fileName)
+      }
+      
+      // Try to discover goalie files (goalie-silhouette.png, goalie-silhouette2.png, etc.)
+      for (let i = 1; i <= 20; i++) {
+        const fileName = i === 1 ? 'goalie-silhouette.png' : `goalie-silhouette${i}.png`
+        playerFiles.push(fileName)
+      }
+      
+      // Also try alternative naming patterns
+      const alternativePatterns = [
+        'player.png', 'player1.png', 'player2.png', 'player3.png', 'player4.png', 'player5.png', 'player6.png',
+        'goalie.png', 'goalie1.png', 'goalie2.png', 'goalie3.png', 'goalie4.png', 'goalie5.png'
+      ]
+      
+      alternativePatterns.forEach(fileName => {
+        if (!playerFiles.includes(fileName)) {
+          playerFiles.push(fileName)
+        }
+      })
+      
+      const loadedPlayers = []
+      
+      for (let i = 0; i < playerFiles.length; i++) {
+        const fileName = playerFiles[i]
+        const imagePath = `/images/players/${fileName}`
+        
+        try {
+          const img = new window.Image()
+          await new Promise((resolve, reject) => {
+            img.onload = resolve
+            img.onerror = reject
+            img.src = imagePath
+          })
+          
+          // Generate a unique ID and label based on filename
+          const baseName = fileName.replace('.png', '')
+          const isGoalie = baseName.includes('goalie')
+          
+          // Extract number from filename
+          let playerNumber = ''
+          if (baseName.includes('player-silhouette')) {
+            const match = baseName.match(/player-silhouette(\d+)/)
+            playerNumber = match ? match[1] : ''
+          } else if (baseName.includes('goalie-silhouette')) {
+            const match = baseName.match(/goalie-silhouette(\d+)/)
+            playerNumber = match ? match[1] : ''
+          } else if (baseName.match(/^(player|goalie)(\d+)$/)) {
+            const match = baseName.match(/^(player|goalie)(\d+)$/)
+            playerNumber = match ? match[2] : ''
+          }
+          
+          const playerId = `dynamic-player-${i}`
+          const playerLabel = isGoalie 
+            ? `Goalie ${playerNumber || '1'}`
+            : `Player ${playerNumber || (i + 1)}`
+          
+          loadedPlayers.push({
+            id: playerId,
+            label: playerLabel,
+            icon: '🏒',
+            image: img,
+            fileName: fileName
+          })
+          
+        } catch (error) {
+          // Silently skip files that don't exist
+        }
+      }
+      
+      console.log('Loaded players:', loadedPlayers)
+      setDynamicPlayerTools(loadedPlayers)
+      
+      // Set the first player as default if we have any
+      if (loadedPlayers.length > 0) {
+        setCurrentPlayerType(loadedPlayers[0].id)
+        console.log('Set default player:', loadedPlayers[0].id)
+      }
+      
+    } catch (error) {
+      console.error('Error loading dynamic players:', error)
+    } finally {
+      setIsLoadingPlayers(false)
+    }
+  }
+
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showPlayerDropdown && !event.target.closest('.player-dropdown')) {
+        setShowPlayerDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showPlayerDropdown])
 
   // Initialize canvas
   useEffect(() => {
@@ -32,6 +147,9 @@ const DrillDesignerV2 = () => {
     // Use same dimensions as V1: 1200x600 (2:1 aspect ratio)
     canvas.width = 1200
     canvas.height = 600
+
+    // Load dynamic players
+    loadDynamicPlayers()
 
     // Add event listeners
     canvas.addEventListener('click', handleCanvasClick)
@@ -375,7 +493,8 @@ const DrillDesignerV2 = () => {
       x: x,
       y: y,
       fill: type === 'puck' ? '#000000' : '#ff0000',
-      radius: type === 'puck' ? 8 : 15
+      radius: type === 'puck' ? 8 : 15,
+      playerType: type === 'player' ? currentPlayerType : type
     }
     setElements([...elements, newElement])
   }
@@ -515,6 +634,54 @@ const DrillDesignerV2 = () => {
                         Draw Paths
                       </label>
                     </div>
+                    
+                    {/* Player Selection Dropdown */}
+                    {tool === 'add' && (
+                      <div className="relative player-dropdown">
+                        <button
+                          type="button"
+                          onClick={() => setShowPlayerDropdown(!showPlayerDropdown)}
+                          className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <span>🏒</span>
+                          <span>
+                            {dynamicPlayerTools.find(p => p.id === currentPlayerType)?.label || 'Select Player'}
+                          </span>
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                        
+                        {/* Player Dropdown */}
+                        {showPlayerDropdown && (
+                          <div className="absolute z-10 mt-1 w-56 bg-white shadow-lg border border-gray-200 rounded-md max-h-60 overflow-y-auto">
+                            {dynamicPlayerTools.map((player) => (
+                              <button
+                                key={player.id}
+                                onClick={() => {
+                                  setCurrentPlayerType(player.id)
+                                  setShowPlayerDropdown(false)
+                                }}
+                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                  currentPlayerType === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                                }`}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <span>{player.icon}</span>
+                                  <span>{player.label}</span>
+                                  {currentPlayerType === player.id && (
+                                    <svg className="h-4 w-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="text-sm text-gray-500">
                       Current tool: <span className="font-medium">{tool}</span>
                     </div>
