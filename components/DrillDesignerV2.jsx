@@ -29,17 +29,6 @@ const DrillDesignerV2 = () => {
     canvas.width = 800
     canvas.height = 600
 
-    // Set background to white initially
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-    // Load rink background
-    const rinkImage = new Image()
-    rinkImage.onload = () => {
-      ctx.drawImage(rinkImage, 0, 0, canvas.width, canvas.height)
-    }
-    rinkImage.src = '/images/rink-background.png' // Same as V1
-
     // Add event listeners
     canvas.addEventListener('mousedown', handleMouseDown)
     canvas.addEventListener('mousemove', handleMouseMove)
@@ -57,6 +46,128 @@ const DrillDesignerV2 = () => {
     redrawCanvas()
   }, [paths, currentPath, isPlaying, currentTime])
 
+  const drawRinkBackground = (ctx) => {
+    const canvas = ctx.canvas
+    const rinkColor = '#87CEEB' // Light blue (same as V1)
+    const lineColor = '#FF0000' // Red lines (same as V1)
+    const borderColor = '#000000' // Black border (same as V1)
+    
+    // Rink dimensions and scaling (same as V1)
+    const rinkLength = 60 // meters
+    const rinkWidth = 30 // meters
+    const scaleX = canvas.width / rinkLength
+    const scaleY = canvas.height / rinkWidth
+    const cornerRadius = 2 // meters
+    
+    // Convert meters to pixels
+    const mToPx = (meters) => meters * scaleX
+    const mToPxY = (meters) => meters * scaleY
+    
+    // Rink Background
+    ctx.fillStyle = rinkColor
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    
+    // Rink Border with rounded corners
+    ctx.strokeStyle = borderColor
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.roundRect(0, 0, canvas.width, canvas.height, mToPx(cornerRadius))
+    ctx.stroke()
+    
+    // Center Line
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(canvas.width / 2, 0)
+    ctx.lineTo(canvas.width / 2, canvas.height)
+    ctx.stroke()
+    
+    // Face-off Circles
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 3
+    
+    // Center face-off circle
+    ctx.beginPath()
+    ctx.arc(canvas.width / 2, canvas.height / 2, mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    // Corner face-off circles
+    ctx.beginPath()
+    ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    // Hash Marks at Face-off Circles
+    ctx.fillStyle = lineColor
+    
+    // Top Left Face-off Circle
+    ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+    
+    // Top Right Face-off Circle
+    ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+    
+    // Bottom Left Face-off Circle
+    ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+    
+    // Bottom Right Face-off Circle
+    ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+    
+    // Center Ice Hash Mark
+    ctx.fillStyle = '#0000FF'
+    ctx.fillRect(canvas.width / 2 - mToPx(0.3), canvas.height / 2 - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
+    
+    // Goal Lines
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(mToPx(4.5), 10)
+    ctx.lineTo(mToPx(4.5), canvas.height - 10)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.moveTo(canvas.width - mToPx(4.5), 10)
+    ctx.lineTo(canvas.width - mToPx(4.5), canvas.height - 10)
+    ctx.stroke()
+    
+    // Goals
+    // Left Goal
+    ctx.fillStyle = '#FFFFFF'
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 2
+    ctx.fillRect(mToPx(4.5) - mToPxY(1), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    ctx.strokeRect(mToPx(4.5) - mToPxY(1), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    
+    // Right Goal
+    ctx.fillRect(canvas.width - mToPx(4.5), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    ctx.strokeRect(canvas.width - mToPx(4.5), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    
+    // Neutral Zone Dots
+    ctx.fillStyle = lineColor
+    ctx.beginPath()
+    ctx.arc(canvas.width / 2, mToPxY(3), mToPx(0.3), 0, 2 * Math.PI)
+    ctx.fill()
+    
+    ctx.beginPath()
+    ctx.arc(canvas.width / 2, canvas.height - mToPxY(3), mToPx(0.3), 0, 2 * Math.PI)
+    ctx.fill()
+    
+    // Center Ice Dot
+    ctx.beginPath()
+    ctx.arc(canvas.width / 2, canvas.height / 2, mToPx(0.3), 0, 2 * Math.PI)
+    ctx.fill()
+  }
+
   const redrawCanvas = () => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -66,27 +177,23 @@ const DrillDesignerV2 = () => {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
-    // Draw rink background
-    const rinkImage = new Image()
-    rinkImage.onload = () => {
-      ctx.drawImage(rinkImage, 0, 0, canvas.width, canvas.height)
-      
-      // Draw all completed paths
-      paths.forEach((path, index) => {
-        drawPath(ctx, path, index === selectedPlayer)
-      })
-      
-      // Draw current path being drawn
-      if (currentPath.length > 0) {
-        drawPath(ctx, currentPath, false, true)
-      }
-      
-      // Draw players at current time if playing
-      if (isPlaying) {
-        drawPlayersAtTime(ctx, currentTime)
-      }
+    // Draw rink background (same as V1)
+    drawRinkBackground(ctx)
+    
+    // Draw all completed paths
+    paths.forEach((path, index) => {
+      drawPath(ctx, path, index === selectedPlayer)
+    })
+    
+    // Draw current path being drawn
+    if (currentPath.length > 0) {
+      drawPath(ctx, currentPath, false, true)
     }
-    rinkImage.src = '/images/rink-background.png'
+    
+    // Draw players at current time if playing
+    if (isPlaying) {
+      drawPlayersAtTime(ctx, currentTime)
+    }
   }
 
   const drawPath = (ctx, path, isSelected = false, isDrawing = false) => {
