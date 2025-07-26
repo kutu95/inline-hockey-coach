@@ -596,6 +596,7 @@ const DrillDesignerV2 = () => {
       currentPlayerType: currentPlayerTypeValue, 
       dynamicPlayerToolsLength: currentDynamicPlayerTools.length 
     })
+    console.log('Current tool is:', tool)
 
     if (tool === 'add') {
       // Check if player data is loaded and a player is selected
@@ -738,7 +739,7 @@ const DrillDesignerV2 = () => {
                 
                 {/* Toolbar */}
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg border">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">Tools</h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Tools - Current tool: <span className="text-blue-600 font-bold">{tool}</span></h3>
                   <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                       <input
