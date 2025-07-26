@@ -26,7 +26,8 @@ const DrillDesignerV2 = () => {
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
-    canvas.width = 800
+    // Use same dimensions as V1: 1200x600 (2:1 aspect ratio)
+    canvas.width = 1200
     canvas.height = 600
 
     // Add event listeners
@@ -57,7 +58,7 @@ const DrillDesignerV2 = () => {
     const rinkWidth = 30 // meters
     const scaleX = canvas.width / rinkLength
     const scaleY = canvas.height / rinkWidth
-    const cornerRadius = 2 // meters
+    const cornerRadius = 8.5 // meters (same as V1)
     
     // Convert meters to pixels
     const mToPx = (meters) => meters * scaleX
