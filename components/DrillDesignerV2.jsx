@@ -171,19 +171,59 @@ const DrillDesignerV2 = () => {
   }, [paths, currentPath, isPlaying, currentTime, elements])
 
   const drawElement = (ctx, element) => {
-    ctx.beginPath()
-    ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
-    ctx.fillStyle = element.fill
-    ctx.fill()
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 2
-    ctx.stroke()
-    
-    // Draw element type label
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 12px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText(element.type === 'puck' ? 'P' : 'P', element.x, element.y + 4)
+    if (element.type === 'puck') {
+      // Draw puck as a black circle
+      ctx.beginPath()
+      ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
+      ctx.fillStyle = '#000000'
+      ctx.fill()
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.stroke()
+      
+      // Draw "P" label for puck
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 12px Arial'
+      ctx.textAlign = 'center'
+      ctx.fillText('P', element.x, element.y + 4)
+    } else if (element.type === 'player' && element.playerType) {
+      // Draw player using the selected player image
+      const selectedPlayerData = dynamicPlayerTools.find(p => p.id === element.playerType)
+      if (selectedPlayerData && selectedPlayerData.image) {
+        // Calculate image dimensions (same as V1)
+        const imageSize = 30 // pixels
+        const halfSize = imageSize / 2
+        
+        // Draw the player image
+        ctx.save()
+        ctx.drawImage(
+          selectedPlayerData.image,
+          element.x - halfSize,
+          element.y - halfSize,
+          imageSize,
+          imageSize
+        )
+        ctx.restore()
+      } else {
+        // Fallback to red circle if image not found
+        ctx.beginPath()
+        ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
+        ctx.fillStyle = '#ff0000'
+        ctx.fill()
+        ctx.strokeStyle = '#000000'
+        ctx.lineWidth = 2
+        ctx.stroke()
+      }
+    } else {
+      // Fallback for unknown element types
+      ctx.beginPath()
+      ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
+      ctx.fillStyle = element.fill || '#ff0000'
+      ctx.fill()
+      ctx.strokeStyle = '#000000'
+      ctx.lineWidth = 2
+      ctx.stroke()
+    }
   }
 
   const drawRinkBackground = (ctx) => {
@@ -510,6 +550,9 @@ const DrillDesignerV2 = () => {
     if (tool === 'add') {
       // Add a player at click position
       addElement('player', x, y)
+    } else if (tool === 'add-puck') {
+      // Add a puck at click position
+      addElement('puck', x, y)
     } else if (tool === 'path') {
       // Check if clicking on an element to select it for path drawing
       const clickedElement = findElementAtPosition(x, y)
@@ -623,6 +666,20 @@ const DrillDesignerV2 = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
+                        id="add-puck"
+                        name="tool"
+                        value="add-puck"
+                        checked={tool === 'add-puck'}
+                        onChange={(e) => setTool(e.target.value)}
+                        className="text-blue-600"
+                      />
+                      <label htmlFor="add-puck" className="text-sm font-medium text-gray-700">
+                        Add Puck
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
                         id="path"
                         name="tool"
                         value="path"
@@ -643,7 +700,18 @@ const DrillDesignerV2 = () => {
                           onClick={() => setShowPlayerDropdown(!showPlayerDropdown)}
                           className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                          <span>🏒</span>
+                          {(() => {
+                            const selectedPlayerData = dynamicPlayerTools.find(p => p.id === currentPlayerType)
+                            return selectedPlayerData && selectedPlayerData.image ? (
+                              <img 
+                                src={selectedPlayerData.image.src} 
+                                alt={selectedPlayerData.label}
+                                className="w-6 h-6 object-contain"
+                              />
+                            ) : (
+                              <span>🏒</span>
+                            )
+                          })()}
                           <span>
                             {dynamicPlayerTools.find(p => p.id === currentPlayerType)?.label || 'Select Player'}
                           </span>
@@ -667,7 +735,15 @@ const DrillDesignerV2 = () => {
                                 }`}
                               >
                                 <div className="flex items-center space-x-2">
-                                  <span>{player.icon}</span>
+                                  {player.image ? (
+                                    <img 
+                                      src={player.image.src} 
+                                      alt={player.label}
+                                      className="w-6 h-6 object-contain"
+                                    />
+                                  ) : (
+                                    <span>{player.icon}</span>
+                                  )}
                                   <span>{player.label}</span>
                                   {currentPlayerType === player.id && (
                                     <svg className="h-4 w-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
