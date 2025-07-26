@@ -748,7 +748,10 @@ const DrillDesignerV2 = () => {
                         name="tool"
                         value="add"
                         checked={tool === 'add'}
-                        onChange={(e) => setTool(e.target.value)}
+                        onChange={(e) => {
+                          console.log('Add tool selected! New value:', e.target.value)
+                          setTool(e.target.value)
+                        }}
                         className="text-blue-600"
                       />
                       <label htmlFor="add" className="text-sm font-medium text-gray-700">
@@ -762,7 +765,10 @@ const DrillDesignerV2 = () => {
                         name="tool"
                         value="add-puck"
                         checked={tool === 'add-puck'}
-                        onChange={(e) => setTool(e.target.value)}
+                        onChange={(e) => {
+                          console.log('Add puck tool selected! New value:', e.target.value)
+                          setTool(e.target.value)
+                        }}
                         className="text-blue-600"
                       />
                       <label htmlFor="add-puck" className="text-sm font-medium text-gray-700">
@@ -776,7 +782,10 @@ const DrillDesignerV2 = () => {
                         name="tool"
                         value="path"
                         checked={tool === 'path'}
-                        onChange={(e) => setTool(e.target.value)}
+                        onChange={(e) => {
+                          console.log('Path tool selected! New value:', e.target.value)
+                          setTool(e.target.value)
+                        }}
                         className="text-blue-600"
                       />
                       <label htmlFor="path" className="text-sm font-medium text-gray-700">
