@@ -141,6 +141,63 @@ const DrillDesignerV2 = () => {
     console.log('currentPlayerType changed to:', currentPlayerType)
   }, [currentPlayerType])
 
+  // Mouse event handlers (defined before useEffect to avoid undefined references)
+  const handleMouseDown = (e) => {
+    const currentTool = toolRef.current
+    if (currentTool !== 'path' || !selectedPathElement) return
+    
+    const canvas = canvasRef.current
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+    
+    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: selectedPathElement })
+    setIsDrawing(true)
+    setCurrentPath([{ x: selectedPathElement.x, y: selectedPathElement.y, time: 0 }])
+  }
+
+  const handleMouseMove = (e) => {
+    const currentTool = toolRef.current
+    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) return
+    
+    const canvas = canvasRef.current
+    const rect = canvas.getBoundingClientRect()
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+    
+    const time = currentPath.length * 0.5 // 0.5 seconds per point
+    setCurrentPath(prev => [...prev, { x, y, time }])
+    
+    // Force immediate redraw for smooth path drawing
+    requestAnimationFrame(() => {
+      redrawCanvas()
+    })
+  }
+
+  const handleMouseUp = () => {
+    if (!isDrawing) return
+    
+    setIsDrawing(false)
+    setCurrentPath(prevPath => {
+      if (prevPath.length > 1) {
+        console.log('Saving path with', prevPath.length, 'points:', prevPath)
+        setPaths(prevPaths => {
+          const newPaths = [...prevPaths, prevPath]
+          console.log('Updated paths array:', { prevCount: prevPaths.length, newCount: newPaths.length })
+          return newPaths
+        })
+        return []
+      }
+      return prevPath
+    })
+  }
+
   // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current
@@ -518,62 +575,6 @@ const DrillDesignerV2 = () => {
       x: start.x + (end.x - start.x) * progress,
       y: start.y + (end.y - start.y) * progress
     }
-  }
-
-  const handleMouseDown = (e) => {
-    const currentTool = toolRef.current
-    if (currentTool !== 'path' || !selectedPathElement) return
-    
-    const canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    
-    const x = (e.clientX - rect.left) * scaleX
-    const y = (e.clientY - rect.top) * scaleY
-    
-    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: selectedPathElement })
-    setIsDrawing(true)
-    setCurrentPath([{ x: selectedPathElement.x, y: selectedPathElement.y, time: 0 }])
-  }
-
-  const handleMouseMove = (e) => {
-    const currentTool = toolRef.current
-    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) return
-    
-    const canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    
-    const x = (e.clientX - rect.left) * scaleX
-    const y = (e.clientY - rect.top) * scaleY
-    
-    const time = currentPath.length * 0.5 // 0.5 seconds per point
-    setCurrentPath(prev => [...prev, { x, y, time }])
-    
-    // Force immediate redraw for smooth path drawing
-    requestAnimationFrame(() => {
-      redrawCanvas()
-    })
-  }
-
-  const handleMouseUp = () => {
-    if (!isDrawing) return
-    
-    setIsDrawing(false)
-    setCurrentPath(prevPath => {
-      if (prevPath.length > 1) {
-        console.log('Saving path with', prevPath.length, 'points:', prevPath)
-        setPaths(prevPaths => {
-          const newPaths = [...prevPaths, prevPath]
-          console.log('Updated paths array:', { prevCount: prevPaths.length, newCount: newPaths.length })
-          return newPaths
-        })
-        return []
-      }
-      return prevPath
-    })
   }
 
   const startAnimation = () => {
