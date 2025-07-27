@@ -472,8 +472,10 @@ const DrillDesignerV2 = () => {
   }
 
   const drawPlayersAtTime = (ctx, time) => {
+    console.log('Drawing players at time:', time, 'with', paths.length, 'paths')
     paths.forEach((path, playerIndex) => {
       const position = getPlayerPositionAtTime(path, time)
+      console.log(`Path ${playerIndex} position at time ${time}:`, position)
       if (position) {
         ctx.beginPath()
         ctx.arc(position.x, position.y, 15, 0, 2 * Math.PI)
@@ -549,25 +551,44 @@ const DrillDesignerV2 = () => {
     
     const time = currentPath.length * 0.5 // 0.5 seconds per point
     setCurrentPath(prev => [...prev, { x, y, time }])
+    
+    // Force immediate redraw for smooth path drawing
+    requestAnimationFrame(() => {
+      redrawCanvas()
+    })
   }
 
   const handleMouseUp = () => {
     if (!isDrawing) return
     
     setIsDrawing(false)
-    if (currentPath.length > 1) {
-      setPaths(prev => [...prev, currentPath])
-      setCurrentPath([])
-    }
+    setCurrentPath(prevPath => {
+      if (prevPath.length > 1) {
+        console.log('Saving path with', prevPath.length, 'points:', prevPath)
+        setPaths(prevPaths => {
+          const newPaths = [...prevPaths, prevPath]
+          console.log('Updated paths array:', { prevCount: prevPaths.length, newCount: newPaths.length })
+          return newPaths
+        })
+        return []
+      }
+      return prevPath
+    })
   }
 
   const startAnimation = () => {
+    console.log('Starting animation with paths:', paths.length)
+    paths.forEach((path, index) => {
+      console.log(`Path ${index}:`, path.length, 'points, duration:', path[path.length - 1]?.time || 0)
+    })
+    
     setIsPlaying(true)
     setCurrentTime(0)
     
     const interval = setInterval(() => {
       setCurrentTime(prev => {
         if (prev >= animationDuration) {
+          console.log('Animation completed')
           setIsPlaying(false)
           clearInterval(interval)
           return 0
