@@ -577,7 +577,11 @@ const DrillDesignerV2 = () => {
     console.log('Adding element:', newElement)
     console.log('Using player type:', playerType)
     console.log('Dynamic player tools length:', currentDynamicPlayerTools.length)
-    setElements([...elements, newElement])
+    setElements(prevElements => {
+      const newElements = [...prevElements, newElement]
+      console.log('Updated elements array:', { prevCount: prevElements.length, newCount: newElements.length, newElementId: newElement.id })
+      return newElements
+    })
   }
 
   const handleCanvasClick = (e) => {
@@ -639,7 +643,7 @@ const DrillDesignerV2 = () => {
   }
 
   const findElementAtPosition = (x, y) => {
-    console.log('Finding element at position:', { x, y, elementsCount: elements.length })
+    console.log('Finding element at position:', { x, y, elementsCount: elements.length, elements: elements })
     
     const foundElement = elements.find(element => {
       const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
