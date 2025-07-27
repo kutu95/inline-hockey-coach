@@ -12,6 +12,7 @@ const DrillDesignerV2 = () => {
   const currentPlayerTypeRef = useRef(null)
   const toolRef = useRef('add')
   const elementsRef = useRef([])
+  const selectedPathElementRef = useRef(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPath, setCurrentPath] = useState([])
   const [paths, setPaths] = useState([])
@@ -144,9 +145,10 @@ const DrillDesignerV2 = () => {
   // Mouse event handlers (defined before useEffect to avoid undefined references)
   const handleMouseDown = (e) => {
     const currentTool = toolRef.current
-    console.log('Mouse down triggered:', { currentTool, selectedPathElement: !!selectedPathElement, isDrawing })
+    const currentSelectedPathElement = selectedPathElementRef.current
+    console.log('Mouse down triggered:', { currentTool, selectedPathElement: !!currentSelectedPathElement, isDrawing })
     
-    if (currentTool !== 'path' || !selectedPathElement) {
+    if (currentTool !== 'path' || !currentSelectedPathElement) {
       console.log('Mouse down - conditions not met, returning')
       return
     }
@@ -159,16 +161,17 @@ const DrillDesignerV2 = () => {
     const x = (e.clientX - rect.left) * scaleX
     const y = (e.clientY - rect.top) * scaleY
     
-    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: selectedPathElement })
+    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: currentSelectedPathElement })
     setIsDrawing(true)
-    setCurrentPath([{ x: selectedPathElement.x, y: selectedPathElement.y, time: 0 }])
+    setCurrentPath([{ x: currentSelectedPathElement.x, y: currentSelectedPathElement.y, time: 0 }])
   }
 
   const handleMouseMove = (e) => {
     const currentTool = toolRef.current
-    console.log('Mouse move triggered:', { currentTool, isDrawing, selectedPathElement: !!selectedPathElement })
+    const currentSelectedPathElement = selectedPathElementRef.current
+    console.log('Mouse move triggered:', { currentTool, isDrawing, selectedPathElement: !!currentSelectedPathElement })
     
-    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) {
+    if (!isDrawing || currentTool !== 'path' || !currentSelectedPathElement) {
       console.log('Mouse move - conditions not met, returning')
       return
     }
@@ -258,6 +261,10 @@ const DrillDesignerV2 = () => {
   useEffect(() => {
     elementsRef.current = elements
   }, [elements])
+
+  useEffect(() => {
+    selectedPathElementRef.current = selectedPathElement
+  }, [selectedPathElement])
 
   // Redraw canvas when elements, paths, or current path changes
   useEffect(() => {
