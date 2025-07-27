@@ -11,6 +11,7 @@ const DrillDesignerV2 = () => {
   const dynamicPlayerToolsRef = useRef([])
   const currentPlayerTypeRef = useRef(null)
   const toolRef = useRef('add')
+  const elementsRef = useRef([])
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPath, setCurrentPath] = useState([])
   const [paths, setPaths] = useState([])
@@ -179,6 +180,10 @@ const DrillDesignerV2 = () => {
   useEffect(() => {
     toolRef.current = tool
   }, [tool])
+
+  useEffect(() => {
+    elementsRef.current = elements
+  }, [elements])
 
   // Ensure currentPlayerType is set when dynamicPlayerTools loads
   useEffect(() => {
@@ -643,9 +648,10 @@ const DrillDesignerV2 = () => {
   }
 
   const findElementAtPosition = (x, y) => {
-    console.log('Finding element at position:', { x, y, elementsCount: elements.length, elements: elements })
+    const currentElements = elementsRef.current
+    console.log('Finding element at position:', { x, y, elementsCount: currentElements.length, elements: currentElements })
     
-    const foundElement = elements.find(element => {
+    const foundElement = currentElements.find(element => {
       const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
       
       // Use appropriate radius based on element type
