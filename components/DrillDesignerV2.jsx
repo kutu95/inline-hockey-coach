@@ -185,6 +185,11 @@ const DrillDesignerV2 = () => {
     elementsRef.current = elements
   }, [elements])
 
+  // Redraw canvas when elements, paths, or current path changes
+  useEffect(() => {
+    redrawCanvas()
+  }, [elements, paths, currentPath, isPlaying, currentTime])
+
   // Ensure currentPlayerType is set when dynamicPlayerTools loads
   useEffect(() => {
     if (dynamicPlayerTools.length > 0 && !currentPlayerType) {
@@ -429,9 +434,26 @@ const DrillDesignerV2 = () => {
       ctx.lineTo(path[i].x, path[i].y)
     }
     
-    ctx.strokeStyle = isSelected ? '#ff0000' : isDrawing ? '#00ff00' : '#0000ff'
-    ctx.lineWidth = isSelected ? 3 : 2
+    // Set line style based on state
+    if (isDrawing) {
+      // Dotted line for drawing in progress
+      ctx.setLineDash([5, 5])
+      ctx.strokeStyle = '#00ff00'
+      ctx.lineWidth = 3
+    } else if (isSelected) {
+      // Solid line for selected path
+      ctx.setLineDash([])
+      ctx.strokeStyle = '#ff0000'
+      ctx.lineWidth = 3
+    } else {
+      // Solid line for normal paths
+      ctx.setLineDash([])
+      ctx.strokeStyle = '#0000ff'
+      ctx.lineWidth = 2
+    }
+    
     ctx.stroke()
+    ctx.setLineDash([]) // Reset line dash
     
     // Draw points
     path.forEach((point, index) => {
@@ -497,24 +519,33 @@ const DrillDesignerV2 = () => {
   }
 
   const handleMouseDown = (e) => {
-    if (tool !== 'path' || !selectedPathElement) return
+    const currentTool = toolRef.current
+    if (currentTool !== 'path' || !selectedPathElement) return
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
     
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
+    
+    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: selectedPathElement })
     setIsDrawing(true)
     setCurrentPath([{ x: selectedPathElement.x, y: selectedPathElement.y, time: 0 }])
   }
 
   const handleMouseMove = (e) => {
-    if (!isDrawing || tool !== 'path' || !selectedPathElement) return
+    const currentTool = toolRef.current
+    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) return
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    const scaleX = canvas.width / rect.width
+    const scaleY = canvas.height / rect.height
+    
+    const x = (e.clientX - rect.left) * scaleX
+    const y = (e.clientY - rect.top) * scaleY
     
     const time = currentPath.length * 0.5 // 0.5 seconds per point
     setCurrentPath(prev => [...prev, { x, y, time }])
