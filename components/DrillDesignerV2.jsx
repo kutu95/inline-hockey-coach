@@ -579,21 +579,6 @@ const DrillDesignerV2 = () => {
     
     ctx.stroke()
     ctx.setLineDash([]) // Reset line dash
-    
-    // Draw points
-    path.forEach((point, index) => {
-      ctx.beginPath()
-      ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
-      ctx.fillStyle = isSelected ? '#ff0000' : '#0000ff'
-      ctx.fill()
-      
-      // Draw time labels
-      if (index % 5 === 0) {
-        ctx.fillStyle = '#000000'
-        ctx.font = '12px Arial'
-        ctx.fillText(`${point.time}s`, point.x + 5, point.y - 5)
-      }
-    })
   }
 
   const drawPlayersAtTime = (ctx, time) => {
