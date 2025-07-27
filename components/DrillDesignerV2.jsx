@@ -13,6 +13,7 @@ const DrillDesignerV2 = () => {
   const toolRef = useRef('add')
   const elementsRef = useRef([])
   const selectedPathElementRef = useRef(null)
+  const isDrawingRef = useRef(false)
   const [isDrawing, setIsDrawing] = useState(false)
   const [currentPath, setCurrentPath] = useState([])
   const [paths, setPaths] = useState([])
@@ -169,9 +170,10 @@ const DrillDesignerV2 = () => {
   const handleMouseMove = (e) => {
     const currentTool = toolRef.current
     const currentSelectedPathElement = selectedPathElementRef.current
-    console.log('Mouse move triggered:', { currentTool, isDrawing, selectedPathElement: !!currentSelectedPathElement })
+    const currentIsDrawing = isDrawingRef.current
+    console.log('Mouse move triggered:', { currentTool, isDrawing: currentIsDrawing, selectedPathElement: !!currentSelectedPathElement })
     
-    if (!isDrawing || currentTool !== 'path' || !currentSelectedPathElement) {
+    if (!currentIsDrawing || currentTool !== 'path' || !currentSelectedPathElement) {
       console.log('Mouse move - conditions not met, returning')
       return
     }
@@ -195,9 +197,10 @@ const DrillDesignerV2 = () => {
   }
 
   const handleMouseUp = () => {
-    console.log('Mouse up triggered:', { isDrawing })
+    const currentIsDrawing = isDrawingRef.current
+    console.log('Mouse up triggered:', { isDrawing: currentIsDrawing })
     
-    if (!isDrawing) {
+    if (!currentIsDrawing) {
       console.log('Mouse up - not drawing, returning')
       return
     }
@@ -265,6 +268,10 @@ const DrillDesignerV2 = () => {
   useEffect(() => {
     selectedPathElementRef.current = selectedPathElement
   }, [selectedPathElement])
+
+  useEffect(() => {
+    isDrawingRef.current = isDrawing
+  }, [isDrawing])
 
   // Redraw canvas when elements, paths, or current path changes
   useEffect(() => {
