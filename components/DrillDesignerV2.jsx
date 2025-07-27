@@ -23,6 +23,7 @@ const DrillDesignerV2 = () => {
   const [currentTime, setCurrentTime] = useState(0)
   const [animationDuration, setAnimationDuration] = useState(10) // seconds
   const [tool, setTool] = useState('add') // 'add', 'path', 'select'
+  const [animationInterval, setAnimationInterval] = useState(null)
   const [selectedElement, setSelectedElement] = useState(null)
   const [elements, setElements] = useState([])
   const [selectedPathElement, setSelectedPathElement] = useState(null)
@@ -295,6 +296,9 @@ const DrillDesignerV2 = () => {
   const drawElement = (ctx, element) => {
     console.log('Drawing element:', element)
     
+    // Check if this element is selected for path drawing
+    const isSelected = selectedPathElement && selectedPathElement.id === element.id
+    
     if (element.type === 'puck') {
       // Draw puck as a black circle
       ctx.beginPath()
@@ -333,6 +337,17 @@ const DrillDesignerV2 = () => {
           imageSize
         )
         ctx.restore()
+        
+        // Draw selection indicator if selected
+        if (isSelected) {
+          ctx.strokeStyle = '#00ff00'
+          ctx.lineWidth = 4
+          ctx.setLineDash([5, 5])
+          ctx.beginPath()
+          ctx.arc(element.x, element.y, halfSize + 5, 0, 2 * Math.PI)
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
       } else {
         console.log('No player image found, using fallback')
         // Fallback to red circle if image not found
@@ -343,6 +358,17 @@ const DrillDesignerV2 = () => {
         ctx.strokeStyle = '#000000'
         ctx.lineWidth = 2
         ctx.stroke()
+        
+        // Draw selection indicator if selected
+        if (isSelected) {
+          ctx.strokeStyle = '#00ff00'
+          ctx.lineWidth = 4
+          ctx.setLineDash([5, 5])
+          ctx.beginPath()
+          ctx.arc(element.x, element.y, element.radius + 5, 0, 2 * Math.PI)
+          ctx.stroke()
+          ctx.setLineDash([])
+        }
       }
     } else {
       console.log('Unknown element type:', element.type)
@@ -354,6 +380,17 @@ const DrillDesignerV2 = () => {
       ctx.strokeStyle = '#000000'
       ctx.lineWidth = 2
       ctx.stroke()
+      
+      // Draw selection indicator if selected
+      if (isSelected) {
+        ctx.strokeStyle = '#00ff00'
+        ctx.lineWidth = 4
+        ctx.setLineDash([5, 5])
+        ctx.beginPath()
+        ctx.arc(element.x, element.y, element.radius + 5, 0, 2 * Math.PI)
+        ctx.stroke()
+        ctx.setLineDash([])
+      }
     }
   }
 
@@ -491,11 +528,6 @@ const DrillDesignerV2 = () => {
     // Draw rink background (same as V1)
     drawRinkBackground(ctx)
     
-    // Draw all elements (players, pucks)
-    elements.forEach(element => {
-      drawElement(ctx, element)
-    })
-    
     // Draw all completed paths
     paths.forEach((path, index) => {
       drawPath(ctx, path, index === selectedPlayer)
@@ -506,9 +538,14 @@ const DrillDesignerV2 = () => {
       drawPath(ctx, currentPath, false, true)
     }
     
-    // Draw players at current time if playing
+    // Draw players at current time if playing, otherwise draw static elements
     if (isPlaying) {
       drawPlayersAtTime(ctx, currentTime)
+    } else {
+      // Draw all elements (players, pucks) in their static positions
+      elements.forEach(element => {
+        drawElement(ctx, element)
+      })
     }
   }
 
@@ -561,23 +598,31 @@ const DrillDesignerV2 = () => {
 
   const drawPlayersAtTime = (ctx, time) => {
     console.log('Drawing players at time:', time, 'with', paths.length, 'paths')
-    paths.forEach((path, playerIndex) => {
+    
+    // Draw each element at its animated position
+    elements.forEach((element, elementIndex) => {
+      // Find the path for this element (assuming paths array corresponds to elements)
+      const path = paths[elementIndex]
+      if (!path || path.length < 2) {
+        // If no path, draw at original position
+        drawElement(ctx, element)
+        return
+      }
+      
       const position = getPlayerPositionAtTime(path, time)
-      console.log(`Path ${playerIndex} position at time ${time}:`, position)
+      console.log(`Element ${elementIndex} position at time ${time}:`, position)
+      
       if (position) {
-        ctx.beginPath()
-        ctx.arc(position.x, position.y, 15, 0, 2 * Math.PI)
-        ctx.fillStyle = `hsl(${playerIndex * 60}, 70%, 50%)`
-        ctx.fill()
-        ctx.strokeStyle = '#000000'
-        ctx.lineWidth = 2
-        ctx.stroke()
-        
-        // Draw player number
-        ctx.fillStyle = '#ffffff'
-        ctx.font = 'bold 14px Arial'
-        ctx.textAlign = 'center'
-        ctx.fillText(`${playerIndex + 1}`, position.x, position.y + 4)
+        // Create a temporary element at the animated position
+        const animatedElement = {
+          ...element,
+          x: position.x,
+          y: position.y
+        }
+        drawElement(ctx, animatedElement)
+      } else {
+        // Fallback to original position
+        drawElement(ctx, element)
       }
     })
   }
@@ -614,6 +659,11 @@ const DrillDesignerV2 = () => {
       console.log(`Path ${index}:`, path.length, 'points, duration:', path[path.length - 1]?.time || 0)
     })
     
+    // Clear any existing interval
+    if (animationInterval) {
+      clearInterval(animationInterval)
+    }
+    
     setIsPlaying(true)
     setCurrentTime(0)
     
@@ -623,16 +673,26 @@ const DrillDesignerV2 = () => {
           console.log('Animation completed')
           setIsPlaying(false)
           clearInterval(interval)
+          setAnimationInterval(null)
           return 0
         }
         return prev + 0.1
       })
     }, 100)
+    
+    setAnimationInterval(interval)
   }
 
   const stopAnimation = () => {
+    console.log('Stopping animation')
     setIsPlaying(false)
     setCurrentTime(0)
+    
+    // Clear the interval
+    if (animationInterval) {
+      clearInterval(animationInterval)
+      setAnimationInterval(null)
+    }
   }
 
   const clearAllPaths = () => {
