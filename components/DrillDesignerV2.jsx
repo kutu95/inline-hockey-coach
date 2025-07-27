@@ -144,7 +144,12 @@ const DrillDesignerV2 = () => {
   // Mouse event handlers (defined before useEffect to avoid undefined references)
   const handleMouseDown = (e) => {
     const currentTool = toolRef.current
-    if (currentTool !== 'path' || !selectedPathElement) return
+    console.log('Mouse down triggered:', { currentTool, selectedPathElement: !!selectedPathElement, isDrawing })
+    
+    if (currentTool !== 'path' || !selectedPathElement) {
+      console.log('Mouse down - conditions not met, returning')
+      return
+    }
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
@@ -161,7 +166,12 @@ const DrillDesignerV2 = () => {
 
   const handleMouseMove = (e) => {
     const currentTool = toolRef.current
-    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) return
+    console.log('Mouse move triggered:', { currentTool, isDrawing, selectedPathElement: !!selectedPathElement })
+    
+    if (!isDrawing || currentTool !== 'path' || !selectedPathElement) {
+      console.log('Mouse move - conditions not met, returning')
+      return
+    }
     
     const canvas = canvasRef.current
     const rect = canvas.getBoundingClientRect()
@@ -172,6 +182,7 @@ const DrillDesignerV2 = () => {
     const y = (e.clientY - rect.top) * scaleY
     
     const time = currentPath.length * 0.5 // 0.5 seconds per point
+    console.log('Adding path point:', { x, y, time, currentPathLength: currentPath.length })
     setCurrentPath(prev => [...prev, { x, y, time }])
     
     // Force immediate redraw for smooth path drawing
@@ -181,8 +192,14 @@ const DrillDesignerV2 = () => {
   }
 
   const handleMouseUp = () => {
-    if (!isDrawing) return
+    console.log('Mouse up triggered:', { isDrawing })
     
+    if (!isDrawing) {
+      console.log('Mouse up - not drawing, returning')
+      return
+    }
+    
+    console.log('Mouse up - finishing path drawing')
     setIsDrawing(false)
     setCurrentPath(prevPath => {
       if (prevPath.length > 1) {
