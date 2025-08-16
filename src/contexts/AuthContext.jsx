@@ -36,28 +36,27 @@ export function AuthProvider({ children }) {
       console.log('Fetching roles for user:', userId, retryCount > 0 ? `(retry ${retryCount})` : '')
       
       const fetchPromise = async () => {
-        console.log('Starting user_roles query...')
+        console.log('Starting get_user_roles_safe query...')
         const startTime = Date.now()
         
         try {
-          // Use a simpler query to avoid RLS recursion issues
-          const { data: userRolesData, error: userRolesError } = await supabase
-            .from('user_roles')
-            .select('role_id')
-            .eq('user_id', userId)
+          // Use the get_user_roles_safe function instead of manual queries
+          const { data: rolesData, error: rolesError } = await supabase.rpc('get_user_roles_safe', {
+            user_uuid: userId
+          })
           
           const endTime = Date.now()
-          console.log(`user_roles query took ${endTime - startTime}ms`)
-          console.log('user_roles query completed:', { data: userRolesData, error: userRolesError })
+          console.log(`get_user_roles_safe query took ${endTime - startTime}ms`)
+          console.log('get_user_roles_safe query completed:', { data: rolesData, error: rolesError })
           
-          if (userRolesError) {
-            console.error('User roles query failed:', userRolesError)
+          if (rolesError) {
+            console.error('get_user_roles_safe query failed:', rolesError)
             
             // Check if this is an auth-related error
-            if (userRolesError.code === 'PGRST116' || 
-                userRolesError.message?.includes('unauthorized') ||
-                userRolesError.message?.includes('forbidden')) {
-              setAuthError(userRolesError)
+            if (rolesError.code === 'PGRST116' || 
+                rolesError.message?.includes('unauthorized') ||
+                rolesError.message?.includes('forbidden')) {
+              setAuthError(rolesError)
               throw new Error('User access denied - account may have been deleted')
             }
             
@@ -65,7 +64,7 @@ export function AuthProvider({ children }) {
             return []
           }
           
-          if (!userRolesData || userRolesData.length === 0) {
+          if (!rolesData || rolesData.length === 0) {
             console.log('No roles found for user - this may indicate the user record was deleted')
             
             // For newly created users, retry more times and wait longer
@@ -91,35 +90,7 @@ export function AuthProvider({ children }) {
             return []
           }
           
-          console.log('Starting roles query...')
-          const startTime2 = Date.now()
-          // Get role names for the role IDs
-          const roleIds = userRolesData.map(ur => ur.role_id)
-          const { data: rolesData, error: rolesError } = await supabase
-            .from('roles')
-            .select('name')
-            .in('id', roleIds)
-          
-          const endTime2 = Date.now()
-          console.log(`roles query took ${endTime2 - startTime2}ms`)
-          console.log('roles query completed:', { data: rolesData, error: rolesError })
-          
-          if (rolesError) {
-            console.error('Roles query failed:', rolesError)
-            
-            // Check if this is an auth-related error
-            if (rolesError.code === 'PGRST116' || 
-                rolesError.message?.includes('unauthorized') ||
-                rolesError.message?.includes('forbidden')) {
-              setAuthError(rolesError)
-              throw new Error('User access denied - account may have been deleted')
-            }
-            
-            // Return empty array instead of throwing for other errors
-            return []
-          }
-          
-          const roles = rolesData?.map(r => r.name).filter(Boolean) || []
+          const roles = rolesData || []
           console.log('Roles fetched successfully:', roles)
           return roles
         } catch (error) {

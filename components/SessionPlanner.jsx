@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 
+
+
 const SessionPlanner = () => {
   const [session, setSession] = useState(null)
   const [organization, setOrganization] = useState(null)
@@ -18,6 +20,8 @@ const SessionPlanner = () => {
   const [insertPosition, setInsertPosition] = useState(0)
   const [templates, setTemplates] = useState([])
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [imageUrls, setImageUrls] = useState({})
+
   
   // Filter state for drill selector
   const [drillFilters, setDrillFilters] = useState({
@@ -46,6 +50,7 @@ const SessionPlanner = () => {
       fetchSessionData()
       fetchDrills()
       fetchTemplates()
+  
       if (orgId) {
         fetchOrganization()
       }
@@ -74,6 +79,30 @@ const SessionPlanner = () => {
     }
   }
 
+  const getSignedUrl = async (url) => {
+    if (!url) return null
+    
+    try {
+      // Extract file path from the URL
+      const urlParts = url.split('/')
+      const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
+      
+      const { data, error } = await supabase.storage
+        .from('drill-images')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        console.error('Error creating signed URL:', error)
+        return null
+      }
+      
+      return data?.signedUrl || null
+    } catch (err) {
+      console.error('Error getting signed URL:', err)
+      return null
+    }
+  }
+
   const fetchSessionData = async () => {
     try {
       setLoading(true)
@@ -87,6 +116,9 @@ const SessionPlanner = () => {
         setSession(data.session)
         setNotesBlocks(data.notes_blocks || [])
         setSessionDrills(data.session_drills || [])
+        
+        // Get signed URLs for all drill images
+        await resolveDrillImages(data.notes_blocks || [], data.session_drills || [])
       }
     } catch (err) {
       setError('Failed to fetch session data')
@@ -94,6 +126,32 @@ const SessionPlanner = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const resolveDrillImages = async (notesBlocksData, sessionDrillsData) => {
+    const urls = {}
+    
+    // Process notes blocks for drill images
+    for (const block of notesBlocksData) {
+      if (block.block_type === 'drill' && block.drill?.image_url) {
+        const signedUrl = await getSignedUrl(block.drill.image_url)
+        if (signedUrl) {
+          urls[`block-${block.id}`] = signedUrl
+        }
+      }
+    }
+    
+    // Process session drills for drill images
+    for (const sessionDrill of sessionDrillsData) {
+      if (sessionDrill.drill?.image_url) {
+        const signedUrl = await getSignedUrl(sessionDrill.drill.image_url)
+        if (signedUrl) {
+          urls[`drill-${sessionDrill.id}`] = signedUrl
+        }
+      }
+    }
+    
+    setImageUrls(urls)
   }
 
   const fetchDrills = async () => {
@@ -116,6 +174,8 @@ const SessionPlanner = () => {
       console.error('Error fetching drills:', err)
     }
   }
+
+
 
   const fetchTemplates = async () => {
     try {
@@ -217,6 +277,10 @@ const SessionPlanner = () => {
     setShowDrillSelector(true)
   }
 
+
+
+
+
   const selectDrill = (drill) => {
     const newBlock = {
       id: `temp-${Date.now()}`,
@@ -240,6 +304,8 @@ const SessionPlanner = () => {
     setShowDrillSelector(false)
     setSelectedDrill(null)
   }
+
+
 
   const selectTemplate = async (template) => {
     try {
@@ -310,6 +376,8 @@ const SessionPlanner = () => {
       filterMode: 'all'
     })
   }
+
+
 
   const selectAllFeatures = () => {
     setDrillFilters(prev => ({
@@ -468,9 +536,13 @@ const SessionPlanner = () => {
             {block.drill?.image_url && (
               <div className="mb-3">
                 <img 
-                  src={block.drill.image_url} 
+                  src={imageUrls[`block-${block.id}`] || block.drill.image_url} 
                   alt={block.drill.title}
                   className="w-full max-w-md h-48 object-cover rounded-lg border border-green-200"
+                  onError={(e) => {
+                    console.log('Failed to load drill image:', block.drill.image_url)
+                    e.target.style.display = 'none'
+                  }}
                 />
               </div>
             )}
@@ -533,6 +605,8 @@ const SessionPlanner = () => {
           </div>
         )
       
+
+      
       case 'text':
       default:
         return (
@@ -563,10 +637,13 @@ const SessionPlanner = () => {
             <textarea
               value={block.content}
               onChange={(e) => updateBlockContent(block.id, e.target.value)}
-              placeholder="Enter your notes..."
+              placeholder="Enter your notes... Use [text](url) for links like [Watch Video](https://drive.google.com/...)"
               className="w-full p-2 border border-gray-300 rounded-md bg-white"
               rows="4"
             />
+            <div className="text-xs text-gray-500 mt-1">
+              💡 Use [Link Text](https://example.com) to create clickable links. Perfect for Google Drive videos!
+            </div>
           </div>
         )
     }
@@ -592,6 +669,7 @@ const SessionPlanner = () => {
       >
         + Drill
       </button>
+
     </div>
   )
 
@@ -716,13 +794,13 @@ const SessionPlanner = () => {
                   >
                     Import Template
                   </button>
-                  <button
-                    onClick={saveSessionPlan}
-                    disabled={saving}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
-                  >
-                    {saving ? 'Saving...' : 'Save Plan'}
-                  </button>
+                <button
+                  onClick={saveSessionPlan}
+                  disabled={saving}
+                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : 'Save Plan'}
+                </button>
                 </div>
               </div>
 
@@ -905,6 +983,10 @@ const SessionPlanner = () => {
                             src={drill.image_url}
                             alt={drill.title}
                             className="w-16 h-16 object-cover rounded-md border border-gray-300 ml-3"
+                            onError={(e) => {
+                              console.log('Failed to load drill selector image:', drill.image_url)
+                              e.target.style.display = 'none'
+                            }}
                           />
                         )}
                       </div>
@@ -916,6 +998,8 @@ const SessionPlanner = () => {
           </div>
         </div>
       )}
+
+
 
       {/* Template Selector Modal */}
       {showTemplateSelector && (

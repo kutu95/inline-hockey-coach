@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Login from '../components/Login'
 import AcceptInvitation from '../components/AcceptInvitation'
+import ResetPassword from '../components/ResetPassword'
 import Dashboard from '../components/Dashboard'
 import PlayerList from '../components/PlayerList'
 import PlayerProfile from '../components/PlayerProfile'
@@ -148,6 +149,10 @@ function App() {
             <Route 
               path="/accept-invitation" 
               element={<AcceptInvitation />} 
+            />
+            <Route 
+              path="/reset-password" 
+              element={<ResetPassword />} 
             />
             <Route 
               path="/dashboard" 

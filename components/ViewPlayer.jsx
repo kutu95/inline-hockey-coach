@@ -346,10 +346,16 @@ const ViewPlayer = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Player Not Found</h2>
                 <p className="text-gray-600 mb-6">The player you're looking for doesn't exist or you don't have permission to view it.</p>
                 <Link
-                  to={orgId ? `/organisations/${orgId}/players` : "/players"}
+                  to={
+                    // If user only has player role, go to organization page
+                    // Otherwise go to players page
+                    hasRole('admin') || hasRole('coach') 
+                      ? (orgId ? `/organisations/${orgId}/players` : "/players")
+                      : (orgId ? `/organisations/${orgId}` : "/dashboard")
+                  }
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
-                  Back to Players
+                  {hasRole('admin') || hasRole('coach') ? 'Back to Players' : 'Back to Organization'}
                 </Link>
               </div>
             </div>
@@ -372,10 +378,16 @@ const ViewPlayer = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                   <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                     <Link
-                      to={orgId ? `/organisations/${orgId}/players` : "/players"}
+                      to={
+                        // If user only has player role, go to organization page
+                        // Otherwise go to players page
+                        hasRole('admin') || hasRole('coach') 
+                          ? (orgId ? `/organisations/${orgId}/players` : "/players")
+                          : (orgId ? `/organisations/${orgId}` : "/dashboard")
+                      }
                       className="text-gray-600 hover:text-gray-800 font-medium"
                     >
-                      ← Back to Players
+                      ← {hasRole('admin') || hasRole('coach') ? 'Back to Players' : 'Back to Organization'}
                     </Link>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Player Details</h1>
                   </div>
@@ -564,7 +576,7 @@ const ViewPlayer = () => {
                         <span className="font-medium">{player.email}</span>
                       </div>
                     )}
-                    {player.email && (
+                    {player.email && (hasRole('admin') || hasRole('coach') || hasRole('superadmin')) && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Account Status:</span>
                         <span className={`font-medium ${getInvitationStatus().color}`}>
@@ -572,7 +584,7 @@ const ViewPlayer = () => {
                         </span>
                       </div>
                     )}
-                    {player.email && !player.user_id && (
+                    {player.email && !player.user_id && (hasRole('admin') || hasRole('coach') || hasRole('superadmin')) && (
                       <div className="mt-4">
                         <button
                           onClick={handleSendInvitation}
@@ -669,10 +681,16 @@ const ViewPlayer = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <div className="flex justify-between">
                   <Link
-                    to={orgId ? `/organisations/${orgId}/players` : "/players"}
-                    className="text-indigo-600 hover:text-indigo-800 font-medium"
+                    to={
+                      // If user only has player role, go to organization page
+                      // Otherwise go to players page
+                      hasRole('admin') || hasRole('coach') 
+                        ? (orgId ? `/organisations/${orgId}/players` : "/players")
+                        : (orgId ? `/organisations/${orgId}` : "/dashboard")
+                    }
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
-                    ← Back to Players
+                    {hasRole('admin') || hasRole('coach') ? 'Back to Players' : 'Back to Organization'}
                   </Link>
                   {(hasRole('admin') || hasRole('coach')) && (
                     <Link
@@ -702,10 +720,16 @@ const ViewPlayer = () => {
                 <p className="text-gray-600 mb-6">There was an error loading the player details. Please try again.</p>
                 <p className="text-red-600 text-sm mb-4">{err.message}</p>
                 <Link
-                  to={orgId ? `/organisations/${orgId}/players` : "/players"}
+                  to={
+                    // If user only has player role, go to organization page
+                    // Otherwise go to players page
+                    hasRole('admin') || hasRole('coach') 
+                      ? (orgId ? `/organisations/${orgId}/players` : "/players")
+                      : (orgId ? `/organisations/${orgId}` : "/dashboard")
+                  }
                   className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                 >
-                  Back to Players
+                  {hasRole('admin') || hasRole('coach') ? 'Back to Players' : 'Back to Organization'}
                 </Link>
               </div>
             </div>

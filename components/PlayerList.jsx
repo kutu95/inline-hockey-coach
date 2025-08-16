@@ -708,7 +708,7 @@ const PlayerList = () => {
                                   onLoad={(e) => {
                                     // Hide the fallback when image loads successfully
                                     if (e.target.nextSibling) {
-                                      e.target.nextSibling.style.display = 'none'
+                                    e.target.nextSibling.style.display = 'none'
                                     }
                                   }}
                                 />

@@ -262,6 +262,26 @@ const Clubs = () => {
     }
   }
 
+  const handleClearLogo = async (club) => {
+    if (!confirm('Are you sure you want to clear this club\'s logo? This will allow you to upload a new one.')) return
+
+    try {
+      const { error } = await supabase
+        .from('clubs')
+        .update({ logo_url: null })
+        .eq('id', club.id)
+
+      if (error) throw error
+      
+      // Refresh the clubs list
+      fetchClubs()
+      setError('')
+    } catch (err) {
+      setError('Failed to clear logo')
+      console.error('Error clearing logo:', err)
+    }
+  }
+
   const handleLogoChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -295,7 +315,12 @@ const Clubs = () => {
     try {
       const fileExt = logoFile.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
-      const filePath = `${user.id}/${fileName}`
+      
+      // Use organization ID if available, otherwise fall back to user ID
+      const folderId = orgId || user.id
+      const filePath = `${folderId}/${fileName}`
+
+      console.log('Uploading logo to path:', filePath)
 
       const { error: uploadError } = await supabase.storage
         .from('club-logos')
@@ -319,15 +344,49 @@ const Clubs = () => {
   const getSignedUrl = async (url) => {
     if (!url) return null
     
-    // If it's already a signed URL or external URL, return as is
+    // If it's already a signed URL (contains query parameters) or external URL, return as is
     if (url.includes('?') || !url.includes('supabase.co') || !url.includes('/storage/')) {
+      console.log('URL is already signed or external, returning as-is:', url)
       return url
     }
     
-    // For now, just return the original URL since it's already a public URL
-    // The signed URL generation is failing, so let's use the public URL directly
-    console.log('Using original public URL for:', url)
-    return url
+    try {
+      // Extract file path from the URL
+      // URL format: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/public/club-logos/organization_id/filename
+      const urlParts = url.split('/')
+      const clubLogosIndex = urlParts.findIndex(part => part === 'club-logos')
+      
+      if (clubLogosIndex === -1) {
+        console.log('Not a club-logos URL:', url)
+        return url
+      }
+      
+      // Get the path after 'club-logos': organization_id/filename
+      const filePath = urlParts.slice(clubLogosIndex + 1).join('/')
+      
+      if (!filePath) {
+        console.log('Could not extract file path from:', url)
+        return url
+      }
+      
+      console.log('Extracted file path:', filePath)
+      
+      // Create signed URL
+      const { data, error } = await supabase.storage
+        .from('club-logos')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+      
+      if (error) {
+        console.error('Error creating signed URL for:', filePath, error)
+        return url // Fallback to original URL
+      }
+      
+      console.log('Created signed URL for:', filePath)
+      return data?.signedUrl || url
+    } catch (err) {
+      console.error('Error in getSignedUrl:', err)
+      return url // Fallback to original URL
+    }
   }
 
   // State for signed URLs
@@ -628,11 +687,40 @@ const Clubs = () => {
                                 e.target.style.display = 'none'
                                 e.target.nextSibling.style.display = 'flex'
                               }}
+                              onLoad={(e) => {
+                                // Hide the fallback when image loads successfully
+                                e.target.nextSibling.style.display = 'none'
+                              }}
                             />
                             <div className="w-16 h-16 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center" style={{ display: 'none' }}>
-                              <span className="text-gray-500 text-sm font-medium">
-                                {club.name.charAt(0)}
-                              </span>
+                              <div className="text-center">
+                                <span className="text-gray-500 text-sm font-medium block">
+                                  {club.name.charAt(0)}
+                                </span>
+                                <span className="text-gray-400 text-xs block mt-1">
+                                  No Logo
+                                </span>
+                                {canManageClubs && (
+                                  <div className="space-y-1">
+                                    <button
+                                      onClick={() => handleEdit(club)}
+                                      className="block w-full text-xs text-blue-600 hover:text-blue-800 underline"
+                                      title="Click to add logo"
+                                    >
+                                      Add Logo
+                                    </button>
+                                    {club.logo_url && (
+                                      <button
+                                        onClick={() => handleClearLogo(club)}
+                                        className="block w-full text-xs text-red-600 hover:text-red-800 underline"
+                                        title="Clear broken logo"
+                                      >
+                                        Clear Logo
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </>
                         ) : (
@@ -679,18 +767,29 @@ const Clubs = () => {
                         </div>
                       </div>
                       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                        <Link
-                          to={orgId ? `/organisations/${orgId}/clubs/${club.id}` : `/clubs/${club.id}`}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
-                        >
-                          View Details
-                        </Link>
+                        {(canManageClubs || hasRole('coach')) && (
+                          <Link
+                            to={orgId ? `/organisations/${orgId}/clubs/${club.id}` : `/clubs/${club.id}`}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
+                          >
+                            View Details
+                          </Link>
+                        )}
                         {canManageClubs && (
                           <button
                             onClick={() => handleEdit(club)}
                             className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
                           >
                             Edit
+                          </button>
+                        )}
+                        {canManageClubs && club.logo_url && (
+                          <button
+                            onClick={() => handleClearLogo(club)}
+                            className="text-orange-600 hover:text-orange-800 text-sm font-medium text-center sm:text-left"
+                            title="Clear broken logo"
+                          >
+                            Clear Logo
                           </button>
                         )}
                         {canManageClubs && (

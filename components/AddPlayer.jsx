@@ -6,7 +6,7 @@ import { sendInvitationEmail } from '../src/lib/email'
 
 const AddPlayer = () => {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, hasRole } = useAuth()
   const params = useParams()
   const orgId = params.orgId // Get organization ID from route params
   const [searchParams] = useState(() => new URLSearchParams(window.location.search))
@@ -574,42 +574,44 @@ const AddPlayer = () => {
                 </div>
 
                 {/* Invitation Section */}
-                <div className="md:col-span-2">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4 mt-6">Account Invitation</h3>
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="ml-3">
-                        <h4 className="text-sm font-medium text-blue-800">Send Account Invitation</h4>
-                        <p className="text-sm text-blue-700 mt-1">
-                          Check this box to send an invitation email to the player. They will be able to set up their own account and access the platform.
-                        </p>
-                        <div className="mt-3">
-                          <label className="flex items-center">
-                            <input
-                              type="checkbox"
-                              checked={sendInvitation}
-                              onChange={(e) => setSendInvitation(e.target.checked)}
-                              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            />
-                            <span className="ml-2 text-sm text-blue-800">
-                              Send invitation email to {formData.email || 'player'}
-                            </span>
-                          </label>
+                {hasRole('admin') || hasRole('coach') ? (
+                  <div className="md:col-span-2">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4 mt-6">Account Invitation</h3>
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0">
+                          <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
                         </div>
-                        {sendInvitation && !formData.email && (
-                          <p className="text-sm text-red-600 mt-2">
-                            Please enter an email address above to send an invitation.
+                        <div className="ml-3">
+                          <h4 className="text-sm font-medium text-blue-800">Send Account Invitation</h4>
+                          <p className="text-sm text-blue-700 mt-1">
+                            Check this box to send an invitation email to the player. They will be able to set up their own account and access the platform.
                           </p>
-                        )}
+                          <div className="mt-3">
+                            <label className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={sendInvitation}
+                                onChange={(e) => setSendInvitation(e.target.checked)}
+                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                              />
+                              <span className="ml-2 text-sm text-blue-800">
+                                Send invitation email to {formData.email || 'player'}
+                              </span>
+                            </label>
+                          </div>
+                          {sendInvitation && !formData.email && (
+                            <p className="text-sm text-red-600 mt-2">
+                              Please enter an email address above to send an invitation.
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : null}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-8">

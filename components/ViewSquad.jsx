@@ -124,6 +124,7 @@ const ViewSquad = () => {
             jersey_number,
             accreditations,
             photo_url,
+            user_id,
             clubs:club_id (
               id,
               name,
@@ -265,69 +266,131 @@ const ViewSquad = () => {
                     <div key={player.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-4">
                         <div className="flex items-center justify-between">
-                          <Link
-                            to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                            className="flex items-center space-x-4 flex-1 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors duration-200"
-                          >
-                            {player.photo_url ? (
-                              <img
-                                src={playerPhotoUrls[player.id] || player.photo_url}
-                                alt={`${player.first_name} ${player.last_name}`}
-                                className="w-12 h-12 object-cover rounded-full border border-gray-300"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                <span className="text-gray-500 text-sm font-medium">
-                                  {player.first_name.charAt(0)}{player.last_name.charAt(0)}
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                  {player.first_name} {player.last_name}
-                                </h3>
-                                {player.jersey_number && (
-                                  <span className="text-sm text-gray-500">#{player.jersey_number}</span>
-                                )}
-                                {player.hand && (
-                                  <span className="text-sm text-gray-500 capitalize">{player.hand}</span>
-                                )}
-                                {player.birthdate && (
-                                  <span className="text-sm text-gray-500">
-                                    {calculateAge(player.birthdate)} years old
+                          {/* Player info - only clickable for admins/coaches or if it's the current user's own profile */}
+                          {(canViewPlayers || player.user_id === user?.id) ? (
+                            <Link
+                              to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
+                              className="flex items-center space-x-4 flex-1 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors duration-200"
+                            >
+                              {player.photo_url ? (
+                                <img
+                                  src={playerPhotoUrls[player.id] || player.photo_url}
+                                  alt={`${player.first_name} ${player.last_name}`}
+                                  className="w-12 h-12 object-cover rounded-full border border-gray-300"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                  <span className="text-gray-500 text-sm font-medium">
+                                    {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                                   </span>
-                                )}
-                              </div>
-                              <div className="flex items-center space-x-4 mt-1">
-                                <div className="flex flex-wrap gap-1">
-                                  {getAccreditationBadges(player.accreditations).map((badge, index) => (
-                                    <span
-                                      key={index}
-                                      className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badge.color}`}
-                                    >
-                                      {badge.text}
-                                    </span>
-                                  ))}
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                  {player.clubs?.logo_url ? (
-                                    <img
-                                      src={signedUrls[player.clubs.id] || player.clubs.logo_url}
-                                      alt={`${player.clubs.name} logo`}
-                                      className="w-5 h-5 object-contain"
-                                    />
-                                  ) : null}
-                                  <span className="text-sm text-gray-600">
-                                    {player.clubs?.name || 'No club assigned'}
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3">
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    {player.first_name} {player.last_name}
+                                  </h3>
+                                  {player.jersey_number && (
+                                    <span className="text-sm text-gray-500">#{player.jersey_number}</span>
+                                  )}
+                                  {player.hand && (
+                                    <span className="text-sm text-gray-500 capitalize">{player.hand}</span>
+                                  )}
+                                  {player.birthdate && (
+                                    <span className="text-sm text-gray-500">
+                                      {calculateAge(player.birthdate)} years old
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center space-x-4 mt-1">
+                                  <div className="flex flex-wrap gap-1">
+                                    {getAccreditationBadges(player.accreditations).map((badge, index) => (
+                                      <span
+                                        key={index}
+                                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badge.color}`}
+                                      >
+                                        {badge.text}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    {player.clubs?.logo_url ? (
+                                      <img
+                                        src={signedUrls[player.clubs.id] || player.clubs.logo_url}
+                                        alt={`${player.clubs.name} logo`}
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                    ) : null}
+                                    <span className="text-sm text-gray-600">
+                                      {player.clubs?.name || 'No club assigned'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          ) : (
+                            /* Non-clickable player info for players viewing other players */
+                            <div className="flex items-center space-x-4 flex-1">
+                              {player.photo_url ? (
+                                <img
+                                  src={playerPhotoUrls[player.id] || player.photo_url}
+                                  alt={`${player.first_name} ${player.last_name}`}
+                                  className="w-12 h-12 object-cover rounded-full border border-gray-300"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                  <span className="text-gray-500 text-sm font-medium">
+                                    {player.first_name.charAt(0)}{player.last_name.charAt(0)}
                                   </span>
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3">
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    {player.first_name} {player.last_name}
+                                  </h3>
+                                  {player.jersey_number && (
+                                    <span className="text-sm text-gray-500">#{player.jersey_number}</span>
+                                  )}
+                                  {player.hand && (
+                                    <span className="text-sm text-gray-500 capitalize">{player.hand}</span>
+                                  )}
+                                  {player.birthdate && (
+                                    <span className="text-sm text-gray-500">
+                                      {calculateAge(player.birthdate)} years old
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center space-x-4 mt-1">
+                                  <div className="flex flex-wrap gap-1">
+                                    {getAccreditationBadges(player.accreditations).map((badge, index) => (
+                                      <span
+                                        key={index}
+                                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${badge.color}`}
+                                      >
+                                        {badge.text}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    {player.clubs?.logo_url ? (
+                                      <img
+                                        src={signedUrls[player.clubs.id] || player.clubs.logo_url}
+                                        alt={`${player.clubs.name} logo`}
+                                        className="w-5 h-5 object-contain"
+                                      />
+                                    ) : null}
+                                    <span className="text-sm text-gray-600">
+                                      {player.clubs?.name || 'No club assigned'}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </Link>
-                          {(canViewPlayers || canManageSquad) && (
+                          )}
+                          {(canViewPlayers || canManageSquad || player.user_id === user?.id) && (
                             <div className="flex space-x-2 ml-4">
-                              {canViewPlayers && (
+                              {(canViewPlayers || player.user_id === user?.id) && (
                                 <Link
                                   to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
                                   className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"

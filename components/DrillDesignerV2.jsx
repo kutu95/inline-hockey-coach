@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
@@ -8,63 +8,71 @@ const DrillDesignerV2 = () => {
   const { orgId, drillId } = useParams()
   const { user } = useAuth()
   const canvasRef = useRef(null)
-  const dynamicPlayerToolsRef = useRef([])
-  const currentPlayerTypeRef = useRef(null)
-  const toolRef = useRef('add')
-  const elementsRef = useRef([])
-  const selectedPathElementRef = useRef(null)
-  const isDrawingRef = useRef(false)
-  const [isDrawing, setIsDrawing] = useState(false)
-  const [currentPath, setCurrentPath] = useState([])
-  const [paths, setPaths] = useState([])
-  const [selectedPlayer, setSelectedPlayer] = useState(null)
-  const [players, setPlayers] = useState([])
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [animationDuration, setAnimationDuration] = useState(10) // seconds
-  const [tool, setTool] = useState('add') // 'add', 'path', 'select'
-  const [animationInterval, setAnimationInterval] = useState(null)
-  const [selectedElement, setSelectedElement] = useState(null)
-  const [elements, setElements] = useState([])
-  const [selectedPathElement, setSelectedPathElement] = useState(null)
-  const [currentPlayerType, setCurrentPlayerType] = useState(null)
-  const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
-  const [dynamicPlayerTools, setDynamicPlayerTools] = useState([])
-  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const animationRef = useRef(null)
+  const selectedToolRef = useRef('select')
+  const selectedPlayerTypeRef = useRef(null)
+  const objectsRef = useRef([])
+  const keyframesRef = useRef([])
 
-  // Load dynamic players (same as V1)
-  const loadDynamicPlayers = async () => {
+  // Core animation state
+  const [keyframes, setKeyframes] = useState([])
+  const [currentFrame, setCurrentFrame] = useState(0)
+  const [totalFrames, setTotalFrames] = useState(60) // 2 seconds at 30fps
+  const [fps, setFps] = useState(30)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [playbackSpeed, setPlaybackSpeed] = useState(1)
+  
+  // Objects state
+  const [objects, setObjects] = useState([])
+  const [selectedObject, setSelectedObject] = useState(null)
+  const [nextObjectId, setNextObjectId] = useState(1)
+  
+  // Tools and UI state
+  const [selectedTool, setSelectedTool] = useState('select') // select, add-player, add-puck, delete
+  const [showOnionSkin, setShowOnionSkin] = useState(true)
+  const [onionSkinOpacity, setOnionSkinOpacity] = useState(0.3)
+  const [onionSkinFrames, setOnionSkinFrames] = useState(3)
+  const [showTimeline, setShowTimeline] = useState(true)
+  const [showPlayerDropdown, setShowPlayerDropdown] = useState(false)
+  
+  // Player types
+  const [playerTypes, setPlayerTypes] = useState([])
+  const [selectedPlayerType, setSelectedPlayerType] = useState(null)
+  const [isLoadingPlayers, setIsLoadingPlayers] = useState(true)
+  
+  // Export state
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportProgress, setExportProgress] = useState(0)
+  
+  // Canvas dimensions
+  const canvasWidth = 1200
+  const canvasHeight = 600
+
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+
+  // Load player types on mount
+  useEffect(() => {
+    loadPlayerTypes()
+  }, [])
+
+  const loadPlayerTypes = async () => {
     try {
       setIsLoadingPlayers(true)
-      
-      // Dynamic file discovery - try to load files with common naming patterns
       const playerFiles = []
       
-      // Try to discover player files (player-silhouette.png, player-silhouette2.png, etc.)
-      for (let i = 1; i <= 50; i++) {
+      // Try to discover player files
+      for (let i = 1; i <= 20; i++) {
         const fileName = i === 1 ? 'player-silhouette.png' : `player-silhouette${i}.png`
         playerFiles.push(fileName)
       }
       
-      // Try to discover goalie files (goalie-silhouette.png, goalie-silhouette2.png, etc.)
-      for (let i = 1; i <= 20; i++) {
+      // Try goalie files
+      for (let i = 1; i <= 10; i++) {
         const fileName = i === 1 ? 'goalie-silhouette.png' : `goalie-silhouette${i}.png`
         playerFiles.push(fileName)
       }
-      
-      // Also try alternative naming patterns
-      const alternativePatterns = [
-        'player.png', 'player1.png', 'player2.png', 'player3.png', 'player4.png', 'player5.png', 'player6.png',
-        'goalie.png', 'goalie1.png', 'goalie2.png', 'goalie3.png', 'goalie4.png', 'goalie5.png'
-      ]
-      
-      alternativePatterns.forEach(fileName => {
-        if (!playerFiles.includes(fileName)) {
-          playerFiles.push(fileName)
-        }
-      })
       
       const loadedPlayers = []
       
@@ -80,24 +88,11 @@ const DrillDesignerV2 = () => {
             img.src = imagePath
           })
           
-          // Generate a unique ID and label based on filename
           const baseName = fileName.replace('.png', '')
           const isGoalie = baseName.includes('goalie')
+          const playerNumber = baseName.match(/\d+/)?.[0] || ''
           
-          // Extract number from filename
-          let playerNumber = ''
-          if (baseName.includes('player-silhouette')) {
-            const match = baseName.match(/player-silhouette(\d+)/)
-            playerNumber = match ? match[1] : ''
-          } else if (baseName.includes('goalie-silhouette')) {
-            const match = baseName.match(/goalie-silhouette(\d+)/)
-            playerNumber = match ? match[1] : ''
-          } else if (baseName.match(/^(player|goalie)(\d+)$/)) {
-            const match = baseName.match(/^(player|goalie)(\d+)$/)
-            playerNumber = match ? match[2] : ''
-          }
-          
-          const playerId = `dynamic-player-${i}`
+          const playerId = `player-${i}`
           const playerLabel = isGoalie 
             ? `Goalie ${playerNumber || '1'}`
             : `Player ${playerNumber || (i + 1)}`
@@ -109,117 +104,20 @@ const DrillDesignerV2 = () => {
             image: img,
             fileName: fileName
           })
-          
         } catch (error) {
           // Silently skip files that don't exist
         }
       }
       
-      console.log('Loaded players:', loadedPlayers)
-      setDynamicPlayerTools(loadedPlayers)
-      
+      setPlayerTypes(loadedPlayers)
+      if (loadedPlayers.length > 0) {
+        setSelectedPlayerType(loadedPlayers[0].id)
+      }
     } catch (error) {
-      console.error('Error loading dynamic players:', error)
+      console.error('Error loading player types:', error)
     } finally {
       setIsLoadingPlayers(false)
     }
-  }
-
-  // Handle click outside dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (showPlayerDropdown && !event.target.closest('.player-dropdown')) {
-        setShowPlayerDropdown(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showPlayerDropdown])
-
-  // Debug currentPlayerType changes
-  useEffect(() => {
-    console.log('currentPlayerType changed to:', currentPlayerType)
-  }, [currentPlayerType])
-
-  // Mouse event handlers (defined before useEffect to avoid undefined references)
-  const handleMouseDown = (e) => {
-    const currentTool = toolRef.current
-    const currentSelectedPathElement = selectedPathElementRef.current
-    console.log('Mouse down triggered:', { currentTool, selectedPathElement: !!currentSelectedPathElement, isDrawing })
-    
-    if (currentTool !== 'path' || !currentSelectedPathElement) {
-      console.log('Mouse down - conditions not met, returning')
-      return
-    }
-    
-    const canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    
-    const x = (e.clientX - rect.left) * scaleX
-    const y = (e.clientY - rect.top) * scaleY
-    
-    console.log('Mouse down - starting path drawing:', { x, y, selectedElement: currentSelectedPathElement })
-    setIsDrawing(true)
-    setCurrentPath([{ x: currentSelectedPathElement.x, y: currentSelectedPathElement.y, time: 0 }])
-  }
-
-  const handleMouseMove = (e) => {
-    const currentTool = toolRef.current
-    const currentSelectedPathElement = selectedPathElementRef.current
-    const currentIsDrawing = isDrawingRef.current
-    console.log('Mouse move triggered:', { currentTool, isDrawing: currentIsDrawing, selectedPathElement: !!currentSelectedPathElement })
-    
-    if (!currentIsDrawing || currentTool !== 'path' || !currentSelectedPathElement) {
-      console.log('Mouse move - conditions not met, returning')
-      return
-    }
-    
-    const canvas = canvasRef.current
-    const rect = canvas.getBoundingClientRect()
-    const scaleX = canvas.width / rect.width
-    const scaleY = canvas.height / rect.height
-    
-    const x = (e.clientX - rect.left) * scaleX
-    const y = (e.clientY - rect.top) * scaleY
-    
-    const time = currentPath.length * 0.5 // 0.5 seconds per point
-    console.log('Adding path point:', { x, y, time, currentPathLength: currentPath.length })
-    setCurrentPath(prev => [...prev, { x, y, time }])
-    
-    // Force immediate redraw for smooth path drawing
-    requestAnimationFrame(() => {
-      redrawCanvas()
-    })
-  }
-
-  const handleMouseUp = () => {
-    const currentIsDrawing = isDrawingRef.current
-    console.log('Mouse up triggered:', { isDrawing: currentIsDrawing })
-    
-    if (!currentIsDrawing) {
-      console.log('Mouse up - not drawing, returning')
-      return
-    }
-    
-    console.log('Mouse up - finishing path drawing')
-    setIsDrawing(false)
-    setCurrentPath(prevPath => {
-      if (prevPath.length > 1) {
-        console.log('Saving path with', prevPath.length, 'points:', prevPath)
-        setPaths(prevPaths => {
-          const newPaths = [...prevPaths, prevPath]
-          console.log('Updated paths array:', { prevCount: prevPaths.length, newCount: newPaths.length })
-          return newPaths
-        })
-        return []
-      }
-      return prevPath
-    })
   }
 
   // Initialize canvas
@@ -228,12 +126,8 @@ const DrillDesignerV2 = () => {
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
-    // Use same dimensions as V1: 1200x600 (2:1 aspect ratio)
-    canvas.width = 1200
-    canvas.height = 600
-
-    // Load dynamic players
-    loadDynamicPlayers()
+    canvas.width = canvasWidth
+    canvas.height = canvasHeight
 
     // Add event listeners
     canvas.addEventListener('click', handleCanvasClick)
@@ -249,272 +143,64 @@ const DrillDesignerV2 = () => {
     }
   }, [])
 
+  // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showPlayerDropdown && !event.target.closest('.player-dropdown')) {
+        setShowPlayerDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showPlayerDropdown])
+
+  // Debug tool changes
+  useEffect(() => {
+    console.log('Selected tool changed to:', selectedTool)
+    selectedToolRef.current = selectedTool
+  }, [selectedTool])
+
+  // Debug player type changes
+  useEffect(() => {
+    console.log('Selected player type changed to:', selectedPlayerType)
+    selectedPlayerTypeRef.current = selectedPlayerType
+  }, [selectedPlayerType])
+
+  // Redraw canvas when state changes
+  useEffect(() => {
+    console.log('Redraw effect triggered:', { currentFrame, objectsCount: objects.length, keyframesCount: keyframes.length })
+    redrawCanvas()
+  }, [currentFrame, objects, keyframes, showOnionSkin, onionSkinOpacity, onionSkinFrames])
+
   // Update refs when state changes
   useEffect(() => {
-    dynamicPlayerToolsRef.current = dynamicPlayerTools
-  }, [dynamicPlayerTools])
+    objectsRef.current = objects
+  }, [objects])
 
   useEffect(() => {
-    currentPlayerTypeRef.current = currentPlayerType
-  }, [currentPlayerType])
+    keyframesRef.current = keyframes
+  }, [keyframes])
 
+  // Animation playback
   useEffect(() => {
-    toolRef.current = tool
-  }, [tool])
+    if (!isPlaying) return
 
-  useEffect(() => {
-    elementsRef.current = elements
-  }, [elements])
-
-  useEffect(() => {
-    selectedPathElementRef.current = selectedPathElement
-  }, [selectedPathElement])
-
-  useEffect(() => {
-    isDrawingRef.current = isDrawing
-  }, [isDrawing])
-
-  // Redraw canvas when elements, paths, or current path changes
-  useEffect(() => {
-    redrawCanvas()
-  }, [elements, paths, currentPath, isPlaying, currentTime])
-
-  // Ensure currentPlayerType is set when dynamicPlayerTools loads
-  useEffect(() => {
-    if (dynamicPlayerTools.length > 0 && !currentPlayerType) {
-      const defaultPlayerId = dynamicPlayerTools[0].id
-      setCurrentPlayerType(defaultPlayerId)
-      console.log('Setting default player from useEffect:', defaultPlayerId)
-    }
-  }, [dynamicPlayerTools, currentPlayerType])
-
-  // Redraw canvas when paths change
-  useEffect(() => {
-    redrawCanvas()
-  }, [paths, currentPath, isPlaying, currentTime, elements])
-
-  const drawElement = (ctx, element) => {
-    console.log('Drawing element:', element)
-    
-    // Check if this element is selected for path drawing
-    const isSelected = selectedPathElement && selectedPathElement.id === element.id
-    
-    if (element.type === 'puck') {
-      // Draw puck as a black circle
-      ctx.beginPath()
-      ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
-      ctx.fillStyle = '#000000'
-      ctx.fill()
-      ctx.strokeStyle = '#ffffff'
-      ctx.lineWidth = 2
-      ctx.stroke()
-      
-      // Draw "P" label for puck
-      ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 12px Arial'
-      ctx.textAlign = 'center'
-      ctx.fillText('P', element.x, element.y + 4)
-    } else if (element.type === 'player' && element.playerType) {
-      // Draw player using the selected player image (use refs to avoid closure issues)
-      const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
-      const selectedPlayerData = currentDynamicPlayerTools.find(p => p.id === element.playerType)
-      console.log('Selected player data:', selectedPlayerData)
-      
-      if (selectedPlayerData && selectedPlayerData.image) {
-        // Calculate image dimensions (doubled from V1 for better visibility)
-        const imageSize = 60 // pixels
-        const halfSize = imageSize / 2
-        
-        console.log('Drawing player image at:', element.x - halfSize, element.y - halfSize)
-        
-        // Draw the player image
-        ctx.save()
-        ctx.drawImage(
-          selectedPlayerData.image,
-          element.x - halfSize,
-          element.y - halfSize,
-          imageSize,
-          imageSize
-        )
-        ctx.restore()
-        
-        // Draw selection indicator if selected
-        if (isSelected) {
-          ctx.strokeStyle = '#00ff00'
-          ctx.lineWidth = 4
-          ctx.setLineDash([5, 5])
-          ctx.beginPath()
-          ctx.arc(element.x, element.y, halfSize + 5, 0, 2 * Math.PI)
-          ctx.stroke()
-          ctx.setLineDash([])
+    const interval = setInterval(() => {
+      setCurrentFrame(prev => {
+        const next = prev + playbackSpeed
+        if (next >= totalFrames) {
+          setIsPlaying(false)
+          return 0
         }
-      } else {
-        console.log('No player image found, using fallback')
-        // Fallback to red circle if image not found
-        ctx.beginPath()
-        ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
-        ctx.fillStyle = '#ff0000'
-        ctx.fill()
-        ctx.strokeStyle = '#000000'
-        ctx.lineWidth = 2
-        ctx.stroke()
-        
-        // Draw selection indicator if selected
-        if (isSelected) {
-          ctx.strokeStyle = '#00ff00'
-          ctx.lineWidth = 4
-          ctx.setLineDash([5, 5])
-          ctx.beginPath()
-          ctx.arc(element.x, element.y, element.radius + 5, 0, 2 * Math.PI)
-          ctx.stroke()
-          ctx.setLineDash([])
-        }
-      }
-    } else {
-      console.log('Unknown element type:', element.type)
-      // Fallback for unknown element types
-      ctx.beginPath()
-      ctx.arc(element.x, element.y, element.radius, 0, 2 * Math.PI)
-      ctx.fillStyle = element.fill || '#ff0000'
-      ctx.fill()
-      ctx.strokeStyle = '#000000'
-      ctx.lineWidth = 2
-      ctx.stroke()
-      
-      // Draw selection indicator if selected
-      if (isSelected) {
-        ctx.strokeStyle = '#00ff00'
-        ctx.lineWidth = 4
-        ctx.setLineDash([5, 5])
-        ctx.beginPath()
-        ctx.arc(element.x, element.y, element.radius + 5, 0, 2 * Math.PI)
-        ctx.stroke()
-        ctx.setLineDash([])
-      }
-    }
-  }
+        return next
+      })
+    }, 1000 / fps)
 
-  const drawRinkBackground = (ctx) => {
-    const canvas = ctx.canvas
-    const rinkColor = '#87CEEB' // Light blue (same as V1)
-    const lineColor = '#FF0000' // Red lines (same as V1)
-    const borderColor = '#000000' // Black border (same as V1)
-    
-    // Rink dimensions and scaling (same as V1)
-    const rinkLength = 60 // meters
-    const rinkWidth = 30 // meters
-    const scaleX = canvas.width / rinkLength
-    const scaleY = canvas.height / rinkWidth
-    const cornerRadius = 8.5 // meters (same as V1)
-    
-    // Convert meters to pixels
-    const mToPx = (meters) => meters * scaleX
-    const mToPxY = (meters) => meters * scaleY
-    
-    // Rink Background
-    ctx.fillStyle = rinkColor
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    
-    // Rink Border with rounded corners
-    ctx.strokeStyle = borderColor
-    ctx.lineWidth = 3
-    ctx.beginPath()
-    ctx.roundRect(0, 0, canvas.width, canvas.height, mToPx(cornerRadius))
-    ctx.stroke()
-    
-    // Center Line
-    ctx.strokeStyle = lineColor
-    ctx.lineWidth = 3
-    ctx.beginPath()
-    ctx.moveTo(canvas.width / 2, 0)
-    ctx.lineTo(canvas.width / 2, canvas.height)
-    ctx.stroke()
-    
-    // Face-off Circles
-    ctx.strokeStyle = lineColor
-    ctx.lineWidth = 3
-    
-    // Center face-off circle
-    ctx.beginPath()
-    ctx.arc(canvas.width / 2, canvas.height / 2, mToPx(2.25), 0, 2 * Math.PI)
-    ctx.stroke()
-    
-    // Corner face-off circles
-    ctx.beginPath()
-    ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.arc(canvas.width - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.arc(mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.arc(canvas.width - mToPx(14), canvas.height - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
-    ctx.stroke()
-    
-    // Hash Marks at Face-off Circles
-    ctx.fillStyle = lineColor
-    
-    // Top Left Face-off Circle
-    ctx.fillRect(mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
-    
-    // Top Right Face-off Circle
-    ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
-    
-    // Bottom Left Face-off Circle
-    ctx.fillRect(mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
-    
-    // Bottom Right Face-off Circle
-    ctx.fillRect(canvas.width - mToPx(14) - mToPx(0.3), canvas.height - mToPxY(7) - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
-    
-    // Center Ice Hash Mark
-    ctx.fillStyle = '#0000FF'
-    ctx.fillRect(canvas.width / 2 - mToPx(0.3), canvas.height / 2 - mToPxY(0.3), mToPx(0.6), mToPxY(0.6))
-    
-    // Goal Lines
-    ctx.strokeStyle = lineColor
-    ctx.lineWidth = 3
-    ctx.beginPath()
-    ctx.moveTo(mToPx(4.5), 10)
-    ctx.lineTo(mToPx(4.5), canvas.height - 10)
-    ctx.stroke()
-    
-    ctx.beginPath()
-    ctx.moveTo(canvas.width - mToPx(4.5), 10)
-    ctx.lineTo(canvas.width - mToPx(4.5), canvas.height - 10)
-    ctx.stroke()
-    
-    // Goals
-    // Left Goal
-    ctx.fillStyle = '#FFFFFF'
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 2
-    ctx.fillRect(mToPx(4.5) - mToPxY(1), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
-    ctx.strokeRect(mToPx(4.5) - mToPxY(1), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
-    
-    // Right Goal
-    ctx.fillRect(canvas.width - mToPx(4.5), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
-    ctx.strokeRect(canvas.width - mToPx(4.5), canvas.height / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
-    
-    // Neutral Zone Dots
-    ctx.fillStyle = lineColor
-    ctx.beginPath()
-    ctx.arc(canvas.width / 2, mToPxY(3), mToPx(0.3), 0, 2 * Math.PI)
-    ctx.fill()
-    
-    ctx.beginPath()
-    ctx.arc(canvas.width / 2, canvas.height - mToPxY(3), mToPx(0.3), 0, 2 * Math.PI)
-    ctx.fill()
-    
-    // Center Ice Dot
-    ctx.beginPath()
-    ctx.arc(canvas.width / 2, canvas.height / 2, mToPx(0.3), 0, 2 * Math.PI)
-    ctx.fill()
-  }
+    return () => clearInterval(interval)
+  }, [isPlaying, fps, playbackSpeed, totalFrames])
 
   const redrawCanvas = () => {
     const canvas = canvasRef.current
@@ -525,205 +211,257 @@ const DrillDesignerV2 = () => {
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     
-    // Draw rink background (same as V1)
+    // Draw rink background
     drawRinkBackground(ctx)
     
-    // Draw all completed paths
-    paths.forEach((path, index) => {
-      drawPath(ctx, path, index === selectedPlayer)
-    })
-    
-    // Draw current path being drawn
-    if (currentPath.length > 0) {
-      drawPath(ctx, currentPath, false, true)
+    // Draw onion skin frames
+    if (showOnionSkin) {
+      drawOnionSkin(ctx)
     }
     
-    // Draw players at current time if playing, otherwise draw static elements
-    if (isPlaying) {
-      drawPlayersAtTime(ctx, currentTime)
-    } else {
-      // Draw all elements (players, pucks) in their static positions
-      elements.forEach(element => {
-        drawElement(ctx, element)
-      })
+    // Draw current frame objects
+    console.log('Redrawing canvas, current frame:', currentFrame, 'objects count:', objects.length)
+    drawFrameObjects(ctx, currentFrame)
+    
+    // Draw selection indicators
+    if (selectedObject) {
+      drawSelectionIndicator(ctx, selectedObject)
     }
   }
 
-  const drawPath = (ctx, path, isSelected = false, isDrawing = false) => {
-    if (path.length < 2) return
-
+  const drawRinkBackground = (ctx) => {
+    const rinkColor = '#87CEEB'
+    const lineColor = '#FF0000'
+    const borderColor = '#000000'
+    
+    const rinkLength = 60
+    const rinkWidth = 30
+    const scaleX = canvasWidth / rinkLength
+    const scaleY = canvasHeight / rinkWidth
+    const cornerRadius = 8.5
+    
+    const mToPx = (meters) => meters * scaleX
+    const mToPxY = (meters) => meters * scaleY
+    
+    // Rink Background
+    ctx.fillStyle = rinkColor
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+    
+    // Rink Border
+    ctx.strokeStyle = borderColor
+    ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.moveTo(path[0].x, path[0].y)
-    
-    for (let i = 1; i < path.length; i++) {
-      ctx.lineTo(path[i].x, path[i].y)
-    }
-    
-    // Set line style based on state
-    if (isDrawing) {
-      // Dotted line for drawing in progress
-      ctx.setLineDash([5, 5])
-      ctx.strokeStyle = '#00ff00'
-      ctx.lineWidth = 3
-    } else if (isSelected) {
-      // Solid line for selected path
-      ctx.setLineDash([])
-      ctx.strokeStyle = '#ff0000'
-      ctx.lineWidth = 3
-    } else {
-      // Solid line for normal paths
-      ctx.setLineDash([])
-      ctx.strokeStyle = '#0000ff'
-      ctx.lineWidth = 2
-    }
-    
+    ctx.roundRect(0, 0, canvasWidth, canvasHeight, mToPx(cornerRadius))
     ctx.stroke()
-    ctx.setLineDash([]) // Reset line dash
+    
+    // Center Line
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(canvasWidth / 2, 0)
+    ctx.lineTo(canvasWidth / 2, canvasHeight)
+    ctx.stroke()
+    
+    // Face-off Circles
+    ctx.strokeStyle = lineColor
+    ctx.lineWidth = 3
+    
+    // Center face-off circle
+    ctx.beginPath()
+    ctx.arc(canvasWidth / 2, canvasHeight / 2, mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    // Corner face-off circles
+    ctx.beginPath()
+    ctx.arc(mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(canvasWidth - mToPx(14), mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(mToPx(14), canvasHeight - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    ctx.beginPath()
+    ctx.arc(canvasWidth - mToPx(14), canvasHeight - mToPxY(7), mToPx(2.25), 0, 2 * Math.PI)
+    ctx.stroke()
+    
+    // Goals
+    ctx.fillStyle = '#FFFFFF'
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 2
+    
+    // Left Goal
+    ctx.fillRect(mToPx(4.5) - mToPxY(1), canvasHeight / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    ctx.strokeRect(mToPx(4.5) - mToPxY(1), canvasHeight / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    
+    // Right Goal
+    ctx.fillRect(canvasWidth - mToPx(4.5), canvasHeight / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
+    ctx.strokeRect(canvasWidth - mToPx(4.5), canvasHeight / 2 - mToPx(0.9), mToPxY(1), mToPx(1.8))
   }
 
-  const drawPlayersAtTime = (ctx, time) => {
-    console.log('Drawing players at time:', time, 'with', paths.length, 'paths')
+  const drawOnionSkin = (ctx) => {
+    // Draw previous frames with reduced opacity
+    for (let i = 1; i <= onionSkinFrames; i++) {
+      const frameIndex = currentFrame - i
+      if (frameIndex >= 0) {
+        ctx.globalAlpha = onionSkinOpacity * (1 - i / (onionSkinFrames + 1))
+        drawFrameObjects(ctx, frameIndex)
+      }
+    }
+    ctx.globalAlpha = 1
+  }
+
+  const drawFrameObjects = (ctx, frameIndex) => {
+    const frameObjects = getObjectsAtFrame(frameIndex)
     
-    // Draw each element at its animated position
-    elements.forEach((element, elementIndex) => {
-      // Find the path for this element (assuming paths array corresponds to elements)
-      const path = paths[elementIndex]
-      if (!path || path.length < 2) {
-        // If no path, draw at original position
-        drawElement(ctx, element)
-        return
+    console.log(`Drawing frame ${frameIndex}, objects:`, frameObjects)
+    
+    frameObjects.forEach(obj => {
+      if (obj.type === 'puck') {
+        drawPuck(ctx, obj)
+      } else if (obj.type === 'player') {
+        drawPlayer(ctx, obj)
       }
       
-      const position = getPlayerPositionAtTime(path, time)
-      console.log(`Element ${elementIndex} position at time ${time}:`, position)
+      // Draw selection indicator if this object is selected
+      if (selectedObject && selectedObject.id === obj.id) {
+        drawSelectionIndicator(ctx, obj)
+      }
+    })
+  }
+
+  const drawPuck = (ctx, puck) => {
+    ctx.beginPath()
+    ctx.arc(puck.x, puck.y, 8, 0, 2 * Math.PI)
+    ctx.fillStyle = '#000000'
+    ctx.fill()
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 2
+    ctx.stroke()
+    
+    // Draw "P" label
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 12px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('P', puck.x, puck.y + 4)
+  }
+
+  const drawPlayer = (ctx, player) => {
+    const playerType = playerTypes.find(p => p.id === player.playerType)
+    
+    if (playerType && playerType.image) {
+      const imageSize = 50
+      const halfSize = imageSize / 2
       
-      if (position) {
-        // Create a temporary element at the animated position
-        const animatedElement = {
-          ...element,
-          x: position.x,
-          y: position.y
+      ctx.save()
+      ctx.translate(player.x, player.y)
+      if (player.flipped) {
+        ctx.scale(-1, 1)
+      }
+      ctx.drawImage(
+        playerType.image,
+        -halfSize,
+        -halfSize,
+        imageSize,
+        imageSize
+      )
+      ctx.restore()
+    } else {
+      // Fallback circle
+      ctx.beginPath()
+      ctx.arc(player.x, player.y, 25, 0, 2 * Math.PI)
+      ctx.fillStyle = '#ff0000'
+      ctx.fill()
+      ctx.strokeStyle = '#000000'
+      ctx.lineWidth = 2
+      ctx.stroke()
+    }
+  }
+
+  const drawSelectionIndicator = (ctx, obj) => {
+    ctx.strokeStyle = '#00ff00'
+    ctx.lineWidth = 3
+    ctx.setLineDash([5, 5])
+    ctx.beginPath()
+    ctx.arc(obj.x, obj.y, 35, 0, 2 * Math.PI)
+    ctx.stroke()
+    ctx.setLineDash([])
+  }
+
+  const getObjectsAtFrame = (frameIndex) => {
+    return getObjectsAtFrameWithData(frameIndex, objects, keyframes)
+  }
+
+  const getObjectsAtFrameWithData = (frameIndex, objectsData, keyframesData) => {
+    // Get all objects that have keyframes at or before this frame
+    const frameObjects = []
+    
+    console.log('getObjectsAtFrameWithData called with frameIndex:', frameIndex)
+    console.log('Total objects:', objectsData.length)
+    console.log('Total keyframes:', keyframesData.length)
+    
+    objectsData.forEach(obj => {
+      console.log('Processing object:', obj.id, 'type:', obj.type)
+      const objKeyframes = keyframesData.filter(k => k.objectId === obj.id && k.frame <= frameIndex)
+      console.log('Found keyframes for object', obj.id, ':', objKeyframes.length)
+      
+      if (objKeyframes.length > 0) {
+        // Find the most recent keyframe for this object
+        const latestKeyframe = objKeyframes.reduce((latest, current) => 
+          current.frame > latest.frame ? current : latest
+        )
+        
+        // Interpolate if there's a next keyframe
+        const nextKeyframe = keyframesData.find(k => 
+          k.objectId === obj.id && k.frame > frameIndex
+        )
+        
+        if (nextKeyframe) {
+          // Interpolate between keyframes
+          const progress = (frameIndex - latestKeyframe.frame) / (nextKeyframe.frame - latestKeyframe.frame)
+          frameObjects.push({
+            ...obj,
+            x: latestKeyframe.x + (nextKeyframe.x - latestKeyframe.x) * progress,
+            y: latestKeyframe.y + (nextKeyframe.y - latestKeyframe.y) * progress,
+            flipped: latestKeyframe.flipped
+          })
+        } else {
+          // Use the latest keyframe as-is
+          frameObjects.push({
+            ...obj,
+            x: latestKeyframe.x,
+            y: latestKeyframe.y,
+            flipped: latestKeyframe.flipped
+          })
         }
-        drawElement(ctx, animatedElement)
       } else {
-        // Fallback to original position
-        drawElement(ctx, element)
+        // If no keyframes exist for this object, use its default position
+        // This ensures objects show up immediately when added
+        console.log('No keyframes found for object', obj.id, '- using default position')
+        frameObjects.push({
+          ...obj,
+          x: obj.x,
+          y: obj.y,
+          flipped: obj.flipped || false
+        })
       }
     })
-  }
-
-  const getPlayerPositionAtTime = (path, time) => {
-    if (path.length < 2) return null
     
-    // Find the two points that bracket the current time
-    let startIndex = 0
-    for (let i = 0; i < path.length - 1; i++) {
-      if (path[i].time <= time && path[i + 1].time >= time) {
-        startIndex = i
-        break
-      }
-    }
-    
-    if (startIndex >= path.length - 1) {
-      return path[path.length - 1]
-    }
-    
-    const start = path[startIndex]
-    const end = path[startIndex + 1]
-    const progress = (time - start.time) / (end.time - start.time)
-    
-    return {
-      x: start.x + (end.x - start.x) * progress,
-      y: start.y + (end.y - start.y) * progress
-    }
-  }
-
-  const startAnimation = () => {
-    console.log('Starting animation with paths:', paths.length)
-    paths.forEach((path, index) => {
-      console.log(`Path ${index}:`, path.length, 'points, duration:', path[path.length - 1]?.time || 0)
-    })
-    
-    // Clear any existing interval
-    if (animationInterval) {
-      clearInterval(animationInterval)
-    }
-    
-    setIsPlaying(true)
-    setCurrentTime(0)
-    
-    const interval = setInterval(() => {
-      setCurrentTime(prev => {
-        if (prev >= animationDuration) {
-          console.log('Animation completed')
-          setIsPlaying(false)
-          clearInterval(interval)
-          setAnimationInterval(null)
-          return 0
-        }
-        return prev + 0.1
-      })
-    }, 100)
-    
-    setAnimationInterval(interval)
-  }
-
-  const stopAnimation = () => {
-    console.log('Stopping animation')
-    setIsPlaying(false)
-    setCurrentTime(0)
-    
-    // Clear the interval
-    if (animationInterval) {
-      clearInterval(animationInterval)
-      setAnimationInterval(null)
-    }
-  }
-
-  const clearAllPaths = () => {
-    setPaths([])
-    setCurrentPath([])
-    setSelectedPlayer(null)
-  }
-
-  const deleteSelectedPath = () => {
-    if (selectedPlayer !== null) {
-      setPaths(prev => prev.filter((_, index) => index !== selectedPlayer))
-      setSelectedPlayer(null)
-    }
-  }
-
-  const addElement = (type, x, y, playerTypeOverride = null) => {
-    // Get the player type to use (use refs to avoid closure issues)
-    const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
-    const currentPlayerTypeValue = currentPlayerTypeRef.current
-    const playerType = playerTypeOverride || currentPlayerTypeValue || currentDynamicPlayerTools[0]?.id
-    
-    const newElement = {
-      id: Date.now() + Math.random(),
-      type: type,
-      x: x,
-      y: y,
-      fill: type === 'puck' ? '#000000' : '#ff0000',
-      radius: type === 'puck' ? 8 : 15,
-      playerType: type === 'player' ? playerType : type
-    }
-    console.log('Adding element:', newElement)
-    console.log('Using player type:', playerType)
-    console.log('Dynamic player tools length:', currentDynamicPlayerTools.length)
-    setElements(prevElements => {
-      const newElements = [...prevElements, newElement]
-      console.log('Updated elements array:', { prevCount: prevElements.length, newCount: newElements.length, newElementId: newElement.id })
-      return newElements
-    })
+    console.log('Returning frame objects:', frameObjects.length)
+    return frameObjects
   }
 
   const handleCanvasClick = (e) => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      console.log('Canvas ref is null')
+      return
+    }
 
     const rect = canvas.getBoundingClientRect()
-    // Calculate the scale factor between CSS pixels and canvas pixels
     const scaleX = canvas.width / rect.width
     const scaleY = canvas.height / rect.height
     
@@ -731,84 +469,372 @@ const DrillDesignerV2 = () => {
     const y = (e.clientY - rect.top) * scaleY
 
     // Use refs to get current values (avoid closure issues)
-    const currentDynamicPlayerTools = dynamicPlayerToolsRef.current
-    const currentPlayerTypeValue = currentPlayerTypeRef.current
-    const currentTool = toolRef.current
+    const currentTool = selectedToolRef.current
+    const currentPlayerType = selectedPlayerTypeRef.current
 
     console.log('Canvas click:', { 
-      x, y, tool: currentTool, 
-      currentPlayerType: currentPlayerTypeValue, 
-      dynamicPlayerToolsLength: currentDynamicPlayerTools.length 
+      x, y, selectedTool: currentTool, selectedPlayerType: currentPlayerType,
+      clientX: e.clientX, clientY: e.clientY,
+      rectLeft: rect.left, rectTop: rect.top,
+      scaleX, scaleY
     })
-    console.log('Current tool is:', currentTool)
 
-    if (currentTool === 'add') {
-      // Check if player data is loaded and a player is selected
-      if (currentDynamicPlayerTools.length === 0) {
-        console.log('Player data not loaded yet, please wait...')
-        return
-      }
-      
-      // Get the current player type from the refs
-      const currentPlayer = currentPlayerTypeValue || currentDynamicPlayerTools[0]?.id
-      if (!currentPlayer) {
-        console.log('No player selected, please select a player first')
-        return
-      }
-      
-      console.log('Adding player with type:', currentPlayer)
-      // Add a player at click position
-      addElement('player', x, y, currentPlayer)
+    if (currentTool === 'add-player') {
+      console.log('Adding player...')
+      addPlayer(x, y)
     } else if (currentTool === 'add-puck') {
-      // Add a puck at click position
-      addElement('puck', x, y)
-    } else if (currentTool === 'path') {
-      // Check if clicking on an element to select it for path drawing
-      const clickedElement = findElementAtPosition(x, y)
-      console.log('Path tool - clicked element:', clickedElement)
-      if (clickedElement) {
-        console.log('Setting selected path element:', clickedElement)
-        setSelectedPathElement(clickedElement)
-        setCurrentPath([{ x: clickedElement.x, y: clickedElement.y, time: 0 }])
+      console.log('Adding puck...')
+      addPuck(x, y)
+    } else if (currentTool === 'select') {
+      console.log('Selecting object...')
+      const clickedObject = selectObjectAtPosition(x, y)
+      setSelectedObject(clickedObject)
+    } else {
+      console.log('Unknown tool:', currentTool)
+    }
+  }
+
+  const handleMouseDown = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    if (selectedTool === 'select') {
+      const clickedObject = selectObjectAtPosition(x, y)
+      if (clickedObject) {
+        setSelectedObject(clickedObject)
+        setIsDragging(true)
+        setDragOffset({
+          x: x - clickedObject.x,
+          y: y - clickedObject.y
+        })
       } else {
-        console.log('No element found at click position for path drawing')
+        setSelectedObject(null)
       }
     }
   }
 
-  const findElementAtPosition = (x, y) => {
-    const currentElements = elementsRef.current
-    console.log('Finding element at position:', { x, y, elementsCount: currentElements.length, elements: currentElements })
-    
-    const foundElement = currentElements.find(element => {
-      const distance = Math.sqrt((x - element.x) ** 2 + (y - element.y) ** 2)
+  const handleMouseMove = (e) => {
+    if (isDragging && selectedObject) {
+      const rect = canvasRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left - dragOffset.x
+      const y = e.clientY - rect.top - dragOffset.y
+
+      // Update the selected object's position
+      const updatedObject = { ...selectedObject, x, y }
+      setSelectedObject(updatedObject)
+
+      // Update the object in the objects array
+      setObjects(prev => prev.map(obj => 
+        obj.id === selectedObject.id ? updatedObject : obj
+      ))
+
+      // Update the keyframe if one exists at current frame
+      const existingKeyframeIndex = keyframes.findIndex(k => 
+        k.objectId === selectedObject.id && k.frame === currentFrame
+      )
       
-      // Use appropriate radius based on element type
-      let detectionRadius = element.radius
-      
-      if (element.type === 'player') {
-        // For players, use the image size for better click detection
-        detectionRadius = 30 // Half of the 60px image size
+      if (existingKeyframeIndex >= 0) {
+        const updatedKeyframes = [...keyframes]
+        updatedKeyframes[existingKeyframeIndex] = {
+          ...updatedKeyframes[existingKeyframeIndex],
+          x,
+          y
+        }
+        setKeyframes(updatedKeyframes)
       }
-      
-      const isWithinRadius = distance <= detectionRadius
-      console.log('Checking element:', { 
-        elementId: element.id, 
-        elementType: element.type, 
-        distance: distance.toFixed(2), 
-        detectionRadius, 
-        isWithinRadius 
-      })
-      
-      return isWithinRadius
-    })
-    
-    console.log('Found element:', foundElement)
-    return foundElement
+    }
   }
 
-  const selectPath = (index) => {
-    setSelectedPlayer(index)
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const addPlayer = (x, y) => {
+    const currentPlayerType = selectedPlayerTypeRef.current
+    if (!currentPlayerType) {
+      console.log('No player type selected')
+      return
+    }
+    
+    console.log('Adding player at:', x, y, 'with type:', currentPlayerType)
+    
+    // Generate unique ID using timestamp + random number
+    const uniqueId = Date.now() + Math.random()
+    
+    const newPlayer = {
+      id: uniqueId,
+      type: 'player',
+      playerType: currentPlayerType,
+      x: x,
+      y: y,
+      flipped: false
+    }
+    
+    console.log('New player object:', newPlayer)
+    
+    setObjects(prev => {
+      const newObjects = [...prev, newPlayer]
+      console.log('Updated objects array:', newObjects)
+      return newObjects
+    })
+    
+    // Add keyframe for this player at current frame
+    const newKeyframe = {
+      id: Date.now() + Math.random(),
+      objectId: uniqueId,
+      frame: currentFrame,
+      x: x,
+      y: y,
+      flipped: false
+    }
+    
+    setKeyframes(prev => {
+      const newKeyframes = [...prev, newKeyframe]
+      console.log('Added keyframe for new player:', newKeyframe)
+      return newKeyframes
+    })
+  }
+
+  const addPuck = (x, y) => {
+    console.log('Adding puck at:', x, y)
+    
+    // Generate unique ID using timestamp + random number
+    const uniqueId = Date.now() + Math.random()
+    
+    const newPuck = {
+      id: uniqueId,
+      type: 'puck',
+      x: x,
+      y: y
+    }
+    
+    console.log('New puck object:', newPuck)
+    
+    setObjects(prev => {
+      const newObjects = [...prev, newPuck]
+      console.log('Updated objects array:', newObjects)
+      return newObjects
+    })
+    
+    // Add keyframe for this puck at current frame
+    const newKeyframe = {
+      id: Date.now() + Math.random(),
+      objectId: uniqueId,
+      frame: currentFrame,
+      x: x,
+      y: y,
+      flipped: false
+    }
+    
+    setKeyframes(prev => {
+      const newKeyframes = [...prev, newKeyframe]
+      console.log('Added keyframe for new puck:', newKeyframe)
+      return newKeyframes
+    })
+  }
+
+  const selectObjectAtPosition = (x, y) => {
+    console.log('selectObjectAtPosition called with currentFrame:', currentFrame)
+    console.log('Current objects array (from ref):', objectsRef.current)
+    console.log('Current keyframes array (from ref):', keyframesRef.current)
+    
+    // Use refs to get current values (avoid closure issues)
+    const currentObjects = objectsRef.current
+    const currentKeyframes = keyframesRef.current
+    
+    const frameObjects = getObjectsAtFrameWithData(currentFrame, currentObjects, currentKeyframes)
+    console.log('Selecting object at position:', x, y, 'frame objects:', frameObjects)
+    
+    const clickedObject = frameObjects.find(obj => {
+      const distance = Math.sqrt((x - obj.x) ** 2 + (y - obj.y) ** 2)
+      console.log('Checking object:', obj.id, 'distance:', distance, 'threshold: 30')
+      return distance <= 30
+    })
+    
+    console.log('Selected object:', clickedObject)
+    return clickedObject || null
+  }
+
+  // Add keyframe for selected object at current frame
+  const addKeyframe = () => {
+    console.log('addKeyframe called with selectedObject:', selectedObject, 'currentFrame:', currentFrame)
+    
+    if (!selectedObject) {
+      alert('Please select an object first')
+      return
+    }
+
+    const existingKeyframe = keyframes.find(k => k.objectId === selectedObject.id && k.frame === currentFrame)
+    if (existingKeyframe) {
+      alert('A keyframe already exists at this frame')
+      return
+    }
+
+    const newKeyframe = {
+      id: Date.now() + Math.random(),
+      objectId: selectedObject.id,
+      frame: currentFrame,
+      x: selectedObject.x,
+      y: selectedObject.y,
+      flipped: selectedObject.flipped || false
+    }
+
+    console.log('Creating new keyframe:', newKeyframe)
+    setKeyframes(prev => {
+      const newKeyframes = [...prev, newKeyframe]
+      console.log('Updated keyframes array:', newKeyframes)
+      return newKeyframes
+    })
+    console.log('Created keyframe:', newKeyframe)
+  }
+
+  // Update keyframe for selected object at current frame
+  const updateKeyframe = () => {
+    if (!selectedObject) {
+      alert('Please select an object first')
+      return
+    }
+
+    const existingKeyframeIndex = keyframes.findIndex(k => k.objectId === selectedObject.id && k.frame === currentFrame)
+    if (existingKeyframeIndex === -1) {
+      alert('No keyframe exists at this frame. Use "Create Keyframe" instead.')
+      return
+    }
+
+    const updatedKeyframes = [...keyframes]
+    updatedKeyframes[existingKeyframeIndex] = {
+      ...updatedKeyframes[existingKeyframeIndex],
+      x: selectedObject.x,
+      y: selectedObject.y,
+      flipped: selectedObject.flipped || false
+    }
+
+    setKeyframes(updatedKeyframes)
+    console.log('Updated keyframe:', updatedKeyframes[existingKeyframeIndex])
+  }
+
+  // Delete keyframe for selected object at current frame
+  const deleteKeyframe = () => {
+    if (!selectedObject) {
+      alert('Please select an object first')
+      return
+    }
+
+    const existingKeyframeIndex = keyframes.findIndex(k => k.objectId === selectedObject.id && k.frame === currentFrame)
+    if (existingKeyframeIndex === -1) {
+      alert('No keyframe exists at this frame')
+      return
+    }
+
+    const updatedKeyframes = keyframes.filter((_, index) => index !== existingKeyframeIndex)
+    setKeyframes(updatedKeyframes)
+    console.log('Deleted keyframe at frame:', currentFrame)
+  }
+
+  const deleteObject = (objectId) => {
+    setObjects(prev => prev.filter(obj => obj.id !== objectId))
+    setKeyframes(prev => prev.filter(k => k.objectId !== objectId))
+    setSelectedObject(null)
+  }
+
+  const flipObject = () => {
+    if (!selectedObject) return
+    
+    const currentKeyframe = keyframes.find(k => 
+      k.objectId === selectedObject.id && k.frame === currentFrame
+    )
+    
+    const newFlipped = currentKeyframe ? !currentKeyframe.flipped : true
+    updateKeyframe(selectedObject.id, selectedObject.x, selectedObject.y, newFlipped)
+  }
+
+  const playAnimation = () => {
+    setIsPlaying(true)
+  }
+
+  const pauseAnimation = () => {
+    setIsPlaying(false)
+  }
+
+  const stopAnimation = () => {
+    setIsPlaying(false)
+    setCurrentFrame(0)
+  }
+
+  const goToFrame = (frame) => {
+    setCurrentFrame(Math.max(0, Math.min(frame, totalFrames - 1)))
+  }
+
+  const goToPreviousFrame = () => {
+    setCurrentFrame(prev => Math.max(0, prev - 1))
+  }
+
+  const goToNextFrame = () => {
+    setCurrentFrame(prev => Math.min(totalFrames - 1, prev + 1))
+  }
+
+  const exportAnimation = async () => {
+    setIsExporting(true)
+    setExportProgress(0)
+    
+    try {
+      const canvas = document.createElement('canvas')
+      canvas.width = canvasWidth
+      canvas.height = canvasHeight
+      const ctx = canvas.getContext('2d')
+      
+      const stream = canvas.captureStream(fps)
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9'
+      })
+      
+      const chunks = []
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data)
+        }
+      }
+      
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.download = 'drill-animation.webm'
+        link.href = url
+        link.click()
+        URL.revokeObjectURL(url)
+        setIsExporting(false)
+        setExportProgress(0)
+      }
+      
+      mediaRecorder.start()
+      
+      // Render all frames
+      for (let frame = 0; frame < totalFrames; frame++) {
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        // Draw rink background
+        drawRinkBackground(ctx)
+        
+        // Draw frame objects
+        drawFrameObjects(ctx, frame)
+        
+        // Update progress
+        setExportProgress((frame / totalFrames) * 100)
+        
+        // Wait for frame duration
+        await new Promise(resolve => setTimeout(resolve, 1000 / fps))
+      }
+      
+      mediaRecorder.stop()
+      
+    } catch (error) {
+      console.error('Error exporting animation:', error)
+      setIsExporting(false)
+      setExportProgress(0)
+    }
   }
 
   return (
@@ -828,22 +854,16 @@ const DrillDesignerV2 = () => {
                   </Link>
                   <div>
                     <h1 className="text-2xl font-bold text-gray-900">Drill Designer V2</h1>
-                    <p className="text-gray-600 mt-1">Path-driven animation designer</p>
+                    <p className="text-gray-600 mt-1">Advanced Stop Motion Animation</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <button
-                    onClick={clearAllPaths}
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                    onClick={exportAnimation}
+                    disabled={isExporting}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                   >
-                    Clear All
-                  </button>
-                  <button
-                    onClick={deleteSelectedPath}
-                    disabled={selectedPlayer === null}
-                    className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                  >
-                    Delete Selected
+                    {isExporting ? `Exporting... ${Math.round(exportProgress)}%` : 'Export Video'}
                   </button>
                 </div>
               </div>
@@ -856,51 +876,98 @@ const DrillDesignerV2 = () => {
             <div className="lg:col-span-3">
               <div className="bg-white shadow rounded-lg p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Rink Canvas</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">Animation Canvas</h2>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={isPlaying ? stopAnimation : startAnimation}
-                      className={`px-4 py-2 rounded-md font-medium transition duration-150 ease-in-out ${
+                      onClick={stopAnimation}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      ⏹
+                    </button>
+                    <button
+                      onClick={goToPreviousFrame}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      ⏮
+                    </button>
+                    <button
+                      onClick={isPlaying ? pauseAnimation : playAnimation}
+                      className={`px-4 py-1 rounded text-sm font-medium transition duration-150 ease-in-out ${
                         isPlaying 
                           ? 'bg-red-600 hover:bg-red-700 text-white' 
                           : 'bg-green-600 hover:bg-green-700 text-white'
                       }`}
                     >
-                      {isPlaying ? 'Stop' : 'Play'}
+                      {isPlaying ? '⏸' : '▶'}
                     </button>
-                    <span className="text-sm text-gray-600">
-                      {currentTime.toFixed(1)}s / {animationDuration}s
+                    <button
+                      onClick={goToNextFrame}
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
+                    >
+                      ⏭
+                    </button>
+                    <span className="text-sm text-gray-600 ml-2">
+                      Frame {currentFrame + 1} / {totalFrames}
                     </span>
                   </div>
                 </div>
                 
-                <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                <div className="border-2 rounded-lg overflow-hidden relative border-gray-300">
                   <canvas
                     ref={canvasRef}
-                    className="w-full h-auto cursor-crosshair"
+                    className={`w-full h-auto ${isDragging ? 'cursor-grabbing' : 'cursor-crosshair'}`}
                     style={{ maxHeight: '600px' }}
+                    onClick={handleCanvasClick}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
                   />
                 </div>
+                {isDragging && (
+                  <div className="absolute inset-0 bg-blue-500 bg-opacity-10 pointer-events-none flex items-center justify-center">
+                    <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+                      Dragging object...
+                    </div>
+                  </div>
+                )}
                 
-                {/* Toolbar */}
+                {/* Tools */}
                 <div className="mt-4 p-4 bg-gray-100 rounded-lg border">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">Tools - Current tool: <span className="text-blue-600 font-bold">{tool}</span></h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Tools</h3>
                   <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
-                        id="add"
+                        id="select"
                         name="tool"
-                        value="add"
-                        checked={tool === 'add'}
+                        value="select"
+                        checked={selectedTool === 'select'}
                         onChange={(e) => {
-                          console.log('Add tool selected! New value:', e.target.value)
-                          setTool(e.target.value)
+                          console.log('Select tool clicked, new value:', e.target.value)
+                          setSelectedTool(e.target.value)
                         }}
                         className="text-blue-600"
                       />
-                      <label htmlFor="add" className="text-sm font-medium text-gray-700">
-                        Add Players
+                      <label htmlFor="select" className="text-sm font-medium text-gray-700">
+                        Select
+                      </label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id="add-player"
+                        name="tool"
+                        value="add-player"
+                        checked={selectedTool === 'add-player'}
+                        onChange={(e) => {
+                          console.log('Add player tool clicked, new value:', e.target.value)
+                          setSelectedTool(e.target.value)
+                        }}
+                        className="text-blue-600"
+                      />
+                      <label htmlFor="add-player" className="text-sm font-medium text-gray-700">
+                        Add Player
                       </label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -909,10 +976,10 @@ const DrillDesignerV2 = () => {
                         id="add-puck"
                         name="tool"
                         value="add-puck"
-                        checked={tool === 'add-puck'}
+                        checked={selectedTool === 'add-puck'}
                         onChange={(e) => {
-                          console.log('Add puck tool selected! New value:', e.target.value)
-                          setTool(e.target.value)
+                          console.log('Add puck tool clicked, new value:', e.target.value)
+                          setSelectedTool(e.target.value)
                         }}
                         className="text-blue-600"
                       />
@@ -920,39 +987,18 @@ const DrillDesignerV2 = () => {
                         Add Puck
                       </label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id="path"
-                        name="tool"
-                        value="path"
-                        checked={tool === 'path'}
-                        onChange={(e) => {
-                          console.log('Path tool selected! New value:', e.target.value)
-                          setTool(e.target.value)
-                        }}
-                        className="text-blue-600"
-                      />
-                      <label htmlFor="path" className="text-sm font-medium text-gray-700">
-                        Draw Paths
-                      </label>
-                    </div>
                     
-                    {/* Player Selection Dropdown */}
-                    {tool === 'add' && (
-                      <div className="relative player-dropdown">
-                        {isLoadingPlayers ? (
-                          <div className="flex items-center space-x-2 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-500">
-                            <span>Loading players...</span>
-                          </div>
-                        ) : (
+                    {/* Player Selection */}
+                    {selectedTool === 'add-player' && (
+                      <div className="flex items-center space-x-2">
+                        <div className="relative player-dropdown">
                           <button
                             type="button"
                             onClick={() => setShowPlayerDropdown(!showPlayerDropdown)}
-                            className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="flex items-center space-x-2 px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50"
                           >
                             {(() => {
-                              const selectedPlayerData = dynamicPlayerTools.find(p => p.id === currentPlayerType)
+                              const selectedPlayerData = playerTypes.find(p => p.id === selectedPlayerType)
                               return selectedPlayerData && selectedPlayerData.image ? (
                                 <img 
                                   src={selectedPlayerData.image.src} 
@@ -964,55 +1010,52 @@ const DrillDesignerV2 = () => {
                               )
                             })()}
                             <span>
-                              {dynamicPlayerTools.find(p => p.id === currentPlayerType)?.label || 'Select Player'}
+                              {playerTypes.find(p => p.id === selectedPlayerType)?.label || 'Select Player'}
                             </span>
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                           </button>
-                        )}
-                        
-                        {/* Player Dropdown */}
-                        {showPlayerDropdown && !isLoadingPlayers && (
-                          <div className="absolute z-10 mt-1 w-56 bg-white shadow-lg border border-gray-200 rounded-md max-h-60 overflow-y-auto">
-                            {dynamicPlayerTools.map((player) => (
-                              <button
-                                key={player.id}
-                                onClick={() => {
-                                  setCurrentPlayerType(player.id)
-                                  setShowPlayerDropdown(false)
-                                }}
-                                className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                                  currentPlayerType === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                                }`}
-                              >
-                                <div className="flex items-center space-x-2">
-                                  {player.image ? (
-                                    <img 
-                                      src={player.image.src} 
-                                      alt={player.label}
-                                      className="w-6 h-6 object-contain"
-                                    />
-                                  ) : (
-                                    <span>{player.icon}</span>
-                                  )}
-                                  <span>{player.label}</span>
-                                  {currentPlayerType === player.id && (
-                                    <svg className="h-4 w-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                  )}
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                          
+                          {/* Player Dropdown */}
+                          {showPlayerDropdown && (
+                            <div className="absolute z-10 mt-1 w-56 bg-white shadow-lg border border-gray-200 rounded-md max-h-60 overflow-y-auto">
+                              {playerTypes.map((player) => (
+                                <button
+                                  key={player.id}
+                                  onClick={() => {
+                                    console.log('Player selected:', player.id, player.label)
+                                    setSelectedPlayerType(player.id)
+                                    setShowPlayerDropdown(false)
+                                  }}
+                                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
+                                    selectedPlayerType === player.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    {player.image ? (
+                                      <img 
+                                        src={player.image.src} 
+                                        alt={player.label}
+                                        className="w-6 h-6 object-contain"
+                                      />
+                                    ) : (
+                                      <span>{player.icon}</span>
+                                    )}
+                                    <span>{player.label}</span>
+                                    {selectedPlayerType === player.id && (
+                                      <svg className="h-4 w-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                      </svg>
+                                    )}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
-                    
-                    <div className="text-sm text-gray-500">
-                      Current tool: <span className="font-medium">{tool}</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1021,64 +1064,250 @@ const DrillDesignerV2 = () => {
             {/* Controls Panel */}
             <div className="lg:col-span-1">
               <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Controls</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Animation Controls</h3>
                 
-                {/* Animation Duration */}
+                {/* Frame Controls */}
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Animation Duration (seconds)
+                    Frame {currentFrame + 1} / {totalFrames}
                   </label>
                   <input
-                    type="number"
-                    min="1"
-                    max="60"
-                    value={animationDuration}
-                    onChange={(e) => setAnimationDuration(parseFloat(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="range"
+                    min="0"
+                    max={totalFrames - 1}
+                    value={currentFrame}
+                    onChange={(e) => goToFrame(parseInt(e.target.value))}
+                    className="w-full"
                   />
                 </div>
 
-                {/* Paths List */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Player Paths ({paths.length})
-                  </label>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {paths.map((path, index) => (
-                      <div
-                        key={index}
-                        onClick={() => selectPath(index)}
-                        className={`p-2 rounded-md cursor-pointer transition duration-150 ease-in-out ${
-                          selectedPlayer === index
-                            ? 'bg-blue-100 border-2 border-blue-500'
-                            : 'bg-gray-100 hover:bg-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium">Player {index + 1}</span>
-                          <span className="text-xs text-gray-500">
-                            {path.length} points
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Duration: {path[path.length - 1]?.time?.toFixed(1) || 0}s
-                        </div>
-                      </div>
-                    ))}
+                {/* Animation Settings */}
+                <div className="mb-4 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      FPS
+                    </label>
+                    <select
+                      value={fps}
+                      onChange={(e) => setFps(parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value={15}>15 FPS</option>
+                      <option value={24}>24 FPS</option>
+                      <option value={30}>30 FPS</option>
+                      <option value={60}>60 FPS</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Total Frames
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="300"
+                      value={totalFrames}
+                      onChange={(e) => setTotalFrames(parseInt(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Playback Speed
+                    </label>
+                    <select
+                      value={playbackSpeed}
+                      onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value={0.25}>0.25x</option>
+                      <option value={0.5}>0.5x</option>
+                      <option value={1}>1x</option>
+                      <option value={2}>2x</option>
+                      <option value={4}>4x</option>
+                    </select>
                   </div>
                 </div>
 
-                {/* Instructions */}
-                <div className="mt-6 p-4 bg-blue-50 rounded-md">
-                  <h4 className="text-sm font-medium text-blue-900 mb-2">How to Use:</h4>
-                  <ul className="text-xs text-blue-800 space-y-1">
-                    <li>• Select "Add Players" tool</li>
-                    <li>• Click on the rink to add players</li>
-                    <li>• Select "Draw Paths" tool</li>
-                    <li>• Click on a player to select it</li>
-                    <li>• Click and drag to draw movement path</li>
-                    <li>• Click "Play" to see animation</li>
-                  </ul>
+                {/* Onion Skin Controls */}
+                <div className="mb-4 p-3 bg-blue-50 rounded border">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="checkbox"
+                      id="onion-skin"
+                      checked={showOnionSkin}
+                      onChange={(e) => setShowOnionSkin(e.target.checked)}
+                      className="text-blue-600"
+                    />
+                    <label htmlFor="onion-skin" className="text-sm font-medium text-blue-900">
+                      Onion Skin
+                    </label>
+                  </div>
+                  
+                  {showOnionSkin && (
+                    <div className="space-y-2">
+                      <div>
+                        <label className="block text-xs text-blue-700 mb-1">
+                          Opacity
+                        </label>
+                        <input
+                          type="range"
+                          min="0"
+                          max="1"
+                          step="0.1"
+                          value={onionSkinOpacity}
+                          onChange={(e) => setOnionSkinOpacity(parseFloat(e.target.value))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs text-blue-700 mb-1">
+                          Frames
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={onionSkinFrames}
+                          onChange={(e) => setOnionSkinFrames(parseInt(e.target.value))}
+                          className="w-full px-2 py-1 border border-blue-200 rounded text-xs"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Keyframe Controls */}
+                <div className="bg-white p-4 rounded-lg shadow-md mb-4">
+                  <h3 className="text-lg font-semibold mb-3">Keyframe Controls</h3>
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      onClick={addKeyframe}
+                      className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-400"
+                      disabled={!selectedObject}
+                    >
+                      Create Keyframe
+                    </button>
+                    <button
+                      onClick={updateKeyframe}
+                      className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+                      disabled={!selectedObject}
+                    >
+                      Update Keyframe
+                    </button>
+                    <button
+                      onClick={deleteKeyframe}
+                      className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-gray-400"
+                      disabled={!selectedObject}
+                    >
+                      Delete Keyframe
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p><strong>How to create keyframes:</strong></p>
+                    <ol className="list-decimal list-inside mt-2 space-y-1">
+                      <li>Select an object on the rink (click on it)</li>
+                      <li>Move to a different frame using the timeline below</li>
+                      <li>Drag the object to a new position (click and drag)</li>
+                      <li>Click "Create Keyframe" to save the position</li>
+                      <li>Repeat for more animation frames</li>
+                    </ol>
+                    {selectedObject && (
+                      <div className="mt-3 p-2 bg-blue-50 rounded">
+                        <p><strong>Selected:</strong> {selectedObject.type} at ({Math.round(selectedObject.x)}, {Math.round(selectedObject.y)})</p>
+                        <p><strong>Current Frame:</strong> {currentFrame}</p>
+                        {isDragging && <p className="text-blue-600 font-semibold">Dragging object...</p>}
+                        
+                        {/* Keyframe Status */}
+                        {(() => {
+                          const hasKeyframe = keyframes.some(k => k.objectId === selectedObject.id && k.frame === currentFrame)
+                          return (
+                            <div className="mt-2">
+                              <p className={`font-semibold ${hasKeyframe ? 'text-green-600' : 'text-red-600'}`}>
+                                {hasKeyframe ? '✓ Keyframe exists at this frame' : '✗ No keyframe at this frame'}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Total keyframes for this object: {keyframes.filter(k => k.objectId === selectedObject.id).length}
+                              </p>
+                            </div>
+                          )
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Object Controls */}
+                {selectedObject && (
+                  <div className="mb-4 p-3 bg-green-50 rounded border">
+                    <h4 className="text-sm font-medium text-green-900 mb-2">
+                      Selected: {selectedObject.type === 'puck' ? 'Puck' : 'Player'}
+                    </h4>
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => updateKeyframe(selectedObject.id, selectedObject.x, selectedObject.y, selectedObject.flipped)}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Set Keyframe
+                      </button>
+                      <button
+                        onClick={flipObject}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Flip
+                      </button>
+                      <button
+                        onClick={() => deleteObject(selectedObject.id)}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Debug Info */}
+                <div className="mb-4 p-3 bg-yellow-50 rounded border">
+                  <h4 className="text-sm font-medium text-yellow-900 mb-2">Debug Info</h4>
+                  <div className="text-xs text-yellow-800 space-y-1">
+                    <div>Selected Tool: {selectedTool}</div>
+                    <div>Selected Player Type: {selectedPlayerType || 'None'}</div>
+                    <div>Objects Count: {objects.length}</div>
+                    <div>Keyframes Count: {keyframes.length}</div>
+                    <div>Current Frame: {currentFrame}</div>
+                    <div>Selected Object: {selectedObject ? `${selectedObject.type} (${selectedObject.id})` : 'None'}</div>
+                    <div>Is Dragging: {isDragging ? 'Yes' : 'No'}</div>
+                    {selectedObject && (
+                      <div>
+                        Keyframes for selected object: {keyframes.filter(k => k.objectId === selectedObject.id).length}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Objects List */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    Objects ({objects.length})
+                  </h4>
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {objects.map(obj => (
+                      <div
+                        key={obj.id}
+                        onClick={() => setSelectedObject(obj)}
+                        className={`p-2 rounded text-sm cursor-pointer ${
+                          selectedObject?.id === obj.id
+                            ? 'bg-blue-100 border border-blue-300'
+                            : 'bg-gray-100 hover:bg-gray-200'
+                        }`}
+                      >
+                        {obj.type === 'puck' ? 'Puck' : 'Player'} {obj.id} - ({obj.x}, {obj.y})
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

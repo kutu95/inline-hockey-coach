@@ -13,14 +13,15 @@ const ViewClub = () => {
   const [error, setError] = useState(null);
   const [playerProfile, setPlayerProfile] = useState(null);
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null);
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   
   // Debug logging
   console.log('ViewClub: orgId =', orgId);
   console.log('ViewClub: clubId =', clubId);
   
   // Determine user permissions
-  const canAddPlayers = user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'coach';
+  const canAddPlayers = hasRole('superadmin') || hasRole('admin') || hasRole('coach');
+  const canViewPlayers = hasRole('superadmin') || hasRole('admin') || hasRole('coach');
 
   useEffect(() => {
     console.log('ViewClub useEffect triggered with clubId:', clubId, 'orgId:', orgId);
@@ -77,7 +78,7 @@ const ViewClub = () => {
     try {
       const { data: playersData, error: playersError } = await supabase
         .from('players')
-        .select('*')
+        .select('id, first_name, last_name, birthdate, email, phone, accreditations, status, user_id')
         .eq('club_id', clubId)
         .order('first_name')
         .order('last_name');
@@ -478,12 +479,18 @@ const ViewClub = () => {
                       }`}>
                         {player.status || 'active'}
                       </span>
-                      <Link
-                        to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                      >
-                        View Profile
-                      </Link>
+                      {(canViewPlayers || player.user_id === user?.id) ? (
+                        <Link
+                          to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          View Profile
+                        </Link>
+                      ) : (
+                        <span className="text-gray-400 text-sm font-medium">
+                          View Profile
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
