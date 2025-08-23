@@ -702,13 +702,17 @@ const PlayerList = () => {
                                   alt={`${player.first_name} ${player.last_name}`}
                                   className="w-12 h-12 object-cover rounded-full border border-gray-300"
                                   onError={(e) => {
-                                    e.target.style.display = 'none'
-                                    e.target.nextSibling.style.display = 'flex'
+                                    if (e.target) {
+                                      e.target.style.display = 'none'
+                                    }
+                                    if (e.target && e.target.nextSibling) {
+                                      e.target.nextSibling.style.display = 'flex'
+                                    }
                                   }}
                                   onLoad={(e) => {
                                     // Hide the fallback when image loads successfully
-                                    if (e.target.nextSibling) {
-                                    e.target.nextSibling.style.display = 'none'
+                                    if (e.target && e.target.nextSibling) {
+                                      e.target.nextSibling.style.display = 'none'
                                     }
                                   }}
                                 />
@@ -778,7 +782,9 @@ const PlayerList = () => {
                                         alt={`${player.clubs.name} logo`}
                                         className="w-5 h-5 object-contain"
                                         onError={(e) => {
-                                          e.target.style.display = 'none'
+                                          if (e.target) {
+                                            e.target.style.display = 'none'
+                                          }
                                         }}
                                         onLoad={(e) => {
                                           // Image loaded successfully - no action needed
