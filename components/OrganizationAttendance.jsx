@@ -10,6 +10,10 @@ const OrganizationAttendance = () => {
   const [error, setError] = useState('')
   const [playerProfile, setPlayerProfile] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const [sessionStats, setSessionStats] = useState({})
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [playerAttendanceStats, setPlayerAttendanceStats] = useState([])
+  const [playerStatsLoading, setPlayerStatsLoading] = useState(false)
   const { user, hasRole } = useAuth()
   
   // Determine user permissions
@@ -24,54 +28,180 @@ const OrganizationAttendance = () => {
     }
   }, [orgId])
 
+  // Calculate stats for all sessions when sessions change
+  useEffect(() => {
+    if (sessions.length > 0) {
+      calculateAllSessionStats()
+    }
+  }, [sessions])
+
+  // Fetch player attendance statistics when sessions change
+  useEffect(() => {
+    if (sessions.length > 0 && orgId) {
+      fetchPlayerAttendanceStats()
+    }
+  }, [sessions, orgId])
+
+  // Calculate stats for all sessions
+  const calculateAllSessionStats = async () => {
+    setStatsLoading(true)
+    try {
+      const stats = {}
+      for (const session of sessions) {
+        stats[session.id] = await getAttendanceStats(session)
+      }
+      setSessionStats(stats)
+    } catch (err) {
+      console.error('Error calculating session stats:', err)
+    } finally {
+      setStatsLoading(false)
+    }
+  }
+
+  // Fetch player attendance statistics
+  const fetchPlayerAttendanceStats = async () => {
+    setPlayerStatsLoading(true)
+    try {
+      // Get current date to exclude future sessions
+      const currentDate = new Date().toISOString().split('T')[0]
+      
+      // Fetch all active squad players
+      const { data: activePlayers, error: playersError } = await supabase
+        .from('players')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          photo_url,
+          player_squads!inner(
+            squad_id,
+            squads!inner(
+              id,
+              name,
+              is_active
+            )
+          )
+        `)
+        .eq('organization_id', orgId)
+        .eq('player_squads.squads.is_active', true)
+
+      if (playersError) throw playersError
+
+      // Get all past and current sessions (excluding future)
+      const { data: eligibleSessions, error: sessionsError } = await supabase
+        .from('sessions')
+        .select(`
+          id,
+          date,
+          session_squads (
+            squad_id
+          )
+        `)
+        .eq('organization_id', orgId)
+        .lte('date', currentDate)
+        .order('date', { ascending: true })
+
+      if (sessionsError) throw sessionsError
+
+      // Get all attendance records for these sessions
+      const { data: allAttendance, error: attendanceError } = await supabase
+        .from('session_attendance')
+        .select(`
+          session_id,
+          player_id,
+          attended
+        `)
+        .in('session_id', eligibleSessions.map(s => s.id))
+
+      if (attendanceError) throw attendanceError
+
+      // Calculate statistics for each player
+      const playerStats = activePlayers.map(player => {
+        // Get all squads this player is in
+        const playerSquadIds = player.player_squads.map(ps => ps.squad_id)
+        
+        // Count sessions this player was eligible to attend
+        const eligibleSessionsCount = eligibleSessions.filter(session => 
+          session.session_squads.some(ss => playerSquadIds.includes(ss.squad_id))
+        ).length
+        
+        // Count sessions this player actually attended
+        const attendedSessionsCount = allAttendance.filter(record => 
+          record.player_id === player.id && record.attended
+        ).length
+        
+        // Calculate attendance percentage
+        const attendancePercentage = eligibleSessionsCount > 0 
+          ? Math.round((attendedSessionsCount / eligibleSessionsCount) * 100) 
+          : 0
+
+        return {
+          id: player.id,
+          firstName: player.first_name,
+          lastName: player.last_name,
+          photoUrl: player.photo_url,
+          squads: player.player_squads.map(ps => ps.squads.name).join(', '),
+          eligibleSessions: eligibleSessionsCount,
+          attendedSessions: attendedSessionsCount,
+          attendancePercentage
+        }
+      })
+
+      // Sort by attendance percentage (descending) then by name
+      playerStats.sort((a, b) => {
+        if (b.attendancePercentage !== a.attendancePercentage) {
+          return b.attendancePercentage - a.attendancePercentage
+        }
+        return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+      })
+
+      setPlayerAttendanceStats(playerStats)
+    } catch (err) {
+      console.error('Error fetching player attendance stats:', err)
+    } finally {
+      setPlayerStatsLoading(false)
+    }
+  }
+
   // Function to get signed URL for player photos
   const getSignedUrlForPlayerPhoto = async (url) => {
-    // Only process URLs that are from Supabase storage
-    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
-      return null
-    }
+    if (!url) return null
     
     try {
       // Extract file path from the URL
       const urlParts = url.split('/')
-      if (urlParts.length < 2) return null
-      
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      // First check if the file exists
-      const { data: existsData, error: existsError } = await supabase.storage
-        .from('player-photos')
-        .list(filePath.split('/')[0]) // List files in the user directory
-      
-      if (existsError) {
-        // Silently skip if we can't check file existence
-        return null
-      }
-      
-      // Check if the file exists in the list
-      const fileName = filePath.split('/')[1]
-      const fileExists = existsData?.some(file => file.name === fileName)
-      
-      if (!fileExists) {
-        // Silently skip missing files - this is expected for some records
-        return null
-      }
-      
-      const { data, error } = await supabase.storage
+      const { data: { signedUrl } } = await supabase.storage
         .from('player-photos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
-      if (error) {
-        // Silently skip if we can't get signed URL
-        return null
-      }
-      
-      return data?.signedUrl || null
+      return signedUrl
     } catch (err) {
-      // Silently skip if there's an error
-      return null
+      console.error('Error getting signed URL for player photo:', err)
+      return url // Fallback to original URL
     }
   }
+
+  // Update player attendance stats with signed photo URLs
+  useEffect(() => {
+    const updatePlayerPhotoUrls = async () => {
+      if (playerAttendanceStats.length > 0) {
+        const updatedStats = await Promise.all(
+          playerAttendanceStats.map(async (player) => {
+            if (player.photoUrl) {
+              const signedUrl = await getSignedUrlForPlayerPhoto(player.photoUrl)
+              return { ...player, photoUrl: signedUrl }
+            }
+            return player
+          })
+        )
+        setPlayerAttendanceStats(updatedStats)
+      }
+    }
+    
+    updatePlayerPhotoUrls()
+  }, [playerAttendanceStats.length])
 
   // Fetch current user's player profile
   const fetchPlayerProfile = async () => {
@@ -108,6 +238,13 @@ const OrganizationAttendance = () => {
         .from('sessions')
         .select(`
           *,
+          session_squads (
+            squad_id,
+            squads (
+              id,
+              name
+            )
+          ),
           session_attendance (
             player_id,
             attended,
@@ -117,12 +254,11 @@ const OrganizationAttendance = () => {
         .order('date', { ascending: false })
         .order('start_time', { ascending: false })
 
-      // If we're in an organization context, filter by organization_id
+      // Filter by organization_id for multi-tenant access
       if (orgId) {
         query = query.eq('organization_id', orgId)
       } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
+        throw new Error('Organization ID is required for multi-tenant access')
       }
 
       const { data, error } = await query
@@ -134,6 +270,72 @@ const OrganizationAttendance = () => {
       console.error('Error fetching sessions:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Function to get unique invited players for a session
+  const getInvitedPlayers = async (session) => {
+    if (!session.session_squads || session.session_squads.length === 0) {
+      return []
+    }
+
+    try {
+      const invitedSquadIds = session.session_squads.map(assignment => assignment.squad_id)
+      
+      // Fetch unique players from invited squads
+      const { data: playersData, error } = await supabase
+        .from('players')
+        .select(`
+          id,
+          player_squads!inner(squad_id)
+        `)
+        .eq('organization_id', orgId)
+        .in('player_squads.squad_id', invitedSquadIds)
+
+      if (error) {
+        console.error('Error fetching invited players:', error)
+        return []
+      }
+
+      // Return unique players (remove duplicates if a player is in multiple squads)
+      const uniquePlayers = playersData || []
+      return uniquePlayers
+    } catch (err) {
+      console.error('Error in getInvitedPlayers:', err)
+      return []
+    }
+  }
+
+  // Updated attendance statistics calculation
+  const getAttendanceStats = async (session) => {
+    try {
+      // Get the actual invited players (unique players from invited squads)
+      const invitedPlayers = await getInvitedPlayers(session)
+      const totalInvited = invitedPlayers.length
+
+      if (totalInvited === 0) {
+        return { total: 0, attended: 0, percentage: 0 }
+      }
+
+      // Count how many of the invited players actually attended
+      if (!session.session_attendance || session.session_attendance.length === 0) {
+        return { total: totalInvited, attended: 0, percentage: 0 }
+      }
+
+      // Create a set of invited player IDs for efficient lookup
+      const invitedPlayerIds = new Set(invitedPlayers.map(player => player.id))
+      
+      // Count attended players from the invited list
+      const attended = session.session_attendance.filter(record => 
+        invitedPlayerIds.has(record.player_id) && record.attended
+      ).length
+
+      const percentage = totalInvited > 0 ? Math.round((attended / totalInvited) * 100) : 0
+
+      return { total: totalInvited, attended, percentage }
+    } catch (err) {
+      console.error('Error calculating attendance stats:', err)
+      return { total: 0, attended: 0, percentage: 0 }
     }
   }
 
@@ -165,18 +367,6 @@ const OrganizationAttendance = () => {
       month: 'short',
       day: 'numeric'
     })
-  }
-
-  const getAttendanceStats = (session) => {
-    if (!session.session_attendance || session.session_attendance.length === 0) {
-      return { total: 0, attended: 0, percentage: 0 }
-    }
-
-    const total = session.session_attendance.length
-    const attended = session.session_attendance.filter(record => record.attended).length
-    const percentage = total > 0 ? Math.round((attended / total) * 100) : 0
-
-    return { total, attended, percentage }
   }
 
   if (loading) {
@@ -213,7 +403,7 @@ const OrganizationAttendance = () => {
               ) : (
                 <div className="space-y-4">
                   {sessions.map((session) => {
-                    const stats = getAttendanceStats(session)
+                    const stats = sessionStats[session.id] || { total: 0, attended: 0, percentage: 0 }
                     return (
                       <div key={session.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
                         <div className="flex items-center justify-between">
@@ -233,13 +423,22 @@ const OrganizationAttendance = () => {
                             )}
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-indigo-600">{stats.percentage}%</div>
-                            <div className="text-sm text-gray-500">
-                              {stats.attended}/{stats.total} players
-                            </div>
+                            {statsLoading ? (
+                              <div className="animate-pulse">
+                                <div className="h-8 bg-gray-200 rounded w-16 mb-1"></div>
+                                <div className="h-4 bg-gray-200 rounded w-20"></div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="text-2xl font-bold text-indigo-600">{stats.percentage}%</div>
+                                <div className="text-sm text-gray-500">
+                                  {stats.attended}/{stats.total} players
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
-                        {stats.total > 0 && (
+                        {stats.total > 0 && !statsLoading && (
                           <div className="mt-3">
                             <div className="w-full bg-gray-200 rounded-full h-2">
                               <div 
@@ -264,6 +463,121 @@ const OrganizationAttendance = () => {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Player Attendance Statistics Table */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Player Attendance Summary</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              Attendance statistics for all active squad players (excluding future sessions)
+            </p>
+          </div>
+          
+          {playerStatsLoading ? (
+            <div className="p-6">
+              <div className="animate-pulse space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <div className="h-10 w-10 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded w-16"></div>
+                    <div className="h-4 bg-gray-200 rounded w-16"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : playerAttendanceStats.length === 0 ? (
+            <div className="p-6 text-center text-gray-500">
+              No active squad players found.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Player
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Squads
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sessions Attended
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sessions Eligible
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Attendance Rate
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {playerAttendanceStats.map((player) => (
+                    <tr key={player.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            {player.photoUrl ? (
+                              <img
+                                className="h-10 w-10 rounded-full object-cover"
+                                src={player.photoUrl}
+                                alt={`${player.firstName} ${player.lastName}`}
+                              />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                                <span className="text-sm font-medium text-gray-700">
+                                  {player.firstName.charAt(0)}{player.lastName.charAt(0)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {player.firstName} {player.lastName}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {player.squads}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {player.attendedSessions}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {player.eligibleSessions}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900 mr-2">
+                            {player.attendancePercentage}%
+                          </div>
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                player.attendancePercentage >= 80 ? 'bg-green-500' :
+                                player.attendancePercentage >= 60 ? 'bg-yellow-500' :
+                                'bg-red-500'
+                              }`}
+                              style={{ width: `${player.attendancePercentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

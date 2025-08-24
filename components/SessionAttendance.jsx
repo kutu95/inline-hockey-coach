@@ -15,7 +15,32 @@ const SessionAttendance = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [playerPhotoUrls, setPlayerPhotoUrls] = useState({})
+  const [retryCount, setRetryCount] = useState(0)
   const { user } = useAuth()
+
+  // Clear error when component unmounts or when retry count changes
+  useEffect(() => {
+    if (error && retryCount > 0) {
+      setError('')
+    }
+  }, [retryCount])
+
+  // Retry function for network issues
+  const retryOperation = () => {
+    setRetryCount(prev => prev + 1)
+    setError('')
+    fetchSessionAndPlayers()
+  }
+
+  // Clear success message after a delay
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess('')
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [success])
 
   useEffect(() => {
     fetchSessionAndPlayers()
@@ -79,12 +104,11 @@ const SessionAttendance = () => {
         `)
         .eq('id', sessionId)
 
-      // If we're in an organization context, filter by organization_id
+      // Filter by organization_id for multi-tenant access
       if (orgId) {
         sessionQuery = sessionQuery.eq('organization_id', orgId)
       } else {
-        // Otherwise, filter by coach_id (single tenant)
-        sessionQuery = sessionQuery.eq('coach_id', user.id)
+        throw new Error('Organization ID is required for multi-tenant access')
       }
 
       const { data: sessionData, error: sessionError } = await sessionQuery.single()
@@ -104,12 +128,11 @@ const SessionAttendance = () => {
         `)
         .order('first_name', { ascending: true })
 
-      // If we're in an organization context, filter by organization_id
+      // Filter by organization_id for multi-tenant access
       if (orgId) {
         playersQuery = playersQuery.eq('organization_id', orgId)
       } else {
-        // Otherwise, filter by coach_id (single tenant)
-        playersQuery = playersQuery.eq('coach_id', user.id)
+        throw new Error('Organization ID is required for multi-tenant access')
       }
 
       const { data: playersData, error: playersError } = await playersQuery
@@ -142,7 +165,7 @@ const SessionAttendance = () => {
 
       // Initialize attendance state
       const attendanceState = {}
-      playersData.forEach(player => {
+      invitedPlayers.forEach(player => {
         const existingRecord = attendanceData.find(record => record.player_id === player.id)
         attendanceState[player.id] = {
           attended: existingRecord ? existingRecord.attended : true,
@@ -213,36 +236,62 @@ const SessionAttendance = () => {
         .update({ notes: sessionNotes })
         .eq('id', sessionId)
 
-      // If we're in an organization context, ensure the session belongs to the organization
+      // Filter by organization_id for multi-tenant access
       if (orgId) {
         sessionUpdateQuery = sessionUpdateQuery.eq('organization_id', orgId)
       } else {
-        // Otherwise, ensure the session belongs to the coach
-        sessionUpdateQuery = sessionUpdateQuery.eq('coach_id', user.id)
+        throw new Error('Organization ID is required for multi-tenant access')
       }
 
       const { error: sessionError } = await sessionUpdateQuery
 
-      if (sessionError) throw sessionError
+      if (sessionError) {
+        console.error('Session update error:', sessionError)
+        throw new Error(`Failed to update session notes: ${sessionError.message}`)
+      }
 
-      // Update attendance records
-      for (const [playerId, record] of Object.entries(attendance)) {
-        const { error } = await supabase
-          .from('session_attendance')
-          .upsert({
-            session_id: sessionId,
-            player_id: playerId,
-            attended: record.attended,
-            notes: record.notes || null
-          })
+      // Update attendance records - use upsert to handle both insert and update
+      // This prevents the unique constraint violation
+      const attendanceRecords = Object.entries(attendance).map(([playerId, record]) => ({
+        session_id: sessionId,
+        player_id: playerId,
+        attended: record.attended,
+        notes: record.notes || null
+      }))
 
-        if (error) throw error
+      // Use upsert with onConflict to handle the unique constraint properly
+      const { error: attendanceError } = await supabase
+        .from('session_attendance')
+        .upsert(attendanceRecords, {
+          onConflict: 'session_id,player_id',
+          ignoreDuplicates: false
+        })
+
+      if (attendanceError) {
+        console.error('Attendance upsert error:', attendanceError)
+        
+        // Provide more specific error messages based on the error type
+        if (attendanceError.code === '409') {
+          throw new Error('Conflict detected. This usually means the attendance data has been modified by another user. Please refresh the page and try again.')
+        } else if (attendanceError.code === '42501') {
+          throw new Error('Permission denied. You may not have access to modify this session\'s attendance.')
+        } else if (attendanceError.code === '23505') {
+          throw new Error('Duplicate attendance record detected. Please refresh the page and try again.')
+        } else {
+          throw new Error(`Failed to save attendance: ${attendanceError.message}`)
+        }
       }
 
       setSuccess('Attendance saved successfully!')
     } catch (err) {
-      setError('Failed to save attendance')
       console.error('Error saving attendance:', err)
+      
+      // Handle network errors specifically
+      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+        setError('Network connection lost. Please check your internet connection and try again.')
+      } else {
+        setError(err.message || 'Failed to save attendance. Please try again.')
+      }
     } finally {
       setSaving(false)
     }
@@ -326,18 +375,36 @@ const SessionAttendance = () => {
               </div>
             </div>
 
+            {/* Error Display */}
             {error && (
-              <div className="px-6 py-4">
-                <div className="rounded-md bg-red-50 p-4">
-                  <div className="text-sm text-red-700">{error}</div>
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <svg className="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-red-800">{error}</span>
+                  </div>
+                  {error.includes('Network connection lost') && (
+                    <button
+                      onClick={retryOperation}
+                      className="ml-4 px-3 py-1 text-sm bg-red-100 text-red-700 border border-red-300 rounded-md hover:bg-red-200 transition-colors duration-150"
+                    >
+                      Retry
+                    </button>
+                  )}
                 </div>
               </div>
             )}
 
+            {/* Success Display */}
             {success && (
-              <div className="px-6 py-4">
-                <div className="rounded-md bg-green-50 p-4">
-                  <div className="text-sm text-green-700">{success}</div>
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center">
+                  <svg className="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-green-800">{success}</span>
                 </div>
               </div>
             )}
@@ -456,9 +523,19 @@ const SessionAttendance = () => {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
+                  className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center"
                 >
-                  {saving ? 'Saving...' : 'Save Attendance'}
+                  {saving ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Attendance'
+                  )}
                 </button>
               </div>
             </div>
