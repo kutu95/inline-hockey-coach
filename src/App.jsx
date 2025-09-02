@@ -41,6 +41,13 @@ import ViewDrill from '../components/ViewDrill'
 import SessionTemplatesList from '../components/SessionTemplatesList'
 import SessionTemplateEditor from '../components/SessionTemplateEditor'
 import SessionTemplateView from '../components/SessionTemplateView'
+import StrengthConditioning from '../components/StrengthConditioning'
+import StrengthConditioningPhase1 from '../components/StrengthConditioningPhase1'
+import StrengthConditioningPhase2 from '../components/StrengthConditioningPhase2'
+import StrengthConditioningPhase3 from '../components/StrengthConditioningPhase3'
+import StrengthConditioningPhase4 from '../components/StrengthConditioningPhase4'
+import StrengthConditioningPhase5 from '../components/StrengthConditioningPhase5'
+import StrengthConditioningPhase0 from '../components/StrengthConditioningPhase0'
 import AuthErrorBoundary from '../components/AuthErrorBoundary'
 import AuthErrorHandler from '../components/AuthErrorHandler'
 import AccessDenied from '../components/AccessDenied'
@@ -628,6 +635,64 @@ function App() {
                 <RoleProtectedRoute requiredRoles={['admin', 'superadmin', 'coach']}>
                   <DrillDesignerV2 />
                 </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Strength & Conditioning Program - available to all authenticated users */}
+            <Route 
+              path="/strength-conditioning" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioning />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-1" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase1 />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-2" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase2 />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-3" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase3 />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-4" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase4 />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-5" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase5 />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/strength-conditioning/phase-0" 
+              element={
+                <ProtectedRoute>
+                  <StrengthConditioningPhase0 />
+                </ProtectedRoute>
               } 
             />
             
