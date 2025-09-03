@@ -594,29 +594,31 @@ const OrganisationDetail = () => {
               </Link>
             )}
 
-            {/* Strength & Conditioning - Available to all users */}
-            <Link
-              to="/strength-conditioning"
-              className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                    </svg>
+            {/* Strength & Conditioning - Superadmin only */}
+            {hasRole('superadmin') && (
+              <Link
+                to="/strength-conditioning"
+                className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      Strength & Conditioning
+                      <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Beta</span>
+                    </h3>
+                    <p className="text-gray-600">9-month fitness program</p>
+                    <p className="text-sm text-orange-600 mt-1">Phase I Program</p>
                   </div>
                 </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    Strength & Conditioning
-                    <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Beta</span>
-                  </h3>
-                  <p className="text-gray-600">9-month fitness program</p>
-                  <p className="text-sm text-orange-600 mt-1">Phase I Program</p>
-                </div>
-              </div>
-            </Link>
+              </Link>
+            )}
 
 
 
