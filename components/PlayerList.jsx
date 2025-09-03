@@ -663,34 +663,10 @@ const PlayerList = () => {
                             >
                               {/* Player photo image */}
                               <img
-                                src={playerPhotoUrls[player.id] || player.photo_url || ''}
+                                src={playerPhotoUrls[player.id] || player.photo_url || '/backcheck-logo.png'}
                                 alt={`${player.first_name} ${player.last_name}`}
                                 className="w-12 h-12 object-cover rounded-full border border-gray-300"
-                                style={{ display: player.photo_url ? 'block' : 'none' }}
-                                onError={(e) => {
-                                  e.target.style.display = 'none'
-                                  const fallback = e.target.nextElementSibling
-                                  if (fallback) {
-                                    fallback.style.display = 'flex'
-                                  }
-                                }}
-                                onLoad={(e) => {
-                                  // Hide the fallback when image loads successfully
-                                  const fallback = e.target.nextElementSibling
-                                  if (fallback) {
-                                    fallback.style.display = 'none'
-                                  }
-                                }}
                               />
-                              {/* Fallback initials div - always rendered but conditionally displayed */}
-                              <div 
-                                className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center absolute top-0 left-0"
-                                style={{ display: player.photo_url ? 'none' : 'flex' }}
-                              >
-                                <span className="text-gray-500 text-sm font-medium">
-                                  {player.first_name.charAt(0)}{player.last_name.charAt(0)}
-                                </span>
-                              </div>
                             </Link>
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-wrap items-center gap-2 sm:gap-3">

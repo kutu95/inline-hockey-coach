@@ -446,15 +446,13 @@ const ViewPlayer = () => {
                 {/* Basic Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
-                  {player.photo_url && (
-                    <div className="mb-4">
-                      <img
-                        src={playerPhotoUrl || player.photo_url}
-                        alt={`${player.first_name} ${player.last_name}`}
-                        className="w-48 h-48 object-cover rounded-lg border border-gray-300"
-                      />
-                    </div>
-                  )}
+                  <div className="mb-4">
+                    <img
+                      src={playerPhotoUrl || player.photo_url || "/backcheck-logo.png"}
+                      alt={`${player.first_name} ${player.last_name}`}
+                      className="w-48 h-48 object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Full Name:</span>
