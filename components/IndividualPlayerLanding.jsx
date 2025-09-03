@@ -45,7 +45,7 @@ const IndividualPlayerLanding = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Join our comprehensive 9-month fitness program designed specifically for inline hockey players. 
+            Join our comprehensive 9-month fitness program designed specifically for adult inline hockey players. 
             Perfect for individuals or groups of players who are not sure how to improve their hockey fitness.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -73,7 +73,7 @@ const IndividualPlayerLanding = () => {
               What You'll Get
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              A comprehensive fitness program tailored specifically for inline hockey players
+              A comprehensive fitness program tailored specifically for adult inline hockey players
             </p>
           </div>
 
@@ -179,7 +179,7 @@ const IndividualPlayerLanding = () => {
             Ready to Transform Your Game?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Start your fitness journey with our comprehensive 9-month program designed specifically for inline hockey players.
+            Start your fitness journey with our comprehensive 9-month program designed specifically for adult inline hockey players.
           </p>
           <Link
             to="/register-individual"

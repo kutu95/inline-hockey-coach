@@ -49,12 +49,12 @@ const IndividualPlayerRegistration = () => {
       return
     }
 
-    // Age validation (must be at least 13)
+    // Age validation (must be at least 18)
     const birthDate = new Date(formData.birthdate)
     const today = new Date()
     const age = today.getFullYear() - birthDate.getFullYear()
-    if (age < 13) {
-      setError('You must be at least 13 years old to register')
+    if (age < 18) {
+      setError('This program is designed specifically for adults (18+). If you are under 18, please consult your coach about a suitable fitness program considering your age and stage of development.')
       setLoading(false)
       return
     }
