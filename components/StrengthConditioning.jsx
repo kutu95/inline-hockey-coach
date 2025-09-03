@@ -30,7 +30,10 @@ const StrengthConditioning = () => {
                   alt="Backcheck" 
                   className="h-16 w-auto"
                 />
-                <h1 className="text-2xl font-bold">Strength and Conditioning Program</h1>
+                <h1 className="text-2xl font-bold flex items-center gap-3">
+                  Strength and Conditioning Program
+                  <span className="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full">Beta</span>
+                </h1>
               </div>
               <p className="text-blue-200 text-sm">for Inline Hockey</p>
             </div>

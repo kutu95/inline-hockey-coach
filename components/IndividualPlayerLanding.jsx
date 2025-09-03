@@ -39,7 +39,10 @@ const IndividualPlayerLanding = () => {
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Strength & Conditioning Program
-            <span className="block text-blue-600">for Inline Hockey</span>
+            <span className="block text-blue-600 flex items-center justify-center gap-3">
+              for Inline Hockey
+              <span className="bg-orange-100 text-orange-800 text-lg font-medium px-4 py-2 rounded-full">Beta</span>
+            </span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Join our comprehensive 9-month fitness program designed specifically for inline hockey players. 
