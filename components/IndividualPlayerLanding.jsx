@@ -179,7 +179,7 @@ const IndividualPlayerLanding = () => {
             Ready to Transform Your Game?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join hundreds of inline hockey players who have improved their fitness and performance with our program.
+            Start your fitness journey with our comprehensive 9-month program designed specifically for inline hockey players.
           </p>
           <Link
             to="/register-individual"
