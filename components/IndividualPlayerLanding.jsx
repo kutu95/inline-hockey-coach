@@ -46,7 +46,7 @@ const IndividualPlayerLanding = () => {
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Join our comprehensive 9-month fitness program designed specifically for inline hockey players. 
-            No club membership required - perfect for individual players looking to improve their game.
+            Perfect for individuals or groups of players who are not sure how to improve their hockey fitness.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
