@@ -288,13 +288,12 @@ export default function StrengthConditioningWelcome() {
         .select('*')
         .eq('user_id', user.id)
         .eq('is_active', true)
-        .single()
       
-      if (data && !error) {
-        setEnrollment(data)
+      if (data && data.length > 0 && !error) {
+        setEnrollment(data[0])
         // Auto-redirect to current phase if not showing all phases
         if (!showAllPhases) {
-          const currentPhaseRoute = getPhaseRoute(data.current_phase)
+          const currentPhaseRoute = getPhaseRoute(data[0].current_phase)
           navigate(currentPhaseRoute, { replace: true })
           return
         }

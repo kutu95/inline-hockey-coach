@@ -44,7 +44,12 @@ export function useConsent() {
         .select('consent_type, granted, granted_at, withdrawn_at')
         .eq('user_id', user.id)
 
-      if (error) throw error
+      if (error) {
+        // If table doesn't exist or other error, just set empty state
+        console.warn('Could not load consent state:', error.message)
+        setConsentState({})
+        return
+      }
 
       // Convert array to object for easier access
       const consentMap = {}
@@ -59,6 +64,8 @@ export function useConsent() {
       setConsentState(consentMap)
     } catch (error) {
       console.error('Error loading consent state:', error)
+      // Set empty state on error
+      setConsentState({})
     } finally {
       setLoading(false)
     }

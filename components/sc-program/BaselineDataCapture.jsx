@@ -73,32 +73,33 @@ function UserProfileForm({ onSave, onCancel }) {
         .from('players')
         .select('birthdate')
         .eq('user_id', user.id)
-        .single()
 
       // Then get the existing S&C profile
       const { data: profileData, error: profileError } = await supabase
         .from('sc_user_profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single()
       
       // Use player birthdate if available, otherwise use profile birthdate
-      const birthdate = playerData?.birthdate || profileData?.birthdate || ''
-      const isFromPlayer = !!playerData?.birthdate
+      const playerBirthdate = playerData && playerData.length > 0 ? playerData[0].birthdate : null
+      const profileBirthdate = profileData && profileData.length > 0 ? profileData[0].birthdate : null
+      const birthdate = playerBirthdate || profileBirthdate || ''
+      const isFromPlayer = !!playerBirthdate
       
-      if (profileData && !profileError) {
+      if (profileData && profileData.length > 0 && !profileError) {
+        const profile = profileData[0]
         setFormData({
           birthdate: birthdate,
-          height_cm: profileData.height_cm || '',
-          weight_kg: profileData.weight_kg || '',
-          max_hr: profileData.max_hr || '',
-          resting_hr: profileData.resting_hr || '',
-          training_experience: profileData.training_experience || 'beginner',
-          injury_history: profileData.injury_history || '',
-          medical_notes: profileData.medical_notes || ''
+          height_cm: profile.height_cm || '',
+          weight_kg: profile.weight_kg || '',
+          max_hr: profile.max_hr || '',
+          resting_hr: profile.resting_hr || '',
+          training_experience: profile.training_experience || 'beginner',
+          injury_history: profile.injury_history || '',
+          medical_notes: profile.medical_notes || ''
         })
         setBirthdateFromPlayer(isFromPlayer)
-      } else if (playerData && !playerError) {
+      } else if (playerData && playerData.length > 0 && !playerError) {
         // If no S&C profile exists but player record exists, pre-fill with birthdate
         setFormData({
           birthdate: birthdate,
