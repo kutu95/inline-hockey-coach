@@ -397,7 +397,7 @@ const ViewPlayer = () => {
                         to={`/players/${playerId}/edit`}
                         className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out w-full sm:w-auto text-center"
                       >
-                        Edit Player
+                        {hasRole('player') && player.user_id === user.id ? 'Edit My Details' : 'Edit Player'}
                       </Link>
                     )}
                     {hasRole('admin') && (
@@ -418,7 +418,7 @@ const ViewPlayer = () => {
                       to={`/organisations/${orgId}/players/${playerId}/edit`}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
                     >
-                      Edit Player
+                      {hasRole('player') && player.user_id === user.id ? 'Edit My Details' : 'Edit Player'}
                     </Link>
                   )}
                   {hasRole('admin') && (
