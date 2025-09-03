@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { loginRateLimiter, passwordResetRateLimiter } from '../src/utils/rateLimiter'
@@ -271,7 +272,21 @@ const Login = () => {
                   Back to sign in
                 </button>
               ) : (
-                <p>Need an account? Contact your coach for an invitation.</p>
+                <div className="text-center">
+                  <p className="text-gray-600 mb-3">
+                    Need an account? If you belong to a club on Backcheck, contact your coach for an invitation. 
+                    Otherwise, to register as an individual player, click the link below.
+                  </p>
+                  <Link
+                    to="/individual-players"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Register as Individual Player
+                  </Link>
+                </div>
               )}
             </div>
           </div>

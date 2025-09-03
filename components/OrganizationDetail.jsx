@@ -618,29 +618,7 @@ const OrganisationDetail = () => {
               </div>
             </Link>
 
-            {/* Individual Player Registration - Available to all users */}
-            <Link
-              to="/individual-players"
-              className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    Individual Player Registration
-                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">New</span>
-                  </h3>
-                  <p className="text-gray-600">Join S&C program without club membership</p>
-                  <p className="text-sm text-green-600 mt-1">Register as individual player</p>
-                </div>
-              </div>
-            </Link>
+
 
             {/* Admin Panel - Only visible to admins */}
             {canViewAdminPanel() && (
