@@ -1,13 +1,33 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import OrganizationHeader from './OrganizationHeader'
 
-const EditPlayer = () => {
-  const { id, orgId } = useParams()
+const EditPlayer = ({ id, orgId }) => {
   const navigate = useNavigate()
   const { user, hasRole } = useAuth()
+  
+  // Debug logging
+  console.log('EditPlayer component initialized with:', { id, orgId })
+  
+  // Validate required props
+  if (!id || !orgId) {
+    console.error('EditPlayer: Missing required props:', { id, orgId })
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-900">Invalid Parameters</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Missing player ID or organization ID. Please check the URL.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -38,24 +58,28 @@ const EditPlayer = () => {
   const availableAccreditations = ['skater', 'goalie', 'coach', 'referee']
 
   useEffect(() => {
-    fetchPlayer()
-    fetchClubs()
-  }, [id])
+    console.log('EditPlayer useEffect triggered with id:', id, 'orgId:', orgId)
+    if (id) {
+      fetchPlayer()
+      fetchClubs()
+    } else {
+      console.log('Waiting for id to be available')
+    }
+  }, [id, orgId])
 
   const fetchClubs = async () => {
     try {
       setLoadingClubs(true)
+      
       let query = supabase
         .from('clubs')
         .select('id, name')
         .order('name', { ascending: true })
 
       // If we're in an organization context, filter by organization_id
-      if (orgId) {
+      if (orgId && orgId !== 'undefined') {
+        console.log('Filtering clubs by organization_id:', orgId)
         query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
       }
 
       const { data, error } = await query
@@ -72,22 +96,32 @@ const EditPlayer = () => {
   const fetchPlayer = async () => {
     try {
       setLoading(true)
+      console.log('fetchPlayer called with id:', id, 'orgId:', orgId)
+      
+      // Ensure we have valid parameters
+      if (!id) {
+        throw new Error('Invalid player ID')
+      }
+      
       let query = supabase
         .from('players')
         .select('*')
         .eq('id', id)
 
       // If we're in an organization context, filter by organization_id
-      if (orgId) {
+      if (orgId && orgId !== 'undefined') {
+        console.log('Filtering by organization_id:', orgId)
         query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
       }
 
+      console.log('Final query:', query)
       const { data, error } = await query.single()
+      console.log('Query result:', { data, error })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error details:', error)
+        throw error
+      }
       
       setFormData({
         first_name: data.first_name || '',
@@ -112,8 +146,12 @@ const EditPlayer = () => {
       const isOwnProfile = data.user_id === user.id
       setIsPlayerEditingOwnProfile(isPlayer && isOwnProfile)
     } catch (err) {
-      setError('Failed to fetch player')
       console.error('Error fetching player:', err)
+      if (err.message) {
+        setError(`Failed to fetch player: ${err.message}`)
+      } else {
+        setError('Failed to fetch player')
+      }
     } finally {
       setLoading(false)
     }
@@ -213,19 +251,26 @@ const EditPlayer = () => {
         })
         .eq('id', id)
 
-      // If we're in an organization context, ensure the player belongs to the organization
-      if (orgId) {
+      // Ensure the player belongs to the organization
+      if (orgId && orgId !== 'undefined') {
         query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, ensure the player belongs to the coach
-        query = query.eq('coach_id', user.id)
       }
 
       const { error } = await query
 
       if (error) throw error
 
-      navigate(orgId ? `/organisations/${orgId}/players/${id}` : `/players/${id}`)
+      console.log('About to navigate with orgId:', orgId, 'id:', id)
+      
+      // Ensure we have valid orgId before navigating
+      if (orgId && orgId !== 'undefined') {
+        const redirectUrl = `/organisations/${orgId}/players/${id}`
+        console.log('Redirecting to:', redirectUrl)
+        navigate(redirectUrl)
+      } else {
+        console.error('orgId is undefined, cannot navigate')
+        setError('Organization ID is missing, cannot redirect')
+      }
     } catch (err) {
       setError('Failed to update player')
       console.error('Error updating player:', err)
@@ -251,7 +296,7 @@ const EditPlayer = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
-                    to={orgId ? `/organisations/${orgId}` : '/dashboard'}
+                    to={`/organisations/${orgId}`}
                     className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                   >
                     ← Back to Dashboard
@@ -259,7 +304,7 @@ const EditPlayer = () => {
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Edit Player</h1>
                 </div>
                 <button
-                  onClick={() => navigate(orgId ? `/organisations/${orgId}/players` : '/players')}
+                  onClick={() => navigate(`/organisations/${orgId}/players`)}
                   className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                 >
                   ← Back to Players

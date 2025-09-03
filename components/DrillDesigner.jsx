@@ -613,7 +613,8 @@ const DrillDesigner = () => {
           points: [0, 0, 50, 0], 
           stroke: selectedColor, 
           strokeWidth: 3,
-          fill: selectedColor
+          fill: selectedColor,
+          rotation: 0
         }
       case 'text':
         return { 
@@ -1194,6 +1195,25 @@ const DrillDesigner = () => {
     }
   }
 
+  const rotateSelectedElement = () => {
+    if (selectedElement && selectedElement.type === 'arrow') {
+      console.log('Rotating arrow:', selectedElement.id)
+      
+      setElements(prev => prev.map(el => {
+        if (el.id === selectedElement.id) {
+          return {
+            ...el,
+            rotation: (el.rotation || 0) + 90
+          }
+        }
+        return el
+      }))
+      
+      setHasUnsavedChanges(true)
+      console.log(`Arrow ${selectedElement.id} rotated 90°`)
+    }
+  }
+
   const flipSelectedElement = () => {
     console.log('Flip button clicked!')
     console.log('Selected element:', selectedElement)
@@ -1235,8 +1255,24 @@ const DrillDesigner = () => {
       // Force a re-render by updating elements state
       // This ensures the visual flip is immediately visible
       setElements(prev => [...prev])
+    } else if (selectedElement && selectedElement.type === 'arrow') {
+      // Flip arrow by rotating it 180 degrees
+      console.log('Flipping arrow:', selectedElement.id)
+      
+      setElements(prev => prev.map(el => {
+        if (el.id === selectedElement.id) {
+          return {
+            ...el,
+            rotation: (el.rotation || 0) + 180
+          }
+        }
+        return el
+      }))
+      
+      setHasUnsavedChanges(true)
+      console.log(`Arrow ${selectedElement.id} flipped (rotated 180°)`)
     } else {
-      console.log('No dynamic player selected or invalid element type')
+      console.log('No dynamic player or arrow selected')
     }
   }
 
@@ -2052,10 +2088,20 @@ const DrillDesigner = () => {
       case 'arrow':
         ctx.strokeStyle = element.stroke || '#000000'
         ctx.lineWidth = element.strokeWidth || 3
+        
+        // Apply rotation transformation
+        ctx.save()
+        ctx.translate(element.x, element.y)
+        if (element.rotation) {
+          ctx.rotate((element.rotation * Math.PI) / 180)
+        }
+        
         ctx.beginPath()
-        ctx.moveTo(element.x, element.y)
-        ctx.lineTo(element.x + (element.points?.[2] || 50), element.y + (element.points?.[3] || 0))
+        ctx.moveTo(0, 0)
+        ctx.lineTo(element.points?.[2] || 50, element.points?.[3] || 0)
         ctx.stroke()
+        
+        ctx.restore()
         break
         
       case 'text':
@@ -3684,10 +3730,22 @@ const DrillDesigner = () => {
                     📋 Duplicate
                   </button>
                   <button
+                    onClick={rotateSelectedElement}
+                    disabled={!selectedElement || selectedElement.type !== 'arrow'}
+                    className="bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
+                    title="Rotate arrow 90° clockwise"
+                  >
+                    🔄 Rotate
+                  </button>
+                  <button
                     onClick={flipSelectedElement}
                     disabled={!selectedElement}
                     className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-xs font-medium"
-                    title={selectedElement ? `Flip ${selectedElement.type}` : 'Select a player to flip'}
+                    title={selectedElement ? 
+                      (selectedElement.type === 'arrow' ? 'Flip arrow direction' : 
+                       selectedElement.type.startsWith('dynamic-player-') ? 'Flip player orientation' : 
+                       'Flip selected element') : 
+                      'Select an element to flip'}
                   >
                     🔄 Flip
                   </button>
@@ -4156,6 +4214,7 @@ const DrillDesigner = () => {
                               x={element.x}
                               y={element.y}
                               points={element.points}
+                              rotation={element.rotation || 0}
                               stroke={isSelected ? '#00ff00' : element.stroke}
                               strokeWidth={isSelected ? 5 : element.strokeWidth}
                               fill={element.fill}

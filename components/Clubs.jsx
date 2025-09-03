@@ -70,13 +70,8 @@ const Clubs = () => {
         .select('*')
         .order('name', { ascending: true })
 
-      // If we're in an organization context, filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      // Filter by organization_id
+      query = query.eq('organization_id', orgId)
 
       const { data: clubsData, error } = await query
 
@@ -90,13 +85,8 @@ const Clubs = () => {
             .select('accreditations')
             .eq('club_id', club.id)
 
-          // If we're in an organization context, filter by organization_id
-          if (orgId) {
-            playersQuery = playersQuery.eq('organization_id', orgId)
-          } else {
-            // Otherwise, filter by coach_id (single tenant)
-            playersQuery = playersQuery.eq('coach_id', user.id)
-          }
+          // Filter by organization_id
+          playersQuery = playersQuery.eq('organization_id', orgId)
 
           const { data: players, error: playersError } = await playersQuery
 
@@ -189,13 +179,8 @@ const Clubs = () => {
           ...clubData
         }
 
-        // If we're in an organization context, set organization_id
-        if (orgId) {
-          insertData.organization_id = orgId
-        } else {
-          // Otherwise, set coach_id (single tenant)
-          insertData.coach_id = user.id
-        }
+        // Set organization_id
+        insertData.organization_id = orgId
 
         const { error } = await supabase
           .from('clubs')
@@ -243,13 +228,8 @@ const Clubs = () => {
         .delete()
         .eq('id', clubId)
 
-      // If we're in an organization context, ensure the club belongs to the organization
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, ensure the club belongs to the coach
-        query = query.eq('coach_id', user.id)
-      }
+      // Ensure the club belongs to the organization
+      query = query.eq('organization_id', orgId)
 
       const { error } = await query
 

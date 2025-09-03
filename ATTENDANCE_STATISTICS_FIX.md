@@ -146,3 +146,4 @@ If issues persist:
 2. Verify that the `session_squads` relationship is properly set up
 3. Ensure the `player_squads` table has correct data
 4. Check that the Supabase query is returning expected results
+

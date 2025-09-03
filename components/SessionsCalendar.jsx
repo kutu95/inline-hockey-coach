@@ -136,13 +136,8 @@ const SessionsCalendar = () => {
         .order('date', { ascending: true })
         .order('start_time', { ascending: true })
 
-      // If we're in an organization context, filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      // Filter by organization_id
+      query = query.eq('organization_id', orgId)
 
       const { data, error } = await query
 
@@ -235,18 +230,14 @@ const SessionsCalendar = () => {
           .update(sessionData)
           .eq('id', editingSession.id)
         
-        if (orgId) {
-          query = query.eq('organization_id', orgId)
-        } else {
-          query = query.eq('coach_id', user.id)
-        }
+        query = query.eq('organization_id', orgId)
 
         const { error } = await query
         if (error) throw error
       } else {
         const insertData = {
           ...sessionData,
-          ...(orgId ? { organization_id: orgId } : { coach_id: user.id })
+          organization_id: orgId
         }
 
         const { error } = await supabase
@@ -287,11 +278,7 @@ const SessionsCalendar = () => {
         .delete()
         .eq('id', sessionId)
       
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        query = query.eq('coach_id', user.id)
-      }
+      query = query.eq('organization_id', orgId)
 
       const { error } = await query
 

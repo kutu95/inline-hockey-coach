@@ -27,15 +27,11 @@ const UserHeader = ({ playerProfile, playerPhotoUrl, orgId }) => {
               alt={`${playerProfile.first_name} ${playerProfile.last_name}`}
               className="w-10 h-10 object-cover rounded-full border border-gray-300"
               onError={(e) => {
-                if (e.target) {
-                  e.target.style.display = 'none'
-                }
-                if (e.target && e.target.nextSibling) {
-                  e.target.nextSibling.style.display = 'flex'
-                }
+                e.target.style.display = 'none'
+                e.target.nextSibling.style.display = 'flex'
               }}
               onLoad={(e) => {
-                if (e.target && e.target.nextSibling) {
+                if (e.target.nextSibling) {
                   e.target.nextSibling.style.display = 'none'
                 }
               }}

@@ -52,12 +52,7 @@ const AddPlayer = () => {
         .order('name', { ascending: true })
 
       // If we're in an organization context, filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      query = query.eq('organization_id', orgId)
 
       const { data, error } = await query
 
@@ -176,14 +171,8 @@ const AddPlayer = () => {
         photo_url: photoUrl
       }
 
-      // If we're in an organization context, set organization_id
-      if (orgId) {
-        playerDataToInsert.organization_id = orgId
-        // Don't set coach_id in organization context
-      } else {
-        // Otherwise, set coach_id (single tenant)
-        playerDataToInsert.coach_id = user.id
-      }
+      // Set organization_id
+      playerDataToInsert.organization_id = orgId
 
       // Insert player
       const { data: playerData, error } = await supabase
@@ -238,15 +227,9 @@ const AddPlayer = () => {
       setTimeout(() => {
         if (clubId) {
           // If we came from a club page, redirect back to that club
-          if (orgId) {
-            navigate(`/organisations/${orgId}/clubs/${clubId}`)
-          } else {
-            navigate(`/clubs/${clubId}`)
-          }
-        } else if (orgId) {
-          navigate(`/organisations/${orgId}/players`)
+          navigate(`/organisations/${orgId}/clubs/${clubId}`)
         } else {
-          navigate('/players')
+          navigate(`/organisations/${orgId}/players`)
         }
       }, 2000)
     } catch (err) {
@@ -266,7 +249,7 @@ const AddPlayer = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <Link
-                    to={orgId ? `/organisations/${orgId}` : '/dashboard'}
+                    to={`/organisations/${orgId}`}
                     className="text-gray-600 hover:text-gray-800 font-medium text-sm sm:text-base"
                   >
                     ← Back to Dashboard

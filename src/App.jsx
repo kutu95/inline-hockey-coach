@@ -48,6 +48,8 @@ import StrengthConditioningPhase3 from '../components/StrengthConditioningPhase3
 import StrengthConditioningPhase4 from '../components/StrengthConditioningPhase4'
 import StrengthConditioningPhase5 from '../components/StrengthConditioningPhase5'
 import StrengthConditioningPhase0 from '../components/StrengthConditioningPhase0'
+import IndividualPlayerLanding from '../components/IndividualPlayerLanding'
+import IndividualPlayerRegistration from '../components/IndividualPlayerRegistration'
 import AuthErrorBoundary from '../components/AuthErrorBoundary'
 import AuthErrorHandler from '../components/AuthErrorHandler'
 import AccessDenied from '../components/AccessDenied'
@@ -695,6 +697,10 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Individual Player Routes */}
+            <Route path="/individual-players" element={<IndividualPlayerLanding />} />
+            <Route path="/register-individual" element={<IndividualPlayerRegistration />} />
             
             <Route path="/access-denied" element={<AccessDenied />} />
             <Route path="/" element={<RoleBasedRedirect />} />

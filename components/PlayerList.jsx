@@ -84,37 +84,22 @@ const PlayerList = () => {
       
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      // First check if the file exists
-      const { data: existsData, error: existsError } = await supabase.storage
-        .from('club-logos')
-        .list(filePath.split('/')[0]) // List files in the user directory
-      
-      if (existsError) {
-        // Silently skip if we can't check file existence
-        return null
-      }
-      
-      // Check if the file exists in the list
-      const fileName = filePath.split('/')[1]
-      const fileExists = existsData?.some(file => file.name === fileName)
-      
-      if (!fileExists) {
-        // Silently skip missing files - this is expected for some records
-        return null
-      }
-      
+      // Skip file existence check to avoid CORS issues
+      // Just try to create a signed URL directly
       const { data, error } = await supabase.storage
         .from('club-logos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
       if (error) {
         // Silently skip if we can't get signed URL
+        console.log('Could not get signed URL for club logo:', error.message)
         return null
       }
       
       return data?.signedUrl || null
     } catch (err) {
       // Silently skip if there's an error
+      console.log('Error getting signed URL for club logo:', err.message)
       return null
     }
   }
@@ -133,37 +118,22 @@ const PlayerList = () => {
       
       const filePath = urlParts.slice(-2).join('/') // Get user_id/filename
       
-      // First check if the file exists
-      const { data: existsData, error: existsError } = await supabase.storage
-        .from('player-photos')
-        .list(filePath.split('/')[0]) // List files in the user directory
-      
-      if (existsError) {
-        // Silently skip if we can't check file existence
-        return null
-      }
-      
-      // Check if the file exists in the list
-      const fileName = filePath.split('/')[1]
-      const fileExists = existsData?.some(file => file.name === fileName)
-      
-      if (!fileExists) {
-        // Silently skip missing files - this is expected for some records
-        return null
-      }
-      
+      // Skip file existence check in organization context to avoid CORS issues
+      // Just try to create a signed URL directly
       const { data, error } = await supabase.storage
         .from('player-photos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
       
       if (error) {
         // Silently skip if we can't get signed URL
+        console.log('Could not get signed URL for player photo:', error.message)
         return null
       }
       
       return data?.signedUrl || null
     } catch (err) {
       // Silently skip if there's an error
+      console.log('Error getting signed URL for player photo:', err.message)
       return null
     }
   }
@@ -263,13 +233,8 @@ const PlayerList = () => {
           )
         `)
 
-      // If we're in an organization context (orgId from route params), filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      // Filter by organization_id
+      query = query.eq('organization_id', orgId)
 
       query = query.order(sortField, { ascending: sortDirection === 'asc' })
 
@@ -694,35 +659,38 @@ const PlayerList = () => {
                             {/* Image as link */}
                             <Link
                               to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}
-                              className="hover:opacity-80 transition-opacity flex-shrink-0"
+                              className="hover:opacity-80 transition-opacity flex-shrink-0 relative"
                             >
-                              {player.photo_url ? (
-                                <img
-                                  src={playerPhotoUrls[player.id] || player.photo_url}
-                                  alt={`${player.first_name} ${player.last_name}`}
-                                  className="w-12 h-12 object-cover rounded-full border border-gray-300"
-                                  onError={(e) => {
-                                    if (e.target) {
-                                      e.target.style.display = 'none'
-                                    }
-                                    if (e.target && e.target.nextSibling) {
-                                      e.target.nextSibling.style.display = 'flex'
-                                    }
-                                  }}
-                                  onLoad={(e) => {
-                                    // Hide the fallback when image loads successfully
-                                    if (e.target && e.target.nextSibling) {
-                                      e.target.nextSibling.style.display = 'none'
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center" style={{ display: player.photo_url ? 'none' : 'flex' }}>
-                                  <span className="text-gray-500 text-sm font-medium">
-                                    {player.first_name.charAt(0)}{player.last_name.charAt(0)}
-                                  </span>
-                                </div>
-                              )}
+                              {/* Player photo image */}
+                              <img
+                                src={playerPhotoUrls[player.id] || player.photo_url || ''}
+                                alt={`${player.first_name} ${player.last_name}`}
+                                className="w-12 h-12 object-cover rounded-full border border-gray-300"
+                                style={{ display: player.photo_url ? 'block' : 'none' }}
+                                onError={(e) => {
+                                  e.target.style.display = 'none'
+                                  const fallback = e.target.nextElementSibling
+                                  if (fallback) {
+                                    fallback.style.display = 'flex'
+                                  }
+                                }}
+                                onLoad={(e) => {
+                                  // Hide the fallback when image loads successfully
+                                  const fallback = e.target.nextElementSibling
+                                  if (fallback) {
+                                    fallback.style.display = 'none'
+                                  }
+                                }}
+                              />
+                              {/* Fallback initials div - always rendered but conditionally displayed */}
+                              <div 
+                                className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center absolute top-0 left-0"
+                                style={{ display: player.photo_url ? 'none' : 'flex' }}
+                              >
+                                <span className="text-gray-500 text-sm font-medium">
+                                  {player.first_name.charAt(0)}{player.last_name.charAt(0)}
+                                </span>
+                              </div>
                             </Link>
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -782,9 +750,7 @@ const PlayerList = () => {
                                         alt={`${player.clubs.name} logo`}
                                         className="w-5 h-5 object-contain"
                                         onError={(e) => {
-                                          if (e.target) {
-                                            e.target.style.display = 'none'
-                                          }
+                                          e.target.style.display = 'none'
                                         }}
                                         onLoad={(e) => {
                                           // Image loaded successfully - no action needed

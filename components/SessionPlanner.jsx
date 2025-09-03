@@ -444,8 +444,8 @@ const SessionPlanner = () => {
       setSuccess('')
 
       console.log('Saving session plan for session:', sessionId)
-      console.log('Notes blocks:', notesBlocks)
-      console.log('Session drills:', sessionDrills)
+      console.log('Raw notes blocks:', notesBlocks)
+      console.log('Raw session drills:', sessionDrills)
 
       // Prepare data for saving
       const notesBlocksData = notesBlocks.map(block => ({
@@ -464,6 +464,11 @@ const SessionPlanner = () => {
 
       console.log('Prepared notes blocks data:', notesBlocksData)
       console.log('Prepared session drills data:', sessionDrillsData)
+      console.log('Data being sent to RPC:', {
+        session_uuid: sessionId,
+        notes_blocks_data: notesBlocksData,
+        session_drills_data: sessionDrillsData
+      })
 
       const { data, error } = await supabase.rpc('save_session_planning', {
         session_uuid: sessionId,

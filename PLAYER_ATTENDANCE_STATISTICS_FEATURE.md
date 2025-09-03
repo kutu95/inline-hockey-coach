@@ -195,3 +195,4 @@ sessions ←→ session_attendance ←→ players
 - Error handling scenarios
 
 This feature provides valuable insights into player attendance patterns, helping coaches and administrators make data-driven decisions about player development and squad management.
+

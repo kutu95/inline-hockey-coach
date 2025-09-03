@@ -1,3 +1,4 @@
+import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
 import { useState, useEffect } from 'react'
@@ -54,7 +55,7 @@ const OrganizationPlayerEditRoute = ({ children, requiredRoles = [] }) => {
   
   // If user has required role, allow access
   if (hasRequiredRole) {
-    return children
+    return React.cloneElement(children, { id, orgId })
   }
   
   // If user doesn't have required role, check if they're a player trying to edit their own profile
@@ -69,7 +70,7 @@ const OrganizationPlayerEditRoute = ({ children, requiredRoles = [] }) => {
     
     // If the player profile belongs to the current user, allow access
     if (playerProfile && playerProfile.user_id === user.id) {
-      return children
+      return React.cloneElement(children, { id, orgId })
     }
   }
   

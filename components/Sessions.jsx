@@ -143,13 +143,8 @@ const Sessions = () => {
         .order('date', { ascending: true })
         .order('start_time', { ascending: true })
 
-      // If we're in an organization context, filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      // Filter by organization_id
+      query = query.eq('organization_id', orgId)
 
       const { data, error } = await query
 
@@ -171,13 +166,8 @@ const Sessions = () => {
         .eq('is_active', true)
         .order('name', { ascending: true })
 
-      // If we're in an organization context, filter by organization_id
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, filter by coach_id (single tenant)
-        query = query.eq('coach_id', user.id)
-      }
+      // Filter by organization_id
+      query = query.eq('organization_id', orgId)
 
       const { data, error } = await query
 
@@ -351,13 +341,8 @@ const Sessions = () => {
           .update(updateData)
           .eq('id', editingSession.id)
 
-        // If we're in an organization context, ensure the session belongs to the organization
-        if (orgId) {
-          query = query.eq('organization_id', orgId)
-        } else {
-          // Otherwise, ensure the session belongs to the coach
-          query = query.eq('coach_id', user.id)
-        }
+        // Ensure the session belongs to the organization
+        query = query.eq('organization_id', orgId)
 
         const { error } = await query
 
@@ -373,13 +358,8 @@ const Sessions = () => {
           ...sessionData
         }
 
-        // If we're in an organization context, set organization_id
-        if (orgId) {
-          insertData.organization_id = orgId
-        } else {
-          // Otherwise, set coach_id (single tenant)
-          insertData.coach_id = user.id
-        }
+        // Set organization_id
+        insertData.organization_id = orgId
 
         const { data, error } = await supabase
           .from('sessions')
@@ -456,13 +436,8 @@ const Sessions = () => {
         .delete()
         .eq('id', sessionId)
 
-      // If we're in an organization context, ensure the session belongs to the organization
-      if (orgId) {
-        query = query.eq('organization_id', orgId)
-      } else {
-        // Otherwise, ensure the session belongs to the coach
-        query = query.eq('coach_id', user.id)
-      }
+      // Ensure the session belongs to the organization
+      query = query.eq('organization_id', orgId)
 
       const { error } = await query
 
