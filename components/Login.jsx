@@ -274,8 +274,8 @@ const Login = () => {
               ) : (
                 <div className="text-center">
                   <p className="text-gray-600 mb-3">
-                    Need an account? If you belong to a club on Backcheck, contact your coach for an invitation. 
-                    Otherwise, to register as an individual player, click the link below.
+                    Need an account? Contact your coach for an invitation to the platform. 
+                    To register as an individual unaffiliated player, click the link below.
                   </p>
                   <Link
                     to="/individual-players"
