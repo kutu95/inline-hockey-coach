@@ -129,19 +129,25 @@ const StrengthConditioningPhase1 = () => {
                           <svg className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
                           </svg>
-                          <span className="text-gray-700"><strong>Build your aerobic base</strong> – longer shifts, faster recovery.</span>
+                          <span className="text-gray-700"><strong>Aerobic base (Zone 2)</strong> – 2 sessions/week; build to <strong>60 minutes</strong> per session at ~<strong>60–70% Max HR</strong>. If you already do 60′, hold it and look for more distance at the same HR.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <svg className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
                           </svg>
-                          <span className="text-gray-700"><strong>Develop whole-body strength</strong> – stronger stride, reduced injury risk.</span>
+                          <span className="text-gray-700"><strong>Strength (2×/week)</strong> – <span className="underline">Gym track</span>: Squat, Deadlift (1×5), Bench/Overhead Press, Chin‑ups (progressive load; aim 3×5 except DL). <span className="underline">No‑gym track</span>: Goblet Squat, Push‑ups, Bridges, Chin‑ups (3 rounds; add small reps weekly). Emphasize technique; progress gradually.</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <svg className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
                           </svg>
-                          <span className="text-gray-700"><strong>Improve movement quality</strong> – mobility, posture, and coordination.</span>
+                          <span className="text-gray-700"><strong>Movement quality</strong> – mobility, posture, and coordination to keep joints healthy and technique clean.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
+                          </svg>
+                          <span className="text-gray-700"><strong>Games = high‑intensity work</strong> – do not add extra max‑intensity intervals here; games supply them.</span>
                         </li>
                       </ul>
                       <div className="bg-white rounded-lg p-4 mb-6">
@@ -150,6 +156,32 @@ const StrengthConditioningPhase1 = () => {
                           Hockey is high-intensity and interval-based. Games push your heart rate near max, so we don't need to train that every day. 
                           Instead, this program strengthens your base systems so you can perform better and recover faster during the season.
                         </p>
+                      </div>
+                      <div className="border-t border-orange-200 pt-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                          <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          Games/week scheduling tips
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">1 game/week</h4>
+                            <ul className="text-sm text-gray-700 space-y-1">
+                              <li>• Rest day before and after the game</li>
+                              <li>• Alternate STR and AEROBIC on non‑game days</li>
+                              <li>• Move days to fit life; consistency over perfection</li>
+                            </ul>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">2–3 games/week</h4>
+                            <ul className="text-sm text-gray-700 space-y-1">
+                              <li>• Use one/two double days as needed (STR AM, AEROBIC PM preferred; otherwise back‑to‑back)</li>
+                              <li>• Keep Zone‑2 truly easy; protect recovery</li>
+                              <li>• On strength days while fatigued, favor technique over load</li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
                       <div className="border-t border-orange-200 pt-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
