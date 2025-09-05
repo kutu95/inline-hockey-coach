@@ -434,7 +434,7 @@ export default function StrengthConditioningWelcome() {
         <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
           <p className="text-yellow-800">
             <span className="mr-2">⚠️</span>
-            <span className="font-semibold">Who it’s not for:</span> This program is not intended for players who already have a high standard of fitness and are following a structured plan designed by a coach or sports scientist. We do not want to “fix what isn’t broken.” If you’re already performing at a high level on a proven program, stick with what works for you.
+            <span className="font-semibold">Who it’s not for:</span> This program is not intended for players who already have a high standard of fitness and have a good plan. We do not want to “fix what isn’t broken.” If you’re already performing at a high level of fitness, stick with what works for you.
           </p>
         </div>
       </div>
