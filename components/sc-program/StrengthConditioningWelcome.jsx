@@ -401,7 +401,7 @@ export default function StrengthConditioningWelcome() {
         </h1>
         <div className="max-w-2xl mx-auto text-left">
           <p className="text-gray-700 mb-4">
-            This program is designed for <span className="font-semibold">adult inline hockey players (18+)</span> who want to improve their fitness and need a structured plan to follow. It’s built for players who:
+            This comprehensive 9-month training program is designed specifically for <span className="font-semibold">adult inline hockey players (18+)</span> who want to improve their fitness and need a structured plan to follow.  It will build strength, power, and endurance while reducing injury risk. It’s built for players who:
           </p>
           <ul className="list-disc pl-5 space-y-2 text-gray-600">
             <li>Don’t currently have a dedicated strength &amp; conditioning plan</li>
