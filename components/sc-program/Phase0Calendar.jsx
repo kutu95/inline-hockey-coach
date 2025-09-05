@@ -84,7 +84,6 @@ function makeWeekTemplate(weekIndex) {
       { type: SESSION_TYPES.TEST, title: 'Aerobic Baseline: 2.4 km Run OR 1.6 km Walk', details: 'Warm-up 8–10′. Time the test. Record time + avg HR (if available).' },
       { type: SESSION_TYPES.TEST, title: 'Movement Screen', details: 'Overhead squat view; ankle wall test (knee-to-wall); single-leg balance 30–45s/side. Note any limits.' },
       { type: SESSION_TYPES.EDU, title: 'Education Overview', details: 'Open the Education Overview modal: why Zone 2 matters, strength basics, and safety.' },
-      { type: SESSION_TYPES.REST, title: 'Rest / Family / Hobbies', details: 'No formal training. Hydrate, sleep.' },
     ]
   }
   // Week 2
@@ -94,7 +93,6 @@ function makeWeekTemplate(weekIndex) {
     { type: SESSION_TYPES.TEST, title: 'HR Max Review & Zone Calculator', details: 'Enter measured peak (game or hard effort) or estimate (208−0.7×age). App computes zones.' },
     { type: SESSION_TYPES.EDU, title: 'How the Program Works (Phases I–V)', details: 'Read quick guide; plan your training times; add game days to calendar.' },
     { type: SESSION_TYPES.SETUP, title: 'Set Anchor Monday for Phase I', details: 'Choose the Monday you will start Phase I; confirm reminders work.' },
-    { type: SESSION_TYPES.REST, title: 'Rest & Prepare', details: 'Lay out gear, sleep well. Phase I starts next week.' },
   ]
 }
 
