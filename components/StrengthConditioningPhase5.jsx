@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
-import PhaseVCalendar from './sc-program/PhaseVCalendar'
 import PhaseNavigation from './sc-program/PhaseNavigation'
 import UserHeader from './UserHeader'
 
@@ -302,8 +301,7 @@ const StrengthConditioningPhase5 = () => {
                 )}
               </div>
               
-              {/* Phase V Calendar Component */}
-              <PhaseVCalendar />
+              {/* Simplified: No calendar is shown for Phase V */}
             </div>
           )}
         </div>
