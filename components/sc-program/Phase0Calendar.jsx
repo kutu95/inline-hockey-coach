@@ -15,6 +15,7 @@ import { supabase } from '../../src/lib/supabase'
 import { useAuth } from '../../src/contexts/AuthContext'
 import { HRMaxZonesNote, BaselinesNote, QuickGuideCard } from './Phase0Notes'
 import BaselineDataCapture from './BaselineDataCapture'
+import { renderWithTechniqueLinks } from './ExerciseTechniqueModals'
 
 // ---------------------- Types ----------------------
 
@@ -295,7 +296,7 @@ export default function Phase0Calendar() {
             </h3>
           </div>
           <div className="space-y-3">
-            <p className="text-sm text-gray-600">{s.details || '—'}</p>
+            <p className="text-sm text-gray-600">{s.details ? renderWithTechniqueLinks(s.details) : '—'}</p>
             {'id' in s && s.id ? (
               <div className="flex items-center gap-3">
                 <input
