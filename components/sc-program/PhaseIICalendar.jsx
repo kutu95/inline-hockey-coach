@@ -41,7 +41,7 @@ function makePhaseIIWeekTemplate() {
     { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength A (Single-Leg)', details: [
       'Rear-Foot Elevated Split Squat 3×5–6/leg',
       'Chin-Ups 3 sets (work toward 3×15; add load if easy)',
-      'DB/KB RDL 3×6–8',
+      'DB/KB deadlift technique 3×6–8',
       'Pallof (anti-rotation) 3×10–12/side',
       'Progress only when form is clean.',
     ].join(' · ') },
@@ -54,7 +54,7 @@ function makePhaseIIWeekTemplate() {
     { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength B (Rotational + PC)', details: [
       'Walking Lunge (long stride) 3×6–8/leg',
       'Bench Press or Push-Ups 3×5–8',
-      'Single-Leg RDL 3×6–8/leg',
+      'Single-leg deadlift technique 3×6–8/leg',
       'Cable/Band Rotational Chop 3×8–10/side',
     ].join(' · ') },
     { date: '', type: SESSION_TYPES.AEROBIC, title: 'Zone-2 Aerobic (Maintenance)', details: '45–60′ @ ~60–70% max HR. Conversational pace.' },

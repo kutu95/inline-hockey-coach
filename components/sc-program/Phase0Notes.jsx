@@ -203,7 +203,7 @@ export function BaselinesNote({ triggerClassName }) {
                     </p>
                     <ul className="list-disc pl-5 space-y-1">
                       <li><strong>Squat:</strong> Bodyweight → goblet → empty bar. Focus on depth, knees tracking, and braced torso.</li>
-                      <li><strong>Hinge (RDL):</strong> Hip back, shins vertical, neutral spine, bar stays close to legs; feel hamstrings.</li>
+                      <li><strong>Deadlift technique:</strong> Hip back, shins near vertical, neutral spine, bar stays close; feel hamstrings.</li>
                       <li><strong>Push (bench/push-up):</strong> Scapular set ("proud chest"), forearms vertical, smooth tempo.</li>
                       <li><strong>Chin-up regressions:</strong> Band-assisted, feet-assisted, eccentric-only, or inverted rows. Aim for clean reps, not exhaustion.</li>
                     </ul>
@@ -265,7 +265,7 @@ export function DemoSourcesNote({ triggerClassName }) {
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Exercise demos: where to source</h3>
-                <p className="text-sm text-gray-600 mb-4">Shortlist of reliable options for "squat", "RDL/hinge", "chin-up regressions", etc.</p>
+                <p className="text-sm text-gray-600 mb-4">Shortlist of reliable options for "squat", "deadlift technique", "chin-up regressions", etc.</p>
 
                 <div className="text-sm space-y-3 leading-relaxed">
                   <ul className="list-disc pl-5 space-y-1">
@@ -273,7 +273,7 @@ export function DemoSourcesNote({ triggerClassName }) {
                     <li><strong>Use trusted libraries:</strong> look for clear angles, concise cues, and safe progressions. Examples to search for:
                       <ul className="list-disc pl-5 mt-1 space-y-1">
                         <li>"Goblet squat setup & depth", "Back squat bracing and knee tracking"</li>
-                        <li>"Romanian deadlift bar path", "Hip hinge drill with dowel"</li>
+                        <li>"Deadlift setup and bar path", "Hip hinge drill with dowel"</li>
                         <li>"Band-assisted chin-ups", "Eccentric chin-ups", "Inverted row setup"</li>
                       </ul>
                     </li>
