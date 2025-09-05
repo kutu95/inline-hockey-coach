@@ -594,8 +594,8 @@ const OrganisationDetail = () => {
               </Link>
             )}
 
-            {/* Strength & Conditioning - Superadmin only */}
-            {hasRole('superadmin') && (
+            {/* Strength & Conditioning - visible to all authenticated users */}
+            {
               <Link
                 to="/strength-conditioning"
                 className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
@@ -618,7 +618,7 @@ const OrganisationDetail = () => {
                   </div>
                 </div>
               </Link>
-            )}
+            }
 
 
 

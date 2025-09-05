@@ -640,61 +640,61 @@ function App() {
               } 
             />
             
-            {/* Strength & Conditioning Program - superadmin only */}
+            {/* Strength & Conditioning Program - authenticated users */}
             <Route 
               path="/strength-conditioning" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioning />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-1" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase1 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-2" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase2 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-3" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase3 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-4" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase4 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-5" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase5 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             <Route 
               path="/strength-conditioning/phase-0" 
               element={
-                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                <ProtectedRoute>
                   <StrengthConditioningPhase0 />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             
