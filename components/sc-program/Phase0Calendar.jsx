@@ -16,6 +16,7 @@ import { useAuth } from '../../src/contexts/AuthContext'
 import { HRMaxZonesNote, BaselinesNote, QuickGuideCard } from './Phase0Notes'
 import BaselineDataCapture from './BaselineDataCapture'
 import { renderWithTechniqueLinks } from './ExerciseTechniqueModals'
+import { EducationNote } from './Phase0Notes'
 
 // ---------------------- Types ----------------------
 
@@ -294,7 +295,12 @@ export default function Phase0Calendar() {
             </h3>
           </div>
           <div className="space-y-3">
-            <p className="text-sm text-gray-600">{s.details ? renderWithTechniqueLinks(s.details) : '—'}</p>
+            <p className="text-sm text-gray-600">
+              {s.details ? renderWithTechniqueLinks(s.details) : '—'}
+              {s.type === SESSION_TYPES.EDU && (
+                <span className="ml-2 inline-block"><EducationNote triggerClassName="!px-2 !py-1" /></span>
+              )}
+            </p>
             {'id' in s && s.id ? (
               <div className="flex items-center gap-3">
                 <input
