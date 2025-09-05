@@ -91,7 +91,6 @@ function makeWeekTemplate(weekIndex) {
     { type: SESSION_TYPES.STRENGTH, title: 'Technique Orientation (Gym or Bodyweight)', details: 'Learn form: squat, deadlift technique, push-up, chin-up regressions; stop fresh. No maxing.' },
     { type: SESSION_TYPES.AEROBIC, title: 'Zone 2 Familiarisation (20–30′)', details: 'Find pace that keeps HR in 60–70% max; conversational effort.' },
     { type: SESSION_TYPES.TEST, title: 'HR Max Review & Zone Calculator', details: 'Enter measured peak (game or hard effort) or estimate (208−0.7×age). App computes zones.' },
-    { type: SESSION_TYPES.EDU, title: 'How the Program Works (Phases I–V)', details: 'Read quick guide; plan your training times; add game days to calendar.' },
     { type: SESSION_TYPES.SETUP, title: 'Set Anchor Monday for Phase I', details: 'Choose the Monday you will start Phase I; confirm reminders work.' },
   ]
 }
