@@ -66,10 +66,7 @@ function EnrollmentPrompt({ onEnroll, loading }) {
         </svg>
       </div>
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Ready to Transform Your Game?</h2>
-      <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-        Join our comprehensive 9-month Strength & Conditioning program designed specifically for inline hockey players. 
-        Build strength, power, and endurance while reducing injury risk and improving performance on the rink.
-      </p>
+      {/* Intro removed to avoid repetition with header section */}
       
       <div className="grid md:grid-cols-3 gap-4 mb-6 max-w-4xl mx-auto">
         <div className="bg-white rounded-lg p-4 shadow-sm">
