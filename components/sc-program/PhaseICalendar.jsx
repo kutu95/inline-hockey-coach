@@ -15,6 +15,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { addDays, format, startOfWeek } from 'date-fns'
 import { supabase } from '../../src/lib/supabase'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { renderWithTechniqueLinks } from './ExerciseTechniqueModals'
 
 // ---------------------- Types ----------------------
 
@@ -33,7 +34,7 @@ function makePhaseIWeekTemplate() {
   // Title/Details are player-facing.
   return [
     { date: '', type: SESSION_TYPES.REST, title: 'Rest / Mobility' },
-    { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength Day A', details: 'Squat 3×5, Bench 3×5, Deadlift 1×5, Chin-ups 3 sets (progress). Warm-up sets as prescribed.' },
+    { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength Day A', details: 'Squat 3×5, Bench Press 3×5, Deadlift 1×5, Chin-ups 3 sets (progress). Warm-up sets as prescribed.' },
     { date: '', type: SESSION_TYPES.AEROBIC, title: 'Zone 2 Aerobic', details: '45–60 min @ ~60–70% max HR. Choose bike/row/run-walk/swim.' },
     { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength Day B', details: 'Squat 3×5, Overhead Press 3×5, Deadlift 1×5, Chin-ups. Add 2.5–5 kg if form is solid.' },
     { date: '', type: SESSION_TYPES.AEROBIC, title: 'Zone 2 Aerobic', details: '45–60 min @ ~60–70% max HR. Maintain conversational pace.' },
@@ -276,7 +277,7 @@ export default function PhaseICalendar() {
               </h3>
             </div>
             <div className="space-y-3">
-              <p className="text-sm text-gray-600">{s.details || '—'}</p>
+              <p className="text-sm text-gray-600">{s.details ? renderWithTechniqueLinks(s.details) : '—'}</p>
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"

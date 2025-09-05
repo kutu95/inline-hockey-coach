@@ -13,6 +13,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { addDays, format, startOfWeek } from 'date-fns'
 import { supabase } from '../../src/lib/supabase'
 import { useAuth } from '../../src/contexts/AuthContext'
+import { renderWithTechniqueLinks } from './ExerciseTechniqueModals'
 
 // ---------------------- Types ----------------------
 
@@ -308,7 +309,7 @@ export default function PhaseIIICalendar() {
             </h3>
           </div>
           <div className="space-y-3">
-            <p className="text-sm text-gray-600">{s.details || '—'}</p>
+            <p className="text-sm text-gray-600">{s.details ? renderWithTechniqueLinks(s.details) : '—'}</p>
             {'id' in s && s.id ? (
               <div className="flex items-center gap-3">
                 <input
