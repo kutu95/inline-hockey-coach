@@ -399,10 +399,22 @@ export default function StrengthConditioningWelcome() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Strength & Conditioning Program
         </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          A comprehensive 9-month training program designed specifically for inline hockey players. 
-          Build strength, power, and endurance while reducing injury risk.
-        </p>
+        <div className="max-w-2xl mx-auto text-left">
+          <p className="text-gray-700 mb-4">
+            This program is designed for <span className="font-semibold">adult inline hockey players (18+)</span> who want to improve their fitness and need a structured plan to follow. It’s built for players who:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 text-gray-600">
+            <li>Don’t currently have a dedicated strength &amp; conditioning plan</li>
+            <li>Want to build their aerobic engine, strength, and mobility consistently</li>
+            <li>Need clear guidance to balance training with games and recovery</li>
+          </ul>
+          <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+            <p className="text-yellow-800">
+              <span className="mr-2">⚠️</span>
+              <span className="font-semibold">Who it’s not for:</span> This program is not intended for players who already have a high standard of fitness and have a good plan. We do not want to “fix what isn’t broken.” If you’re already performing at a high level of fitness, stick with what works for you.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -420,24 +432,7 @@ export default function StrengthConditioningWelcome() {
         <CurrentPhaseCard enrollment={enrollment} onContinue={handleShowAllPhases} />
       )}
 
-      {/* Who This Is For */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">Who This Is For</h2>
-        <p className="text-gray-700 mb-4">
-          This program is designed for <span className="font-semibold">adult inline hockey players (18+)</span> who want to improve their fitness and need a structured plan to follow. It’s built for players who:
-        </p>
-        <ul className="list-disc pl-5 space-y-2 text-gray-600">
-          <li>Don’t currently have a dedicated strength &amp; conditioning plan</li>
-          <li>Want to build their aerobic engine, strength, and mobility consistently</li>
-          <li>Need clear guidance to balance training with games and recovery</li>
-        </ul>
-        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-          <p className="text-yellow-800">
-            <span className="mr-2">⚠️</span>
-            <span className="font-semibold">Who it’s not for:</span> This program is not intended for players who already have a high standard of fitness and have a good plan. We do not want to “fix what isn’t broken.” If you’re already performing at a high level of fitness, stick with what works for you.
-          </p>
-        </div>
-      </div>
+      
 
       {/* Program Benefits */}
       <div className="bg-gray-50 rounded-lg p-6">
