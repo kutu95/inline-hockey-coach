@@ -88,7 +88,7 @@ function makeWeekTemplate(weekIndex) {
   }
   // Week 2
   return [
-    { type: SESSION_TYPES.STRENGTH, title: 'Technique Orientation (Gym or Bodyweight)', details: 'Learn form: squat, hinge (RDL), push, chin-up regressions; stop fresh. No maxing.' },
+    { type: SESSION_TYPES.STRENGTH, title: 'Technique Orientation (Gym or Bodyweight)', details: 'Learn form: squat, hip hinge (Romanian deadlift pattern), push, chin-up regressions; stop fresh. No maxing.' },
     { type: SESSION_TYPES.AEROBIC, title: 'Zone-2 Familiarisation (20–30′)', details: 'Find pace that keeps HR in 60–70% max; conversational effort.' },
     { type: SESSION_TYPES.TEST, title: 'HR Max Review & Zone Calculator', details: 'Enter measured peak (game or hard effort) or estimate (208−0.7×age). App computes zones.' },
     { type: SESSION_TYPES.MOBILITY, title: 'Mobility Flow (10–20′)', details: 'Add light core: dead-bugs, bird-dogs, side planks 2×20–30s/side.' },
