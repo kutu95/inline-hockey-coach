@@ -13,7 +13,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { addDays, format, startOfWeek } from 'date-fns'
 import { supabase } from '../../src/lib/supabase'
 import { useAuth } from '../../src/contexts/AuthContext'
-import { InfoNotesRow, QuickGuideCard } from './Phase0Notes'
+import { HRMaxZonesNote, BaselinesNote, QuickGuideCard } from './Phase0Notes'
 import BaselineDataCapture from './BaselineDataCapture'
 
 // ---------------------- Types ----------------------
@@ -43,12 +43,18 @@ function IntroCard() {
   return (
     <div className="bg-white rounded-lg shadow border border-blue-200">
       <div className="p-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Phase 0 — Preparation / Onboarding (2 Weeks)
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Phase 0 — Preparation / Onboarding (2 Weeks)
+          </h2>
+          <div className="flex items-center gap-2">
+            <HRMaxZonesNote />
+            <BaselinesNote />
+          </div>
+        </div>
         <div className="space-y-3 text-sm leading-relaxed">
           <p>
             <strong>Goal:</strong> get you ready to train. Over the next two weeks you'll set up your profile, check gear,
@@ -352,7 +358,6 @@ export default function Phase0Calendar() {
       <IntroCard />
       
       {/* Helpful Notes and Guides */}
-      <InfoNotesRow />
       <QuickGuideCard className="mt-2" />
       
       {/* Baseline Data Capture Button */}
