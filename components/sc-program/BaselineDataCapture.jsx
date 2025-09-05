@@ -514,7 +514,7 @@ function BaselineTestsForm({ onSave, onCancel }) {
 
 // ---------------------- Main Component ----------------------
 
-export default function BaselineDataCapture() {
+export default function BaselineDataCapture({ onCancel }) {
   const [currentStep, setCurrentStep] = useState('profile') // 'profile', 'tests', 'complete'
   const [userProfile, setUserProfile] = useState(null)
 
@@ -527,6 +527,10 @@ export default function BaselineDataCapture() {
   }
 
   const handleCancel = () => {
+    if (typeof onCancel === 'function') {
+      onCancel()
+      return
+    }
     setCurrentStep('profile')
   }
 

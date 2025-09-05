@@ -348,7 +348,7 @@ export default function Phase0Calendar() {
             Back to Phase 0
           </button>
         </div>
-        <BaselineDataCapture />
+        <BaselineDataCapture onCancel={() => setShowBaselineCapture(false)} />
       </div>
     )
   }
