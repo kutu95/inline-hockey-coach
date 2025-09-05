@@ -12,7 +12,6 @@ const StrengthConditioningPhase5 = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <UserHeader />
       
       {/* Brand Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
@@ -40,7 +39,7 @@ const StrengthConditioningPhase5 = () => {
               </div>
               <p className="text-blue-200 text-sm">for Inline Hockey</p>
             </div>
-            <div className="w-24"></div> {/* Spacer for centering */}
+            <div className="flex items-center"><UserHeader variant="onBlue" /></div>
           </div>
         </div>
       </div>
