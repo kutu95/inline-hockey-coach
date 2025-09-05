@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
 import Phase0Calendar from './sc-program/Phase0Calendar'
+import { EducationNote } from './sc-program/Phase0Notes'
 import PhaseNavigation from './sc-program/PhaseNavigation'
 import UserHeader from './UserHeader'
 
@@ -277,7 +278,8 @@ const StrengthConditioningPhase0 = () => {
                             <span className="text-blue-600 font-semibold text-sm">5</span>
                           </div>
                           <p className="text-gray-700">
-                            <strong>Ask questions</strong> – Use the education modules to understand the program philosophy.
+                            <strong>Learn the why</strong> – Open the Education Overview to understand the program philosophy.
+                            <span className="ml-2 inline-block"><EducationNote triggerClassName="!px-2 !py-1" /></span>
                           </p>
                         </div>
                         

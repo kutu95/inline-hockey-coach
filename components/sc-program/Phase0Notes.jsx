@@ -299,6 +299,101 @@ export function DemoSourcesNote({ triggerClassName }) {
   )
 }
 
+// ---------- Education Overview Modal ----------
+export function EducationNote({ triggerClassName }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(true)}
+        className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 ${triggerClassName || ''}`}
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v12m6-6H6" />
+        </svg>
+        Education Overview
+      </button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" onClick={() => setIsOpen(false)}>
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v12m6-6H6" />
+                  </svg>
+                  <h3 className="text-lg font-medium text-gray-900">Education Overview</h3>
+                </div>
+
+                <div className="space-y-5 text-sm leading-relaxed">
+                  <section className="space-y-2">
+                    <p className="font-medium">Program philosophy (Phases 0–V)</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li><strong>Phase 0 – Preparation:</strong> collect baselines, set HR zones, learn technique, set anchor Monday.</li>
+                      <li><strong>Phase I – Foundation:</strong> build aerobic base (Zone 2) and whole‑body strength; keep movement quality.</li>
+                      <li><strong>Phase II – Transition:</strong> introduce intervals (75–85% max HR); single‑leg/rotational strength.</li>
+                      <li><strong>Phase III – Peak Power:</strong> short hard intervals and power work; maintain base and strength.</li>
+                      <li><strong>Phase IV – Competition:</strong> prioritize recovery between games; minimal formal training.</li>
+                      <li><strong>Phase V – Recovery:</strong> programmed rest; resume when freshness returns.</li>
+                    </ul>
+                  </section>
+
+                  <div className="border-t border-gray-200"></div>
+
+                  <section className="space-y-2">
+                    <p className="font-medium">Why Zone 2 matters</p>
+                    <p>
+                      Zone 2 (≈60–70% of max HR) expands your aerobic engine: you cover more distance at the same heart rate and
+                      recover faster between shifts, without burning out on daily high intensity.
+                    </p>
+                  </section>
+
+                  <div className="border-t border-gray-200"></div>
+
+                  <section className="space-y-2">
+                    <p className="font-medium">Strength basics</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Favor big, multi‑joint exercises (squat, deadlift, press, chin‑up) for efficient whole‑body strength.</li>
+                      <li>Progress intensity gradually; most work sets are 3×5 (deadlift often 1×5). Add load only with clean form.</li>
+                      <li>No‑gym track: use goblet squats, push‑ups, bridges, chin‑ups; add small reps week to week.</li>
+                    </ul>
+                  </section>
+
+                  <div className="border-t border-gray-200"></div>
+
+                  <section className="space-y-2">
+                    <p className="font-medium">Safety</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Warm up properly (bar warm‑ups for barbell lifts; technique first).</li>
+                      <li>Use spotters/rack safety where appropriate; don’t chase maxes when learning.</li>
+                      <li>Film lifts occasionally or get coached feedback; reduce load if form degrades.</li>
+                    </ul>
+                  </section>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 // ---------- Quick Guide (card) ----------
 export function QuickGuideCard({ className }) {
   return (
