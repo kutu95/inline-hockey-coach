@@ -29,22 +29,29 @@ const SESSION_TYPES = {
 
 // ---------------------- Helpers ----------------------
 
-function makePhaseIWeekTemplate() {
+function makePhaseIWeekTemplate(hasGymAccess) {
   // 4 sessions/week template (Tue/Thu strength, Wed/Fri aerobic)
   // Title/Details are player-facing.
+  const strengthADetails = hasGymAccess
+    ? 'Squat 3×5, Bench Press 3×5, Deadlift 1×5, Chin-ups 3 sets (progress). Warm-up sets as prescribed.'
+    : 'Circuit 3 rounds: Goblet Squat 8–12 · Push-up sub-max · Chin-up/Jumping sub-max · Dip (bench) 8–12 · Bridge (3s) 8–12. Stop fresh; add small reps weekly.'
+  const strengthBDetails = hasGymAccess
+    ? 'Squat 3×5, Overhead Press 3×5, Deadlift 1×5, Chin-ups. Add 2.5–5 kg if form is solid.'
+    : 'Circuit 3 rounds: Goblet Squat 8–12 · Push-up sub-max · Chin-up/Jumping sub-max · Dip (bench) 8–12 · Bridge (3s) 8–12. Keep quality high.'
+
   return [
     { date: '', type: SESSION_TYPES.REST, title: 'Rest / Mobility' },
-    { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength Day A', details: 'Squat 3×5, Bench Press 3×5, Deadlift 1×5, Chin-ups 3 sets (progress). Warm-up sets as prescribed.' },
+    { date: '', type: SESSION_TYPES.STRENGTH, title: hasGymAccess ? 'Strength Day A' : 'Strength Day A (No Gym)', details: strengthADetails },
     { date: '', type: SESSION_TYPES.AEROBIC, title: 'Zone 2 Aerobic', details: '45–60 min @ ~60–70% max HR. Choose bike/row/run-walk/swim.' },
-    { date: '', type: SESSION_TYPES.STRENGTH, title: 'Strength Day B', details: 'Squat 3×5, Overhead Press 3×5, Deadlift 1×5, Chin-ups. Add 2.5–5 kg if form is solid.' },
+    { date: '', type: SESSION_TYPES.STRENGTH, title: hasGymAccess ? 'Strength Day B' : 'Strength Day B (No Gym)', details: strengthBDetails },
     { date: '', type: SESSION_TYPES.AEROBIC, title: 'Zone 2 Aerobic', details: '45–60 min @ ~60–70% max HR. Maintain conversational pace.' },
     { date: '', type: SESSION_TYPES.REST, title: 'Rest / Light Movement' },
     { date: '', type: SESSION_TYPES.GAME, title: 'Game Day', details: 'Games count as interval conditioning. Prioritize sleep, hydration.' },
   ]
 }
 
-function fitToWeek(start, gamesPerWeek) {
-  const base = makePhaseIWeekTemplate()
+function fitToWeek(start, gamesPerWeek, hasGymAccess) {
+  const base = makePhaseIWeekTemplate(hasGymAccess)
   const weekStart = startOfWeek(start, { weekStartsOn: 1 }) // Monday start
   // assign dates Mon..Sun
   const dated = base.map((s, idx) => ({ ...s, date: addDays(weekStart, idx).toISOString() }))
@@ -59,12 +66,12 @@ function fitToWeek(start, gamesPerWeek) {
   return dated
 }
 
-function buildEightWeeksPhaseI(anchorMondayISO, gamesPerWeek) {
+function buildEightWeeksPhaseI(anchorMondayISO, gamesPerWeek, hasGymAccess) {
   const anchor = new Date(anchorMondayISO)
   const weeks = []
   for (let w = 0; w < 8; w++) {
     const weekStart = addDays(anchor, w * 7)
-    weeks.push(...fitToWeek(weekStart, gamesPerWeek))
+    weeks.push(...fitToWeek(weekStart, gamesPerWeek, hasGymAccess))
   }
   return weeks
 }
@@ -80,6 +87,7 @@ function isToday(iso) {
 export default function PhaseICalendar() {
   const { user } = useAuth()
   const [gamesPerWeek, setGamesPerWeek] = useState(1)
+  const [hasGymAccess, setHasGymAccess] = useState(true)
   const [anchorMonday, setAnchorMonday] = useState(() => {
     // default to upcoming Monday
     const now = new Date()
@@ -94,8 +102,8 @@ export default function PhaseICalendar() {
 
   const weeks = useMemo(() => {
     // 8-week plan from anchor Monday
-    return buildEightWeeksPhaseI(anchorMonday, gamesPerWeek)
-  }, [anchorMonday, gamesPerWeek])
+    return buildEightWeeksPhaseI(anchorMonday, gamesPerWeek, hasGymAccess)
+  }, [anchorMonday, gamesPerWeek, hasGymAccess])
 
   useEffect(() => {
     // Ask for notifications (for reminders) – optional
@@ -353,6 +361,17 @@ export default function PhaseICalendar() {
                 onChange={(e) => setGamesPerWeek(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gym access</label>
+              <select
+                value={hasGymAccess ? 'yes' : 'no'}
+                onChange={(e) => setHasGymAccess(e.target.value === 'yes')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="yes">Yes (Gym program)</option>
+                <option value="no">No (Bodyweight circuit)</option>
+              </select>
             </div>
             <div className="flex items-end gap-2">
               <button
