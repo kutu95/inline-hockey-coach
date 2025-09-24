@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../src/contexts/AuthContext'
+import PhaseIVCalendar from './sc-program/PhaseIVCalendar'
 import PhaseNavigation from './sc-program/PhaseNavigation'
 import UserHeader from './UserHeader'
 
@@ -201,7 +202,104 @@ const StrengthConditioningPhase4 = () => {
                 )}
               </div>
               
-              {/* Simplified: No calendar is shown for Phase IV */}
+              {/* How to Use This Plan */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <button
+                  onClick={() => setIsHowToUseExpanded(!isHowToUseExpanded)}
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    How to Use Phase IV
+                  </h2>
+                  <svg 
+                    className={`w-5 h-5 text-blue-600 transition-transform ${isHowToUseExpanded ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isHowToUseExpanded && (
+                  <div className="px-6 pb-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">1</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Set tournament dates</strong> – choose your anchor Monday and tournament length (1-2 weeks).
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">2</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Configure games per day</strong> – most tournaments have 1-2 games per day.
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">3</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Follow the daily routine</strong> – mobility, primer, game, recovery, sleep.
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">4</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Prioritize recovery</strong> – if anything makes you more tired, skip it.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">5</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Stay consistent</strong> – same sleep schedule, same nutrition, same routine.
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">6</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Trust your training</strong> – you've done the work, now let it show.
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                            <span className="text-green-600 font-semibold text-sm">7</span>
+                          </div>
+                          <p className="text-gray-700">
+                            <strong>Enjoy the moment</strong> – this is what all the training was for.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Phase IV Calendar Component */}
+              <PhaseIVCalendar />
             </div>
           )}
         </div>

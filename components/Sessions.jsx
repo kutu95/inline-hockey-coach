@@ -33,7 +33,8 @@ const Sessions = () => {
     start_time: '',
     duration_minutes: '',
     location_id: '',
-    notes: ''
+    notes: '',
+    event_type: 'practice'
   })
 
   // Fetch current user's player profile
@@ -288,7 +289,8 @@ const Sessions = () => {
       start_time: '',
       duration_minutes: '',
       location_id: '',
-      notes: ''
+      notes: '',
+      event_type: 'practice'
     })
     setSelectedSquads([])
     setEditingSession(null)
@@ -302,6 +304,10 @@ const Sessions = () => {
       setError('Please fill in all required fields')
       return
     }
+    if (formData.event_type === 'game' && selectedSquads.length !== 1) {
+      setError('Please select exactly one squad for a game')
+      return
+    }
 
     try {
       // Prepare the data for submission
@@ -312,8 +318,13 @@ const Sessions = () => {
         start_time: formData.start_time,
         duration_minutes: parseInt(formData.duration_minutes),
         location_id: formData.location_id,
-        notes: formData.notes.trim() || null
+        notes: formData.notes.trim() || null,
+        event_type: formData.event_type || 'practice'
       }
+
+      // Ensure legacy "location" text column is populated for compatibility
+      const selectedLocation = locations.find(loc => loc.id === formData.location_id)
+      sessionData.location = selectedLocation?.name || 'Main Arena'
 
       // Remove any undefined or null values and system fields to avoid trigger issues
       Object.keys(sessionData).forEach(key => {
@@ -348,6 +359,12 @@ const Sessions = () => {
 
         if (error) {
           console.error('Supabase update error:', error)
+          console.error('Supabase update error details:', {
+            message: error?.message,
+            details: error?.details,
+            hint: error?.hint,
+            code: error?.code
+          })
           throw error
         }
 
@@ -360,19 +377,64 @@ const Sessions = () => {
 
         // Set organization_id
         insertData.organization_id = orgId
+        // Set created_by to current user for NOT NULL constraint
+        insertData.created_by = user.id
 
-        const { data, error } = await supabase
-          .from('sessions')
-          .insert(insertData)
-          .select('id')
-          .single()
+        let insertError = null
+        let insertResult = null
 
-        if (error) {
-          console.error('Supabase insert error:', error)
-          throw error
+        const attemptInsert = async () => {
+          const { data, error } = await supabase
+            .from('sessions')
+            .insert(insertData)
+            .select('id')
+            .single()
+          insertResult = data
+          insertError = error
         }
 
-        sessionId = data.id
+        await attemptInsert()
+
+        if (insertError) {
+          console.error('Supabase insert error:', insertError)
+          console.error('Supabase insert error details:', {
+            message: insertError?.message,
+            details: insertError?.details,
+            hint: insertError?.hint,
+            code: insertError?.code
+          })
+
+          // Fallback 1: event_type column does not exist (new column)
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('event_type') || insertError?.details?.includes('event_type'))) {
+            delete insertData.event_type
+            await attemptInsert()
+          }
+
+          // Fallback 2: older schema requiring coach_id NOT NULL
+          if (insertError?.code === '23502' && (insertError?.message?.includes('coach_id') || insertError?.details?.includes('coach_id'))) {
+            insertData.coach_id = user.id
+            await attemptInsert()
+          }
+
+          // Fallback 3: created_by column does not exist on this DB
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('created_by') || insertError?.details?.includes('created_by'))) {
+            delete insertData.created_by
+            await attemptInsert()
+          }
+
+          // Fallback 4: location_id column does not exist (legacy schema)
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('location_id') || insertError?.details?.includes('location_id'))) {
+            delete insertData.location_id
+            await attemptInsert()
+          }
+
+          // If still failing, throw last error
+          if (insertError) {
+            throw insertError
+          }
+        }
+
+        sessionId = insertResult.id
       }
 
       // Handle squad assignments
@@ -404,8 +466,14 @@ const Sessions = () => {
       resetForm()
       fetchSessions()
     } catch (err) {
-      setError(editingSession ? 'Failed to update session' : 'Failed to add session')
+      setError((editingSession ? 'Failed to update session' : 'Failed to add session') + (err?.message ? `: ${err.message}` : ''))
       console.error('Error saving session:', err)
+      console.error('Error saving session details:', {
+        message: err?.message,
+        details: err?.details,
+        hint: err?.hint,
+        code: err?.code
+      })
     }
   }
 
@@ -418,7 +486,8 @@ const Sessions = () => {
       start_time: session.start_time || '',
       duration_minutes: session.duration_minutes || '',
       location_id: session.location_id || '',
-      notes: session.notes || ''
+      notes: session.notes || '',
+      event_type: session.event_type || 'practice'
     })
     
     // Fetch existing squad assignments for this session
@@ -572,6 +641,21 @@ const Sessions = () => {
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
+                        <label htmlFor="event_type" className="block text-sm font-medium text-gray-700 mb-2">
+                          Type
+                        </label>
+                        <select
+                          id="event_type"
+                          name="event_type"
+                          value={formData.event_type}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="practice">Practice</option>
+                          <option value="game">Game</option>
+                        </select>
+                      </div>
+                      <div>
                         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                           Session Title *
                         </label>
@@ -681,6 +765,32 @@ const Sessions = () => {
                       />
                     </div>
 
+                    {formData.event_type === 'game' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Game Squad (select exactly one)
+                        </label>
+                        {squads.length === 0 ? (
+                          <p className="text-sm text-gray-500">No squads available. Create squads first to use games.</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {squads.map((squad) => (
+                              <label key={squad.id} className="flex items-center space-x-3 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="game_squad"
+                                  checked={selectedSquads.includes(squad.id)}
+                                  onChange={() => setSelectedSquads([squad.id])}
+                                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                />
+                                <span className="text-sm text-gray-900">{squad.name}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div>
                       <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
                         Session Notes
@@ -768,7 +878,7 @@ const Sessions = () => {
                                 {session.title}
                               </Link>
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start sm:self-auto">
-                                {formatDate(session.date)}
+                                {session.event_type === 'game' ? 'Game' : 'Practice'} · {formatDate(session.date)}
                               </span>
                             </div>
                             
@@ -808,7 +918,7 @@ const Sessions = () => {
                             >
                               View Session
                             </Link>
-                            {canManageSessions && (
+                            {canManageSessions && session.event_type !== 'game' && (
                               <Link
                                 to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}
                                 className="text-purple-600 hover:text-purple-800 text-sm font-medium text-center sm:text-left"
@@ -816,7 +926,7 @@ const Sessions = () => {
                                 Plan Session
                               </Link>
                             )}
-                            {canManageSessions && (
+                            {canManageSessions && session.event_type !== 'game' && (
                               <Link
                                 to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"

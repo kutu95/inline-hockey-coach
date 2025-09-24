@@ -7,6 +7,7 @@ import OrganizationHeader from './OrganizationHeader'
 const SessionsCalendar = () => {
   const [sessions, setSessions] = useState([])
   const [locations, setLocations] = useState([])
+  const [squads, setSquads] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -27,7 +28,9 @@ const SessionsCalendar = () => {
     start_time: '',
     duration_minutes: '',
     location_id: '',
-    notes: ''
+    notes: '',
+    event_type: 'practice',
+    squad_id: ''
   })
 
   // Function to get signed URL for player photos
@@ -110,6 +113,7 @@ const SessionsCalendar = () => {
   useEffect(() => {
     if (orgId && orgId !== 'undefined') {
       fetchSessions()
+      fetchSquads()
       fetchPlayerProfile()
     }
   }, [orgId])
@@ -178,6 +182,26 @@ const SessionsCalendar = () => {
     }
   }
 
+  const fetchSquads = async () => {
+    try {
+      let query = supabase
+        .from('squads')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name', { ascending: true })
+
+      if (orgId) {
+        query = query.eq('organization_id', orgId)
+      }
+
+      const { data, error } = await query
+      if (error) throw error
+      setSquads(data || [])
+    } catch (err) {
+      console.error('Error fetching squads:', err)
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -194,7 +218,9 @@ const SessionsCalendar = () => {
       start_time: '',
       duration_minutes: '',
       location_id: '',
-      notes: ''
+      notes: '',
+      event_type: 'practice',
+      squad_id: ''
     })
     setEditingSession(null)
     setShowAddForm(false)
@@ -209,6 +235,11 @@ const SessionsCalendar = () => {
     }
 
     try {
+      if (formData.event_type === 'game' && !formData.squad_id) {
+        setError('Please select a squad for the game')
+        return
+      }
+
       // Prepare the data for submission
       const sessionData = {
         title: formData.title.trim(),
@@ -217,12 +248,19 @@ const SessionsCalendar = () => {
         start_time: formData.start_time,
         duration_minutes: parseInt(formData.duration_minutes),
         location_id: formData.location_id,
-        notes: formData.notes.trim() || null
+        notes: formData.notes.trim() || null,
+        event_type: formData.event_type || 'practice'
       }
+
+      // Ensure legacy "location" text column is populated for compatibility
+      const selectedLocation = locations.find(loc => loc.id === formData.location_id)
+      sessionData.location = selectedLocation?.name || 'Main Arena'
 
       if (orgId) {
         sessionData.organization_id = orgId
       }
+
+      let sessionId
 
       if (editingSession) {
         let query = supabase
@@ -233,25 +271,107 @@ const SessionsCalendar = () => {
         query = query.eq('organization_id', orgId)
 
         const { error } = await query
-        if (error) throw error
+        if (error) {
+          console.error('Supabase update error:', error)
+          console.error('Supabase update error details:', {
+            message: error?.message,
+            details: error?.details,
+            hint: error?.hint,
+            code: error?.code
+          })
+          throw error
+        }
+        sessionId = editingSession.id
       } else {
         const insertData = {
           ...sessionData,
-          organization_id: orgId
+          organization_id: orgId,
+          created_by: user.id
         }
 
-        const { error } = await supabase
-          .from('sessions')
-          .insert(insertData)
+        let insertError = null
+        let insertResult = null
+        const attemptInsert = async () => {
+          const { data, error } = await supabase
+            .from('sessions')
+            .insert(insertData)
+            .select('id')
+            .single()
+          insertResult = data
+          insertError = error
+        }
 
-        if (error) throw error
+        await attemptInsert()
+
+        if (insertError) {
+          console.error('Supabase insert error:', insertError)
+          console.error('Supabase insert error details:', {
+            message: insertError?.message,
+            details: insertError?.details,
+            hint: insertError?.hint,
+            code: insertError?.code
+          })
+
+          // Fallback 1: event_type column does not exist (new column)
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('event_type') || insertError?.details?.includes('event_type'))) {
+            delete insertData.event_type
+            await attemptInsert()
+          }
+
+          // Fallback 2: coach_id required on this DB
+          if (insertError?.code === '23502' && (insertError?.message?.includes('coach_id') || insertError?.details?.includes('coach_id'))) {
+            insertData.coach_id = user.id
+            await attemptInsert()
+          }
+
+          // Fallback 3: created_by column absent
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('created_by') || insertError?.details?.includes('created_by'))) {
+            delete insertData.created_by
+            await attemptInsert()
+          }
+
+          // Fallback 4: location_id column absent
+          if (insertError && (insertError?.code === '42703') && (insertError?.message?.includes('location_id') || insertError?.details?.includes('location_id'))) {
+            delete insertData.location_id
+            await attemptInsert()
+          }
+
+          if (insertError) throw insertError
+        }
+        sessionId = insertResult.id
+      }
+
+      // For games, upsert exactly one squad assignment
+      if (sessionId && formData.event_type === 'game') {
+        // Clear existing
+        await supabase
+          .from('session_squads')
+          .delete()
+          .eq('session_id', sessionId)
+
+        if (formData.squad_id) {
+          const { error: squadErr } = await supabase
+            .from('session_squads')
+            .insert({ session_id: sessionId, squad_id: formData.squad_id })
+
+          if (squadErr) {
+            console.error('Error saving game squad assignment:', squadErr)
+            throw squadErr
+          }
+        }
       }
 
       resetForm()
       fetchSessions()
     } catch (err) {
-      setError(editingSession ? 'Failed to update session' : 'Failed to add session')
+      setError((editingSession ? 'Failed to update session' : 'Failed to add session') + (err?.message ? `: ${err.message}` : ''))
       console.error('Error saving session:', err)
+      console.error('Error saving session details:', {
+        message: err?.message,
+        details: err?.details,
+        hint: err?.hint,
+        code: err?.code
+      })
     }
   }
 
@@ -566,7 +686,7 @@ const SessionsCalendar = () => {
                         <div key={session.id} className="bg-gray-50 rounded-lg p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900">{session.title}</h4>
+                              <h4 className="font-semibold text-gray-900">{session.event_type === 'game' ? 'Game: ' : ''}{session.title}</h4>
                               <div className="text-sm text-gray-600 mt-1">
                                 <div>Time: {formatTime(session.start_time)} - {getEndTime(session.start_time, session.duration_minutes)}</div>
                                 <div>Location: {session.locations?.name || session.location || 'No location'}</div>
@@ -577,12 +697,14 @@ const SessionsCalendar = () => {
                               </div>
                             </div>
                             <div className="flex space-x-2 ml-4">
-                              <Link
-                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
-                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                              >
-                                Take Attendance
-                              </Link>
+                              {session.event_type !== 'game' && (
+                                <Link
+                                  to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
+                                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                >
+                                  Take Attendance
+                                </Link>
+                              )}
                               <button
                                 onClick={() => handleEdit(session)}
                                 className="text-green-600 hover:text-green-800 text-sm font-medium"
@@ -612,6 +734,21 @@ const SessionsCalendar = () => {
                   </h3>
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="event_type" className="block text-sm font-medium text-gray-700 mb-2">
+                          Type
+                        </label>
+                        <select
+                          id="event_type"
+                          name="event_type"
+                          value={formData.event_type}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                          <option value="practice">Practice</option>
+                          <option value="game">Game</option>
+                        </select>
+                      </div>
                       <div>
                         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                           Session Title *
@@ -723,6 +860,32 @@ const SessionsCalendar = () => {
                         placeholder="Session details, focus areas, etc."
                       />
                     </div>
+
+                    {formData.event_type === 'game' && (
+                      <div>
+                        <label htmlFor="squad_id" className="block text-sm font-medium text-gray-700 mb-2">
+                          Squad (required for games)
+                        </label>
+                        {squads.length === 0 ? (
+                          <div className="text-sm text-gray-500">
+                            No squads available. Create a squad first.
+                          </div>
+                        ) : (
+                          <select
+                            id="squad_id"
+                            name="squad_id"
+                            value={formData.squad_id}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          >
+                            <option value="">Select a squad</option>
+                            {squads.map((squad) => (
+                              <option key={squad.id} value={squad.id}>{squad.name}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    )}
 
                     <div>
                       <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">

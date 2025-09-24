@@ -113,6 +113,12 @@ const SessionPlanner = () => {
       if (error) throw error
 
       if (data) {
+        // Block planner for games
+        if (data.session?.event_type === 'game') {
+          setError('Planner is not available for games')
+          setLoading(false)
+          return
+        }
         setSession(data.session)
         setNotesBlocks(data.notes_blocks || [])
         setSessionDrills(data.session_drills || [])
