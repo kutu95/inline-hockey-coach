@@ -62,6 +62,7 @@ import SliderOnlyTest from '../components/animator/SliderOnlyTest'
 import MinimalSliderTest from '../components/animator/MinimalSliderTest'
 import CleanSliderTest from '../components/animator/CleanSliderTest'
 import GameManagement from '../components/GameManagement'
+import GameStats from '../components/GameStats'
 import './App.css'
 
 // Protected Route Component
@@ -808,7 +809,27 @@ function App() {
                 <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
                   <GameManagement />
                 </RoleProtectedRoute>
+              }
+            />
+            
+            {/* Game Stats */}
+            <Route 
+              path="/sessions/:sessionId/game-stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
+                  <GameStats />
+                </RoleProtectedRoute>
               } 
+            />
+            
+            {/* Organization-scoped Game Stats */}
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/game-stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
+                  <GameStats />
+                </RoleProtectedRoute>
+              }
             />
             
             <Route path="/access-denied" element={<AccessDenied />} />

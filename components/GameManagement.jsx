@@ -27,6 +27,8 @@ const GameManagement = () => {
   const [showSettings, setShowSettings] = useState(false)
   const [stoppageTimeout, setStoppageTimeout] = useState(60) // Default 60 seconds
   const [playStopTime, setPlayStopTime] = useState(null) // Track when play was stopped
+  const [gameHasEnded, setGameHasEnded] = useState(false) // Track if game has ended
+  const [showEndGameConfirm, setShowEndGameConfirm] = useState(false) // Track end game confirmation
   
   // Players
   const [squadPlayers, setSquadPlayers] = useState([])
@@ -190,16 +192,103 @@ const GameManagement = () => {
         
         if (players && players.length > 0) {
           setSquadPlayers(players)
-          setBenchPlayers([...players])
           
-          // Split bench players between D and F columns
-          const half = Math.ceil(players.length / 2)
-          setBenchDPlayers(players.slice(0, half))
-          setBenchFPlayers(players.slice(half))
+          // Load deleted players first before placing players on bench
+          console.log('Loading deleted players before initial placement...')
+          const { data: deletedEvents, error: deletedEventsError } = await supabase
+            .from('game_events')
+            .select('player_id')
+            .eq('session_id', sessionId)
+            .eq('event_type', 'player_deleted')
+          
+          let deletedPlayerIds = []
+          if (!deletedEventsError && deletedEvents) {
+            deletedPlayerIds = deletedEvents.map(event => event.player_id)
+            console.log('Found deleted players for initial placement:', deletedPlayerIds)
+          }
+          
+          // Load saved player positions before initial placement
+          console.log('Loading saved player positions before initial placement...')
+          const { data: positionEvents, error: positionEventsError } = await supabase
+            .from('game_events')
+            .select('metadata')
+            .eq('session_id', sessionId)
+            .eq('event_type', 'player_positions')
+            .order('event_time', { ascending: false })
+            .limit(1)
+          
+          let savedPositions = null
+          if (!positionEventsError && positionEvents && positionEvents.length > 0) {
+            savedPositions = positionEvents[0].metadata
+            console.log('Found saved player positions for initial placement:', savedPositions)
+            console.log('Position event details for initial placement:', positionEvents[0])
+            console.log('rinkD in saved positions:', savedPositions.rinkD)
+          }
+          
+          // Filter out deleted players
+          const activePlayers = players.filter(player => !deletedPlayerIds.includes(player.id))
+          console.log('Active players (excluding deleted):', activePlayers.length, 'out of', players.length)
+          
+          // Apply saved positions if available, otherwise use default placement
+          if (savedPositions) {
+            console.log('Applying saved positions for initial placement...')
+            
+            // Clear all zones first
+            setBenchDPlayers([])
+            setBenchFPlayers([])
+            setGkPlayers([])
+            setRinkDPlayers([])
+            setRinkFPlayers([])
+            setRinkGkPlayers([])
+            
+            // Restore players to their saved positions
+            Object.entries(savedPositions).forEach(([zone, playerIds]) => {
+              const zonePlayers = playerIds.map(id => activePlayers.find(p => p.id === id)).filter(Boolean)
+              console.log(`Restoring ${zonePlayers.length} players to ${zone} for initial placement`)
+              
+              switch (zone) {
+                case 'benchD':
+                  setBenchDPlayers(zonePlayers)
+                  break
+                case 'benchF':
+                  setBenchFPlayers(zonePlayers)
+                  break
+                case 'gk':
+                  setGkPlayers(zonePlayers)
+                  break
+                case 'rinkD':
+                  setRinkDPlayers(zonePlayers)
+                  break
+                case 'rinkF':
+                  setRinkFPlayers(zonePlayers)
+                  break
+                case 'rinkGk':
+                  setRinkGkPlayers(zonePlayers)
+                  break
+              }
+            })
+            
+            // Set bench players to all non-rink players for compatibility
+            const allBenchPlayers = [...savedPositions.benchD || [], ...savedPositions.benchF || [], ...savedPositions.gk || []]
+            const benchPlayerObjects = allBenchPlayers.map(id => activePlayers.find(p => p.id === id)).filter(Boolean)
+            setBenchPlayers(benchPlayerObjects)
+            
+            console.log('Saved positions applied for initial placement')
+          } else {
+            console.log('No saved positions found, using default placement')
+            
+            setBenchPlayers([...activePlayers])
+            
+            // Split bench players between D and F columns
+            const half = Math.ceil(activePlayers.length / 2)
+            setBenchDPlayers(activePlayers.slice(0, half))
+            setBenchFPlayers(activePlayers.slice(half))
+          }
           
           console.log('Squad players set:', players.length, 'players')
-          console.log('Bench D players:', half, 'players')
-          console.log('Bench F players:', players.length - half, 'players')
+          console.log('Bench D players:', benchDPlayers.length, 'players')
+          console.log('Bench F players:', benchFPlayers.length, 'players')
+          console.log('Rink D players:', rinkDPlayers.length, 'players')
           
           // Load player images
           await loadPlayerImages(players)
@@ -632,10 +721,15 @@ const GameManagement = () => {
           }
         })
       
-      // Record player event (don't wait for this)
-      const eventType = toZone === 'rink' ? 'player_on' : 'player_off'
-      recordGameEvent(eventType, playerId, now, gameTime, playTime)
-        .catch(error => console.error('Error recording game event:', error))
+      // Record player event only for cross-zone moves (bench ↔ rink)
+      if (isCrossZoneMove) {
+        const eventType = isToRink ? 'player_on' : 'player_off'
+        console.log(`Recording ${eventType} event for cross-zone move: ${fromZone} -> ${toZone}`)
+        recordGameEvent(eventType, playerId, now, gameTime, playTime)
+          .catch(error => console.error('Error recording game event:', error))
+      } else {
+        console.log(`Skipping event recording for internal move: ${fromZone} -> ${toZone}`)
+      }
       
     } catch (error) {
       console.error('Error moving player:', error)
@@ -672,8 +766,9 @@ const GameManagement = () => {
       }
       
       // Record goal event
+      const allRinkPlayers = [...rinkDPlayers, ...rinkFPlayers, ...rinkGkPlayers]
       await recordGameEvent(`goal_${type}`, null, now, currentGameTime, totalPlayTime, {
-        rink_players: rinkPlayers.map(p => p.id)
+        rink_players: allRinkPlayers.map(p => p.id)
       })
       
     } catch (error) {
@@ -697,6 +792,12 @@ const GameManagement = () => {
       
       // Record game end event
       await recordGameEvent('game_end', null, now, currentGameTime, totalPlayTime)
+      
+      // Set game as ended
+      setGameHasEnded(true)
+      
+      // Close confirmation dialog
+      setShowEndGameConfirm(false)
       
       // Navigate back to session details
       navigate(`/sessions/${sessionId}`)
@@ -807,6 +908,9 @@ const GameManagement = () => {
       // Clear deleted players set
       setDeletedPlayers(new Set())
       
+      // Reset game ended state
+      setGameHasEnded(false)
+      
       console.log('✅ ALL game data cleared and players reset to bench')
       console.log('Ready for a fresh game start!')
       
@@ -888,8 +992,32 @@ const GameManagement = () => {
         throw deleteError
       }
       
-      // Add player to deleted set so they don't get restored on refresh
-      setDeletedPlayers(prev => new Set([...prev, playerId]))
+      // Add player to deleted set and update database
+      const newDeletedPlayers = new Set([...deletedPlayers, playerId])
+      setDeletedPlayers(newDeletedPlayers)
+      
+      // Store deleted player event in game_events table
+      console.log('Recording player deletion event for:', playerId)
+      const { error: eventError } = await supabase
+        .from('game_events')
+        .insert({
+          session_id: sessionId,
+          event_type: 'player_deleted',
+          player_id: playerId,
+          event_time: new Date().toISOString(),
+          game_time_seconds: Math.floor((new Date() - gameStartTime) / 1000),
+          play_time_seconds: totalPlayTime,
+          metadata: {
+            deleted_at: new Date().toISOString()
+          }
+        })
+      
+      if (eventError) {
+        console.error('Error recording player deletion event:', eventError)
+        // Don't throw error here as the player is already deleted locally
+      } else {
+        console.log('Successfully recorded player deletion event')
+      }
       
       console.log('Player successfully removed from game')
       setShowDeletePlayerConfirm(false)
@@ -1093,6 +1221,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting benchDPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.benchD = newPlayers.map(p => p.id)
+        console.log(`Updated benchD positions in ref:`, currentPositionsRef.current.benchD)
+        
         return newPlayers
       })
     } else if (targetZone === 'benchF') {
@@ -1113,6 +1246,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting benchFPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.benchF = newPlayers.map(p => p.id)
+        console.log(`Updated benchF positions in ref:`, currentPositionsRef.current.benchF)
+        
         return newPlayers
       })
     } else if (targetZone === 'gk') {
@@ -1133,6 +1271,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting gkPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.gk = newPlayers.map(p => p.id)
+        console.log(`Updated gk positions in ref:`, currentPositionsRef.current.gk)
+        
         return newPlayers
       })
     } else if (targetZone === 'rinkD') {
@@ -1153,6 +1296,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting rinkDPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.rinkD = newPlayers.map(p => p.id)
+        console.log(`Updated rinkD positions in ref:`, currentPositionsRef.current.rinkD)
+        
         return newPlayers
       })
     } else if (targetZone === 'rinkF') {
@@ -1173,6 +1321,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting rinkFPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.rinkF = newPlayers.map(p => p.id)
+        console.log(`Updated rinkF positions in ref:`, currentPositionsRef.current.rinkF)
+        
         return newPlayers
       })
     } else if (targetZone === 'rinkGk') {
@@ -1193,6 +1346,11 @@ const GameManagement = () => {
         const newPlayers = [...filtered]
         newPlayers.splice(clampedIndex, 0, player)
         console.log(`Setting rinkGkPlayers to ${newPlayers.length} players`)
+        
+        // Update ref immediately
+        currentPositionsRef.current.rinkGk = newPlayers.map(p => p.id)
+        console.log(`Updated rinkGk positions in ref:`, currentPositionsRef.current.rinkGk)
+        
         return newPlayers
       })
     }
@@ -1248,23 +1406,111 @@ const GameManagement = () => {
     try {
       console.log('Loading existing game state for session:', sessionId)
       
-      // Check if there's an active game session
+      // Check if there's a game session (active or ended)
       const { data: gameSessionData, error: sessionError } = await supabase
         .from('game_sessions')
         .select('*')
         .eq('session_id', sessionId)
-        .eq('is_active', true)
         .single()
       
+      // Load deleted players from game_events table (always do this, even if no game session)
+      console.log('Loading deleted players from game_events table...')
+      const { data: deletedEvents, error: deletedEventsError } = await supabase
+        .from('game_events')
+        .select('player_id')
+        .eq('session_id', sessionId)
+        .eq('event_type', 'player_deleted')
+      
+      let currentDeletedPlayers = new Set()
+      if (deletedEventsError) {
+        console.error('Error loading deleted players:', deletedEventsError)
+      } else {
+        const deletedPlayerIds = deletedEvents.map(event => event.player_id)
+        console.log('Found deleted players in database:', deletedPlayerIds)
+        currentDeletedPlayers = new Set(deletedPlayerIds)
+        setDeletedPlayers(currentDeletedPlayers)
+      }
+
+      // Load saved player positions
+      console.log('Loading saved player positions...')
+      const { data: positionEvents, error: positionEventsError } = await supabase
+        .from('game_events')
+        .select('metadata')
+        .eq('session_id', sessionId)
+        .eq('event_type', 'player_positions')
+        .order('event_time', { ascending: false })
+        .limit(1)
+      
+      let savedPositions = null
+      if (!positionEventsError && positionEvents && positionEvents.length > 0) {
+        savedPositions = positionEvents[0].metadata
+        console.log('Found saved player positions:', savedPositions)
+        console.log('Position event details:', positionEvents[0])
+      } else {
+        console.log('No saved player positions found')
+        if (positionEventsError) {
+          console.error('Error loading positions:', positionEventsError)
+        }
+      }
+      
+      // Apply saved positions if we have them (regardless of game session)
+      if (savedPositions) {
+        console.log('Applying saved player positions...')
+        
+        // Clear all zones first
+        setBenchDPlayers([])
+        setBenchFPlayers([])
+        setGkPlayers([])
+        setRinkDPlayers([])
+        setRinkFPlayers([])
+        setRinkGkPlayers([])
+        
+        // Restore players to their saved positions
+        Object.entries(savedPositions).forEach(([zone, playerIds]) => {
+          const players = playerIds.map(id => squadPlayers.find(p => p.id === id)).filter(Boolean)
+          console.log(`Restoring ${players.length} players to ${zone}`)
+          
+          // Update both state and ref
+          switch (zone) {
+            case 'benchD':
+              setBenchDPlayers(players)
+              currentPositionsRef.current.benchD = playerIds
+              break
+            case 'benchF':
+              setBenchFPlayers(players)
+              currentPositionsRef.current.benchF = playerIds
+              break
+            case 'gk':
+              setGkPlayers(players)
+              currentPositionsRef.current.gk = playerIds
+              break
+            case 'rinkD':
+              setRinkDPlayers(players)
+              currentPositionsRef.current.rinkD = playerIds
+              break
+            case 'rinkF':
+              setRinkFPlayers(players)
+              currentPositionsRef.current.rinkF = playerIds
+              break
+            case 'rinkGk':
+              setRinkGkPlayers(players)
+              currentPositionsRef.current.rinkGk = playerIds
+              break
+          }
+        })
+        console.log('Saved positions applied successfully')
+      }
+      
       if (sessionError || !gameSessionData) {
-        console.log('No active game session found - keeping current bench players')
-        console.log('Current bench players:', benchPlayers.length)
+        console.log('No game session found - keeping current bench players')
         return
       }
       
-      // If we found a game session, check if it's actually active and valid
+      // Check if game has ended
       if (!gameSessionData.is_active) {
-        console.log('Game session found but not active - keeping current bench players')
+        console.log('Game has ended - cannot restart')
+        setGameHasEnded(true)
+        setGameSession(gameSessionData)
         return
       }
       
@@ -1305,16 +1551,15 @@ const GameManagement = () => {
         console.log(`- Player ${status.player_id}: status=${status.status}, start_time=${status.status_start_time}`)
       })
       
-      // Restore player positions
-      const benchPlayers = []
-      const rinkPlayers = []
+      // Set up player statuses and timers
       const playerStatuses = {}
       const playerTimers = {}
       
+      // Set up player statuses and timers for all players with status data
       playerStatusData.forEach(status => {
         const player = squadPlayers.find(p => p.id === status.player_id)
-        console.log(`Processing player ${status.player_id}: found=${!!player}, status=${status.status}`)
-        if (player && !deletedPlayers.has(status.player_id)) {
+        const isDeleted = currentDeletedPlayers.has(status.player_id)
+        if (player && !isDeleted) {
           playerStatuses[status.player_id] = {
             status: status.status,
             status_start_time: status.status_start_time,
@@ -1345,22 +1590,6 @@ const GameManagement = () => {
               playerTimers[status.player_id] = Math.floor((playStopTime - statusStart) / 1000)
             }
           }
-          
-          if (status.status === 'bench') {
-            console.log(`Adding player ${player.first_name} to bench`)
-            // Remove from all zones first to ensure single placement
-            removePlayerFromAllZones(player.id)
-            // Add to bench D by default (user can redistribute manually)
-            setBenchDPlayers(prev => [...prev, player])
-          } else {
-            console.log(`Adding player ${player.first_name} to rink`)
-            // Remove from all zones first to ensure single placement
-            removePlayerFromAllZones(player.id)
-            // Add to rink D by default (user can redistribute manually)
-            setRinkDPlayers(prev => [...prev, player])
-          }
-        } else {
-          console.log(`Player ${status.player_id} not found in squadPlayers`)
         }
       })
       
@@ -1437,9 +1666,17 @@ const GameManagement = () => {
         return 0
       }
       
-      // Always use the status start time for timer calculation
-      // This ensures timers reset when players move between bench and rink
-      const effectiveStartTime = statusStart
+      // Determine the effective start time for timer calculation
+      let effectiveStartTime
+      if (statusStart <= gameStart) {
+        // Player was moved to current position before or at game start
+        // Use game start time as the effective start time
+        effectiveStartTime = gameStart
+      } else {
+        // Player was moved to current position after game start
+        // Use status start time (when they were moved)
+        effectiveStartTime = statusStart
+      }
       
       // Calculate time based on play state
       let timeElapsed
@@ -1463,11 +1700,13 @@ const GameManagement = () => {
         console.log(`Timer calculation for player ${playerId}:`, {
           currentStatus,
           statusStartTime,
+          gameStartTime: gameStart.toISOString(),
           effectiveStartTime: effectiveStartTime.toISOString(),
           now: now.toISOString(),
           timeElapsed,
           isPlaying,
-          currentPlayStartTime
+          currentPlayStartTime,
+          wasMovedBeforeGameStart: statusStart <= gameStart
         })
       }
       
@@ -1554,6 +1793,157 @@ const GameManagement = () => {
       
       return updatedTimers
     })
+  }
+
+  // Debounced save function to prevent multiple rapid saves
+  const saveTimeoutRef = useRef(null)
+  const isSavingRef = useRef(false)
+  
+  // Track current positions in refs for immediate access
+  const currentPositionsRef = useRef({
+    benchD: [],
+    benchF: [],
+    gk: [],
+    rinkD: [],
+    rinkF: [],
+    rinkGk: []
+  })
+  
+  // Helper function to update both state and ref
+  const updatePlayerPositions = (zone, players) => {
+    // Update state
+    switch (zone) {
+      case 'benchD':
+        setBenchDPlayers(players)
+        break
+      case 'benchF':
+        setBenchFPlayers(players)
+        break
+      case 'gk':
+        setGkPlayers(players)
+        break
+      case 'rinkD':
+        setRinkDPlayers(players)
+        break
+      case 'rinkF':
+        setRinkFPlayers(players)
+        break
+      case 'rinkGk':
+        setRinkGkPlayers(players)
+        break
+    }
+    
+    // Update ref immediately
+    currentPositionsRef.current[zone] = players.map(p => p.id)
+    console.log(`Updated ${zone} positions:`, currentPositionsRef.current[zone])
+  }
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [])
+  
+  // Initialize refs when component mounts
+  useEffect(() => {
+    if (squadPlayers.length > 0) {
+      // Initialize refs with current state
+      currentPositionsRef.current = {
+        benchD: benchDPlayers.map(p => p.id),
+        benchF: benchFPlayers.map(p => p.id),
+        gk: gkPlayers.map(p => p.id),
+        rinkD: rinkDPlayers.map(p => p.id),
+        rinkF: rinkFPlayers.map(p => p.id),
+        rinkGk: rinkGkPlayers.map(p => p.id)
+      }
+      console.log('Initialized refs with current state:', currentPositionsRef.current)
+    }
+  }, [squadPlayers, benchDPlayers, benchFPlayers, gkPlayers, rinkDPlayers, rinkFPlayers, rinkGkPlayers])
+  
+  const savePlayerPositions = async () => {
+    console.log('savePlayerPositions called, isSaving:', isSavingRef.current, 'saveTimeout:', !!saveTimeoutRef.current)
+    
+    // Prevent multiple simultaneous saves
+    if (isSavingRef.current) {
+      console.log('Save already in progress, skipping...')
+      return
+    }
+    
+    // Clear any existing timeout
+    if (saveTimeoutRef.current) {
+      console.log('Clearing existing timeout')
+      clearTimeout(saveTimeoutRef.current)
+    }
+    
+    // Set a new timeout to save after 500ms of inactivity
+    const timeout = setTimeout(async () => {
+      console.log('Timeout triggered, starting save...')
+      isSavingRef.current = true
+      try {
+        // Use ref values for immediate access to current positions
+        const positions = {
+          benchD: currentPositionsRef.current.benchD,
+          benchF: currentPositionsRef.current.benchF,
+          gk: currentPositionsRef.current.gk,
+          rinkD: currentPositionsRef.current.rinkD,
+          rinkF: currentPositionsRef.current.rinkF,
+          rinkGk: currentPositionsRef.current.rinkGk
+        }
+        
+        // If refs are empty, fall back to state values
+        if (positions.benchD.length === 0 && positions.benchF.length === 0) {
+          console.log('Refs are empty, falling back to state values')
+          positions.benchD = benchDPlayers.map(p => p.id)
+          positions.benchF = benchFPlayers.map(p => p.id)
+          positions.gk = gkPlayers.map(p => p.id)
+          positions.rinkD = rinkDPlayers.map(p => p.id)
+          positions.rinkF = rinkFPlayers.map(p => p.id)
+          positions.rinkGk = rinkGkPlayers.map(p => p.id)
+        }
+        
+        console.log('Saving player positions (debounced):', positions)
+        console.log('rinkD players being saved:', positions.rinkD)
+        console.log('benchD players being saved:', positions.benchD)
+        console.log('benchF players being saved:', positions.benchF)
+        
+        // If rinkD is empty, try to get the current state directly
+        if (positions.rinkD.length === 0) {
+          console.log('rinkD is empty, checking current state...')
+          console.log('Current rinkDPlayers state:', rinkDPlayers)
+          console.log('Current rinkDPlayers length:', rinkDPlayers.length)
+        }
+        
+        const { data, error } = await supabase
+          .from('game_events')
+          .insert({
+            session_id: sessionId,
+            event_type: 'player_positions',
+            event_time: new Date().toISOString(),
+            game_time_seconds: Math.floor((new Date() - gameStartTime) / 1000),
+            play_time_seconds: totalPlayTime,
+            metadata: positions
+          })
+          .select()
+        
+        if (error) {
+          console.error('Error saving player positions:', error)
+          console.error('Full error details:', JSON.stringify(error, null, 2))
+        } else {
+          console.log('Player positions saved successfully:', data)
+        }
+      } catch (error) {
+        console.error('Error in savePlayerPositions:', error)
+      } finally {
+        isSavingRef.current = false
+        console.log('Save completed, isSaving reset to false')
+      }
+    }, 500)
+    
+    console.log('Setting new timeout:', timeout)
+    saveTimeoutRef.current = timeout
   }
   
   const handleDragStart = (e, player) => {
@@ -1649,6 +2039,12 @@ const GameManagement = () => {
       }
     }
     
+    // Save player positions after any move
+    // Note: We'll save positions after a short delay to ensure state is updated
+    setTimeout(() => {
+      savePlayerPositions()
+    }, 100)
+    
     setDraggedPlayer(null)
     setDragOverZone(null)
     setDragOverPosition(null)
@@ -1689,7 +2085,8 @@ const GameManagement = () => {
       {/* Game Clock Controls */}
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <div className="w-10"></div> {/* Spacer for centering */}
+          <h1 className="text-2xl font-bold text-gray-800 text-center">
             Game Management
             {session && (
               <span className="text-lg font-normal text-gray-600 ml-2">
@@ -1709,50 +2106,89 @@ const GameManagement = () => {
           </button>
         </div>
         
-        {/* Timer Display */}
-        <div className="flex justify-center mb-4">
-          <div className="bg-blue-50 rounded-lg p-3">
-            <div className="text-sm text-blue-600 font-medium">Game Time</div>
-            <div className="text-2xl font-bold text-blue-800 timer-display">
-              {formatTime(currentGameTime)}
+        {/* Game Ended Message */}
+        {gameHasEnded && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600 mb-2">Game Ended</div>
+                <div className="text-gray-600 mb-4">
+                  This game has been completed and cannot be restarted.
+                </div>
+                <div className="flex space-x-4 justify-center">
+                  <button
+                    onClick={() => navigate(`/sessions/${sessionId}/game-stats`)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    View Game Stats
+                  </button>
+                  <button
+                    onClick={() => setShowClearConfirm(true)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Clear Game Data
+                  </button>
+                  <button
+                    onClick={() => navigate(`/sessions/${sessionId}`)}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                  >
+                    Back to Session
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+        
+        {/* Timer Display */}
+        {!gameHasEnded && (
+          <div className="flex justify-center mb-4">
+            <div className="bg-blue-50 rounded-lg p-3">
+              <div className="text-sm text-blue-600 font-medium">Game Time</div>
+              <div className="text-2xl font-bold text-blue-800 timer-display">
+                {formatTime(currentGameTime)}
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Game Controls */}
-        <div className="flex gap-2 justify-center">
-          {!gameStartTime ? (
-            <button
-              onClick={startGame}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium"
-            >
-              Start Game
-            </button>
-          ) : (
-            <div className="flex space-x-3">
+        {!gameHasEnded && (
+          <div className="flex gap-2 justify-center">
+            {!gameStartTime ? (
               <button
-                onClick={togglePlay}
-                className={`px-6 py-3 rounded-lg font-medium ${
-                  isPlaying 
-                    ? 'bg-red-600 text-white' 
-                    : 'bg-green-600 text-white'
-                }`}
+                onClick={startGame}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium"
               >
-                {isPlaying ? 'Stop Play' : 'Start Play'}
+                Start Game
               </button>
-              <button
-                onClick={endGame}
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium"
-              >
-                End Game
-              </button>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="flex space-x-3">
+                <button
+                  onClick={togglePlay}
+                  className={`px-6 py-3 rounded-lg font-medium ${
+                    isPlaying 
+                      ? 'bg-red-600 text-white' 
+                      : 'bg-green-600 text-white'
+                  }`}
+                >
+                  {isPlaying ? 'Stop Play' : 'Start Play'}
+                </button>
+                <button
+                  onClick={() => setShowEndGameConfirm(true)}
+                  className="bg-gray-600 text-white px-6 py-3 rounded-lg font-medium"
+                >
+                  End Game
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       
       {/* Player Management */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      {!gameHasEnded && (
+        <div className="grid grid-cols-2 gap-4 mb-4">
         {/* Bench - Two Columns + GK Row */}
         <div className="bg-blue-50 rounded-lg p-3 min-h-[300px]">
           <h3 className="text-lg font-semibold text-blue-800 mb-2">Bench</h3>
@@ -2228,9 +2664,11 @@ const GameManagement = () => {
           </div>
         </div>
       </div>
+      )}
       
       {/* Game Events */}
-      <div className="bg-white rounded-lg shadow-md p-4">
+      {!gameHasEnded && (
+        <div className="bg-white rounded-lg shadow-md p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Game Events</h3>
         
         {/* Score Display */}
@@ -2257,6 +2695,7 @@ const GameManagement = () => {
           </button>
         </div>
       </div>
+      )}
       
       {/* Clear Game Data Confirmation Dialog */}
       {showClearConfirm && (
@@ -2311,6 +2750,42 @@ const GameManagement = () => {
                 className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-medium"
               >
                 Delete Player
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
+      )}
+
+      {/* End Game Confirmation Dialog */}
+      {showEndGameConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              End Game
+            </h3>
+            <div className="mb-6">
+              <p className="text-gray-700 mb-4">
+                Are you sure you want to end this game?
+              </p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-red-700 text-sm font-medium">
+                  ⚠️ Warning: Once ended, this game cannot be restarted.
+                </p>
+              </div>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowEndGameConfirm(false)}
+                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={endGame}
+                className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-medium"
+              >
+                End Game
               </button>
             </div>
           </div>
@@ -2373,3 +2848,4 @@ const GameManagement = () => {
 }
 
 export default GameManagement
+
