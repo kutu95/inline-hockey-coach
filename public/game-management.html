@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981">
+    <title>Game Management</title>
+    <style>
+        /* Prevent auto-sleep */
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Keep screen active */
+        .keep-awake {
+            animation: keep-awake 60s infinite;
+        }
+        
+        @keyframes keep-awake {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.99; }
+        }
+    </style>
+</head>
+<body class="keep-awake">
+    <div id="root"></div>
+    <script>
+        // Prevent auto-sleep by keeping the page active
+        let wakeLock = null;
+        
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake lock acquired');
+                }
+            } catch (err) {
+                console.log('Wake lock failed:', err);
+            }
+        }
+        
+        // Request wake lock when page becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !wakeLock) {
+                requestWakeLock();
+            }
+        });
+        
+        // Initial wake lock request
+        requestWakeLock();
+        
+        // Keep the page active with a minimal animation
+        setInterval(() => {
+            document.body.style.opacity = document.body.style.opacity === '0.99' ? '1' : '0.99';
+        }, 30000);
+    </script>
+</body>
+</html>

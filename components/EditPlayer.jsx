@@ -229,6 +229,13 @@ const EditPlayer = ({ id, orgId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Form submitted with data:', formData)
+    console.log('Required fields check:')
+    console.log('- first_name:', formData.first_name)
+    console.log('- last_name:', formData.last_name)
+    console.log('- club_id:', formData.club_id)
+    console.log('- accreditations:', formData.accreditations)
+    
     setSaving(true)
     setError('')
 
@@ -621,6 +628,7 @@ const EditPlayer = ({ id, orgId }) => {
                 <button
                   type="submit"
                   disabled={saving}
+                  onClick={() => console.log('Save Changes button clicked')}
                   className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}

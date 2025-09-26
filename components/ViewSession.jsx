@@ -526,6 +526,21 @@ const ViewSession = () => {
                   <p className="text-gray-600 mt-1">{session.description}</p>
                 </div>
               )}
+              
+              {/* Game Management Link for Game Sessions */}
+              {session.event_type === 'game' && canEditPlan && (
+                <div className="mt-4">
+                  <Link
+                    to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-management` : `/sessions/${sessionId}/game-management`}
+                    className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Manage Game
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Error Message */}

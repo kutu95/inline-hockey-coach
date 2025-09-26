@@ -53,6 +53,15 @@ import IndividualPlayerRegistration from '../components/IndividualPlayerRegistra
 import AuthErrorBoundary from '../components/AuthErrorBoundary'
 import AuthErrorHandler from '../components/AuthErrorHandler'
 import AccessDenied from '../components/AccessDenied'
+import SimpleMultiSportDemo from '../components/animator/SimpleMultiSportDemo'
+import SimpleSliderTest from '../components/animator/SimpleSliderTest'
+import TimelineTest from '../components/animator/TimelineTest'
+import MinimalKeyframeAnimator from '../components/animator/MinimalKeyframeAnimator'
+import KeyframeSoccerAnimatorFixed from '../components/animator/KeyframeSoccerAnimatorFixed'
+import SliderOnlyTest from '../components/animator/SliderOnlyTest'
+import MinimalSliderTest from '../components/animator/MinimalSliderTest'
+import CleanSliderTest from '../components/animator/CleanSliderTest'
+import GameManagement from '../components/GameManagement'
 import './App.css'
 
 // Protected Route Component
@@ -701,6 +710,106 @@ function App() {
             {/* Individual Player Routes */}
             <Route path="/individual-players" element={<IndividualPlayerLanding />} />
             <Route path="/register-individual" element={<IndividualPlayerRegistration />} />
+            
+            {/* Multi-Sport Animator Demo */}
+            <Route 
+              path="/multi-sport-demo" 
+              element={
+                <ProtectedRoute>
+                  <SimpleMultiSportDemo />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Simple Slider Test */}
+            <Route 
+              path="/slider-test" 
+              element={
+                <ProtectedRoute>
+                  <SimpleSliderTest />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Timeline Test */}
+            <Route 
+              path="/timeline-test" 
+              element={
+                <ProtectedRoute>
+                  <TimelineTest />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Minimal Keyframe Animator */}
+            <Route 
+              path="/minimal-keyframe" 
+              element={
+                <ProtectedRoute>
+                  <MinimalKeyframeAnimator />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Fixed Keyframe Soccer Animator */}
+            <Route 
+              path="/keyframe-soccer-fixed" 
+              element={
+                <ProtectedRoute>
+                  <KeyframeSoccerAnimatorFixed />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Slider Only Test */}
+            <Route 
+              path="/slider-only-test" 
+              element={
+                <ProtectedRoute>
+                  <SliderOnlyTest />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Minimal Slider Test */}
+            <Route 
+              path="/minimal-slider-test" 
+              element={
+                <ProtectedRoute>
+                  <MinimalSliderTest />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Clean Slider Test */}
+            <Route 
+              path="/clean-slider-test" 
+              element={
+                <ProtectedRoute>
+                  <CleanSliderTest />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Game Management */}
+            <Route 
+              path="/sessions/:sessionId/game-management" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <GameManagement />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Organization-scoped Game Management */}
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/game-management" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <GameManagement />
+                </RoleProtectedRoute>
+              } 
+            />
             
             <Route path="/access-denied" element={<AccessDenied />} />
             <Route path="/" element={<RoleBasedRedirect />} />

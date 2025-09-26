@@ -1,0 +1,165 @@
+/* Game Management Mobile-First Styles */
+
+/* Prevent auto-sleep on mobile devices */
+.game-management-container {
+  /* Keep screen active */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .game-management-container {
+    padding: 0.5rem;
+  }
+  
+  .timer-display {
+    font-size: 1.5rem;
+  }
+  
+  .player-column {
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .player-card {
+    padding: 0.25rem;
+    font-size: 0.7rem;
+    min-height: 30px;
+  }
+  
+  .event-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .event-button {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Drag and drop visual feedback */
+.drag-over {
+  background-color: #dbeafe !important;
+  border: 2px solid #3b82f6 !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.dragging {
+  opacity: 0.7;
+  transform: rotate(5deg);
+  transition: all 0.2s ease;
+}
+
+/* Player status indicators */
+.player-bench {
+  border-left: 4px solid #3b82f6;
+}
+
+.player-rink {
+  border-left: 4px solid #10b981;
+}
+
+/* Timer animations */
+.timer-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Game clock controls */
+.game-clock-active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.4);
+}
+
+.game-clock-stopped {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.4);
+}
+
+/* Score display */
+.score-display {
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Touch-friendly buttons */
+.touch-button {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Prevent text selection during drag */
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Mobile landscape optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  .game-management-container {
+    padding: 0.25rem;
+  }
+  
+  .timer-display {
+    font-size: 1.25rem;
+  }
+  
+  .player-column {
+    min-height: 150px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  
+  .score-display {
+    font-size: 2rem;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .timer-display {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .game-management-container {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .player-card {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .timer-display {
+    color: #f9fafb;
+  }
+}
