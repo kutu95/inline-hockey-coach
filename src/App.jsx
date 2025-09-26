@@ -792,23 +792,23 @@ function App() {
               } 
             />
             
-            {/* Game Management */}
+            {/* Game Management - Any logged in user */}
             <Route 
               path="/sessions/:sessionId/game-management" 
               element={
-                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                <ProtectedRoute>
                   <GameManagement />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               } 
             />
             
-            {/* Organization-scoped Game Management */}
+            {/* Organization-scoped Game Management - Any logged in user */}
             <Route 
               path="/organisations/:orgId/sessions/:sessionId/game-management" 
               element={
-                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                <ProtectedRoute>
                   <GameManagement />
-                </RoleProtectedRoute>
+                </ProtectedRoute>
               }
             />
             
