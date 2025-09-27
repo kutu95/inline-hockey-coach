@@ -63,6 +63,7 @@ import MinimalSliderTest from '../components/animator/MinimalSliderTest'
 import CleanSliderTest from '../components/animator/CleanSliderTest'
 import GameManagement from '../components/GameManagement'
 import GameStats from '../components/GameStats'
+import GameViewer from '../components/GameViewer'
 import './App.css'
 
 // Protected Route Component
@@ -830,6 +831,18 @@ function App() {
                   <GameStats />
                 </RoleProtectedRoute>
               }
+            />
+            
+            {/* Game Viewer - Public Access */}
+            <Route 
+              path="/sessions/:sessionId/game-viewer" 
+              element={<GameViewer />} 
+            />
+            
+            {/* Organization-scoped Game Viewer - Public Access */}
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/game-viewer" 
+              element={<GameViewer />}
             />
             
             <Route path="/access-denied" element={<AccessDenied />} />

@@ -527,9 +527,9 @@ const ViewSession = () => {
                 </div>
               )}
               
-              {/* Game Management Link for Game Sessions */}
+              {/* Game Management Links for Game Sessions */}
               {session.event_type === 'game' && user && (
-                <div className="mt-4 flex space-x-3">
+                <div className="mt-4 flex flex-wrap gap-3">
                   <Link
                     to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-management` : `/sessions/${sessionId}/game-management`}
                     className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -538,6 +538,16 @@ const ViewSession = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Manage Game
+                  </Link>
+                  <Link
+                    to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-viewer` : `/sessions/${sessionId}/game-viewer`}
+                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Live Game View
                   </Link>
                   <Link
                     to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-stats` : `/sessions/${sessionId}/game-stats`}

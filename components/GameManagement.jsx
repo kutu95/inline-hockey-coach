@@ -2137,7 +2137,14 @@ const GameManagement = () => {
                     const timeValue = session.time || session.start_time
                     if (!timeValue) return null
                     
-                    const time = new Date(timeValue)
+                    let time
+                    // Handle time-only format (HH:MM:SS) by combining with date
+                    if (session.date && timeValue.includes(':') && !timeValue.includes('T')) {
+                      time = new Date(`${session.date}T${timeValue}`)
+                    } else {
+                      time = new Date(timeValue)
+                    }
+                    
                     if (isNaN(time.getTime())) return null
                     
                     return (
