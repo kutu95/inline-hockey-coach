@@ -137,6 +137,24 @@ const GameManagement = () => {
       }
       
       console.log('Session loaded:', session)
+      console.log('Session fields available:', Object.keys(session || {}))
+      console.log('Session date field:', session?.date, 'type:', typeof session?.date)
+      console.log('Session time field:', session?.time, 'type:', typeof session?.time)
+      console.log('Session start_time field:', session?.start_time, 'type:', typeof session?.start_time)
+      
+      // Test date parsing
+      if (session?.date) {
+        const testDate = new Date(session.date)
+        console.log('Date parsing test:', session.date, '->', testDate, 'isValid:', !isNaN(testDate.getTime()))
+      }
+      if (session?.time) {
+        const testTime = new Date(session.time)
+        console.log('Time parsing test:', session.time, '->', testTime, 'isValid:', !isNaN(testTime.getTime()))
+      }
+      if (session?.start_time) {
+        const testStartTime = new Date(session.start_time)
+        console.log('Start time parsing test:', session.start_time, '->', testStartTime, 'isValid:', !isNaN(testStartTime.getTime()))
+      }
       setSession(session)
       
       // Load squad players using correct table structure
@@ -2092,6 +2110,50 @@ const GameManagement = () => {
               <span className="text-lg font-normal text-gray-600 ml-2">
                 - {session.title}
               </span>
+            )}
+            {session && (session.date || session.start_time) && (
+              <div className="text-sm font-normal text-gray-500 mt-1">
+                {(() => {
+                  try {
+                    const dateValue = session.date || session.start_time
+                    if (!dateValue) return null
+                    
+                    const date = new Date(dateValue)
+                    if (isNaN(date.getTime())) return null
+                    
+                    return date.toLocaleDateString('en-AU', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  } catch (error) {
+                    console.error('Error parsing date:', error)
+                    return null
+                  }
+                })()}
+                {(() => {
+                  try {
+                    const timeValue = session.time || session.start_time
+                    if (!timeValue) return null
+                    
+                    const time = new Date(timeValue)
+                    if (isNaN(time.getTime())) return null
+                    
+                    return (
+                      <span className="ml-2">
+                        at {time.toLocaleTimeString('en-AU', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    )
+                  } catch (error) {
+                    console.error('Error parsing time:', error)
+                    return null
+                  }
+                })()}
+              </div>
             )}
           </h1>
           <button

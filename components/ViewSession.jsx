@@ -528,7 +528,7 @@ const ViewSession = () => {
               )}
               
               {/* Game Management Link for Game Sessions */}
-              {session.event_type === 'game' && canEditPlan && (
+              {session.event_type === 'game' && user && (
                 <div className="mt-4 flex space-x-3">
                   <Link
                     to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-management` : `/sessions/${sessionId}/game-management`}
