@@ -1,13 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../src/lib/supabase'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Navigate, Link } from 'react-router-dom'
+import { useAuth } from '../src/contexts/AuthContext'
 import './GameManagement.css'
 
 const GameManagement = () => {
+  const { user, loading: authLoading, hasRole } = useAuth()
   const { sessionId, orgId } = useParams()
   const navigate = useNavigate()
   
   // console.log('GameManagement loaded with sessionId:', sessionId, 'orgId:', orgId)
+
+  // Check authentication and required roles (superadmin or coach)
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!hasRole('superadmin') && !hasRole('coach')) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full space-y-8">
+          <div className="bg-white shadow rounded-lg p-8">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+              
+              <div className="text-left mb-6">
+                <p className="text-gray-600 mb-4">
+                  This page is restricted to superadministrators and coaches only.
+                </p>
+                
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-gray-700 mb-2">
+                    <strong>Current User:</strong> {user?.email}
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    <strong>Required Roles:</strong> superadmin or coach
+                  </p>
+                </div>
+                
+                <p className="text-gray-600 text-sm">
+                  Please contact a system administrator if you need access to this page.
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <Link
+                  to="/dashboard"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Return to Dashboard
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   // Game state
   const [gameSession, setGameSession] = useState(null)
@@ -638,7 +701,13 @@ const GameManagement = () => {
   
   const movePlayer = async (playerId, fromZone, toZone) => {
     try {
-      console.log('Moving player:', playerId, 'from', fromZone, 'to', toZone)
+      console.log('=== movePlayer called ===')
+      console.log('Player ID:', playerId)
+      console.log('From Zone:', fromZone)
+      console.log('To Zone:', toZone)
+      console.log('Timestamp:', new Date().toISOString())
+      console.log('Stack trace:', new Error().stack)
+      console.log('========================')
       
       const now = new Date()
       const gameTime = currentGameTime
@@ -2005,6 +2074,12 @@ const GameManagement = () => {
   const handleDrop = (e, targetZone) => {
     e.preventDefault()
     
+    console.log('=== handleDrop called ===')
+    console.log('Dragged Player:', draggedPlayer?.id, draggedPlayer?.first_name)
+    console.log('Target Zone:', targetZone)
+    console.log('Timestamp:', new Date().toISOString())
+    console.log('========================')
+    
     if (draggedPlayer && targetZone) {
       // Determine current zone
       let currentZone = 'bench'
@@ -2052,6 +2127,11 @@ const GameManagement = () => {
         insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
       } else if (currentZone !== targetZone) {
         // Moving to/from rink (triggers database events)
+        console.log('=== CALLING movePlayer ===')
+        console.log('Current Zone:', currentZone)
+        console.log('Target Zone:', targetZone)
+        console.log('Is Cross-Zone Move:', currentZone !== targetZone)
+        console.log('=======================')
         movePlayer(draggedPlayer.id, currentZone, targetZone)
         insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
       }

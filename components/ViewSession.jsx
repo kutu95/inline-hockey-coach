@@ -528,7 +528,7 @@ const ViewSession = () => {
               )}
               
               {/* Game Management Links for Game Sessions */}
-              {session.event_type === 'game' && user && (
+              {session.event_type === 'game' && user && (hasRole('superadmin') || hasRole('coach')) && (
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Link
                     to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/game-management` : `/sessions/${sessionId}/game-management`}
