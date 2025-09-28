@@ -1,76 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../src/lib/supabase'
-import { useParams, useNavigate, Navigate, Link } from 'react-router-dom'
-import { useAuth } from '../src/contexts/AuthContext'
+import { useParams, useNavigate } from 'react-router-dom'
 import './GameManagement.css'
 
 const GameManagement = () => {
-  const { user, loading: authLoading, hasRole } = useAuth()
   const { sessionId, orgId } = useParams()
   const navigate = useNavigate()
   
   // console.log('GameManagement loaded with sessionId:', sessionId, 'orgId:', orgId)
-
-  // Check authentication and required roles (superadmin or coach)
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />
-  }
-
-  if (!hasRole('superadmin') && !hasRole('coach')) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full space-y-8">
-          <div className="bg-white shadow rounded-lg p-8">
-            <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-              
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-              
-              <div className="text-left mb-6">
-                <p className="text-gray-600 mb-4">
-                  This page is restricted to superadministrators and coaches only.
-                </p>
-                
-                <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-gray-700 mb-2">
-                    <strong>Current User:</strong> {user?.email}
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    <strong>Required Roles:</strong> superadmin or coach
-                  </p>
-                </div>
-                
-                <p className="text-gray-600 text-sm">
-                  Please contact a system administrator if you need access to this page.
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <Link
-                  to="/dashboard"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Return to Dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
   
   // Game state
   const [gameSession, setGameSession] = useState(null)
@@ -118,10 +55,12 @@ const GameManagement = () => {
   const gameTimeInterval = useRef(null)
   const playTimeInterval = useRef(null)
   const hasLoadedGameState = useRef(false)
+  const hasLoadedSessionData = useRef(false)
   
   // Load session data
   useEffect(() => {
-    if (sessionId) {
+    if (sessionId && !hasLoadedSessionData.current) {
+      hasLoadedSessionData.current = true
       loadSessionData()
     }
     return () => {
@@ -176,10 +115,10 @@ const GameManagement = () => {
   
   // Update timers immediately when play state changes
   useEffect(() => {
-    if (gameStartTime) {
+    if (gameStartTime && Object.keys(playerStatuses).length > 0) {
       updatePlayerTimers()
     }
-  }, [isPlaying, currentPlayStartTime])
+  }, [isPlaying, currentPlayStartTime, gameStartTime])
   
   const loadSessionData = async () => {
     try {
@@ -215,8 +154,9 @@ const GameManagement = () => {
         console.log('Time parsing test:', session.time, '->', testTime, 'isValid:', !isNaN(testTime.getTime()))
       }
       if (session?.start_time) {
-        const testStartTime = new Date(session.start_time)
-        console.log('Start time parsing test:', session.start_time, '->', testStartTime, 'isValid:', !isNaN(testStartTime.getTime()))
+        // start_time is just a time string like "15:30:00", not a full date-time
+        // So we can't parse it with new Date() directly
+        console.log('Start time parsing test:', session.start_time, '-> Time string (not a date)')
       }
       setSession(session)
       
@@ -274,97 +214,8 @@ const GameManagement = () => {
         if (players && players.length > 0) {
           setSquadPlayers(players)
           
-          // Load deleted players first before placing players on bench
-          console.log('Loading deleted players before initial placement...')
-          const { data: deletedEvents, error: deletedEventsError } = await supabase
-            .from('game_events')
-            .select('player_id')
-            .eq('session_id', sessionId)
-            .eq('event_type', 'player_deleted')
-          
-          let deletedPlayerIds = []
-          if (!deletedEventsError && deletedEvents) {
-            deletedPlayerIds = deletedEvents.map(event => event.player_id)
-            console.log('Found deleted players for initial placement:', deletedPlayerIds)
-          }
-          
-          // Load saved player positions before initial placement
-          console.log('Loading saved player positions before initial placement...')
-          const { data: positionEvents, error: positionEventsError } = await supabase
-            .from('game_events')
-            .select('metadata')
-            .eq('session_id', sessionId)
-            .eq('event_type', 'player_positions')
-            .order('event_time', { ascending: false })
-            .limit(1)
-          
-          let savedPositions = null
-          if (!positionEventsError && positionEvents && positionEvents.length > 0) {
-            savedPositions = positionEvents[0].metadata
-            console.log('Found saved player positions for initial placement:', savedPositions)
-            console.log('Position event details for initial placement:', positionEvents[0])
-            console.log('rinkD in saved positions:', savedPositions.rinkD)
-          }
-          
-          // Filter out deleted players
-          const activePlayers = players.filter(player => !deletedPlayerIds.includes(player.id))
-          console.log('Active players (excluding deleted):', activePlayers.length, 'out of', players.length)
-          
-          // Apply saved positions if available, otherwise use default placement
-          if (savedPositions) {
-            console.log('Applying saved positions for initial placement...')
-            
-            // Clear all zones first
-            setBenchDPlayers([])
-            setBenchFPlayers([])
-            setGkPlayers([])
-            setRinkDPlayers([])
-            setRinkFPlayers([])
-            setRinkGkPlayers([])
-            
-            // Restore players to their saved positions
-            Object.entries(savedPositions).forEach(([zone, playerIds]) => {
-              const zonePlayers = playerIds.map(id => activePlayers.find(p => p.id === id)).filter(Boolean)
-              console.log(`Restoring ${zonePlayers.length} players to ${zone} for initial placement`)
-              
-              switch (zone) {
-                case 'benchD':
-                  setBenchDPlayers(zonePlayers)
-                  break
-                case 'benchF':
-                  setBenchFPlayers(zonePlayers)
-                  break
-                case 'gk':
-                  setGkPlayers(zonePlayers)
-                  break
-                case 'rinkD':
-                  setRinkDPlayers(zonePlayers)
-                  break
-                case 'rinkF':
-                  setRinkFPlayers(zonePlayers)
-                  break
-                case 'rinkGk':
-                  setRinkGkPlayers(zonePlayers)
-                  break
-              }
-            })
-            
-            // Set bench players to all non-rink players for compatibility
-            const allBenchPlayers = [...savedPositions.benchD || [], ...savedPositions.benchF || [], ...savedPositions.gk || []]
-            const benchPlayerObjects = allBenchPlayers.map(id => activePlayers.find(p => p.id === id)).filter(Boolean)
-            setBenchPlayers(benchPlayerObjects)
-            
-            console.log('Saved positions applied for initial placement')
-          } else {
-            console.log('No saved positions found, using default placement')
-            
-            setBenchPlayers([...activePlayers])
-            
-            // Split bench players between D and F columns
-            const half = Math.ceil(activePlayers.length / 2)
-            setBenchDPlayers(activePlayers.slice(0, half))
-            setBenchFPlayers(activePlayers.slice(half))
-          }
+          // Player positions will be loaded by loadExistingGameState after squadPlayers is set
+          console.log('Squad players loaded, positions will be restored by loadExistingGameState')
           
           console.log('Squad players set:', players.length, 'players')
           console.log('Bench D players:', benchDPlayers.length, 'players')
@@ -389,7 +240,7 @@ const GameManagement = () => {
         .from('game_sessions')
         .select('*')
         .eq('session_id', sessionId)
-        .single()
+        .maybeSingle() // Use maybeSingle() to handle no results gracefully
       
       if (gameSession) {
         setGameSession(gameSession)
@@ -437,7 +288,7 @@ const GameManagement = () => {
         .from('game_sessions')
         .select('*')
         .eq('session_id', sessionId)
-        .single()
+        .maybeSingle() // Use maybeSingle() to handle no results gracefully
       
       let gameSessionData
       
@@ -563,7 +414,7 @@ const GameManagement = () => {
         setPlayerTimers(initialTimers)
       } else {
         console.log('Using existing game session - not resetting player positions')
-        // Don't reset player positions - they should be restored by loadExistingGameState
+        // Don't reset player positions - they will be restored by loadExistingGameState
       }
       
       // Record play start event
@@ -701,13 +552,7 @@ const GameManagement = () => {
   
   const movePlayer = async (playerId, fromZone, toZone) => {
     try {
-      console.log('=== movePlayer called ===')
-      console.log('Player ID:', playerId)
-      console.log('From Zone:', fromZone)
-      console.log('To Zone:', toZone)
-      console.log('Timestamp:', new Date().toISOString())
-      console.log('Stack trace:', new Error().stack)
-      console.log('========================')
+      console.log('Moving player:', playerId, 'from', fromZone, 'to', toZone)
       
       const now = new Date()
       const gameTime = currentGameTime
@@ -1180,268 +1025,21 @@ const GameManagement = () => {
       }
       return filtered
     })
+    
+    // Update refs to prevent duplicates
+    if (currentPositionsRef.current) {
+      currentPositionsRef.current.benchD = currentPositionsRef.current.benchD.filter(id => id !== playerId)
+      currentPositionsRef.current.benchF = currentPositionsRef.current.benchF.filter(id => id !== playerId)
+      currentPositionsRef.current.gk = currentPositionsRef.current.gk.filter(id => id !== playerId)
+      currentPositionsRef.current.rinkD = currentPositionsRef.current.rinkD.filter(id => id !== playerId)
+      currentPositionsRef.current.rinkF = currentPositionsRef.current.rinkF.filter(id => id !== playerId)
+      currentPositionsRef.current.rinkGk = currentPositionsRef.current.rinkGk.filter(id => id !== playerId)
+    }
   }
 
-  // Move player between bench columns (D and F) - no database events
-  const movePlayerBetweenBenchColumns = (playerId, fromColumn, toColumn) => {
-    console.log(`Moving player ${playerId} from ${fromColumn} to ${toColumn}`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to target column
-    if (toColumn === 'benchD') {
-      setBenchDPlayers(prev => [...prev, player])
-    } else if (toColumn === 'benchF') {
-      setBenchFPlayers(prev => [...prev, player])
-    }
-  }
   
-  // Move player to/from GK zone - no database events
-  const movePlayerToGk = (playerId, fromZone) => {
-    console.log(`Moving player ${playerId} from ${fromZone} to GK`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to GK
-    setGkPlayers(prev => [...prev, player])
-  }
-  
-  // Move player from GK to other zones - no database events
-  const movePlayerFromGk = (playerId, toZone) => {
-    console.log(`Moving player ${playerId} from GK to ${toZone}`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to target zone
-    if (toZone === 'benchD') {
-      setBenchDPlayers(prev => [...prev, player])
-    } else if (toZone === 'benchF') {
-      setBenchFPlayers(prev => [...prev, player])
-    } else if (toZone === 'rink') {
-      setRinkPlayers(prev => [...prev, player])
-    }
-  }
-  
-  // Move player between rink columns (D and F) - no database events
-  const movePlayerBetweenRinkColumns = (playerId, fromColumn, toColumn) => {
-    console.log(`Moving player ${playerId} from rink ${fromColumn} to rink ${toColumn}`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to target rink column
-    if (toColumn === 'rinkD') {
-      setRinkDPlayers(prev => [...prev, player])
-    } else if (toColumn === 'rinkF') {
-      setRinkFPlayers(prev => [...prev, player])
-    }
-  }
-  
-  // Move player to/from rink GK zone - no database events
-  const movePlayerToRinkGk = (playerId, fromZone) => {
-    console.log(`Moving player ${playerId} from rink ${fromZone} to rink GK`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to rink GK
-    setRinkGkPlayers(prev => [...prev, player])
-  }
-  
-  // Move player from rink GK to other rink zones - no database events
-  const movePlayerFromRinkGk = (playerId, toZone) => {
-    console.log(`Moving player ${playerId} from rink GK to rink ${toZone}`)
-    
-    const player = squadPlayers.find(p => p.id === playerId)
-    if (!player) return
-    
-    // Remove from all zones first
-    removePlayerFromAllZones(playerId)
-    
-    // Add to target rink zone
-    if (toZone === 'rinkD') {
-      setRinkDPlayers(prev => [...prev, player])
-    } else if (toZone === 'rinkF') {
-      setRinkFPlayers(prev => [...prev, player])
-    }
-  }
-  
-  // Insert player at specific position in column
-  const insertPlayerAtPosition = (player, targetZone, position) => {
-    const playerId = player.id
-    console.log(`Inserting player ${playerId} into ${targetZone} at position ${position}`)
-    
-    // Use functional updates to ensure we get the latest state
-    if (targetZone === 'benchD') {
-      setBenchDPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting benchDPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.benchD = newPlayers.map(p => p.id)
-        console.log(`Updated benchD positions in ref:`, currentPositionsRef.current.benchD)
-        
-        return newPlayers
-      })
-    } else if (targetZone === 'benchF') {
-      setBenchFPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting benchFPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.benchF = newPlayers.map(p => p.id)
-        console.log(`Updated benchF positions in ref:`, currentPositionsRef.current.benchF)
-        
-        return newPlayers
-      })
-    } else if (targetZone === 'gk') {
-      setGkPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting gkPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.gk = newPlayers.map(p => p.id)
-        console.log(`Updated gk positions in ref:`, currentPositionsRef.current.gk)
-        
-        return newPlayers
-      })
-    } else if (targetZone === 'rinkD') {
-      setRinkDPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting rinkDPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.rinkD = newPlayers.map(p => p.id)
-        console.log(`Updated rinkD positions in ref:`, currentPositionsRef.current.rinkD)
-        
-        return newPlayers
-      })
-    } else if (targetZone === 'rinkF') {
-      setRinkFPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting rinkFPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.rinkF = newPlayers.map(p => p.id)
-        console.log(`Updated rinkF positions in ref:`, currentPositionsRef.current.rinkF)
-        
-        return newPlayers
-      })
-    } else if (targetZone === 'rinkGk') {
-      setRinkGkPlayers(prev => {
-        // Remove player from all other zones first
-        setBenchPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setBenchFPlayers(prev => prev.filter(p => p.id !== playerId))
-        setGkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkDPlayers(prev => prev.filter(p => p.id !== playerId))
-        setRinkFPlayers(prev => prev.filter(p => p.id !== playerId))
-        
-        // Remove from current zone and add at position
-        const filtered = prev.filter(p => p.id !== playerId)
-        const insertIndex = Math.floor(position * (filtered.length + 1))
-        const clampedIndex = Math.max(0, Math.min(insertIndex, filtered.length))
-        const newPlayers = [...filtered]
-        newPlayers.splice(clampedIndex, 0, player)
-        console.log(`Setting rinkGkPlayers to ${newPlayers.length} players`)
-        
-        // Update ref immediately
-        currentPositionsRef.current.rinkGk = newPlayers.map(p => p.id)
-        console.log(`Updated rinkGk positions in ref:`, currentPositionsRef.current.rinkGk)
-        
-        return newPlayers
-      })
-    }
-  }
+
+
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
@@ -1493,12 +1091,31 @@ const GameManagement = () => {
     try {
       console.log('Loading existing game state for session:', sessionId)
       
+      // CRITICAL: Clear all zones first to prevent duplicates
+      console.log('Clearing all zones before loading game state...')
+      setBenchDPlayers([])
+      setBenchFPlayers([])
+      setGkPlayers([])
+      setRinkDPlayers([])
+      setRinkFPlayers([])
+      setRinkGkPlayers([])
+      
+      // Clear refs as well
+      currentPositionsRef.current = {
+        benchD: [],
+        benchF: [],
+        gk: [],
+        rinkD: [],
+        rinkF: [],
+        rinkGk: []
+      }
+      
       // Check if there's a game session (active or ended)
       const { data: gameSessionData, error: sessionError } = await supabase
         .from('game_sessions')
         .select('*')
         .eq('session_id', sessionId)
-        .single()
+        .maybeSingle() // Use maybeSingle() to handle no results gracefully
       
       // Load deleted players from game_events table (always do this, even if no game session)
       console.log('Loading deleted players from game_events table...')
@@ -1544,52 +1161,83 @@ const GameManagement = () => {
       if (savedPositions) {
         console.log('Applying saved player positions...')
         
-        // Clear all zones first
-        setBenchDPlayers([])
-        setBenchFPlayers([])
-        setGkPlayers([])
-        setRinkDPlayers([])
-        setRinkFPlayers([])
-        setRinkGkPlayers([])
+        // Restore players to their saved positions - batch all updates to prevent race conditions
+        const zoneUpdates = {}
+        const refUpdates = {}
         
-        // Restore players to their saved positions
         Object.entries(savedPositions).forEach(([zone, playerIds]) => {
           const players = playerIds.map(id => squadPlayers.find(p => p.id === id)).filter(Boolean)
-          console.log(`Restoring ${players.length} players to ${zone}`)
+          console.log(`Preparing to restore ${players.length} players to ${zone}:`, players.map(p => p.first_name))
           
-          // Update both state and ref
-          switch (zone) {
-            case 'benchD':
-              setBenchDPlayers(players)
-              currentPositionsRef.current.benchD = playerIds
-              break
-            case 'benchF':
-              setBenchFPlayers(players)
-              currentPositionsRef.current.benchF = playerIds
-              break
-            case 'gk':
-              setGkPlayers(players)
-              currentPositionsRef.current.gk = playerIds
-              break
-            case 'rinkD':
-              setRinkDPlayers(players)
-              currentPositionsRef.current.rinkD = playerIds
-              break
-            case 'rinkF':
-              setRinkFPlayers(players)
-              currentPositionsRef.current.rinkF = playerIds
-              break
-            case 'rinkGk':
-              setRinkGkPlayers(players)
-              currentPositionsRef.current.rinkGk = playerIds
-              break
-          }
+          zoneUpdates[zone] = players
+          refUpdates[zone] = playerIds
         })
+        
+        // Apply all updates in a single batch
+        if (zoneUpdates.benchD) {
+          setBenchDPlayers(zoneUpdates.benchD)
+          currentPositionsRef.current.benchD = refUpdates.benchD
+        }
+        if (zoneUpdates.benchF) {
+          setBenchFPlayers(zoneUpdates.benchF)
+          currentPositionsRef.current.benchF = refUpdates.benchF
+        }
+        if (zoneUpdates.gk) {
+          setGkPlayers(zoneUpdates.gk)
+          currentPositionsRef.current.gk = refUpdates.gk
+        }
+        if (zoneUpdates.rinkD) {
+          setRinkDPlayers(zoneUpdates.rinkD)
+          currentPositionsRef.current.rinkD = refUpdates.rinkD
+        }
+        if (zoneUpdates.rinkF) {
+          setRinkFPlayers(zoneUpdates.rinkF)
+          currentPositionsRef.current.rinkF = refUpdates.rinkF
+        }
+        if (zoneUpdates.rinkGk) {
+          setRinkGkPlayers(zoneUpdates.rinkGk)
+          currentPositionsRef.current.rinkGk = refUpdates.rinkGk
+        }
         console.log('Saved positions applied successfully')
+      } else {
+        // No saved positions found - place all players on bench by default
+        console.log('No saved positions found - placing all players on bench by default')
+        
+        const allPlayers = squadPlayers.filter(player => !currentDeletedPlayers.has(player.id))
+        if (allPlayers.length > 0) {
+          console.log(`Placing ${allPlayers.length} players on bench by default:`, allPlayers.map(p => p.first_name))
+          
+          // Split players between bench D and F columns
+          const half = Math.ceil(allPlayers.length / 2)
+          const benchDPlayers = allPlayers.slice(0, half)
+          const benchFPlayers = allPlayers.slice(half)
+          
+          console.log(`BenchD players:`, benchDPlayers.map(p => p.first_name))
+          console.log(`BenchF players:`, benchFPlayers.map(p => p.first_name))
+          
+          setBenchDPlayers(benchDPlayers)
+          setBenchFPlayers(benchFPlayers)
+          setGkPlayers([])
+          setRinkDPlayers([])
+          setRinkFPlayers([])
+          setRinkGkPlayers([])
+          
+          // Update refs
+          currentPositionsRef.current = {
+            benchD: allPlayers.slice(0, half).map(p => p.id),
+            benchF: allPlayers.slice(half).map(p => p.id),
+            gk: [],
+            rinkD: [],
+            rinkF: [],
+            rinkGk: []
+          }
+          
+          console.log('Players placed on bench successfully')
+        }
       }
       
       if (sessionError || !gameSessionData) {
-        console.log('No game session found - keeping current bench players')
+        console.log('No game session found - players already placed by position logic above')
         return
       }
       
@@ -1700,21 +1348,27 @@ const GameManagement = () => {
     const timeInSeconds = playerTimers[playerId] || 0
     
     if (status === 'rink') {
-      // Rink players: light green (0-60s) -> fade to red (60-180s)
-      if (timeInSeconds <= 60) {
-        return 'bg-green-100' // Light green for first 60 seconds
-      } else if (timeInSeconds <= 180) {
-        // Fade from green to red between 60-180 seconds
-        const fadeProgress = (timeInSeconds - 60) / 120 // 0 to 1
-        if (fadeProgress < 0.5) {
-          return 'bg-green-200' // Still greenish
-        } else if (fadeProgress < 0.8) {
-          return 'bg-yellow-200' // Yellow transition
+      // Rink players: gradual fade from light green (0s) to light red (120s) to dark red (180s)
+      if (timeInSeconds <= 120) {
+        // Fade from light green to light red (0-120 seconds)
+        const fadeProgress = timeInSeconds / 120 // 0 to 1
+        if (fadeProgress < 0.33) {
+          return 'bg-green-100' // Light green
+        } else if (fadeProgress < 0.66) {
+          return 'bg-green-200' // Medium green
         } else {
-          return 'bg-red-200' // Red
+          return 'bg-red-100' // Light red
+        }
+      } else if (timeInSeconds <= 180) {
+        // Fade from light red to dark red (120-180 seconds)
+        const fadeProgress = (timeInSeconds - 120) / 60 // 0 to 1
+        if (fadeProgress < 0.5) {
+          return 'bg-red-200' // Medium red
+        } else {
+          return 'bg-red-300' // Dark red
         }
       } else {
-        return 'bg-red-300' // Full red after 180 seconds
+        return 'bg-red-400' // Very dark red after 180 seconds
       }
     } else {
       // Bench players: yellow (0-60s) -> white (60-120s) -> fade to blue (120-300s)
@@ -1807,6 +1461,13 @@ const GameManagement = () => {
   // Update all player timers
   const updatePlayerTimers = () => {
     console.log('updatePlayerTimers called')
+    
+    // Don't update timers if we don't have game data yet
+    if (!gameStartTime || Object.keys(playerStatuses).length === 0) {
+      console.log('Skipping timer update - no game data yet')
+      return
+    }
+    
     const newTimers = {}
     
     // Update all players from all zones
@@ -2074,71 +1735,61 @@ const GameManagement = () => {
   const handleDrop = (e, targetZone) => {
     e.preventDefault()
     
-    console.log('=== handleDrop called ===')
-    console.log('Dragged Player:', draggedPlayer?.id, draggedPlayer?.first_name)
-    console.log('Target Zone:', targetZone)
-    console.log('Timestamp:', new Date().toISOString())
-    console.log('========================')
+    if (!draggedPlayer || !targetZone) {
+      setDraggedPlayer(null)
+      setDragOverZone(null)
+      setDragOverPosition(null)
+      return
+    }
+
+    console.log(`Moving player ${draggedPlayer.first_name} to ${targetZone}`)
     
-    if (draggedPlayer && targetZone) {
-      // Determine current zone
-      let currentZone = 'bench'
-      if (rinkPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'rink'
-      } else if (benchDPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'benchD'
-      } else if (benchFPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'benchF'
-      } else if (gkPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'gk'
-      } else if (rinkDPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'rinkD'
-      } else if (rinkFPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'rinkF'
-      } else if (rinkGkPlayers.find(p => p.id === draggedPlayer.id)) {
-        currentZone = 'rinkGk'
+    // Find which zone the player is currently in
+    let currentZone = null
+    if (benchDPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'benchD'
+    } else if (benchFPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'benchF'
+    } else if (gkPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'gk'
+    } else if (rinkDPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'rinkD'
+    } else if (rinkFPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'rinkF'
+    } else if (rinkGkPlayers.find(p => p.id === draggedPlayer.id)) {
+      currentZone = 'rinkGk'
+    }
+
+    if (!currentZone) {
+      console.error(`Player ${draggedPlayer.first_name} not found in any zone`)
+      setDraggedPlayer(null)
+      setDragOverZone(null)
+      setDragOverPosition(null)
+      return
+    }
+
+    // If moving to the same zone, just reorder
+    if (currentZone === targetZone) {
+      console.log(`Reordering ${draggedPlayer.first_name} within ${targetZone}`)
+      movePlayerToZone(draggedPlayer, targetZone, dragOverPosition || 0)
+    } else {
+      // Moving to a different zone
+      console.log(`Moving ${draggedPlayer.first_name} from ${currentZone} to ${targetZone}`)
+      
+      // Check if this is a cross-zone move (bench ↔ rink)
+      const isFromBench = ['benchD', 'benchF', 'gk'].includes(currentZone)
+      const isToBench = ['benchD', 'benchF', 'gk'].includes(targetZone)
+      
+      if (isFromBench !== isToBench) {
+        // Cross-zone move - record database event
+        recordPlayerMove(draggedPlayer.id, currentZone, targetZone)
       }
       
-      // Check if moving within the same zone (reordering)
-      if (currentZone === targetZone) {
-        // Reorder within the same column
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      }
-      // Check if moving to/from bench GK (no database events)
-      else if (targetZone === 'gk') {
-        movePlayerToGk(draggedPlayer.id, currentZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if (currentZone === 'gk') {
-        movePlayerFromGk(draggedPlayer.id, targetZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if ((currentZone === 'benchD' || currentZone === 'benchF') && (targetZone === 'benchD' || targetZone === 'benchF')) {
-        // Moving between bench columns (no database events)
-        movePlayerBetweenBenchColumns(draggedPlayer.id, currentZone, targetZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if ((currentZone === 'rinkD' || currentZone === 'rinkF') && (targetZone === 'rinkD' || targetZone === 'rinkF')) {
-        // Moving between rink columns (no database events)
-        movePlayerBetweenRinkColumns(draggedPlayer.id, currentZone, targetZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if (targetZone === 'rinkGk') {
-        movePlayerToRinkGk(draggedPlayer.id, currentZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if (currentZone === 'rinkGk') {
-        movePlayerFromRinkGk(draggedPlayer.id, targetZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      } else if (currentZone !== targetZone) {
-        // Moving to/from rink (triggers database events)
-        console.log('=== CALLING movePlayer ===')
-        console.log('Current Zone:', currentZone)
-        console.log('Target Zone:', targetZone)
-        console.log('Is Cross-Zone Move:', currentZone !== targetZone)
-        console.log('=======================')
-        movePlayer(draggedPlayer.id, currentZone, targetZone)
-        insertPlayerAtPosition(draggedPlayer, targetZone, dragOverPosition || 0)
-      }
+      // Move the player
+      movePlayerToZone(draggedPlayer, targetZone, dragOverPosition || 0)
     }
-    
-    // Save player positions after any move
-    // Note: We'll save positions after a short delay to ensure state is updated
+
+    // Save positions after a short delay
     setTimeout(() => {
       savePlayerPositions()
     }, 100)
@@ -2146,6 +1797,149 @@ const GameManagement = () => {
     setDraggedPlayer(null)
     setDragOverZone(null)
     setDragOverPosition(null)
+  }
+
+  // Simple function to move a player to any zone
+  const movePlayerToZone = (player, targetZone, position) => {
+    console.log(`Moving ${player.first_name} to ${targetZone} at position ${position}`)
+    
+    // First remove player from all zones
+    setBenchDPlayers(prev => prev.filter(p => p.id !== player.id))
+    setBenchFPlayers(prev => prev.filter(p => p.id !== player.id))
+    setGkPlayers(prev => prev.filter(p => p.id !== player.id))
+    setRinkDPlayers(prev => prev.filter(p => p.id !== player.id))
+    setRinkFPlayers(prev => prev.filter(p => p.id !== player.id))
+    setRinkGkPlayers(prev => prev.filter(p => p.id !== player.id))
+    
+    // Then add player to target zone
+    const addToZone = (setter) => {
+      setter(prev => {
+        const insertIndex = Math.floor(position * (prev.length + 1))
+        const clampedIndex = Math.max(0, Math.min(insertIndex, prev.length))
+        const newPlayers = [...prev]
+        newPlayers.splice(clampedIndex, 0, player)
+        
+        console.log(`Added ${player.first_name} to ${targetZone} at position ${clampedIndex}`)
+        return newPlayers
+      })
+    }
+    
+    switch (targetZone) {
+      case 'benchD':
+        addToZone(setBenchDPlayers)
+        break
+      case 'benchF':
+        addToZone(setBenchFPlayers)
+        break
+      case 'gk':
+        addToZone(setGkPlayers)
+        break
+      case 'rinkD':
+        addToZone(setRinkDPlayers)
+        break
+      case 'rinkF':
+        addToZone(setRinkFPlayers)
+        break
+      case 'rinkGk':
+        addToZone(setRinkGkPlayers)
+        break
+      default:
+        console.error(`Invalid target zone: ${targetZone}`)
+    }
+  }
+
+  // Simple function to record player moves in the database
+  const recordPlayerMove = async (playerId, fromZone, toZone) => {
+    try {
+      const now = new Date()
+      const currentGameTime = gameStartTime ? Math.floor((now - gameStartTime) / 1000) : 0
+      
+      // Determine the effective status for database storage
+      const isFromBench = ['benchD', 'benchF', 'gk'].includes(fromZone)
+      const isToBench = ['benchD', 'benchF', 'gk'].includes(toZone)
+      const isFromRink = ['rinkD', 'rinkF', 'rinkGk'].includes(fromZone)
+      const isToRink = ['rinkD', 'rinkF', 'rinkGk'].includes(toZone)
+      
+      // Only record events for cross-zone moves (bench ↔ rink)
+      if (isFromBench && isToRink) {
+        // Player going from bench to rink
+        console.log(`Recording player_on event for player ${playerId}`)
+        await recordGameEvent(
+          'player_on',
+          playerId,
+          now,
+          currentGameTime,
+          totalPlayTime,
+          { from_zone: fromZone, to_zone: toZone }
+        )
+      } else if (isFromRink && isToBench) {
+        // Player going from rink to bench
+        console.log(`Recording player_off event for player ${playerId}`)
+        await recordGameEvent(
+          'player_off',
+          playerId,
+          now,
+          currentGameTime,
+          totalPlayTime,
+          { from_zone: fromZone, to_zone: toZone }
+        )
+      } else {
+        // Moving within the same zone type (bench to bench, or rink to rink) - no database events needed
+        console.log(`Internal move within same zone type: ${fromZone} to ${toZone} - no database events`)
+        return
+      }
+      
+      // Update player status in game_player_status table
+      const effectiveStatus = isToBench ? 'bench' : 'rink'
+      const { error: statusError } = await supabase
+        .from('game_player_status')
+        .upsert({
+          session_id: sessionId,
+          player_id: playerId,
+          status: effectiveStatus,
+          status_start_time: now.toISOString(),
+          status_start_game_time: currentGameTime,
+          status_start_play_time: totalPlayTime,
+          updated_at: now.toISOString()
+        }, {
+          onConflict: 'session_id,player_id'
+        })
+      
+      if (statusError) {
+        console.error('Error updating player status:', statusError)
+      }
+      
+      // Update local state for immediate UI feedback
+      // Reset player status start time and timer for cross-zone moves
+      const newStatus = {
+        player_id: playerId,
+        status: effectiveStatus,
+        status_start_time: now.toISOString(),
+        status_start_game_time: currentGameTime,
+        status_start_play_time: totalPlayTime
+      }
+      
+      setPlayerStatuses(prev => {
+        const updated = {
+          ...prev,
+          [playerId]: newStatus
+        }
+        // Also update the ref immediately so updatePlayerTimers uses correct data
+        playerStatusesRef.current = updated
+        return updated
+      })
+      
+      // Reset player timer to 0 for cross-zone moves
+      setPlayerTimers(prev => ({
+        ...prev,
+        [playerId]: 0
+      }))
+      
+      console.log(`Reset timer and status for player ${playerId} - new status: ${effectiveStatus}`)
+      
+    } catch (error) {
+      console.error('Error recording player move:', error)
+    }
   }
   
   if (loading) {
@@ -2574,12 +2368,7 @@ const GameManagement = () => {
         
         {/* Rink - Two Columns + GK Row */}
         <div 
-          className={`bg-green-50 rounded-lg p-3 min-h-[300px] player-column ${
-            dragOverZone === 'rink' ? 'drag-over' : ''
-          }`}
-          onDragOver={(e) => handleDragOver(e, 'rink')}
-          onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e, 'rink')}
+          className={`bg-green-50 rounded-lg p-3 min-h-[300px] player-column`}
         >
           <h3 className="text-lg font-semibold text-green-800 mb-2">On Rink</h3>
           <div className="space-y-4">

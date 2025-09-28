@@ -21,6 +21,8 @@ const GameStats = () => {
   const [showAddEventDialog, setShowAddEventDialog] = useState(false)
   const [showDetailsDialog, setShowDetailsDialog] = useState(false)
   const [selectedEventForDetails, setSelectedEventForDetails] = useState(null)
+  const [showPlayerStatsDialog, setShowPlayerStatsDialog] = useState(false)
+  const [selectedPlayerForStats, setSelectedPlayerForStats] = useState(null)
   const [newEvent, setNewEvent] = useState({
     event_type: 'player_on',
     player_id: '',
@@ -245,6 +247,16 @@ const GameStats = () => {
   const handleCloseDetailsDialog = () => {
     setShowDetailsDialog(false)
     setSelectedEventForDetails(null)
+  }
+
+  const handleShowPlayerStats = (player) => {
+    setSelectedPlayerForStats(player)
+    setShowPlayerStatsDialog(true)
+  }
+
+  const handleClosePlayerStatsDialog = () => {
+    setShowPlayerStatsDialog(false)
+    setSelectedPlayerForStats(null)
   }
 
   const refreshGameEvents = async () => {
@@ -601,6 +613,9 @@ const GameStats = () => {
         let shiftCount = 0
         let currentShiftStart = null
         let isOnRink = false
+        let shortestShift = 0
+        let longestShift = 0
+        let longestShiftStartTime = null
         
         // Process all events in chronological order
         const allEvents = [...playerEvents, ...playEvents]
@@ -650,6 +665,12 @@ const GameStats = () => {
               console.log(`Ending shift due to play stop: ${shiftDuration}s (${currentShiftStart.toISOString()} to ${eventTime.toISOString()})`)
               totalRinkTime += shiftDuration
               shiftCount++
+              // Track shortest and longest shifts
+              if (shiftCount === 1 || shiftDuration < shortestShift) shortestShift = shiftDuration
+              if (shiftDuration > longestShift) {
+                longestShift = shiftDuration
+                longestShiftStartTime = currentShiftStart
+              }
               currentShiftStart = null // Don't reset isOnRink, player might still be on rink
             }
           } else if (event.player_id === player.id) {
@@ -670,6 +691,12 @@ const GameStats = () => {
                 console.log(`Player went off rink during active play: ${shiftDuration}s (${currentShiftStart.toISOString()} to ${eventTime.toISOString()})`)
                 totalRinkTime += shiftDuration
                 shiftCount++
+                // Track shortest and longest shifts
+                if (shiftCount === 1 || shiftDuration < shortestShift) shortestShift = shiftDuration
+                if (shiftDuration > longestShift) {
+                  longestShift = shiftDuration
+                  longestShiftStartTime = currentShiftStart
+                }
               } else if (isOnRink && currentShiftStart && !isPlayActive) {
                 console.log(`Player went off rink during stopped play at ${eventTime.toISOString()} - not counting time`)
               }
@@ -686,10 +713,21 @@ const GameStats = () => {
           console.log(`Player still on rink at game end: ${finalShiftDuration}s (${currentShiftStart.toISOString()} to ${gameEndTime.toISOString()})`)
           totalRinkTime += finalShiftDuration
           shiftCount++
+          // Track shortest and longest shifts
+          if (shiftCount === 1 || finalShiftDuration < shortestShift) shortestShift = finalShiftDuration
+          if (finalShiftDuration > longestShift) {
+            longestShift = finalShiftDuration
+            longestShiftStartTime = currentShiftStart
+          }
         }
         
         console.log(`Total rink time for ${player.first_name}: ${totalRinkTime}s`)
         console.log(`Shift count for ${player.first_name}: ${shiftCount}`)
+        console.log(`Shortest shift for ${player.first_name}: ${shortestShift}s`)
+        console.log(`Longest shift for ${player.first_name}: ${longestShift}s`)
+        if (longestShiftStartTime) {
+          console.log(`Longest shift start time for ${player.first_name}: ${longestShiftStartTime.toISOString()}`)
+        }
         
         // Calculate average shift time
         const averageShiftTime = shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0
@@ -747,9 +785,14 @@ const GameStats = () => {
           totalRinkTime,
           shiftCount,
           averageShiftTime,
+          shortestShift,
+          longestShift,
+          longestShiftStartTime,
           plusMinus,
           formattedTime: formatTime(totalRinkTime),
-          formattedAverageShiftTime: formatTime(averageShiftTime)
+          formattedAverageShiftTime: formatTime(averageShiftTime),
+          formattedShortestShift: formatTime(shortestShift),
+          formattedLongestShift: formatTime(longestShift)
         }
       })
 
@@ -845,6 +888,9 @@ const GameStats = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Plus/Minus
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -873,6 +919,14 @@ const GameStats = () => {
                         }`}>
                           {player.plusMinus > 0 ? '+' : ''}{player.plusMinus}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                        <button
+                          onClick={() => handleShowPlayerStats(player)}
+                          className="px-3 py-1 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          View Stats
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -1553,6 +1607,132 @@ const GameStats = () => {
               <div className="flex justify-end mt-6">
                 <button
                   onClick={handleCloseDetailsDialog}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Player Stats Modal */}
+      {showPlayerStatsDialog && selectedPlayerForStats && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Player Statistics - {selectedPlayerForStats.name}
+                </h3>
+                <button
+                  onClick={handleClosePlayerStatsDialog}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Player Stats Content */}
+              <div className="space-y-6">
+                {/* Basic Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-blue-800 mb-2">Total Rink Time</h4>
+                    <p className="text-2xl font-bold text-blue-900">{selectedPlayerForStats.formattedTime}</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-green-800 mb-2">Number of Shifts</h4>
+                    <p className="text-2xl font-bold text-green-900">{selectedPlayerForStats.shiftCount}</p>
+                  </div>
+                </div>
+
+                {/* Shift Statistics */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-yellow-800 mb-2">Average Shift</h4>
+                    <p className="text-xl font-bold text-yellow-900">{selectedPlayerForStats.formattedAverageShiftTime}</p>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-orange-800 mb-2">Shortest Shift</h4>
+                    <p className="text-xl font-bold text-orange-900">{selectedPlayerForStats.formattedShortestShift}</p>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-red-800 mb-2">Longest Shift</h4>
+                    <p className="text-xl font-bold text-red-900">{selectedPlayerForStats.formattedLongestShift}</p>
+                  </div>
+                </div>
+
+                {/* Goal Statistics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-emerald-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-emerald-800 mb-2">Goals For (On Rink)</h4>
+                    <p className="text-2xl font-bold text-emerald-900">
+                      {(() => {
+                        // Count goals for events where this player was on rink
+                        const goalsFor = gameEvents?.filter(event => {
+                          if (event.event_type === 'goal_for' && event.metadata?.rink_players) {
+                            return event.metadata.rink_players.includes(selectedPlayerForStats.id)
+                          }
+                          return false
+                        }).length || 0
+                        return goalsFor
+                      })()}
+                    </p>
+                  </div>
+                  <div className="bg-rose-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-rose-800 mb-2">Goals Against (On Rink)</h4>
+                    <p className="text-2xl font-bold text-rose-900">
+                      {(() => {
+                        // Count goals against events where this player was on rink
+                        const goalsAgainst = gameEvents?.filter(event => {
+                          if (event.event_type === 'goal_against' && event.metadata?.rink_players) {
+                            return event.metadata.rink_players.includes(selectedPlayerForStats.id)
+                          }
+                          return false
+                        }).length || 0
+                        return goalsAgainst
+                      })()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Plus/Minus */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-800 mb-2">Plus/Minus</h4>
+                  <p className={`text-2xl font-bold ${
+                    selectedPlayerForStats.plusMinus > 0 ? 'text-green-600' :
+                    selectedPlayerForStats.plusMinus < 0 ? 'text-red-600' :
+                    'text-gray-600'
+                  }`}>
+                    {selectedPlayerForStats.plusMinus > 0 ? '+' : ''}{selectedPlayerForStats.plusMinus}
+                  </p>
+                </div>
+
+                {/* Additional Details */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-800 mb-3">Additional Details</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Jersey Number:</span>
+                      <span className="ml-2 font-medium">{selectedPlayerForStats.jerseyNumber || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Total Rink Time (seconds):</span>
+                      <span className="ml-2 font-medium">{selectedPlayerForStats.totalRinkTime}s</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={handleClosePlayerStatsDialog}
                   className="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
                 >
                   Close

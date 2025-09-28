@@ -35,6 +35,96 @@ const GameViewer = () => {
   // Auto-refresh timer
   const refreshIntervalRef = useRef(null)
 
+  // Calculate background color based on player status and time
+  const getPlayerCardColor = (playerId, status) => {
+    const timeInSeconds = playerTimers[playerId] || 0
+    
+    if (status === 'rink') {
+      // Rink players: light green (0-60s) -> fade to red (60-180s)
+      if (timeInSeconds <= 60) {
+        return 'bg-green-100' // Light green for first 60 seconds
+      } else if (timeInSeconds <= 180) {
+        // Fade from green to red between 60-180 seconds
+        const fadeProgress = (timeInSeconds - 60) / 120 // 0 to 1
+        if (fadeProgress < 0.5) {
+          return 'bg-green-200' // Still greenish
+        } else if (fadeProgress < 0.8) {
+          return 'bg-yellow-200' // Yellow transition
+        } else {
+          return 'bg-red-200' // Red
+        }
+      } else {
+        return 'bg-red-300' // Full red after 180 seconds
+      }
+    } else {
+      // Bench players: yellow (0-60s) -> white (60-120s) -> fade to blue (120-300s)
+      if (timeInSeconds <= 60) {
+        return 'bg-yellow-100' // Yellow for first 60 seconds
+      } else if (timeInSeconds <= 120) {
+        return 'bg-white' // White for next 60 seconds
+      } else if (timeInSeconds <= 300) {
+        // Fade from white to blue between 120-300 seconds
+        const fadeProgress = (timeInSeconds - 120) / 180 // 0 to 1
+        if (fadeProgress < 0.3) {
+          return 'bg-blue-50' // Very light blue
+        } else if (fadeProgress < 0.6) {
+          return 'bg-blue-100' // Light blue
+        } else {
+          return 'bg-blue-200' // Medium blue
+        }
+      } else {
+        return 'bg-blue-300' // Full blue after 300 seconds
+      }
+    }
+  }
+
+  // Calculate player time based on current status and game state
+  const calculatePlayerTime = (playerId, currentStatus, statusStartTime) => {
+    try {
+      if (!gameStartTime || !statusStartTime) return 0
+      
+      const now = new Date()
+      const statusStart = new Date(statusStartTime)
+      const gameStart = new Date(gameStartTime)
+      
+      // Validate the date
+      if (isNaN(statusStart.getTime())) {
+        console.error(`Invalid statusStartTime for player ${playerId}:`, statusStartTime)
+        return 0
+      }
+      
+      // Determine the effective start time for timer calculation
+      let effectiveStartTime
+      if (statusStart <= gameStart) {
+        // Player was moved to current position before or at game start
+        // Use game start time as the effective start time
+        effectiveStartTime = gameStart
+      } else {
+        // Player was moved to current position after game start
+        // Use status start time (when they were moved)
+        effectiveStartTime = statusStart
+      }
+      
+      // Calculate time based on play state
+      let timeElapsed
+      if (isPlaying) {
+        timeElapsed = Math.floor((now - effectiveStartTime) / 1000)
+      } else {
+        if (currentPlayStartTime) {
+          const playStopTime = new Date(currentPlayStartTime)
+          timeElapsed = Math.floor((playStopTime - effectiveStartTime) / 1000)
+        } else {
+          timeElapsed = 0
+        }
+      }
+      
+      return timeElapsed
+    } catch (error) {
+      console.error(`Error in calculatePlayerTime for player ${playerId}:`, error)
+      return 0
+    }
+  }
+
   // Load session data
   const loadSessionData = async () => {
     try {
@@ -252,11 +342,24 @@ const GameViewer = () => {
       
       if (!statusError && statusData) {
         const statuses = {}
+        const timers = {}
+        
         statusData.forEach(status => {
           statuses[status.player_id] = status
+          
+          // Calculate current timer for this player
+          const calculatedTime = calculatePlayerTime(
+            status.player_id,
+            status.status,
+            status.status_start_time
+          )
+          timers[status.player_id] = calculatedTime
         })
+        
         setPlayerStatuses(statuses)
+        setPlayerTimers(timers)
         console.log('Loaded player statuses:', statuses)
+        console.log('Calculated player timers:', timers)
       }
       
     } catch (error) {
@@ -264,49 +367,6 @@ const GameViewer = () => {
     }
   }
 
-  // Calculate player time
-  const calculatePlayerTime = (playerId, currentStatus, statusStartTime) => {
-    try {
-      if (!gameStartTime || !statusStartTime) return 0
-      
-      const now = new Date()
-      const statusStart = new Date(statusStartTime)
-      const gameStart = new Date(gameStartTime)
-      
-      if (isNaN(statusStart.getTime())) {
-        console.error(`Invalid statusStartTime for player ${playerId}:`, statusStartTime)
-        return 0
-      }
-      
-      // Determine the effective start time for timer calculation
-      let effectiveStartTime
-      if (statusStart <= gameStart) {
-        // Player was moved to current position before or at game start
-        effectiveStartTime = gameStart
-      } else {
-        // Player was moved to current position after game start
-        effectiveStartTime = statusStart
-      }
-      
-      // Calculate time based on play state
-      let timeElapsed
-      if (isPlaying) {
-        timeElapsed = Math.floor((now - effectiveStartTime) / 1000)
-      } else {
-        if (currentPlayStartTime) {
-          const playStopTime = new Date(currentPlayStartTime)
-          timeElapsed = Math.floor((playStopTime - effectiveStartTime) / 1000)
-        } else {
-          timeElapsed = 0
-        }
-      }
-      
-      return timeElapsed
-    } catch (error) {
-      console.error(`Error in calculatePlayerTime for player ${playerId}:`, error)
-      return 0
-    }
-  }
 
   // Update player timers
   const updatePlayerTimers = () => {
@@ -375,6 +435,17 @@ const GameViewer = () => {
       }
     }
   }, [sessionId, squadPlayers.length])
+
+  // Update player timers every second when game is running
+  useEffect(() => {
+    if (gameStartTime && Object.keys(playerStatuses).length > 0) {
+      const playerTimerInterval = setInterval(() => {
+        updatePlayerTimers()
+      }, 1000)
+      
+      return () => clearInterval(playerTimerInterval)
+    }
+  }, [gameStartTime, playerStatuses])
 
   // Update timers when game state changes
   useEffect(() => {
@@ -545,7 +616,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">D</h4>
               <div className="space-y-2">
                 {benchDPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-yellow-50 border border-yellow-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'bench')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -565,7 +636,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>
@@ -579,7 +650,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">F</h4>
               <div className="space-y-2">
                 {benchFPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-yellow-50 border border-yellow-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'bench')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -599,7 +670,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>
@@ -613,7 +684,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">GK</h4>
               <div className="space-y-2">
                 {gkPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-yellow-50 border border-yellow-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'bench')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -633,7 +704,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>
@@ -652,7 +723,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">D</h4>
               <div className="space-y-2">
                 {rinkDPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-green-50 border border-green-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'rink')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -672,7 +743,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>
@@ -686,7 +757,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">F</h4>
               <div className="space-y-2">
                 {rinkFPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-green-50 border border-green-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'rink')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -706,7 +777,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>
@@ -720,7 +791,7 @@ const GameViewer = () => {
               <h4 className="text-sm font-medium text-gray-600 mb-2 text-center">GK</h4>
               <div className="space-y-2">
                 {rinkGkPlayers.map(player => (
-                  <div key={player.id} className="player-card bg-green-50 border border-green-200">
+                  <div key={player.id} className={`player-card ${getPlayerCardColor(player.id, 'rink')} border border-gray-300`}>
                     <div className="flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-300 mr-2 flex-shrink-0 flex items-center justify-center">
                         {playerImages[player.id] ? (
@@ -740,7 +811,7 @@ const GameViewer = () => {
                           {player.first_name} {player.last_name}
                         </div>
                         <div className="text-xs text-gray-600">
-                          {playerTimers[player.id] ? formatTime(playerTimers[player.id].time) : '0s'}
+                          {playerTimers[player.id] ? formatTime(playerTimers[player.id]) : '0s'}
                         </div>
                       </div>
                     </div>

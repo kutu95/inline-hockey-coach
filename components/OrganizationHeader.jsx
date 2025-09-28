@@ -16,6 +16,13 @@ const OrganizationHeader = ({ title, showBackButton = true, backLinkText = "← 
   }, [orgId])
 
   const fetchOrganization = async () => {
+    // Don't fetch if orgId is undefined or invalid
+    if (!orgId || orgId === 'undefined') {
+      console.log('Skipping organization fetch - orgId is undefined or invalid')
+      setLoading(false)
+      return
+    }
+    
     try {
       setLoading(true)
       const { data, error } = await supabase
