@@ -926,7 +926,7 @@ const Sessions = () => {
                                 Plan Session
                               </Link>
                             )}
-                            {canManageSessions && session.event_type !== 'game' && (
+                            {canManageSessions && (
                               <Link
                                 to={orgId ? `/organisations/${orgId}/sessions/${session.id}/attendance` : `/sessions/${session.id}/attendance`}
                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium text-center sm:text-left"
