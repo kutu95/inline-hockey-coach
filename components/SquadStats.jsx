@@ -17,6 +17,17 @@ const SquadStats = () => {
   const orgId = params.orgId
   const squadId = params.squadId || params.id
 
+  // Function to format seconds into hours:minutes:seconds
+  const formatGameTime = (totalSeconds) => {
+    if (!totalSeconds || totalSeconds === 0) return '0:00:00'
+    
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }
+
   // Function to get signed URL for player photos
   const getSignedUrlForPlayerPhoto = async (url) => {
     if (!url) {
@@ -183,7 +194,7 @@ const SquadStats = () => {
         // Player doesn't belong to this squad
         return {
           gamesPlayed: 0,
-          totalMinutes: 0,
+          totalSeconds: 0,
           averageShiftTime: 0,
           plusMinus: 0
         }
@@ -221,7 +232,7 @@ const SquadStats = () => {
       if (sessionIds.length === 0) {
         return {
           gamesPlayed: 0,
-          totalMinutes: 0,
+          totalSeconds: 0,
           averageShiftTime: 0,
           plusMinus: 0
         }
@@ -252,7 +263,7 @@ const SquadStats = () => {
       if (attendedGameSessions.length === 0) {
         return {
           gamesPlayed: 0,
-          totalMinutes: 0,
+          totalSeconds: 0,
           averageShiftTime: 0,
           plusMinus: 0
         }
@@ -339,7 +350,7 @@ const SquadStats = () => {
 
             return {
               gamesPlayed: attendedGameSessions.length,
-              totalMinutes: Math.round(totalRinkTime / 60),
+              totalSeconds: Math.round(totalRinkTime),
               averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
               plusMinus: plusMinus
             }
@@ -348,7 +359,7 @@ const SquadStats = () => {
       console.error('Error calculating player stats:', err)
       return {
         gamesPlayed: 0,
-        totalMinutes: 0,
+        totalSeconds: 0,
         averageShiftTime: 0,
         plusMinus: 0
       }
@@ -409,8 +420,8 @@ const SquadStats = () => {
     )
   }
 
-  // Sort players by total minutes (descending)
-  const sortedPlayers = [...players].sort((a, b) => b.stats.totalMinutes - a.stats.totalMinutes)
+  // Sort players by total game time in seconds (descending)
+  const sortedPlayers = [...players].sort((a, b) => b.stats.totalSeconds - a.stats.totalSeconds)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -466,7 +477,7 @@ const SquadStats = () => {
                           Games
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Total Minutes
+                          Game Time
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Avg Shift Time
@@ -515,7 +526,7 @@ const SquadStats = () => {
                             {player.stats.gamesPlayed}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {player.stats.totalMinutes}m
+                            {formatGameTime(player.stats.totalSeconds)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {player.stats.averageShiftTime}s
