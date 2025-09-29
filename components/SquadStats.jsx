@@ -28,6 +28,16 @@ const SquadStats = () => {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
+  // Function to calculate plus/minus per minute
+  const calculatePlusMinusPerMinute = (plusMinus, totalSeconds) => {
+    if (!totalSeconds || totalSeconds === 0) return '0.00'
+    
+    const totalMinutes = totalSeconds / 60
+    const plusMinusPerMinute = plusMinus / totalMinutes
+    
+    return plusMinusPerMinute.toFixed(2)
+  }
+
   // Function to get signed URL for player photos
   const getSignedUrlForPlayerPhoto = async (url) => {
     if (!url) {
@@ -532,6 +542,9 @@ const SquadStats = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Plus/Minus
                         </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Plus/Minus/Minute
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -587,6 +600,17 @@ const SquadStats = () => {
                                 : 'text-gray-600'
                             }`}>
                               {player.stats.plusMinus > 0 ? '+' : ''}{player.stats.plusMinus}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`font-medium ${
+                              parseFloat(calculatePlusMinusPerMinute(player.stats.plusMinus, player.stats.totalSeconds)) > 0 
+                                ? 'text-green-600' 
+                                : parseFloat(calculatePlusMinusPerMinute(player.stats.plusMinus, player.stats.totalSeconds)) < 0 
+                                ? 'text-red-600' 
+                                : 'text-gray-600'
+                            }`}>
+                              {calculatePlusMinusPerMinute(player.stats.plusMinus, player.stats.totalSeconds)}
                             </span>
                           </td>
                         </tr>
