@@ -79,6 +79,37 @@ const UserAdmin = () => {
         }
       }
 
+      // Now fetch player information for all users to get their names
+      const userIds = Array.from(userMap.keys())
+      if (userIds.length > 0) {
+        const { data: playersData, error: playersError } = await supabase
+          .from('players')
+          .select('id, user_id, first_name, last_name')
+          .in('user_id', userIds)
+
+        if (!playersError && playersData) {
+          // Create a map of user_id to player data
+          const playersMap = new Map()
+          playersData.forEach(player => {
+            if (player.user_id) {
+              playersMap.set(player.user_id, player)
+            }
+          })
+
+          // Update user objects with player names
+          userMap.forEach((userData, userId) => {
+            const playerData = playersMap.get(userId)
+            if (playerData) {
+              userData.name = `${playerData.first_name} ${playerData.last_name}`.trim()
+              userData.player_id = playerData.id
+            } else {
+              // If no player record, use email prefix as name
+              userData.name = userData.email?.split('@')[0] || `User ${userId.slice(0, 8)}...`
+            }
+          })
+        }
+      }
+
       setUsers(Array.from(userMap.values()))
       setRoles(rolesData || [])
       setUserRoles(userRolesMap)
@@ -202,7 +233,7 @@ const UserAdmin = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
+                      Player Name
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Joined
@@ -223,9 +254,6 @@ const UserAdmin = () => {
                         </div>
                         <div className="text-sm text-gray-500">
                           {user.email}
-                        </div>
-                        <div className="text-sm text-gray-400">
-                          ID: {user.id.slice(0, 8)}...
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
