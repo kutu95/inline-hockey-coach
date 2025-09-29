@@ -324,27 +324,36 @@ const SquadStats = () => {
           rinkStartTime = new Date(event.event_time)
         } else if (event.event_type === 'player_off') {
           if (isOnRink && rinkStartTime) {
-            // Check if this was during active play
-            const playStartBefore = playEvents
-              .filter(pe => pe.event_type === 'play_start' && new Date(pe.event_time) <= rinkStartTime)
+            // Find the effective start time - either when player went on rink or when play started, whichever is later
+            const playStartAfterRinkStart = playEvents
+              .filter(pe => pe.event_type === 'play_start' && new Date(pe.event_time) > rinkStartTime)
+              .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
+            
+            const effectiveStartTime = playStartAfterRinkStart ? 
+              new Date(playStartAfterRinkStart.event_time) : rinkStartTime
+            
+            // Find the effective end time - either when player went off rink or when play stopped, whichever is earlier
+            const playStopBeforeRinkEnd = playEvents
+              .filter(pe => pe.event_type === 'play_stop' && new Date(pe.event_time) < new Date(event.event_time))
               .sort((a, b) => new Date(b.event_time) - new Date(a.event_time))[0]
             
-            const playStopAfter = playEvents
-              .filter(pe => pe.event_type === 'play_stop' && new Date(pe.event_time) >= new Date(event.event_time))
-              .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
-
-            if (playStartBefore && (!playStopAfter || new Date(playStopAfter.event_time) > new Date(event.event_time))) {
-              // This shift was during active play
-              const shiftTime = (new Date(event.event_time) - rinkStartTime) / 1000
+            const effectiveEndTime = playStopBeforeRinkEnd ? 
+              new Date(playStopBeforeRinkEnd.event_time) : new Date(event.event_time)
+            
+            // Only count time if there was actually active play during this period
+            if (effectiveEndTime > effectiveStartTime) {
+              const shiftTime = (effectiveEndTime - effectiveStartTime) / 1000
               totalRinkTime += shiftTime
               totalShiftTime += shiftTime
               shiftCount++
               
-              // Record this rink period for plus/minus calculation
+              // Record this rink period for plus/minus calculation (use original times for goal checking)
               rinkPeriods.push({
                 start: rinkStartTime,
                 end: new Date(event.event_time)
               })
+              
+              console.log(`Player ${playerId} shift: ${effectiveStartTime.toISOString()} to ${effectiveEndTime.toISOString()} (${shiftTime}s during active play)`)
             }
           }
           isOnRink = false
@@ -359,16 +368,32 @@ const SquadStats = () => {
           .sort((a, b) => new Date(b.event_time) - new Date(a.event_time))[0]
         
         if (lastPlayStop) {
-          const shiftTime = (new Date(lastPlayStop.event_time) - rinkStartTime) / 1000
-          totalRinkTime += shiftTime
-          totalShiftTime += shiftTime
-          shiftCount++
+          // Find the effective start time - either when player went on rink or when play started, whichever is later
+          const playStartAfterRinkStart = playEvents
+            .filter(pe => pe.event_type === 'play_start' && new Date(pe.event_time) > rinkStartTime)
+            .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
           
-          // Record this final rink period for plus/minus calculation
-          rinkPeriods.push({
-            start: rinkStartTime,
-            end: new Date(lastPlayStop.event_time)
-          })
+          const effectiveStartTime = playStartAfterRinkStart ? 
+            new Date(playStartAfterRinkStart.event_time) : rinkStartTime
+          
+          // Use the last play stop as the effective end time
+          const effectiveEndTime = new Date(lastPlayStop.event_time)
+          
+          // Only count time if there was actually active play during this period
+          if (effectiveEndTime > effectiveStartTime) {
+            const shiftTime = (effectiveEndTime - effectiveStartTime) / 1000
+            totalRinkTime += shiftTime
+            totalShiftTime += shiftTime
+            shiftCount++
+            
+            // Record this final rink period for plus/minus calculation (use original times for goal checking)
+            rinkPeriods.push({
+              start: rinkStartTime,
+              end: new Date(lastPlayStop.event_time)
+            })
+            
+            console.log(`Player ${playerId} final shift: ${effectiveStartTime.toISOString()} to ${effectiveEndTime.toISOString()} (${shiftTime}s during active play)`)
+          }
         }
       }
 
