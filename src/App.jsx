@@ -13,6 +13,7 @@ import Clubs from '../components/Clubs'
 import ViewClub from '../components/ViewClub'
 import Squads from '../components/Squads'
 import ViewSquad from '../components/ViewSquad'
+import SquadStats from '../components/SquadStats'
 import Sessions from '../components/Sessions'
 import SessionsCalendar from '../components/SessionsCalendar'
 import SessionAttendance from '../components/SessionAttendance'
@@ -255,6 +256,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
                   <ViewSquad />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/squads/:squadId/stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin', 'admin', 'coach', 'player']}>
+                  <SquadStats />
                 </RoleProtectedRoute>
               } 
             />
@@ -507,6 +516,14 @@ function App() {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
                   <ViewSquad />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/squads/:squadId/stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin']}>
+                  <SquadStats />
                 </RoleProtectedRoute>
               } 
             />

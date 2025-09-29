@@ -434,6 +434,12 @@ const SquadItem = ({ squad, orgId, canEdit, canDelete, onDelete, onEdit, onToggl
               >
                 View Players
               </Link>
+              <Link
+                to={orgId ? `/organisations/${orgId}/squads/${squad.id}/stats` : `/squads/${squad.id}/stats`}
+                className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+              >
+                Stats
+              </Link>
               {canEdit && (
                 <button
                   onClick={() => setIsEditing(true)}
