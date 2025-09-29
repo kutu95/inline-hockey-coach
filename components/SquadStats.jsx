@@ -181,10 +181,13 @@ const SquadStats = () => {
 
       if (sessionsError) throw sessionsError
 
+      console.log(`Player ${playerId} - Raw game sessions data:`, gameSessions)
+
       // Get all game events for these sessions
-      const sessionIds = (gameSessions || []).map(gs => gs.sessions.id)
+      const validGameSessions = (gameSessions || []).filter(gs => gs.sessions && gs.sessions.id)
+      const sessionIds = validGameSessions.map(gs => gs.sessions.id)
       
-      console.log(`Player ${playerId} - Found ${gameSessions.length} game sessions:`, gameSessions.map(gs => ({
+      console.log(`Player ${playerId} - Found ${validGameSessions.length} valid game sessions:`, validGameSessions.map(gs => ({
         sessionId: gs.sessions.id,
         title: gs.sessions.title,
         date: gs.sessions.date
@@ -276,7 +279,7 @@ const SquadStats = () => {
       }
 
       return {
-        gamesPlayed: gameSessions.length,
+        gamesPlayed: validGameSessions.length,
         totalMinutes: Math.round(totalRinkTime / 60),
         averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
         plusMinus: plusMinus
