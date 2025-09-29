@@ -286,10 +286,15 @@ const SquadStats = () => {
       let totalShiftTime = 0
       let plusMinus = 0
 
-      // Process events for this player
+      // Process events for this player (only player_on/player_off)
       const playerEvents = (gameEvents || []).filter(event => 
         event.player_id === playerId && 
-        ['player_on', 'player_off', 'goal_for', 'goal_against'].includes(event.event_type)
+        ['player_on', 'player_off'].includes(event.event_type)
+      )
+
+      // Get goal events (affect all players on rink)
+      const goalEvents = (gameEvents || []).filter(event => 
+        ['goal_for', 'goal_against'].includes(event.event_type)
       )
 
       // Get play start/stop events
@@ -297,10 +302,11 @@ const SquadStats = () => {
         ['play_start', 'play_stop'].includes(event.event_type)
       )
 
-      // Calculate rink time during active play
+      // Calculate rink time during active play and track when player is on rink
       let isOnRink = false
       let rinkStartTime = null
       let currentPlayStart = null
+      const rinkPeriods = [] // Track all periods when player is on rink
 
       for (const event of playerEvents) {
         if (event.event_type === 'player_on') {
@@ -323,14 +329,16 @@ const SquadStats = () => {
               totalRinkTime += shiftTime
               totalShiftTime += shiftTime
               shiftCount++
+              
+              // Record this rink period for plus/minus calculation
+              rinkPeriods.push({
+                start: rinkStartTime,
+                end: new Date(event.event_time)
+              })
             }
           }
           isOnRink = false
           rinkStartTime = null
-        } else if (event.event_type === 'goal_for') {
-          if (isOnRink) plusMinus++
-        } else if (event.event_type === 'goal_against') {
-          if (isOnRink) plusMinus--
         }
       }
 
@@ -345,8 +353,47 @@ const SquadStats = () => {
           totalRinkTime += shiftTime
           totalShiftTime += shiftTime
           shiftCount++
+          
+          // Record this final rink period for plus/minus calculation
+          rinkPeriods.push({
+            start: rinkStartTime,
+            end: new Date(lastPlayStop.event_time)
+          })
         }
       }
+
+      // Calculate plus/minus by checking which goals occurred while player was on rink
+      console.log(`Player ${playerId} - Rink periods:`, rinkPeriods.map(p => ({
+        start: p.start.toISOString(),
+        end: p.end.toISOString()
+      })))
+      console.log(`Player ${playerId} - Goal events:`, goalEvents.map(g => ({
+        type: g.event_type,
+        time: g.event_time
+      })))
+      
+      for (const goalEvent of goalEvents) {
+        const goalTime = new Date(goalEvent.event_time)
+        
+        // Check if this goal occurred during any of the player's rink periods
+        const wasOnRink = rinkPeriods.some(period => 
+          goalTime >= period.start && goalTime <= period.end
+        )
+        
+        if (wasOnRink) {
+          if (goalEvent.event_type === 'goal_for') {
+            plusMinus++
+            console.log(`Player ${playerId} was on rink for goal_for at ${goalTime.toISOString()} - plusMinus now ${plusMinus}`)
+          } else if (goalEvent.event_type === 'goal_against') {
+            plusMinus--
+            console.log(`Player ${playerId} was on rink for goal_against at ${goalTime.toISOString()} - plusMinus now ${plusMinus}`)
+          }
+        } else {
+          console.log(`Player ${playerId} was NOT on rink for ${goalEvent.event_type} at ${goalTime.toISOString()}`)
+        }
+      }
+      
+      console.log(`Player ${playerId} - Final plus/minus: ${plusMinus}`)
 
             return {
               gamesPlayed: attendedGameSessions.length,
