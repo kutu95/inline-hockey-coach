@@ -170,15 +170,17 @@ const SquadStats = () => {
 
   const calculatePlayerStats = async (playerId) => {
     try {
-      // Get all game sessions this player participated in through squad membership
-      const { data: playerSquads, error: squadError } = await supabase
+      // Check if the player belongs to the current squad
+      const { data: playerSquad, error: squadError } = await supabase
         .from('player_squads')
         .select('squad_id')
         .eq('player_id', playerId)
+        .eq('squad_id', squadId)
 
       if (squadError) throw squadError
 
-      if (!playerSquads || playerSquads.length === 0) {
+      if (!playerSquad || playerSquad.length === 0) {
+        // Player doesn't belong to this squad
         return {
           gamesPlayed: 0,
           totalMinutes: 0,
@@ -187,9 +189,7 @@ const SquadStats = () => {
         }
       }
 
-      const squadIds = playerSquads.map(ps => ps.squad_id)
-
-      // Get all game sessions for these squads
+      // Get game sessions for this specific squad only
       const { data: gameSessions, error: sessionsError } = await supabase
         .from('session_squads')
         .select(`
@@ -201,18 +201,18 @@ const SquadStats = () => {
             event_type
           )
         `)
-        .in('squad_id', squadIds)
+        .eq('squad_id', squadId)
         .eq('sessions.event_type', 'game')
 
       if (sessionsError) throw sessionsError
 
-      console.log(`Player ${playerId} - Raw game sessions data:`, gameSessions)
+      console.log(`Player ${playerId} - Raw game sessions data for squad ${squadId}:`, gameSessions)
 
       // Filter to only valid game sessions
       const validGameSessions = (gameSessions || []).filter(gs => gs.sessions && gs.sessions.id)
       const sessionIds = validGameSessions.map(gs => gs.sessions.id)
       
-      console.log(`Player ${playerId} - Found ${validGameSessions.length} valid game sessions:`, validGameSessions.map(gs => ({
+      console.log(`Player ${playerId} - Found ${validGameSessions.length} valid game sessions for squad ${squadId}:`, validGameSessions.map(gs => ({
         sessionId: gs.sessions.id,
         title: gs.sessions.title,
         date: gs.sessions.date
@@ -243,7 +243,7 @@ const SquadStats = () => {
         attendedSessionIds.includes(gs.sessions.id)
       )
       
-      console.log(`Player ${playerId} - Found ${attendedGameSessions.length} attended game sessions:`, attendedGameSessions.map(gs => ({
+      console.log(`Player ${playerId} - Found ${attendedGameSessions.length} attended game sessions for squad ${squadId}:`, attendedGameSessions.map(gs => ({
         sessionId: gs.sessions.id,
         title: gs.sessions.title,
         date: gs.sessions.date
