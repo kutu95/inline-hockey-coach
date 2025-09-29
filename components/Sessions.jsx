@@ -17,6 +17,7 @@ const Sessions = () => {
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
   const [templates, setTemplates] = useState([])
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [sessionTypeFilter, setSessionTypeFilter] = useState('all') // 'all', 'practice', 'game'
   const { user, hasRole } = useAuth()
   
   // Determine user permissions
@@ -527,6 +528,14 @@ const Sessions = () => {
     })
   }
 
+  // Get filtered sessions based on session type filter
+  const getFilteredSessions = () => {
+    if (sessionTypeFilter === 'all') {
+      return sessions
+    }
+    return sessions.filter(session => session.event_type === sessionTypeFilter)
+  }
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -857,15 +866,66 @@ const Sessions = () => {
                 </div>
               )}
 
+              {/* Session Type Filter */}
+              <div className="mb-6">
+                <div className="flex items-center space-x-4">
+                  <label className="text-sm font-medium text-gray-700">Filter by type:</label>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setSessionTypeFilter('all')}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
+                        sessionTypeFilter === 'all'
+                          ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      All Sessions
+                    </button>
+                    <button
+                      onClick={() => setSessionTypeFilter('practice')}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
+                        sessionTypeFilter === 'practice'
+                          ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Practice
+                    </button>
+                    <button
+                      onClick={() => setSessionTypeFilter('game')}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
+                        sessionTypeFilter === 'game'
+                          ? 'bg-green-100 text-green-800 border border-green-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      Games
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Sessions List */}
-              {sessions.length === 0 ? (
+              {getFilteredSessions().length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="text-gray-500 text-lg mb-4">No sessions scheduled</div>
-                  <p className="text-gray-400">Create your first practice session to get started</p>
+                  <div className="text-gray-500 text-lg mb-4">
+                    {sessions.length === 0 
+                      ? 'No sessions scheduled' 
+                      : sessionTypeFilter === 'all'
+                        ? 'No sessions scheduled'
+                        : `No ${sessionTypeFilter} sessions found`
+                    }
+                  </div>
+                  <p className="text-gray-400">
+                    {sessions.length === 0 
+                      ? 'Create your first practice session to get started'
+                      : `Try selecting a different filter or create a new ${sessionTypeFilter} session`
+                    }
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {sessions.map((session) => (
+                  {getFilteredSessions().map((session) => (
                     <div key={session.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                       <div className="p-6">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
