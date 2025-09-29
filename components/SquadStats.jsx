@@ -19,7 +19,18 @@ const SquadStats = () => {
 
   // Function to get signed URL for player photos
   const getSignedUrlForPlayerPhoto = async (url) => {
-    if (!url || !url.includes('supabase.co') || !url.includes('/storage/')) {
+    if (!url) {
+      return null
+    }
+    
+    // If the URL is already a signed URL (contains token), return it as-is
+    if (url.includes('token=')) {
+      console.log(`URL is already signed for ${url}`)
+      return url
+    }
+    
+    // Only process URLs that are from Supabase storage
+    if (!url.includes('supabase.co') || !url.includes('/storage/')) {
       return null
     }
     
@@ -34,6 +45,7 @@ const SquadStats = () => {
         .list(filePath.split('/')[0])
       
       if (existsError || !existsData?.some(file => file.name === filePath.split('/')[1])) {
+        console.log(`File does not exist: ${filePath}`)
         return null
       }
       
@@ -41,8 +53,15 @@ const SquadStats = () => {
         .from('player-photos')
         .createSignedUrl(filePath, 60 * 60 * 24 * 7)
       
+      if (error) {
+        console.log(`Error creating signed URL: ${error.message}`)
+        return null
+      }
+      
+      console.log(`Successfully created signed URL for ${filePath}`)
       return data?.signedUrl || null
     } catch (err) {
+      console.log(`Exception in getSignedUrlForPlayerPhoto: ${err.message}`)
       return null
     }
   }
