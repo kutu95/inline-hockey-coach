@@ -208,7 +208,7 @@ const SquadStats = () => {
 
       console.log(`Player ${playerId} - Raw game sessions data:`, gameSessions)
 
-      // Get all game events for these sessions
+      // Filter to only valid game sessions
       const validGameSessions = (gameSessions || []).filter(gs => gs.sessions && gs.sessions.id)
       const sessionIds = validGameSessions.map(gs => gs.sessions.id)
       
@@ -227,10 +227,44 @@ const SquadStats = () => {
         }
       }
 
+      // Check attendance for these game sessions - only count games the player actually attended
+      const { data: attendanceRecords, error: attendanceError } = await supabase
+        .from('session_attendance')
+        .select('session_id, attended')
+        .eq('player_id', playerId)
+        .in('session_id', sessionIds)
+        .eq('attended', true)
+
+      if (attendanceError) throw attendanceError
+
+      // Filter to only sessions where player attended
+      const attendedSessionIds = attendanceRecords?.map(record => record.session_id) || []
+      const attendedGameSessions = validGameSessions.filter(gs => 
+        attendedSessionIds.includes(gs.sessions.id)
+      )
+      
+      console.log(`Player ${playerId} - Found ${attendedGameSessions.length} attended game sessions:`, attendedGameSessions.map(gs => ({
+        sessionId: gs.sessions.id,
+        title: gs.sessions.title,
+        date: gs.sessions.date
+      })))
+      
+      if (attendedGameSessions.length === 0) {
+        return {
+          gamesPlayed: 0,
+          totalMinutes: 0,
+          averageShiftTime: 0,
+          plusMinus: 0
+        }
+      }
+
+      // Use only attended sessions for stats calculation
+      const finalSessionIds = attendedGameSessions.map(gs => gs.sessions.id)
+
       const { data: gameEvents, error: eventsError } = await supabase
         .from('game_events')
         .select('*')
-        .in('session_id', sessionIds)
+        .in('session_id', finalSessionIds)
         .order('event_time', { ascending: true })
 
       if (eventsError) throw eventsError
@@ -303,12 +337,12 @@ const SquadStats = () => {
         }
       }
 
-      return {
-        gamesPlayed: validGameSessions.length,
-        totalMinutes: Math.round(totalRinkTime / 60),
-        averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
-        plusMinus: plusMinus
-      }
+            return {
+              gamesPlayed: attendedGameSessions.length,
+              totalMinutes: Math.round(totalRinkTime / 60),
+              averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
+              plusMinus: plusMinus
+            }
 
     } catch (err) {
       console.error('Error calculating player stats:', err)
