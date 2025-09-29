@@ -119,17 +119,23 @@ const SquadStats = () => {
           // Get player photo URL
           let photoUrl = null
           if (player.photo_url) {
+            console.log(`Fetching photo for ${player.first_name} ${player.last_name}: ${player.photo_url}`)
             photoUrl = await getSignedUrlForPlayerPhoto(player.photo_url)
+            console.log(`Photo URL result for ${player.first_name}: ${photoUrl}`)
+          } else {
+            console.log(`No photo_url for ${player.first_name} ${player.last_name}`)
           }
 
           // Calculate stats for this player
           const stats = await calculatePlayerStats(player.id)
 
-          return {
+          const playerWithStats = {
             ...player,
             photo_url: photoUrl,
             stats
           }
+          console.log(`Final player data for ${player.first_name}:`, playerWithStats)
+          return playerWithStats
         })
       )
 
