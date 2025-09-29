@@ -129,9 +129,9 @@ const UserAdmin = () => {
 
       if (checked) {
         // Add role using database function
-        const { data, error } = await supabase.rpc('assign_role_to_user', {
-          target_user_id: userId,
-          role_name: roleName
+        const { data, error } = await supabase.rpc('assign_user_role', {
+          role_name: roleName,
+          user_uuid: userId
         })
 
         if (error) throw error
@@ -141,9 +141,9 @@ const UserAdmin = () => {
         }
       } else {
         // Remove role using database function
-        const { data, error } = await supabase.rpc('remove_role_from_user', {
-          target_user_id: userId,
-          role_name: roleName
+        const { data, error } = await supabase.rpc('remove_user_role', {
+          role_name: roleName,
+          user_uuid: userId
         })
 
         if (error) throw error
