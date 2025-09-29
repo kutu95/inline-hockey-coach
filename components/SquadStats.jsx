@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import OrganizationHeader from './OrganizationHeader'
+import { calculatePlayerGameStats, formatTime } from '../src/utils/gameStatsCalculator'
 
 const SquadStats = () => {
   const [squad, setSquad] = useState(null)
@@ -17,16 +18,6 @@ const SquadStats = () => {
   const orgId = params.orgId
   const squadId = params.squadId || params.id
 
-  // Function to format seconds into hours:minutes:seconds
-  const formatGameTime = (totalSeconds) => {
-    if (!totalSeconds || totalSeconds === 0) return '0:00:00'
-    
-    const hours = Math.floor(totalSeconds / 3600)
-    const minutes = Math.floor((totalSeconds % 3600) / 60)
-    const seconds = totalSeconds % 60
-    
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-  }
 
   // Function to calculate plus/minus per minute
   const calculatePlusMinusPerMinute = (plusMinus, totalSeconds) => {
@@ -282,6 +273,7 @@ const SquadStats = () => {
       // Use only attended sessions for stats calculation
       const finalSessionIds = attendedGameSessions.map(gs => gs.sessions.id)
 
+      // Get game events for all attended sessions
       const { data: gameEvents, error: eventsError } = await supabase
         .from('game_events')
         .select('*')
@@ -290,152 +282,44 @@ const SquadStats = () => {
 
       if (eventsError) throw eventsError
 
-      // Calculate stats
+      // Get game sessions data for context
+      const { data: gameSessionsData, error: gameSessionsError } = await supabase
+        .from('game_sessions')
+        .select('*')
+        .in('session_id', finalSessionIds)
+
+      if (gameSessionsError) throw gameSessionsError
+
+      // Calculate cumulative stats across all games using the proven GameStats logic
       let totalRinkTime = 0
-      let shiftCount = 0
+      let totalShiftCount = 0
+      let totalPlusMinus = 0
       let totalShiftTime = 0
-      let plusMinus = 0
 
-      // Process events for this player (only player_on/player_off)
-      const playerEvents = (gameEvents || []).filter(event => 
-        event.player_id === playerId && 
-        ['player_on', 'player_off'].includes(event.event_type)
-      )
-
-      // Get goal events (affect all players on rink)
-      const goalEvents = (gameEvents || []).filter(event => 
-        ['goal_for', 'goal_against'].includes(event.event_type)
-      )
-
-      // Get play start/stop events
-      const playEvents = (gameEvents || []).filter(event => 
-        ['play_start', 'play_stop'].includes(event.event_type)
-      )
-
-      // Calculate rink time during active play and track when player is on rink
-      let isOnRink = false
-      let rinkStartTime = null
-      let currentPlayStart = null
-      const rinkPeriods = [] // Track all periods when player is on rink
-
-      for (const event of playerEvents) {
-        if (event.event_type === 'player_on') {
-          isOnRink = true
-          rinkStartTime = new Date(event.event_time)
-        } else if (event.event_type === 'player_off') {
-          if (isOnRink && rinkStartTime) {
-            // Find the effective start time - either when player went on rink or when play started, whichever is later
-            const playStartAfterRinkStart = playEvents
-              .filter(pe => pe.event_type === 'play_start' && new Date(pe.event_time) > rinkStartTime)
-              .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
-            
-            const effectiveStartTime = playStartAfterRinkStart ? 
-              new Date(playStartAfterRinkStart.event_time) : rinkStartTime
-            
-            // Find the effective end time - either when player went off rink or when play stopped, whichever is earlier
-            const playStopBeforeRinkEnd = playEvents
-              .filter(pe => pe.event_type === 'play_stop' && new Date(pe.event_time) < new Date(event.event_time))
-              .sort((a, b) => new Date(b.event_time) - new Date(a.event_time))[0]
-            
-            const effectiveEndTime = playStopBeforeRinkEnd ? 
-              new Date(playStopBeforeRinkEnd.event_time) : new Date(event.event_time)
-            
-            // Only count time if there was actually active play during this period
-            if (effectiveEndTime > effectiveStartTime) {
-              const shiftTime = (effectiveEndTime - effectiveStartTime) / 1000
-              totalRinkTime += shiftTime
-              totalShiftTime += shiftTime
-              shiftCount++
-              
-              // Record this rink period for plus/minus calculation (use original times for goal checking)
-              rinkPeriods.push({
-                start: rinkStartTime,
-                end: new Date(event.event_time)
-              })
-              
-              console.log(`Player ${playerId} shift: ${effectiveStartTime.toISOString()} to ${effectiveEndTime.toISOString()} (${shiftTime}s during active play)`)
-            }
-          }
-          isOnRink = false
-          rinkStartTime = null
-        }
+      // Process each game session separately
+      for (const sessionId of finalSessionIds) {
+        const sessionEvents = gameEvents.filter(event => event.session_id === sessionId)
+        const sessionGameSession = gameSessionsData.find(gs => gs.session_id === sessionId)
+        
+        // Get player data for this specific session (we'll use a mock player object with the playerId)
+        const mockPlayer = { id: playerId, first_name: 'Player', last_name: 'Name' }
+        
+        // Use the proven calculation logic from GameStats
+        const sessionStats = calculatePlayerGameStats(mockPlayer, sessionEvents, sessionGameSession)
+        
+        // Accumulate stats across all games
+        totalRinkTime += sessionStats.totalRinkTime
+        totalShiftCount += sessionStats.shiftCount
+        totalPlusMinus += sessionStats.plusMinus
+        totalShiftTime += sessionStats.totalRinkTime // This is the same as totalRinkTime per game
       }
 
-      // Handle case where player is still on rink at end of game
-      if (isOnRink && rinkStartTime) {
-        const lastPlayStop = playEvents
-          .filter(pe => pe.event_type === 'play_stop')
-          .sort((a, b) => new Date(b.event_time) - new Date(a.event_time))[0]
-        
-        if (lastPlayStop) {
-          // Find the effective start time - either when player went on rink or when play started, whichever is later
-          const playStartAfterRinkStart = playEvents
-            .filter(pe => pe.event_type === 'play_start' && new Date(pe.event_time) > rinkStartTime)
-            .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
-          
-          const effectiveStartTime = playStartAfterRinkStart ? 
-            new Date(playStartAfterRinkStart.event_time) : rinkStartTime
-          
-          // Use the last play stop as the effective end time
-          const effectiveEndTime = new Date(lastPlayStop.event_time)
-          
-          // Only count time if there was actually active play during this period
-          if (effectiveEndTime > effectiveStartTime) {
-            const shiftTime = (effectiveEndTime - effectiveStartTime) / 1000
-            totalRinkTime += shiftTime
-            totalShiftTime += shiftTime
-            shiftCount++
-            
-            // Record this final rink period for plus/minus calculation (use original times for goal checking)
-            rinkPeriods.push({
-              start: rinkStartTime,
-              end: new Date(lastPlayStop.event_time)
-            })
-            
-            console.log(`Player ${playerId} final shift: ${effectiveStartTime.toISOString()} to ${effectiveEndTime.toISOString()} (${shiftTime}s during active play)`)
-          }
-        }
+      return {
+        gamesPlayed: attendedGameSessions.length,
+        totalSeconds: Math.round(totalRinkTime),
+        averageShiftTime: totalShiftCount > 0 ? Math.round(totalRinkTime / totalShiftCount) : 0,
+        plusMinus: totalPlusMinus
       }
-
-      // Calculate plus/minus by checking which goals occurred while player was on rink
-      console.log(`Player ${playerId} - Rink periods:`, rinkPeriods.map(p => ({
-        start: p.start.toISOString(),
-        end: p.end.toISOString()
-      })))
-      console.log(`Player ${playerId} - Goal events:`, goalEvents.map(g => ({
-        type: g.event_type,
-        time: g.event_time
-      })))
-      
-      for (const goalEvent of goalEvents) {
-        const goalTime = new Date(goalEvent.event_time)
-        
-        // Check if this goal occurred during any of the player's rink periods
-        const wasOnRink = rinkPeriods.some(period => 
-          goalTime >= period.start && goalTime <= period.end
-        )
-        
-        if (wasOnRink) {
-          if (goalEvent.event_type === 'goal_for') {
-            plusMinus++
-            console.log(`Player ${playerId} was on rink for goal_for at ${goalTime.toISOString()} - plusMinus now ${plusMinus}`)
-          } else if (goalEvent.event_type === 'goal_against') {
-            plusMinus--
-            console.log(`Player ${playerId} was on rink for goal_against at ${goalTime.toISOString()} - plusMinus now ${plusMinus}`)
-          }
-        } else {
-          console.log(`Player ${playerId} was NOT on rink for ${goalEvent.event_type} at ${goalTime.toISOString()}`)
-        }
-      }
-      
-      console.log(`Player ${playerId} - Final plus/minus: ${plusMinus}`)
-
-            return {
-              gamesPlayed: attendedGameSessions.length,
-              totalSeconds: Math.round(totalRinkTime),
-              averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
-              plusMinus: plusMinus
-            }
 
     } catch (err) {
       console.error('Error calculating player stats:', err)
