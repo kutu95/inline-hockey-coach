@@ -145,11 +145,29 @@ const SquadStats = () => {
 
   const calculatePlayerStats = async (playerId) => {
     try {
-      // Get all game sessions this player participated in
+      // Get all game sessions this player participated in through squad membership
+      const { data: playerSquads, error: squadError } = await supabase
+        .from('player_squads')
+        .select('squad_id')
+        .eq('player_id', playerId)
+
+      if (squadError) throw squadError
+
+      if (!playerSquads || playerSquads.length === 0) {
+        return {
+          gamesPlayed: 0,
+          totalMinutes: 0,
+          averageShiftTime: 0,
+          plusMinus: 0
+        }
+      }
+
+      const squadIds = playerSquads.map(ps => ps.squad_id)
+
+      // Get all game sessions for these squads
       const { data: gameSessions, error: sessionsError } = await supabase
-        .from('game_sessions')
+        .from('session_squads')
         .select(`
-          id,
           session_id,
           sessions (
             id,
@@ -158,17 +176,19 @@ const SquadStats = () => {
             event_type
           )
         `)
-        .eq('player_id', playerId)
+        .in('squad_id', squadIds)
+        .eq('sessions.event_type', 'game')
 
       if (sessionsError) throw sessionsError
 
-      // Filter to only include game sessions
-      const gameSessionsOnly = (gameSessions || []).filter(gs => 
-        gs.sessions && gs.sessions.event_type === 'game'
-      )
-
       // Get all game events for these sessions
-      const sessionIds = gameSessionsOnly.map(gs => gs.sessions.id)
+      const sessionIds = (gameSessions || []).map(gs => gs.sessions.id)
+      
+      console.log(`Player ${playerId} - Found ${gameSessions.length} game sessions:`, gameSessions.map(gs => ({
+        sessionId: gs.sessions.id,
+        title: gs.sessions.title,
+        date: gs.sessions.date
+      })))
       
       if (sessionIds.length === 0) {
         return {
@@ -256,7 +276,7 @@ const SquadStats = () => {
       }
 
       return {
-        gamesPlayed: gameSessionsOnly.length,
+        gamesPlayed: gameSessions.length,
         totalMinutes: Math.round(totalRinkTime / 60),
         averageShiftTime: shiftCount > 0 ? Math.round(totalShiftTime / shiftCount) : 0,
         plusMinus: plusMinus
