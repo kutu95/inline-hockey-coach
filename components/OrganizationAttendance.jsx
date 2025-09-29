@@ -14,6 +14,16 @@ const OrganizationAttendance = () => {
   const [statsLoading, setStatsLoading] = useState(false)
   const [playerAttendanceStats, setPlayerAttendanceStats] = useState([])
   const [playerStatsLoading, setPlayerStatsLoading] = useState(false)
+  
+  // Modal state for player sessions
+  const [showPlayerSessionsModal, setShowPlayerSessionsModal] = useState(false)
+  const [selectedPlayer, setSelectedPlayer] = useState(null)
+  const [playerSessions, setPlayerSessions] = useState([])
+  const [playerSessionsLoading, setPlayerSessionsLoading] = useState(false)
+  
+  // Store eligible sessions for modal use
+  const [eligibleSessions, setEligibleSessions] = useState([])
+  
   const { user, hasRole } = useAuth()
   
   // Determine user permissions
@@ -87,21 +97,28 @@ const OrganizationAttendance = () => {
 
       if (playersError) throw playersError
 
-      // Get all past and current sessions (excluding future)
-      const { data: eligibleSessions, error: sessionsError } = await supabase
+      // Get all past and current sessions (excluding future and game sessions)
+      const { data: eligibleSessionsData, error: sessionsError } = await supabase
         .from('sessions')
         .select(`
           id,
           date,
+          title,
+          start_time,
+          event_type,
           session_squads (
             squad_id
           )
         `)
         .eq('organization_id', orgId)
         .lte('date', currentDate)
+        .neq('event_type', 'game')  // Exclude game sessions
         .order('date', { ascending: true })
 
       if (sessionsError) throw sessionsError
+      
+      // Store eligible sessions for modal use
+      setEligibleSessions(eligibleSessionsData || [])
 
       // Get all attendance records for these sessions
       const { data: allAttendance, error: attendanceError } = await supabase
@@ -111,7 +128,7 @@ const OrganizationAttendance = () => {
           player_id,
           attended
         `)
-        .in('session_id', eligibleSessions.map(s => s.id))
+        .in('session_id', eligibleSessionsData.map(s => s.id))
 
       if (attendanceError) throw attendanceError
 
@@ -121,7 +138,7 @@ const OrganizationAttendance = () => {
         const playerSquadIds = player.player_squads.map(ps => ps.squad_id)
         
         // Count sessions this player was eligible to attend
-        const eligibleSessionsCount = eligibleSessions.filter(session => 
+        const eligibleSessionsCount = eligibleSessionsData.filter(session => 
           session.session_squads.some(ss => playerSquadIds.includes(ss.squad_id))
         ).length
         
@@ -160,6 +177,75 @@ const OrganizationAttendance = () => {
       console.error('Error fetching player attendance stats:', err)
     } finally {
       setPlayerStatsLoading(false)
+    }
+  }
+
+  // Function to fetch player sessions for modal
+  const fetchPlayerSessions = async (player) => {
+    setPlayerSessionsLoading(true)
+    setSelectedPlayer(player)
+    setShowPlayerSessionsModal(true)
+    
+    try {
+      // Use the same logic as the main table to ensure consistency
+      // Get player's squad IDs - need to fetch this data if not available
+      let playerSquadIds = []
+      if (player.player_squads) {
+        playerSquadIds = player.player_squads.map(ps => ps.squad_id)
+      } else {
+        // Fetch player's squad IDs if not available in player object
+        const { data: playerSquads } = await supabase
+          .from('player_squads')
+          .select('squad_id')
+          .eq('player_id', player.id)
+        
+        playerSquadIds = playerSquads?.map(ps => ps.squad_id) || []
+      }
+      
+      // Filter the same eligibleSessions used in the main table calculation
+      const playerEligibleSessions = eligibleSessions.filter(session => 
+        session.session_squads.some(ss => playerSquadIds.includes(ss.squad_id))
+      )
+      
+      if (!playerEligibleSessions || playerEligibleSessions.length === 0) {
+        setPlayerSessions([])
+        return
+      }
+      
+      // Get attendance records for this player
+      const { data: attendanceRecords } = await supabase
+        .from('session_attendance')
+        .select('session_id, attended, notes')
+        .eq('player_id', player.id)
+        .in('session_id', playerEligibleSessions.map(s => s.id))
+      
+      // Create attendance map
+      const attendanceMap = {}
+      attendanceRecords?.forEach(record => {
+        attendanceMap[record.session_id] = record
+      })
+      
+      // Combine session data with attendance info and sort by date (newest first)
+      const sessionsWithAttendance = playerEligibleSessions
+        .map(session => {
+          const attendance = attendanceMap[session.id]
+          return {
+            ...session,
+            attended: attendance ? attendance.attended : false,
+            notes: attendance ? attendance.notes : ''
+          }
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date descending
+      
+      console.log(`Modal: Found ${sessionsWithAttendance.length} sessions for ${player.firstName} ${player.lastName}`)
+      console.log('Modal sessions:', sessionsWithAttendance.map(s => ({ id: s.id, title: s.title, date: s.date, attended: s.attended })))
+      
+      setPlayerSessions(sessionsWithAttendance)
+    } catch (error) {
+      console.error('Error fetching player sessions:', error)
+      setPlayerSessions([])
+    } finally {
+      setPlayerSessionsLoading(false)
     }
   }
 
@@ -260,6 +346,9 @@ const OrganizationAttendance = () => {
       } else {
         throw new Error('Organization ID is required for multi-tenant access')
       }
+      
+      // Exclude game sessions from attendance statistics
+      query = query.neq('event_type', 'game')
 
       const { data, error } = await query
 
@@ -472,7 +561,7 @@ const OrganizationAttendance = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Player Attendance Summary</h2>
             <p className="text-sm text-gray-600 mt-1">
-              Attendance statistics for all active squad players (excluding future sessions)
+              Attendance statistics for all active squad players (excluding future sessions and games)
             </p>
           </div>
           
@@ -540,9 +629,12 @@ const OrganizationAttendance = () => {
                             )}
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                            <button
+                              onClick={() => fetchPlayerSessions(player)}
+                              className="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer transition-colors"
+                            >
                               {player.firstName} {player.lastName}
-                            </div>
+                            </button>
                           </div>
                         </div>
                       </td>
@@ -580,6 +672,103 @@ const OrganizationAttendance = () => {
           )}
         </div>
       </div>
+
+      {/* Player Sessions Modal */}
+      {showPlayerSessionsModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Sessions for {selectedPlayer?.firstName} {selectedPlayer?.lastName}
+                </h3>
+                <button
+                  onClick={() => setShowPlayerSessionsModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              {playerSessionsLoading ? (
+                <div className="flex justify-center items-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <span className="ml-2 text-gray-600">Loading sessions...</span>
+                </div>
+              ) : playerSessions.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No sessions found for this player.
+                </div>
+              ) : (
+                <div className="max-h-96 overflow-y-auto">
+                  <div className="space-y-3">
+                    {playerSessions.map((session) => (
+                      <div
+                        key={session.id}
+                        className={`p-4 border rounded-lg ${
+                          session.attended 
+                            ? 'bg-green-50 border-green-200' 
+                            : 'bg-red-50 border-red-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-3 h-3 rounded-full ${
+                                session.attended ? 'bg-green-500' : 'bg-red-500'
+                              }`}></div>
+                              <div>
+                                <h4 className="font-medium text-gray-900">{session.title}</h4>
+                                <div className="text-sm text-gray-600">
+                                  {new Date(session.date).toLocaleDateString()} 
+                                  {session.start_time && ` • ${session.start_time}`}
+                                </div>
+                                {session.event_type && (
+                                  <div className="text-xs text-gray-500 capitalize">
+                                    {session.event_type}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {session.notes && (
+                              <div className="mt-2 text-sm text-gray-600 italic">
+                                Notes: {session.notes}
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              session.attended
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {session.attended ? 'Attended' : 'Absent'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Modal Footer */}
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowPlayerSessionsModal(false)}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

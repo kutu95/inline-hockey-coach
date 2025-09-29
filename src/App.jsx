@@ -427,11 +427,11 @@ function App() {
               } 
             />
             
-            {/* Admin-only routes */}
+            {/* Superadmin-only routes */}
             <Route 
               path="/admin/users" 
               element={
-                <RoleProtectedRoute requiredRoles={['admin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
                   <UserAdmin />
                 </RoleProtectedRoute>
               } 
@@ -439,7 +439,7 @@ function App() {
             <Route 
               path="/user-role-management/:userId" 
               element={
-                <RoleProtectedRoute requiredRoles={['admin', 'superadmin']}>
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
                   <UserRoleManagement />
                 </RoleProtectedRoute>
               } 

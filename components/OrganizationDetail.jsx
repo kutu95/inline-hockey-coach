@@ -645,6 +645,29 @@ const OrganisationDetail = () => {
                 </div>
               </Link>
             )}
+
+            {/* User Administration - Only visible to superadmins */}
+            {hasRole('superadmin') && (
+              <Link
+                to="/admin/users"
+                className="bg-white shadow rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+              >
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-gray-900">User Administration</h3>
+                    <p className="text-gray-600">Manage user roles and permissions</p>
+                    <p className="text-sm text-red-600 mt-1">Superadmin only</p>
+                  </div>
+                </div>
+              </Link>
+            )}
           </div>
         </div>
       </div>

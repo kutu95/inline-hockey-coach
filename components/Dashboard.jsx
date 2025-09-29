@@ -301,6 +301,54 @@ const Dashboard = () => {
             )}
           </div>
 
+          {/* User Administration Section - Superadmin Only */}
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                User Administration
+              </h2>
+            </div>
+            
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Manage User Roles & Permissions
+                  </h3>
+                  <p className="text-sm text-gray-500">Control user access and permissions</p>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 text-sm mb-4">
+                Assign and manage user roles (admin, coach, player) across all organizations. 
+                Control who can access different features and data.
+              </p>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-xs text-gray-500">
+                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full">👑 Superadmin</span>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">⚡ Admin</span>
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">🏒 Coach</span>
+                  <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">👤 Player</span>
+                </div>
+                <Link
+                  to="/admin/users"
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-200 flex items-center space-x-2"
+                >
+                  <span>Manage Users</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+
           {/* Multi-Sport Demo Section - Superadmin Only */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
