@@ -3,7 +3,9 @@ import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import OrganizationHeader from './OrganizationHeader'
-import { calculatePlayerGameStats, formatTime } from '../src/utils/gameStatsCalculator'
+import { formatTime } from '../src/utils/gameStatsCalculator'
+import { calculatePlayerGameStatsExact } from '../src/utils/calculatePlayerGameStatsExact'
+import PlayerGameDetailsModal from './PlayerGameDetailsModal'
 
 const SquadStats = () => {
   const [squad, setSquad] = useState(null)
@@ -12,11 +14,24 @@ const SquadStats = () => {
   const [error, setError] = useState('')
   const [playerProfile, setPlayerProfile] = useState(null)
   const [playerPhotoUrl, setPlayerPhotoUrl] = useState(null)
+  const [selectedPlayer, setSelectedPlayer] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const { user, hasRole } = useAuth()
   
   const params = useParams()
   const orgId = params.orgId
   const squadId = params.squadId || params.id
+
+  // Modal handlers
+  const handlePlayerClick = (player) => {
+    setSelectedPlayer(player)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedPlayer(null)
+  }
 
 
   // Function to calculate plus/minus per minute
@@ -27,6 +42,27 @@ const SquadStats = () => {
     const plusMinusPerMinute = plusMinus / totalMinutes
     
     return plusMinusPerMinute.toFixed(2)
+  }
+
+  // Function to format game time
+  const formatGameTime = (totalSeconds) => {
+    if (!totalSeconds || totalSeconds === 0) return '0:00:00'
+    
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }
+
+  // Function to format shift time (MM:SS format)
+  const formatShiftTime = (totalSeconds) => {
+    if (!totalSeconds || totalSeconds === 0) return '00:00'
+    
+    const minutes = Math.floor(totalSeconds / 60)
+    const seconds = totalSeconds % 60
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
   // Function to get signed URL for player photos
@@ -165,7 +201,6 @@ const SquadStats = () => {
             photo_url: photoUrl,
             stats
           }
-          console.log(`Final player data for ${player.first_name}:`, playerWithStats)
           return playerWithStats
         })
       )
@@ -218,17 +253,11 @@ const SquadStats = () => {
 
       if (sessionsError) throw sessionsError
 
-      console.log(`Player ${playerId} - Raw game sessions data for squad ${squadId}:`, gameSessions)
 
       // Filter to only valid game sessions
-      const validGameSessions = (gameSessions || []).filter(gs => gs.sessions && gs.sessions.id)
-      const sessionIds = validGameSessions.map(gs => gs.sessions.id)
+      const validGameSessionsForPlayer = (gameSessions || []).filter(gs => gs.sessions && gs.sessions.id)
+      const sessionIds = validGameSessionsForPlayer.map(gs => gs.sessions.id)
       
-      console.log(`Player ${playerId} - Found ${validGameSessions.length} valid game sessions for squad ${squadId}:`, validGameSessions.map(gs => ({
-        sessionId: gs.sessions.id,
-        title: gs.sessions.title,
-        date: gs.sessions.date
-      })))
       
       if (sessionIds.length === 0) {
         return {
@@ -251,7 +280,7 @@ const SquadStats = () => {
 
       // Filter to only sessions where player attended
       const attendedSessionIds = attendanceRecords?.map(record => record.session_id) || []
-      const attendedGameSessions = validGameSessions.filter(gs => 
+      const attendedGameSessions = validGameSessionsForPlayer.filter(gs => 
         attendedSessionIds.includes(gs.sessions.id)
       )
       
@@ -273,14 +302,27 @@ const SquadStats = () => {
       // Use only attended sessions for stats calculation
       const finalSessionIds = attendedGameSessions.map(gs => gs.sessions.id)
 
-      // Get game events for all attended sessions
-      const { data: gameEvents, error: eventsError } = await supabase
-        .from('game_events')
-        .select('*')
-        .in('session_id', finalSessionIds)
-        .order('event_time', { ascending: true })
+      // Get game events for each session individually (like GameStats does)
+      // This ensures we get all events without hitting query limits
+      let allGameEvents = []
+      for (const sessionId of finalSessionIds) {
+        const { data: sessionEvents, error: sessionEventsError } = await supabase
+          .from('game_events')
+          .select('*')
+          .eq('session_id', sessionId)
+          .order('event_time', { ascending: true })
+        
+        if (sessionEventsError) {
+          console.error(`Error fetching events for session ${sessionId}:`, sessionEventsError)
+          continue
+        }
+        
+        allGameEvents = allGameEvents.concat(sessionEvents || [])
+      }
+      
+      const gameEvents = allGameEvents
+      
 
-      if (eventsError) throw eventsError
 
       // Get game sessions data for context
       const { data: gameSessionsData, error: gameSessionsError } = await supabase
@@ -290,36 +332,77 @@ const SquadStats = () => {
 
       if (gameSessionsError) throw gameSessionsError
 
+      // Get game end events to determine which games have actually ended
+      const { data: gameEndEvents, error: endEventsError } = await supabase
+        .from('game_events')
+        .select('session_id, event_time')
+        .eq('event_type', 'game_end')
+        .in('session_id', finalSessionIds)
+
+      if (endEventsError) throw endEventsError
+
+      // Filter to only game sessions that have both start time and end event
+      const validGameSessionsData = (gameSessionsData || []).filter(gs => {
+        const hasStartTime = gs.game_start_time
+        const hasEndEvent = gameEndEvents?.some(event => event.session_id === gs.session_id)
+        
+        if (!hasStartTime || !hasEndEvent) {
+          // Skip sessions missing start time or end event
+        }
+        return hasStartTime && hasEndEvent
+      })
+
+      if (validGameSessionsData.length === 0) {
+        return {
+          gamesPlayed: 0,
+          totalSeconds: 0,
+          averageShiftTime: 0,
+          plusMinus: 0
+        }
+      }
+
       // Calculate cumulative stats across all games using the proven GameStats logic
       let totalRinkTime = 0
       let totalShiftCount = 0
       let totalPlusMinus = 0
       let totalShiftTime = 0
 
-      // Process each game session separately
+      // Process each valid game session separately
       for (const sessionId of finalSessionIds) {
         const sessionEvents = gameEvents.filter(event => event.session_id === sessionId)
-        const sessionGameSession = gameSessionsData.find(gs => gs.session_id === sessionId)
+        const sessionGameSession = validGameSessionsData.find(gs => gs.session_id === sessionId)
+        
+        // Skip this session if it's not in the valid game sessions list
+        if (!sessionGameSession) {
+          continue
+        }
         
         // Get player data for this specific session (we'll use a mock player object with the playerId)
         const mockPlayer = { id: playerId, first_name: 'Player', last_name: 'Name' }
         
-        // Use the proven calculation logic from GameStats
-        const sessionStats = calculatePlayerGameStats(mockPlayer, sessionEvents, sessionGameSession)
-        
-        // Accumulate stats across all games
-        totalRinkTime += sessionStats.totalRinkTime
-        totalShiftCount += sessionStats.shiftCount
-        totalPlusMinus += sessionStats.plusMinus
-        totalShiftTime += sessionStats.totalRinkTime // This is the same as totalRinkTime per game
+        try {
+          // Use the exact same calculation logic as GameStats
+          const sessionStats = calculatePlayerGameStatsExact(mockPlayer, sessionEvents, sessionGameSession)
+          
+          // Accumulate stats across all games
+          totalRinkTime += sessionStats.totalRinkTime
+          totalShiftCount += sessionStats.shiftCount
+          totalPlusMinus += sessionStats.plusMinus
+          totalShiftTime += sessionStats.totalRinkTime // This is the same as totalRinkTime per game
+        } catch (sessionError) {
+          console.error(`Error calculating stats for session ${sessionId}:`, sessionError)
+          // Continue with other sessions instead of failing completely
+        }
       }
 
-      return {
+      const result = {
         gamesPlayed: attendedGameSessions.length,
         totalSeconds: Math.round(totalRinkTime),
         averageShiftTime: totalShiftCount > 0 ? Math.round(totalRinkTime / totalShiftCount) : 0,
         plusMinus: totalPlusMinus
       }
+      
+      return result
 
     } catch (err) {
       console.error('Error calculating player stats:', err)
@@ -480,9 +563,12 @@ const SquadStats = () => {
                                 )}
                               </div>
                               <div className="ml-3">
-                                <div className="text-sm font-medium text-gray-900">
+                                <button
+                                  onClick={() => handlePlayerClick(player)}
+                                  className="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline cursor-pointer transition-colors"
+                                >
                                   {player.first_name} {player.last_name}
-                                </div>
+                                </button>
                                 {player.jersey_number && (
                                   <div className="text-sm text-gray-500">
                                     #{player.jersey_number}
@@ -498,7 +584,7 @@ const SquadStats = () => {
                             {formatGameTime(player.stats.totalSeconds)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {player.stats.averageShiftTime}s
+                            {formatShiftTime(player.stats.averageShiftTime)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
                             <span className={`font-medium ${
@@ -532,6 +618,14 @@ const SquadStats = () => {
           </div>
         </div>
       </div>
+
+      {/* Player Game Details Modal */}
+      <PlayerGameDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        player={selectedPlayer}
+        squadId={squadId}
+      />
     </div>
   )
 }

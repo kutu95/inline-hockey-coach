@@ -51,6 +51,11 @@ const GameManagement = () => {
   const [dragOverZone, setDragOverZone] = useState(null)
   const [dragOverPosition, setDragOverPosition] = useState(null) // Track drop position within column
   
+  // Touch support
+  const [touchStartPos, setTouchStartPos] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [touchMoved, setTouchMoved] = useState(false)
+  
   // Refs
   const gameTimeInterval = useRef(null)
   const playTimeInterval = useRef(null)
@@ -1799,6 +1804,80 @@ const GameManagement = () => {
     setDragOverPosition(null)
   }
 
+  // Touch event handlers for mobile support
+  const handleTouchStart = (e, player) => {
+    if (e.touches.length !== 1) return // Only handle single touch
+    
+    const touch = e.touches[0]
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY })
+    setTouchMoved(false)
+    setIsDragging(false)
+    setDraggedPlayer(player)
+  }
+
+  const handleTouchMove = (e) => {
+    if (!touchStartPos || !draggedPlayer) return
+    
+    const touch = e.touches[0]
+    const deltaX = Math.abs(touch.clientX - touchStartPos.x)
+    const deltaY = Math.abs(touch.clientY - touchStartPos.y)
+    
+    // If moved more than 10px, consider it a drag
+    if (deltaX > 10 || deltaY > 10) {
+      setTouchMoved(true)
+      setIsDragging(true)
+      e.preventDefault() // Prevent scrolling
+      
+      // Find the drop zone under the touch point
+      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY)
+      if (elementBelow) {
+        const dropZone = elementBelow.closest('[data-drop-zone]')
+        if (dropZone) {
+          const zone = dropZone.dataset.dropZone
+          setDragOverZone(zone)
+          
+          // Calculate position within the zone
+          const rect = dropZone.getBoundingClientRect()
+          const relativeY = touch.clientY - rect.top
+          const position = Math.min(Math.max(0, relativeY / rect.height), 1)
+          setDragOverPosition(position)
+        }
+      }
+    }
+  }
+
+  const handleTouchEnd = (e) => {
+    if (!draggedPlayer || !touchMoved) {
+      setDraggedPlayer(null)
+      setTouchStartPos(null)
+      setTouchMoved(false)
+      setIsDragging(false)
+      setDragOverZone(null)
+      setDragOverPosition(null)
+      return
+    }
+
+    // Find the drop zone under the touch point
+    const touch = e.changedTouches[0]
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY)
+    
+    if (elementBelow) {
+      const dropZone = elementBelow.closest('[data-drop-zone]')
+      if (dropZone && dragOverZone) {
+        handleDrop(e, dragOverZone)
+        return
+      }
+    }
+
+    // If no valid drop zone, reset
+    setDraggedPlayer(null)
+    setTouchStartPos(null)
+    setTouchMoved(false)
+    setIsDragging(false)
+    setDragOverZone(null)
+    setDragOverPosition(null)
+  }
+
   // Simple function to move a player to any zone
   const movePlayerToZone = (player, targetZone, position) => {
     console.log(`Moving ${player.first_name} to ${targetZone} at position ${position}`)
@@ -2139,10 +2218,11 @@ const GameManagement = () => {
             {/* D and F Columns Row */}
             <div className="grid grid-cols-2 gap-4">
             {/* Bench D Column */}
-            <div 
+            <div
               className={`bg-blue-100 rounded-lg p-2 min-h-[250px] ${
                 dragOverZone === 'benchD' ? 'drag-over' : ''
               }`}
+              data-drop-zone="benchD"
               onDragOver={(e) => handleDragOver(e, 'benchD')}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, 'benchD')}
@@ -2164,7 +2244,10 @@ const GameManagement = () => {
                     key={player.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, { ...player, status: 'benchD' })}
-                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-bench no-select`}
+                    onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'benchD' })}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-bench no-select touch-manipulation`}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center flex-1 min-w-0">
@@ -2214,10 +2297,11 @@ const GameManagement = () => {
             </div>
 
             {/* Bench F Column */}
-            <div 
+            <div
               className={`bg-blue-100 rounded-lg p-2 min-h-[250px] ${
                 dragOverZone === 'benchF' ? 'drag-over' : ''
               }`}
+              data-drop-zone="benchF"
               onDragOver={(e) => handleDragOver(e, 'benchF')}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, 'benchF')}
@@ -2239,7 +2323,10 @@ const GameManagement = () => {
                     key={player.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, { ...player, status: 'benchF' })}
-                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-bench no-select`}
+                    onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'benchF' })}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-bench no-select touch-manipulation`}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center flex-1 min-w-0">
@@ -2290,10 +2377,11 @@ const GameManagement = () => {
             </div>
 
             {/* GK Row */}
-            <div 
+            <div
               className={`bg-purple-100 rounded-lg p-2 min-h-[100px] ${
                 dragOverZone === 'gk' ? 'drag-over' : ''
               }`}
+              data-drop-zone="gk"
               onDragOver={(e) => handleDragOver(e, 'gk')}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, 'gk')}
@@ -2315,7 +2403,10 @@ const GameManagement = () => {
                     key={player.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, { ...player, status: 'gk' })}
-                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-gk no-select`}
+                    onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'gk' })}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`${getPlayerCardColor(player.id, 'bench')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-gk no-select touch-manipulation`}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center flex-1 min-w-0">
@@ -2379,6 +2470,7 @@ const GameManagement = () => {
                 className={`bg-green-100 rounded-lg p-2 min-h-[250px] ${
                   dragOverZone === 'rinkD' ? 'drag-over' : ''
                 }`}
+                data-drop-zone="rinkD"
                 onDragOver={(e) => handleDragOver(e, 'rinkD')}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, 'rinkD')}
@@ -2400,7 +2492,10 @@ const GameManagement = () => {
                       key={player.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, { ...player, status: 'rinkD' })}
-                      className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select`}
+                      onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'rinkD' })}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select touch-manipulation`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center flex-1 min-w-0">
@@ -2454,6 +2549,7 @@ const GameManagement = () => {
                 className={`bg-green-100 rounded-lg p-2 min-h-[250px] ${
                   dragOverZone === 'rinkF' ? 'drag-over' : ''
                 }`}
+                data-drop-zone="rinkF"
                 onDragOver={(e) => handleDragOver(e, 'rinkF')}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, 'rinkF')}
@@ -2475,7 +2571,10 @@ const GameManagement = () => {
                       key={player.id}
                       draggable
                       onDragStart={(e) => handleDragStart(e, { ...player, status: 'rinkF' })}
-                      className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select`}
+                      onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'rinkF' })}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
+                      className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select touch-manipulation`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center flex-1 min-w-0">
@@ -2530,6 +2629,7 @@ const GameManagement = () => {
               className={`bg-purple-100 rounded-lg p-2 min-h-[100px] ${
                 dragOverZone === 'rinkGk' ? 'drag-over' : ''
               }`}
+              data-drop-zone="rinkGk"
               onDragOver={(e) => handleDragOver(e, 'rinkGk')}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, 'rinkGk')}
@@ -2551,7 +2651,10 @@ const GameManagement = () => {
                     key={player.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, { ...player, status: 'rinkGk' })}
-                    className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select`}
+                    onTouchStart={(e) => handleTouchStart(e, { ...player, status: 'rinkGk' })}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className={`${getPlayerCardColor(player.id, 'rink')} rounded p-1.5 shadow-sm cursor-move hover:shadow-md transition-all duration-300 player-card player-rink no-select touch-manipulation`}
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center flex-1 min-w-0">
@@ -2693,7 +2796,6 @@ const GameManagement = () => {
           </div>
         </div>
         )}
-      )}
 
       {/* End Game Confirmation Dialog */}
       {showEndGameConfirm && (

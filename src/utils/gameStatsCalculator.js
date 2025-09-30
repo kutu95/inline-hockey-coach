@@ -12,6 +12,23 @@ export const formatTime = (totalSeconds) => {
 }
 
 export const calculatePlayerGameStats = (player, gameEvents, gameSession) => {
+  // Debug: Check if this is Kael's second game
+  if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+    console.log(`Kael - calculatePlayerGameStats called with ${gameEvents.length} events`)
+    console.log(`Kael - Player object:`, player)
+    console.log(`Kael - Game session ID:`, gameSession?.session_id)
+    
+    // Check for goal events in the input
+    const inputGoalEvents = gameEvents.filter(event => 
+      event.event_type === 'goal_for' || event.event_type === 'goal_against'
+    )
+    console.log(`Kael - Input goal events:`, inputGoalEvents.length, inputGoalEvents.map(e => ({
+      type: e.event_type,
+      time: e.event_time,
+      session_id: e.session_id
+    })))
+  }
+  
   // Filter events for this specific player
   const playerEvents = gameEvents.filter(event => 
     event.player_id === player.id && 
@@ -131,9 +148,228 @@ export const calculatePlayerGameStats = (player, gameEvents, gameSession) => {
     }
   }
   
+  // Calculate plus/minus FIRST (before any early exits)
+  // Debug: Show we're starting plus/minus calculation for Kael
+  if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+    console.log(`Kael - Starting plus/minus calculation...`)
+  }
+  
+  // Calculate plus/minus
+  let plusMinus = 0
+  
+  // Get all goal events
+  const goalEvents = gameEvents.filter(event => 
+    event.event_type === 'goal_for' || event.event_type === 'goal_against'
+  ).sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
+  
+        // Debug: Show goal events details for Kael
+        if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+          console.log(`Kael - Goal events found in calculatePlayerGameStats:`, goalEvents.length, 'events')
+          if (goalEvents.length > 0) {
+            console.log(`Kael - Goal events details:`, goalEvents.map(e => ({
+              type: e.event_type,
+              time: e.event_time,
+              session_id: e.session_id,
+              player_id: e.player_id,
+              metadata: e.metadata,
+              metadata_keys: e.metadata ? Object.keys(e.metadata) : 'no metadata'
+            })))
+      
+      // Check if all goal events belong to the current session
+      const currentSessionId = gameSession?.session_id || 'unknown'
+      const wrongSessionGoals = goalEvents.filter(e => e.session_id !== currentSessionId)
+      if (wrongSessionGoals.length > 0) {
+        console.log(`Kael - WARNING: Found ${wrongSessionGoals.length} goal events from wrong session!`)
+        console.log(`Kael - Current session: ${currentSessionId}`)
+        console.log(`Kael - Wrong session goals:`, wrongSessionGoals.map(e => ({
+          type: e.event_type,
+          time: e.event_time,
+          session_id: e.session_id,
+          player_id: e.player_id
+        })))
+      }
+    } else {
+      console.log(`Kael - No goal events found! Checking all events...`)
+      const allGoalEvents = gameEvents.filter(event => 
+        event.event_type === 'goal_for' || event.event_type === 'goal_against'
+      )
+      console.log(`Kael - All goal events in gameEvents:`, allGoalEvents.length, allGoalEvents.map(e => ({
+        type: e.event_type,
+        time: e.event_time,
+        session_id: e.session_id,
+        player_id: e.player_id
+      })))
+    }
+  }
+  
+  // Debug goal events for specific player
+  if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+    console.log(`Kael - Found ${goalEvents.length} goal events:`, goalEvents.map(e => ({
+      type: e.event_type,
+      time: e.event_time,
+      metadata: e.metadata,
+      player_id: e.player_id
+    })))
+    
+    // Debug all events in the session to see what's available
+    console.log(`Kael - All events in session (${gameEvents.length} total):`, gameEvents.map(e => ({
+      type: e.event_type,
+      time: e.event_time,
+      player_id: e.player_id
+    })))
+  }
+
+  // Process each goal event
+  for (const goalEvent of goalEvents) {
+    // Check if player was on rink at the time of the goal
+    const goalTime = new Date(goalEvent.event_time)
+    let wasOnRinkAtGoal = false
+    
+    
+    // Check if player was on rink at goal time
+    if (goalEvent.metadata && goalEvent.metadata.rink_players) {
+      // Use metadata if available (more accurate)
+      wasOnRinkAtGoal = goalEvent.metadata.rink_players.includes(player.id)
+      
+      // Debug: Log metadata usage for Kael
+      if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+        console.log(`Kael - Using metadata.rink_players for goal at ${goalEvent.event_time}:`, {
+          rink_players: goalEvent.metadata.rink_players,
+          player_id: player.id,
+          was_on_rink: wasOnRinkAtGoal
+        })
+      }
+    } else {
+      // Fallback: check player events to see if they were on rink at goal time
+      const eventsBeforeGoal = playerEvents.filter(e => new Date(e.event_time) <= goalTime)
+      let onRinkState = false
+      
+      for (const event of eventsBeforeGoal) {
+        if (event.event_type === 'player_on') {
+          onRinkState = true
+        } else if (event.event_type === 'player_off') {
+          onRinkState = false
+        }
+      }
+      
+      wasOnRinkAtGoal = onRinkState
+      
+      // Debug: Log fallback usage for Kael
+      if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+        console.log(`Kael - Using fallback player events for goal at ${goalEvent.event_time}:`, {
+          was_on_rink: wasOnRinkAtGoal,
+          events_before_goal: eventsBeforeGoal.length
+        })
+      }
+    }
+    
+    // Apply plus/minus based on goal type and whether player was on rink
+    // IMPORTANT: Only count plus/minus if the player was on the rink when the goal occurred
+    // The goal event type (goal_for/goal_against) already indicates which team scored
+    if (wasOnRinkAtGoal) {
+      if (goalEvent.event_type === 'goal_for') {
+        plusMinus += 1
+        if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+          console.log(`Kael - Goal FOR at ${goalEvent.event_time}, was on rink: ${wasOnRinkAtGoal}, plus/minus: +1, total: ${plusMinus}`)
+        console.log(`Kael - Goal FOR details:`, {
+          scorer_player_id: goalEvent.player_id,
+          scorer_is_kael: goalEvent.player_id === player.id,
+          event_time: goalEvent.event_time,
+          metadata: goalEvent.metadata,
+          metadata_keys: goalEvent.metadata ? Object.keys(goalEvent.metadata) : 'no metadata',
+          full_event: goalEvent
+        })
+        }
+      } else if (goalEvent.event_type === 'goal_against') {
+        plusMinus -= 1
+        if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+          console.log(`Kael - Goal AGAINST at ${goalEvent.event_time}, was on rink: ${wasOnRinkAtGoal}, plus/minus: -1, total: ${plusMinus}`)
+        console.log(`Kael - Goal AGAINST details:`, {
+          scorer_player_id: goalEvent.player_id,
+          scorer_is_kael: goalEvent.player_id === player.id,
+          event_time: goalEvent.event_time,
+          metadata: goalEvent.metadata,
+          metadata_keys: goalEvent.metadata ? Object.keys(goalEvent.metadata) : 'no metadata',
+          full_event: goalEvent
+        })
+        }
+      }
+    } else {
+      if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+        console.log(`Kael - Goal ${goalEvent.event_type} at ${goalEvent.event_time}, was on rink: ${wasOnRinkAtGoal}, no change to plus/minus`)
+        console.log(`Kael - Goal details (not on rink):`, {
+          scorer_player_id: goalEvent.player_id,
+          scorer_is_kael: goalEvent.player_id === player.id,
+          event_time: goalEvent.event_time,
+          metadata: goalEvent.metadata,
+          metadata_keys: goalEvent.metadata ? Object.keys(goalEvent.metadata) : 'no metadata',
+          full_event: goalEvent
+        })
+      }
+    }
+  }
+  
   // Handle case where player is still on rink at game end
   if (isOnRink && currentShiftStart && isPlayActive) {
-    const gameEndTime = gameSession?.game_end_time ? new Date(gameSession.game_end_time) : new Date()
+    // Use the game_end event time if available, otherwise use the last play_stop event
+    let gameEndTime = null
+    
+    // First, try to find a game_end event
+    const gameEndEvent = allEvents.filter(e => e.event_type === 'game_end').pop()
+    if (gameEndEvent) {
+      gameEndTime = new Date(gameEndEvent.event_time)
+    } else if (playEvents.length > 0) {
+      // Find the last play_stop event that happened after the current shift started
+      const playStopEvents = playEvents.filter(e => e.event_type === 'play_stop')
+      const lastPlayStop = playStopEvents.find(e => new Date(e.event_time) > currentShiftStart)
+      if (lastPlayStop) {
+        gameEndTime = new Date(lastPlayStop.event_time)
+      } else {
+        // If no play_stop after current shift, the game might still be active
+        // In this case, we should skip the final shift calculation to avoid negative times
+        console.log(`Player still on rink but no play_stop event after shift start - skipping final shift calculation`)
+        // Debug: Show we're exiting early for Kael but plus/minus is already calculated
+        if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+          console.log(`Kael - EXITING EARLY due to no play_stop event after shift start - but plus/minus already calculated: ${plusMinus}`)
+        }
+        return {
+          totalRinkTime,
+          shiftCount,
+          averageShiftTime: shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0,
+          shortestShift,
+          longestShift,
+          longestShiftStartTime,
+          plusMinus, // Use the calculated plus/minus instead of 0
+          formattedTime: formatTime(totalRinkTime),
+          formattedAverageShiftTime: formatTime(shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0),
+          formattedShortestShift: formatTime(shortestShift),
+          formattedLongestShift: formatTime(longestShift)
+        }
+      }
+    }
+    
+        // If we still don't have a valid end time, skip this shift to avoid infinite calculations
+        if (!gameEndTime) {
+          console.log(`Player still on rink but no valid game end time found - skipping final shift calculation`)
+          // Debug: Show we're exiting early for Kael but plus/minus is already calculated
+          if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+            console.log(`Kael - EXITING EARLY due to no valid game end time - but plus/minus already calculated: ${plusMinus}`)
+          }
+          return {
+            totalRinkTime,
+            shiftCount,
+            averageShiftTime: shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0,
+            shortestShift,
+            longestShift,
+            longestShiftStartTime,
+            plusMinus, // Use the calculated plus/minus instead of 0
+            formattedTime: formatTime(totalRinkTime),
+            formattedAverageShiftTime: formatTime(shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0),
+            formattedShortestShift: formatTime(shortestShift),
+            formattedLongestShift: formatTime(longestShift)
+          }
+        }
+    
     const finalShiftDuration = Math.floor((gameEndTime - currentShiftStart) / 1000)
     console.log(`Player still on rink at game end: ${finalShiftDuration}s (${currentShiftStart.toISOString()} to ${gameEndTime.toISOString()})`)
     totalRinkTime += finalShiftDuration
@@ -158,50 +394,8 @@ export const calculatePlayerGameStats = (player, gameEvents, gameSession) => {
   const averageShiftTime = shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0
   console.log(`Average shift time for ${player.first_name}: ${averageShiftTime}s`)
   
-  // Calculate plus/minus
-  let plusMinus = 0
+  // Plus/minus already calculated above before early exit logic
   
-  // Get all goal events
-  const goalEvents = gameEvents.filter(event => 
-    event.event_type === 'goal_for' || event.event_type === 'goal_against'
-  ).sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
-  
-  for (const goalEvent of goalEvents) {
-    const goalTime = new Date(goalEvent.event_time)
-    
-    // Check if player was on rink at goal time
-    let wasOnRinkAtGoal = false
-    
-    if (goalEvent.metadata && goalEvent.metadata.rink_players) {
-      // Use metadata if available (more accurate)
-      wasOnRinkAtGoal = goalEvent.metadata.rink_players.includes(player.id)
-    } else {
-      // Fallback: check player events to see if they were on rink at goal time
-      const eventsBeforeGoal = playerEvents.filter(e => new Date(e.event_time) <= goalTime)
-      let onRinkState = false
-      
-      for (const event of eventsBeforeGoal) {
-        if (event.event_type === 'player_on') {
-          onRinkState = true
-        } else if (event.event_type === 'player_off') {
-          onRinkState = false
-        }
-      }
-      
-      wasOnRinkAtGoal = onRinkState
-    }
-    
-    if (wasOnRinkAtGoal) {
-      if (goalEvent.event_type === 'goal_for') {
-        plusMinus += 1
-      } else if (goalEvent.event_type === 'goal_against') {
-        plusMinus -= 1
-      }
-    }
-  }
-  
-  console.log(`Plus/minus for ${player.first_name}: ${plusMinus}`)
-  console.log(`=== End calculation for ${player.first_name} ===\n`)
   
   return {
     totalRinkTime,

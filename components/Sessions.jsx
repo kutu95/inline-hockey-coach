@@ -978,6 +978,14 @@ const Sessions = () => {
                             >
                               View Session
                             </Link>
+                            {session.event_type === 'game' && (
+                              <Link
+                                to={orgId ? `/organisations/${orgId}/sessions/${session.id}/game-stats` : `/sessions/${session.id}/game-stats`}
+                                className="text-green-600 hover:text-green-800 text-sm font-medium text-center sm:text-left"
+                              >
+                                Game Stats
+                              </Link>
+                            )}
                             {canManageSessions && session.event_type !== 'game' && (
                               <Link
                                 to={orgId ? `/organisations/${orgId}/sessions/${session.id}/planner` : `/sessions/${session.id}/planner`}

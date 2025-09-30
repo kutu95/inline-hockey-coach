@@ -741,6 +741,21 @@ const GameStats = () => {
           event.event_type === 'goal_for' || event.event_type === 'goal_against'
         ).sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
         
+        // Debug: Check goal events for Kael
+        if (player.id === '8cdeac25-6589-4a4d-9c22-3b2d28508e0e') { // Kael Telfer's ID
+          console.log(`GameStats - Kael - Goal events found:`, goalEvents.length, 'events')
+          if (goalEvents.length > 0) {
+            console.log(`GameStats - Kael - Goal events details:`, goalEvents.map(e => ({
+              type: e.event_type,
+              time: e.event_time,
+              player_id: e.player_id,
+              metadata: e.metadata,
+              id: e.id,
+              session_id: e.session_id
+            })))
+          }
+        }
+        
         for (const goalEvent of goalEvents) {
           const goalTime = new Date(goalEvent.event_time)
           

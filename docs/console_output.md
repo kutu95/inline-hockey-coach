@@ -1,2101 +1,2527 @@
-GameStats.jsx:277 Recalculating goal event metadata...
-GameStats.jsx:278 Total events passed to recalculateGoalEventMetadata: 600
-GameStats.jsx:285 Found 7 goal events to recalculate
-GameStats.jsx:286 Goal event IDs: (7) ['d32f13b5-206c-4fa7-aa34-1625bf9395bf: goal_against at 2025-09-27T10:37:13.628+00:00', 'fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64: goal_against at 2025-09-27T10:45:56.99+00:00', '85a8748b-7301-4556-9a12-894ac0c9ab6f: goal_against at 2025-09-27T10:47:30.897+00:00', '7332cca5-d2ff-4ba0-9339-20cf3922bb14: goal_against at 2025-09-27T11:04:03.411+00:00', '3ae16f5f-3783-491b-95fe-1542ebc88eff: goal_against at 2025-09-27T11:19:31.426+00:00', 'a76993ef-a072-4456-a223-7d3964563bb7: goal_against at 2025-09-27T11:25:45.302+00:00', '8dbb4b98-a6a7-4a77-a844-c695f68d376d: goal_for at 2025-09-27T11:27:15.893+00:00']
-GameStats.jsx:304 
-=== Processing goal event 1/7: goal_against at 2025-09-27T10:37:13.628Z ===
-GameStats.jsx:305 Goal event ID: d32f13b5-206c-4fa7-aa34-1625bf9395bf
-GameStats.jsx:476 Calculating players on rink at 2025-09-27T10:37:13.628Z
-GameStats.jsx:477 Processing 326 player events
-GameStats.jsx:496 Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) was on rink at goal time
-GameStats.jsx:508 Player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 3
-GameStats.jsx:513 Players on rink: (3) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', '80efba0a-3659-49e2-9d51-2ef0386e1be4', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d']
-GameStats.jsx:311 
-=== Goal Event d32f13b5-206c-4fa7-aa34-1625bf9395bf Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T10:37:13.628Z
-GameStats.jsx:313 Players on rink at goal time: 3
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4)
-GameStats.jsx:317   - Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d)
-GameStats.jsx:328 Updating goal event d32f13b5-206c-4fa7-aa34-1625bf9395bf with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d"
-  ],
-  "calculated_at": "2025-09-28T02:15:33.463Z",
-  "goal_time": "2025-09-27T10:37:13.628Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event d32f13b5-206c-4fa7-aa34-1625bf9395bf
-GameStats.jsx:332 DEBUG: Checking current state of goal event d32f13b5-206c-4fa7-aa34-1625bf9395bf before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: 'd32f13b5-206c-4fa7-aa34-1625bf9395bf', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for d32f13b5-206c-4fa7-aa34-1625bf9395bf
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for d32f13b5-206c-4fa7-aa34-1625bf9395bf
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for d32f13b5-206c-4fa7-aa34-1625bf9395bf:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event d32f13b5-206c-4fa7-aa34-1625bf9395bf after update
- DEBUG: After update - current record: {id: 'd32f13b5-206c-4fa7-aa34-1625bf9395bf', metadata: {…}}
- DEBUG: After update - error: null
- ❌ Error processing goal event: 
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:361
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
- Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:362
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
+client:495 [vite] connecting...
+client:618 [vite] connected.
+chunk-RB4WIW2M.js?v=8228aaed:21092 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+react-router-dom.js?v=8228aaed:4394 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=8228aaed:4394
+logDeprecation @ react-router-dom.js?v=8228aaed:4397
+logV6DeprecationWarnings @ react-router-dom.js?v=8228aaed:4400
+(anonymous) @ react-router-dom.js?v=8228aaed:5272
+commitHookEffectListMount @ chunk-RB4WIW2M.js?v=8228aaed:16456
+commitPassiveMountOnFiber @ chunk-RB4WIW2M.js?v=8228aaed:17697
+commitPassiveMountEffects_complete @ chunk-RB4WIW2M.js?v=8228aaed:17670
+commitPassiveMountEffects_begin @ chunk-RB4WIW2M.js?v=8228aaed:17660
+commitPassiveMountEffects @ chunk-RB4WIW2M.js?v=8228aaed:17650
+flushPassiveEffectsImpl @ chunk-RB4WIW2M.js?v=8228aaed:19031
+flushPassiveEffects @ chunk-RB4WIW2M.js?v=8228aaed:18988
+(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:18869
+workLoop @ chunk-TPGAXMBP.js?v=8228aaed:194
+flushWork @ chunk-TPGAXMBP.js?v=8228aaed:173
+performWorkUntilDeadline @ chunk-TPGAXMBP.js?v=8228aaed:381
+react-router-dom.js?v=8228aaed:4394 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=8228aaed:4394
+logDeprecation @ react-router-dom.js?v=8228aaed:4397
+logV6DeprecationWarnings @ react-router-dom.js?v=8228aaed:4403
+(anonymous) @ react-router-dom.js?v=8228aaed:5272
+commitHookEffectListMount @ chunk-RB4WIW2M.js?v=8228aaed:16456
+commitPassiveMountOnFiber @ chunk-RB4WIW2M.js?v=8228aaed:17697
+commitPassiveMountEffects_complete @ chunk-RB4WIW2M.js?v=8228aaed:17670
+commitPassiveMountEffects_begin @ chunk-RB4WIW2M.js?v=8228aaed:17660
+commitPassiveMountEffects @ chunk-RB4WIW2M.js?v=8228aaed:17650
+flushPassiveEffectsImpl @ chunk-RB4WIW2M.js?v=8228aaed:19031
+flushPassiveEffects @ chunk-RB4WIW2M.js?v=8228aaed:18988
+(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:18869
+workLoop @ chunk-TPGAXMBP.js?v=8228aaed:194
+flushWork @ chunk-TPGAXMBP.js?v=8228aaed:173
+performWorkUntilDeadline @ chunk-TPGAXMBP.js?v=8228aaed:381
+AuthContext.jsx:36 Fetching roles for user: f5021231-1b0e-491e-8909-d981016f08b2 
+AuthContext.jsx:39 Starting get_user_roles_safe query...
+AuthContext.jsx:36 Fetching roles for user: f5021231-1b0e-491e-8909-d981016f08b2 
+AuthContext.jsx:39 Starting get_user_roles_safe query...
+AuthContext.jsx:49 get_user_roles_safe query took 184ms
+AuthContext.jsx:50 get_user_roles_safe query completed: {data: Array(3), error: null}
+AuthContext.jsx:94 Roles fetched successfully: (3) ['superadmin', 'admin', 'coach']
+AuthContext.jsx:49 get_user_roles_safe query took 190ms
+AuthContext.jsx:50 get_user_roles_safe query completed: {data: Array(3), error: null}
+AuthContext.jsx:94 Roles fetched successfully: (3) ['superadmin', 'admin', 'coach']
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:175 Fetching photo for Declan Lynne: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:175 Fetching photo for Cory Domican: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:175 Fetching photo for Hayden Fixter: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:175 Fetching photo for Corey Desimone: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:175 Fetching photo for Joel Maher: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:175 Fetching photo for Jesse Mulligan Hopper: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:175 Fetching photo for Mitchell Shaw: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:175 Fetching photo for Andrew Schofield: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:175 Fetching photo for Oliver Delaney: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:175 Fetching photo for Kael Telfer: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:175 Fetching photo for Tyler Colev: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:175 Fetching photo for Daniel Shaw: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:175 Fetching photo for Matias Mellafe: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:175 Fetching photo for Cam Devine: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:175 Fetching photo for John Bowskill: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:177 Photo URL result for Declan: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:177 Photo URL result for Cory: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:177 Photo URL result for Hayden: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:177 Photo URL result for Corey: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:177 Photo URL result for Joel: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:177 Photo URL result for Jesse: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:177 Photo URL result for Mitchell: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:177 Photo URL result for Andrew: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:177 Photo URL result for Oliver: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:177 Photo URL result for Kael: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:177 Photo URL result for Tyler: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:177 Photo URL result for Daniel: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:177 Photo URL result for Matias: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:177 Photo URL result for Cam: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:177 Photo URL result for John: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:175 Fetching photo for Declan Lynne: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:175 Fetching photo for Cory Domican: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:175 Fetching photo for Hayden Fixter: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:175 Fetching photo for Corey Desimone: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:175 Fetching photo for Joel Maher: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:175 Fetching photo for Jesse Mulligan Hopper: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:175 Fetching photo for Mitchell Shaw: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:175 Fetching photo for Andrew Schofield: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:175 Fetching photo for Oliver Delaney: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:175 Fetching photo for Kael Telfer: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:175 Fetching photo for Tyler Colev: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:175 Fetching photo for Daniel Shaw: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:175 Fetching photo for Matias Mellafe: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:175 Fetching photo for Cam Devine: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:175 Fetching photo for John Bowskill: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:62 URL is already signed for https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:177 Photo URL result for Declan: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099480338.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5NDgwMzM4LnBuZyIsImlhdCI6MTc1NjA5OTQ4MSwiZXhwIjoxNzg3NjM1NDgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY
+SquadStats.jsx:177 Photo URL result for Cory: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099117063.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTE3MDYzLnBuZyIsImlhdCI6MTc1NjA5OTExNywiZXhwIjoxNzg3NjM1MTE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg
+SquadStats.jsx:177 Photo URL result for Hayden: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099158241.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MTU4MjQxLnBuZyIsImlhdCI6MTc1NjA5OTE1OCwiZXhwIjoxNzg3NjM1MTU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg
+SquadStats.jsx:177 Photo URL result for Corey: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099071768.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDcxNzY4LnBuZyIsImlhdCI6MTc1NjA5OTA3MiwiZXhwIjoxNzg3NjM1MDcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA
+SquadStats.jsx:177 Photo URL result for Joel: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099269636.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjY5NjM2LnBuZyIsImlhdCI6MTc1NjA5OTI3MSwiZXhwIjoxNzg3NjM1MjcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68
+SquadStats.jsx:177 Photo URL result for Jesse: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752905860184.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA1ODYwMTg0LmpwZyIsImlhdCI6MTc1MjkwNTg2MCwiZXhwIjoxNzg0NDQxODYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M
+SquadStats.jsx:177 Photo URL result for Mitchell: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1758067812813.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU4MDY3ODEyODEzLmpwZyIsImlhdCI6MTc1ODA2NzgxMywiZXhwIjoxNzg5NjAzODEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI
+SquadStats.jsx:177 Photo URL result for Andrew: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099358847.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MzU4ODQ3LnBuZyIsImlhdCI6MTc1NjA5OTM1OSwiZXhwIjoxNzg3NjM1MzU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU
+SquadStats.jsx:177 Photo URL result for Oliver: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099042460.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDQyNDYwLnBuZyIsImlhdCI6MTc1NjA5OTA0MywiZXhwIjoxNzg3NjM1MDQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA
+SquadStats.jsx:177 Photo URL result for Kael: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099387234.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5Mzg3MjM0LnBuZyIsImlhdCI6MTc1NjA5OTM4NywiZXhwIjoxNzg3NjM1Mzg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU
+SquadStats.jsx:177 Photo URL result for Tyler: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099020664.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDIwNjY0LnBuZyIsImlhdCI6MTc1NjA5OTAyMSwiZXhwIjoxNzg3NjM1MDIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8
+SquadStats.jsx:177 Photo URL result for Daniel: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1752906007183.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hZTFjZTczNy1jMjVhLTRjOTktYTc2NC1lZTBmY2FiNmQ3NTIiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzUyOTA2MDA3MTgzLmpwZyIsImlhdCI6MTc1MjkwNjAwNywiZXhwIjoxNzg0NDQyMDA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ
+SquadStats.jsx:177 Photo URL result for Matias: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099291344.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MjkxMzQ0LnBuZyIsImlhdCI6MTc1NjA5OTI5MiwiZXhwIjoxNzg3NjM1MjkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA
+SquadStats.jsx:177 Photo URL result for Cam: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756099097422.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk5MDk3NDIyLnBuZyIsImlhdCI6MTc1NjA5OTA5OCwiZXhwIjoxNzg3NjM1MDk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k
+SquadStats.jsx:177 Photo URL result for John: https://iktybklkggzmcynibhbl.supabase.co/storage/v1/object/sign/player-photos/f5021231-1b0e-491e-8909-d981016f08b2/1756095769813.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8yNmQ4NWQyYy1iZDFjLTRhZTMtYTY1Zi0zN2U0NWU1ZGZlNzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwbGF5ZXItcGhvdG9zL2Y1MDIxMjMxLTFiMGUtNDkxZS04OTA5LWQ5ODEwMTZmMDhiMi8xNzU2MDk1NzY5ODEzLnBuZyIsImlhdCI6MTc1NjA5NTc3MCwiZXhwIjoxNzg3NjMxNzcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs
+SquadStats.jsx:243 Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:243 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:280 Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
  
-=== Processing goal event 2/7: goal_against at 2025-09-27T10:45:56.990Z ===
- Goal event ID: fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64
- Calculating players on rink at 2025-09-27T10:45:56.990Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) was on rink at goal time
-GameStats.jsx:508 Player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) was on rink at goal time
-GameStats.jsx:508 Player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) was on rink at goal time
-GameStats.jsx:508 Player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) was on rink at goal time
-GameStats.jsx:508 Player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 6
-GameStats.jsx:513 Players on rink: (6) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95', 'beac8901-6653-4e0c-bbae-c71146161b44']
-GameStats.jsx:311 
-=== Goal Event fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64 Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T10:45:56.990Z
-GameStats.jsx:313 Players on rink at goal time: 6
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e)
-GameStats.jsx:317   - Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d)
-GameStats.jsx:317   - Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b)
-GameStats.jsx:317   - Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95)
-GameStats.jsx:317   - Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44)
-GameStats.jsx:328 Updating goal event fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64 with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "8cdeac25-6589-4a4d-9c22-3b2d28508e0e",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "adbfffc3-b8e1-4890-b3be-4ceac0009e3b",
-    "0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95",
-    "beac8901-6653-4e0c-bbae-c71146161b44"
-  ],
-  "calculated_at": "2025-09-28T02:15:33.895Z",
-  "goal_time": "2025-09-27T10:45:56.990Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64
-GameStats.jsx:332 DEBUG: Checking current state of goal event fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64 before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: 'fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64 after update
- DEBUG: After update - current record: {id: 'fcf04a40-a8f9-4896-8dc2-c4e97e0c7f64', metadata: {…}}
- DEBUG: After update - error: null
- ❌ Error processing goal event: 
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:361
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
- Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:362
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
+=== Calculating stats for Player Name ===
+ Player events (40): (40) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (46): (46) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:34:57.133Z
+ Player went off rink during active play: 63s (2025-09-27T10:34:57.133Z to 2025-09-27T10:36:01.041Z)
+ Player came on rink during active play at 2025-09-27T10:37:03.702Z
+ Player went off rink during active play: 78s (2025-09-27T10:37:03.702Z to 2025-09-27T10:38:21.821Z)
+ Player came on rink during active play at 2025-09-27T10:39:20.211Z
+ Player went off rink during active play: 67s (2025-09-27T10:39:20.211Z to 2025-09-27T10:40:27.256Z)
+ Player came on rink during active play at 2025-09-27T10:41:30.121Z
+ Player went off rink during active play: 68s (2025-09-27T10:41:30.121Z to 2025-09-27T10:42:38.531Z)
+ Player came on rink during active play at 2025-09-27T10:44:02.344Z
+ Player went off rink during active play: 46s (2025-09-27T10:44:02.344Z to 2025-09-27T10:44:48.621Z)
+ Player came on rink during active play at 2025-09-27T10:45:40.812Z
+ Player went off rink during active play: 25s (2025-09-27T10:45:40.812Z to 2025-09-27T10:46:06.253Z)
+ Player came on rink during active play at 2025-09-27T10:48:05.390Z
+ Player went off rink during active play: 66s (2025-09-27T10:48:05.390Z to 2025-09-27T10:49:11.592Z)
+ Player came on rink during active play at 2025-09-27T10:51:08.826Z
+ Player went off rink during active play: 86s (2025-09-27T10:51:08.826Z to 2025-09-27T10:52:35.506Z)
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Player came on rink during stopped play at 2025-09-27T10:55:08.122Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:01.298Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:45.305Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T10:58:45.305Z to 2025-09-27T11:00:17.155Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:20.447Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 49s (2025-09-27T11:03:20.447Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:20.588Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 96s (2025-09-27T11:18:20.588Z to 2025-09-27T11:19:57.508Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:22:46.165Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 109s (2025-09-27T11:22:46.165Z to 2025-09-27T11:24:35.424Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:09.748Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 84s (2025-09-27T11:26:09.748Z to 2025-09-27T11:27:34.299Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 999s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 14
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 25s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 109s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:22:46.165Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 71s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 999, shiftCount: 14, averageShiftTime: 71, shortestShift: 25, longestShift: 109, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (18): (18) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (23): (23) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:31.889Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 135s (2025-09-29T10:59:31.889Z to 2025-09-29T11:01:47.807Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:02.666Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T11:05:02.666Z to 2025-09-29T11:05:48.508Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:50.017Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 158s (2025-09-29T11:08:50.017Z to 2025-09-29T11:11:28.469Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:05.226Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:15:05.226Z to 2025-09-29T11:16:23.871Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:46.918Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 92s (2025-09-29T11:16:46.918Z to 2025-09-29T11:18:19.553Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:25.934Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 15s (2025-09-29T11:20:25.934Z to 2025-09-29T11:20:41.907Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:02.991Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 94s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:49.370Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:24.569Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 103s (2025-09-29T11:27:24.569Z to 2025-09-29T11:29:08.392Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:45.110Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:33:45.110Z to 2025-09-29T11:35:27.953Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 822s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 9
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 15s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 158s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:50.017Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 91s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 822, shiftCount: 9, averageShiftTime: 91, shortestShift: 15, longestShift: 158, …}
+SquadStats.jsx:190 Final player data for Declan: {id: '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', last_name: 'Lynne', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY', first_name: 'Declan', jersey_number: 74, …}
+SquadStats.jsx:243 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:280 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player f3985202-b9f5-48cc-aced-dec41d9eeb16
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 1202s (2025-09-27T10:33:48.141Z to 2025-09-27T10:53:50.352Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 500s (2025-09-27T10:55:50.000Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 673s (2025-09-27T11:16:36.411Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 2375s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 500s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 1202s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 792s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -5
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 2375, shiftCount: 3, averageShiftTime: 792, shortestShift: 500, longestShift: 1202, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player f3985202-b9f5-48cc-aced-dec41d9eeb16
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (2): (2) [{…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Cory: {id: 'f3985202-b9f5-48cc-aced-dec41d9eeb16', last_name: 'Domican', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…TE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg', first_name: 'Cory', jersey_number: 33, …}
+ Player beac8901-6653-4e0c-bbae-c71146161b44 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player beac8901-6653-4e0c-bbae-c71146161b44 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player adbfffc3-b8e1-4890-b3be-4ceac0009e3b
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
  
-=== Processing goal event 3/7: goal_against at 2025-09-27T10:47:30.897Z ===
- Goal event ID: 85a8748b-7301-4556-9a12-894ac0c9ab6f
- Calculating players on rink at 2025-09-27T10:47:30.897Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:46:06.253Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:46:08.204Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:46:10.615Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:46:16.227Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.142Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.143Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.916Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.917Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.627Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.628Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:25.827Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.697Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.698Z - isOnRink: true
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) was on rink at goal time
-GameStats.jsx:508 Player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) was on rink at goal time
-GameStats.jsx:508 Player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) was on rink at goal time
-GameStats.jsx:508 Player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) was on rink at goal time
-GameStats.jsx:508 Player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 6
-GameStats.jsx:513 Players on rink: (6) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', '275954a5-c144-49ca-bd4d-4086d1a0bc08', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', '0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2', '80efba0a-3659-49e2-9d51-2ef0386e1be4', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b']
-GameStats.jsx:311 
-=== Goal Event 85a8748b-7301-4556-9a12-894ac0c9ab6f Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T10:47:30.897Z
-GameStats.jsx:313 Players on rink at goal time: 6
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08)
-GameStats.jsx:317   - Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a)
-GameStats.jsx:317   - Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2)
-GameStats.jsx:317   - Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4)
-GameStats.jsx:317   - Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b)
-GameStats.jsx:328 Updating goal event 85a8748b-7301-4556-9a12-894ac0c9ab6f with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "275954a5-c144-49ca-bd4d-4086d1a0bc08",
-    "d98ecf9f-e725-41ac-b0e0-5e119bce744a",
-    "0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "adbfffc3-b8e1-4890-b3be-4ceac0009e3b"
-  ],
-  "calculated_at": "2025-09-28T02:15:34.238Z",
-  "goal_time": "2025-09-27T10:47:30.897Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event 85a8748b-7301-4556-9a12-894ac0c9ab6f
-GameStats.jsx:332 DEBUG: Checking current state of goal event 85a8748b-7301-4556-9a12-894ac0c9ab6f before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: '85a8748b-7301-4556-9a12-894ac0c9ab6f', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for 85a8748b-7301-4556-9a12-894ac0c9ab6f
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for 85a8748b-7301-4556-9a12-894ac0c9ab6f
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for 85a8748b-7301-4556-9a12-894ac0c9ab6f:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event 85a8748b-7301-4556-9a12-894ac0c9ab6f after update
- DEBUG: After update - current record: {id: '85a8748b-7301-4556-9a12-894ac0c9ab6f', metadata: {…}}
- DEBUG: After update - error: null
- ❌ Error processing goal event: 
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:361
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
- Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:362
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
+=== Calculating stats for Player Name ===
+ Player events (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:35:01.737Z
+ Player went off rink during active play: 64s (2025-09-27T10:35:01.737Z to 2025-09-27T10:36:05.908Z)
+ Player came on rink during active play at 2025-09-27T10:38:09.750Z
+ Player went off rink during active play: 76s (2025-09-27T10:38:09.750Z to 2025-09-27T10:39:26.150Z)
+ Player came on rink during active play at 2025-09-27T10:41:46.053Z
+ Player went off rink during active play: 50s (2025-09-27T10:41:46.053Z to 2025-09-27T10:42:36.802Z)
+ Player came on rink during active play at 2025-09-27T10:48:09.390Z
+ Player went off rink during active play: 245s (2025-09-27T10:48:09.390Z to 2025-09-27T10:52:14.803Z)
+ Player came on rink during active play at 2025-09-27T10:52:33.479Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 76s (2025-09-27T10:52:33.479Z to 2025-09-27T10:53:50.352Z)
+ Player came on rink during stopped play at 2025-09-27T10:55:17.910Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+ Player went off rink during active play: 94s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:24.891Z)
+ Player came on rink during active play at 2025-09-27T11:00:36.818Z
+ Player went off rink during active play: 129s (2025-09-27T11:00:36.818Z to 2025-09-27T11:02:46.000Z)
+ Play stopped at 2025-09-27T11:04:10.000Z
+ Play started at 2025-09-27T11:16:36.411Z
+ Player came on rink during active play at 2025-09-27T11:17:48.000Z
+ Player went off rink during active play: 107s (2025-09-27T11:17:48.000Z to 2025-09-27T11:19:35.000Z)
+ Player came on rink during active play at 2025-09-27T11:22:55.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 60s (2025-09-27T11:22:55.000Z to 2025-09-27T11:23:55.000Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:00.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 92s (2025-09-27T11:26:00.000Z to 2025-09-27T11:27:32.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 993s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 10
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 50s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 245s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:48:09.390Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 99s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 993, shiftCount: 10, averageShiftTime: 99, shortestShift: 50, longestShift: 245, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player adbfffc3-b8e1-4890-b3be-4ceac0009e3b
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (29): (29) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (34): (34) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 37s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:24.693Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:36.491Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 146s (2025-09-29T10:59:36.491Z to 2025-09-29T11:02:03.464Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:45.539Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 148s (2025-09-29T11:03:45.539Z to 2025-09-29T11:06:13.733Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:46.085Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 179s (2025-09-29T11:07:46.085Z to 2025-09-29T11:10:45.199Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:10:52.120Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 82s (2025-09-29T11:10:52.120Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:16.118Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:59.824Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:35.698Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 44s (2025-09-29T11:15:35.698Z to 2025-09-29T11:16:20.369Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:17.678Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 12s (2025-09-29T11:18:17.678Z to 2025-09-29T11:18:30.553Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:50.998Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 90s (2025-09-29T11:18:50.998Z to 2025-09-29T11:20:21.507Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:01.056Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 82s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:37.434Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:13.822Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 68s (2025-09-29T11:26:13.822Z to 2025-09-29T11:27:22.749Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:11.973Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 113s (2025-09-29T11:29:11.973Z to 2025-09-29T11:31:05.627Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:14.853Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 46s (2025-09-29T11:32:14.853Z to 2025-09-29T11:33:01.628Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:34:33.629Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-29T11:34:33.629Z to 2025-09-29T11:35:58.703Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:56.395Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128138s (2025-09-29T11:36:56.395Z to 2025-09-30T23:12:34.483Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 129372s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 15
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 12s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128138s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:56.395Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 8625s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 129372, shiftCount: 15, averageShiftTime: 8625, shortestShift: 12, longestShift: 128138, …}
+SquadStats.jsx:190 Final player data for Hayden: {id: 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b', last_name: 'Fixter', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…TU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg', first_name: 'Hayden', jersey_number: 14, …}
+SquadStats.jsx:280 Player beac8901-6653-4e0c-bbae-c71146161b44 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:243 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 275954a5-c144-49ca-bd4d-4086d1a0bc08
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
  
-=== Processing goal event 4/7: goal_against at 2025-09-27T11:04:03.411Z ===
- Goal event ID: 7332cca5-d2ff-4ba0-9339-20cf3922bb14
- Calculating players on rink at 2025-09-27T11:04:03.411Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:46:06.253Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:46:08.204Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:46:10.615Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:46:16.227Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.142Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.143Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.916Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.917Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.627Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.628Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:25.827Z - isOnRink: false
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.697Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.698Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:47:34.372Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:47:35.986Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:47:37.634Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:39.269Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.523Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.526Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.390Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.391Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.169Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.171Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:49:11.592Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:39.764Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.966Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.967Z - isOnRink: true
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:49:47.376Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:49:59.530Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:50:02.221Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:50:04.219Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.627Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.628Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.826Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.827Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:13.846Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:51:23.744Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.811Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.812Z - isOnRink: true
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:51:35.000Z - isOnRink: false
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:51:35.403Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.917Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.918Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:14.803Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:29.209Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:52:31.920Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.479Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.481Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:52:35.506Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.815Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.817Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:52:39.918Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.500Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.502Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:54:00.485Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:54:01.908Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:54:03.471Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:54:05.196Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.122Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.124Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.562Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.563Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.222Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.225Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.910Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.911Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.739Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.742Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:57:01.298Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.205Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.206Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:57:15.757Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:57:24.891Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:57:29.870Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.803Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.805Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.084Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.087Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:58:36.055Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:58:38.162Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:58:42.042Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.305Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.309Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.727Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.729Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:58:53.197Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:58:56.575Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.137Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.138Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:00:17.155Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:00:34.977Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:00:36.818Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:00:51.186Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:00:52.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:00:52.663Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:00:57.777Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.741Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.743Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:01:37.880Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:01:43.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.008Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.009Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.736Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.737Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.635Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.636Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:02:46.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.447Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.448Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.768Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.771Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:03:28.097Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:03:36.062Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:03:43.112Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:03:45.326Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.644Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.646Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:03:53.808Z - isOnRink: false
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) was on rink at goal time
-GameStats.jsx:508 Player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) was on rink at goal time
-GameStats.jsx:508 Player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) was on rink at goal time
-GameStats.jsx:508 Player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) was on rink at goal time
-GameStats.jsx:508 Player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 6
-GameStats.jsx:513 Players on rink: (6) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', '80efba0a-3659-49e2-9d51-2ef0386e1be4', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95', '3115849d-1ec3-4585-95e3-ba4674c79687', 'beac8901-6653-4e0c-bbae-c71146161b44']
-GameStats.jsx:311 
-=== Goal Event 7332cca5-d2ff-4ba0-9339-20cf3922bb14 Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T11:04:03.411Z
-GameStats.jsx:313 Players on rink at goal time: 6
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4)
-GameStats.jsx:317   - Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d)
-GameStats.jsx:317   - Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95)
-GameStats.jsx:317   - Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687)
-GameStats.jsx:317   - Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44)
-GameStats.jsx:328 Updating goal event 7332cca5-d2ff-4ba0-9339-20cf3922bb14 with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95",
-    "3115849d-1ec3-4585-95e3-ba4674c79687",
-    "beac8901-6653-4e0c-bbae-c71146161b44"
-  ],
-  "calculated_at": "2025-09-28T02:15:34.566Z",
-  "goal_time": "2025-09-27T11:04:03.411Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event 7332cca5-d2ff-4ba0-9339-20cf3922bb14
-GameStats.jsx:332 DEBUG: Checking current state of goal event 7332cca5-d2ff-4ba0-9339-20cf3922bb14 before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: '7332cca5-d2ff-4ba0-9339-20cf3922bb14', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for 7332cca5-d2ff-4ba0-9339-20cf3922bb14
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for 7332cca5-d2ff-4ba0-9339-20cf3922bb14
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for 7332cca5-d2ff-4ba0-9339-20cf3922bb14:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event 7332cca5-d2ff-4ba0-9339-20cf3922bb14 after update
- DEBUG: After update - current record: {id: '7332cca5-d2ff-4ba0-9339-20cf3922bb14', metadata: {…}}
- DEBUG: After update - error: null
- ❌ Error processing goal event: 
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:361
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
- Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:362
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
+=== Calculating stats for Player Name ===
+ Player events (30): (30) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (36): (36) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 46s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:34.405Z)
+ Player came on rink during active play at 2025-09-27T10:37:26.210Z
+ Player went off rink during active play: 51s (2025-09-27T10:37:26.210Z to 2025-09-27T10:38:17.534Z)
+ Player came on rink during active play at 2025-09-27T10:40:29.294Z
+ Player went off rink during active play: 56s (2025-09-27T10:40:29.294Z to 2025-09-27T10:41:25.327Z)
+ Player came on rink during active play at 2025-09-27T10:42:44.825Z
+ Player went off rink during active play: 67s (2025-09-27T10:42:44.825Z to 2025-09-27T10:43:51.856Z)
+ Player came on rink during active play at 2025-09-27T10:46:19.916Z
+ Player went off rink during active play: 74s (2025-09-27T10:46:19.916Z to 2025-09-27T10:47:34.372Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:52:37.815Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 72s (2025-09-27T10:52:37.815Z to 2025-09-27T10:53:50.352Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:32.803Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 83s (2025-09-27T10:57:32.803Z to 2025-09-27T10:58:56.575Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:02:16.736Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:02:16.736Z to 2025-09-27T11:03:28.097Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:16:40.582Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-27T11:16:40.582Z to 2025-09-27T11:17:59.196Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:20:00.637Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 74s (2025-09-27T11:20:00.637Z to 2025-09-27T11:21:15.499Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:21.480Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 96s (2025-09-27T11:24:21.480Z to 2025-09-27T11:25:58.399Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 768s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 46s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 96s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:24:21.480Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 70s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 768, shiftCount: 11, averageShiftTime: 70, shortestShift: 46, longestShift: 96, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 275954a5-c144-49ca-bd4d-4086d1a0bc08
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (16): (16) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:40.166Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T10:58:40.166Z to 2025-09-29T10:59:26.035Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:49.406Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 108s (2025-09-29T11:03:49.406Z to 2025-09-29T11:05:37.823Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:54.053Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 121s (2025-09-29T11:08:54.053Z to 2025-09-29T11:10:55.485Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:31.329Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 114s (2025-09-29T11:16:31.329Z to 2025-09-29T11:18:25.732Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:44.069Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 52s (2025-09-29T11:20:44.069Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:05.117Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:32.684Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:27.033Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 119s (2025-09-29T11:27:27.033Z to 2025-09-29T11:29:26.171Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:11.145Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 89s (2025-09-29T11:32:11.145Z to 2025-09-29T11:33:41.124Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 726s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 8
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 45s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 121s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:54.053Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 91s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 726, shiftCount: 8, averageShiftTime: 91, shortestShift: 45, longestShift: 121, …}
+SquadStats.jsx:190 Final player data for Jesse: {id: '275954a5-c144-49ca-bd4d-4086d1a0bc08', last_name: 'Mulligan Hopper', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M', first_name: 'Jesse', jersey_number: 11, …}
+SquadStats.jsx:243 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:280 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player e34916a4-124a-4c67-ad70-d33c089f8acb
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:49:59.530Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 95s (2025-09-27T10:49:59.530Z to 2025-09-27T10:51:35.403Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:00:52.663Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-27T11:00:52.663Z to 2025-09-27T11:01:37.880Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:28.239Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:21:28.239Z to 2025-09-27T11:22:39.750Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 211s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 45s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 95s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:49:59.530Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 70s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 211, shiftCount: 3, averageShiftTime: 70, shortestShift: 45, longestShift: 95, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player e34916a4-124a-4c67-ad70-d33c089f8acb
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Matias: {id: 'e34916a4-124a-4c67-ad70-d33c089f8acb', last_name: 'Mellafe', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…jkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA', first_name: 'Matias', jersey_number: 31, …}
+SquadStats.jsx:243 Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
  
-=== Processing goal event 5/7: goal_against at 2025-09-27T11:19:31.426Z ===
- Goal event ID: 3ae16f5f-3783-491b-95fe-1542ebc88eff
- Calculating players on rink at 2025-09-27T11:19:31.426Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:46:06.253Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:46:08.204Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:46:10.615Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:46:16.227Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.142Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.143Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.916Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.917Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.627Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.628Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:25.827Z - isOnRink: false
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.697Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.698Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:47:34.372Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:47:35.986Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:47:37.634Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:39.269Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.523Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.526Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.390Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.391Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.169Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.171Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:49:11.592Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:39.764Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.966Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.967Z - isOnRink: true
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:49:47.376Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:49:59.530Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:50:02.221Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:50:04.219Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.627Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.628Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.826Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.827Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:13.846Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:51:23.744Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.811Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.812Z - isOnRink: true
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:51:35.000Z - isOnRink: false
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:51:35.403Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.917Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.918Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:14.803Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:29.209Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:52:31.920Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.479Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.481Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:52:35.506Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.815Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.817Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:52:39.918Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.500Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.502Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:54:00.485Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:54:01.908Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:54:03.471Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:54:05.196Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.122Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.124Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.562Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.563Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.222Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.225Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.910Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.911Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.739Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.742Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:57:01.298Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.205Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.206Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:57:15.757Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:57:24.891Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:57:29.870Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.803Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.805Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.084Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.087Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:58:36.055Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:58:38.162Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:58:42.042Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.305Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.309Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.727Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.729Z - isOnRink: true
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:58:53.197Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:58:56.575Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.137Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.138Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:00:17.155Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:00:34.977Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:00:36.818Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:00:51.186Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:00:52.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:00:52.663Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:00:57.777Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.741Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.743Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:01:37.880Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:01:43.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.008Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.009Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.736Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.737Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.635Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.636Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:02:46.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.447Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.448Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.768Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.771Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:03:28.097Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:03:36.062Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:03:43.112Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:03:45.326Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.644Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.646Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:03:53.808Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:04:14.127Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:04:15.830Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:04:17.874Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:04:20.234Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.582Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.583Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.054Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.056Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.366Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.368Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:17:48.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:17:59.196Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:18:08.304Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:18:12.611Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.427Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.430Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.588Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.590Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.899Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.902Z - isOnRink: true
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) was on rink at goal time
-GameStats.jsx:508 Player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) was on rink at goal time
-GameStats.jsx:508 Player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) was on rink at goal time
-GameStats.jsx:508 Player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) was on rink at goal time
-GameStats.jsx:508 Player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 6
-GameStats.jsx:513 Players on rink: (6) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', '80efba0a-3659-49e2-9d51-2ef0386e1be4', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b']
-GameStats.jsx:311 
-=== Goal Event 3ae16f5f-3783-491b-95fe-1542ebc88eff Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T11:19:31.426Z
-GameStats.jsx:313 Players on rink at goal time: 6
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a)
-GameStats.jsx:317   - Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e)
-GameStats.jsx:317   - Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4)
-GameStats.jsx:317   - Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d)
-GameStats.jsx:317   - Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b)
-GameStats.jsx:328 Updating goal event 3ae16f5f-3783-491b-95fe-1542ebc88eff with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "d98ecf9f-e725-41ac-b0e0-5e119bce744a",
-    "8cdeac25-6589-4a4d-9c22-3b2d28508e0e",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "adbfffc3-b8e1-4890-b3be-4ceac0009e3b"
-  ],
-  "calculated_at": "2025-09-28T02:15:34.883Z",
-  "goal_time": "2025-09-27T11:19:31.426Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event 3ae16f5f-3783-491b-95fe-1542ebc88eff
-GameStats.jsx:332 DEBUG: Checking current state of goal event 3ae16f5f-3783-491b-95fe-1542ebc88eff before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: '3ae16f5f-3783-491b-95fe-1542ebc88eff', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for 3ae16f5f-3783-491b-95fe-1542ebc88eff
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for 3ae16f5f-3783-491b-95fe-1542ebc88eff
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for 3ae16f5f-3783-491b-95fe-1542ebc88eff:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event 3ae16f5f-3783-491b-95fe-1542ebc88eff after update
- DEBUG: After update - current record: {id: '3ae16f5f-3783-491b-95fe-1542ebc88eff', metadata: {…}}
- DEBUG: After update - error: null
- ❌ Error processing goal event: 
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:361
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
- Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx?t=1759025700896:362
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx?t=1759025700896:1864
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
+=== Calculating stats for Player Name ===
+ Player events (42): (42) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (48): (48) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 54s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:42.686Z)
+ Player came on rink during active play at 2025-09-27T10:36:09.945Z
+ Player went off rink during active play: 49s (2025-09-27T10:36:09.945Z to 2025-09-27T10:36:58.978Z)
+ Player came on rink during active play at 2025-09-27T10:38:05.372Z
+ Player went off rink during active play: 72s (2025-09-27T10:38:05.372Z to 2025-09-27T10:39:18.103Z)
+ Player came on rink during active play at 2025-09-27T10:40:39.827Z
+ Player went off rink during active play: 41s (2025-09-27T10:40:39.827Z to 2025-09-27T10:41:21.273Z)
+ Player came on rink during active play at 2025-09-27T10:42:42.828Z
+ Player went off rink during active play: 73s (2025-09-27T10:42:42.828Z to 2025-09-27T10:43:55.876Z)
+ Player came on rink during active play at 2025-09-27T10:46:14.439Z
+ Player went off rink during active play: 83s (2025-09-27T10:46:14.439Z to 2025-09-27T10:47:37.634Z)
+ Player came on rink during active play at 2025-09-27T10:49:08.169Z
+ Player went off rink during active play: 31s (2025-09-27T10:49:08.169Z to 2025-09-27T10:49:39.764Z)
+ Player came on rink during active play at 2025-09-27T10:50:19.627Z
+ Player went off rink during active play: 64s (2025-09-27T10:50:19.627Z to 2025-09-27T10:51:23.744Z)
+ Player came on rink during active play at 2025-09-27T10:52:42.500Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 67s (2025-09-27T10:52:42.500Z to 2025-09-27T10:53:50.352Z)
+ Play started at 2025-09-27T10:55:50.000Z
+ Player came on rink during active play at 2025-09-27T10:56:58.739Z
+ Player went off rink during active play: 114s (2025-09-27T10:56:58.739Z to 2025-09-27T10:58:53.197Z)
+ Player came on rink during active play at 2025-09-27T11:01:45.008Z
+ Player went off rink during active play: 128s (2025-09-27T11:01:45.008Z to 2025-09-27T11:03:53.808Z)
+ Play stopped at 2025-09-27T11:04:10.000Z
+ Play started at 2025-09-27T11:16:36.411Z
+ Player came on rink during active play at 2025-09-27T11:16:45.366Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 87s (2025-09-27T11:16:45.366Z to 2025-09-27T11:18:12.611Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:20:07.660Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 73s (2025-09-27T11:20:07.660Z to 2025-09-27T11:21:20.729Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:32.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 82s (2025-09-27T11:24:32.818Z to 2025-09-27T11:25:55.054Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:46.244Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 4s (2025-09-27T11:27:46.244Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 1022s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 15
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 4s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:01:45.008Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 68s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 1022, shiftCount: 15, averageShiftTime: 68, shortestShift: 4, longestShift: 128, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (25): (25) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (30): (30) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:26.811Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:00:49.531Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 24s (2025-09-29T11:00:49.531Z to 2025-09-29T11:01:13.578Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:54.352Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 56s (2025-09-29T11:03:54.352Z to 2025-09-29T11:04:50.393Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:06:25.907Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 150s (2025-09-29T11:06:25.907Z to 2025-09-29T11:08:56.433Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:21.827Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 52s (2025-09-29T11:11:21.827Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:12.590Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 62s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:20.223Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:41.482Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 55s (2025-09-29T11:18:41.482Z to 2025-09-29T11:19:36.493Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:22:58.712Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 87s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:42.343Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:36.710Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 52s (2025-09-29T11:26:36.710Z to 2025-09-29T11:27:29.278Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:33.639Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 88s (2025-09-29T11:29:33.639Z to 2025-09-29T11:31:02.051Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:51.523Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-29T11:33:51.523Z to 2025-09-29T11:34:30.833Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:56.850Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 11s (2025-09-29T11:35:56.850Z to 2025-09-29T11:36:08.443Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:58.676Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128136s (2025-09-29T11:36:58.676Z to 2025-09-30T23:12:34.848Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128851s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 13
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 11s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128136s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:58.676Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 9912s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128851, shiftCount: 13, averageShiftTime: 9912, shortestShift: 11, longestShift: 128136, …}
+SquadStats.jsx:190 Final player data for Corey: {id: '0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2', last_name: 'Desimone', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA', first_name: 'Corey', jersey_number: 17, …}
+SquadStats.jsx:280 Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 6b09e6bb-dc69-4865-814b-16a657895d11
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 6b09e6bb-dc69-4865-814b-16a657895d11
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for John: {id: '6b09e6bb-dc69-4865-814b-16a657895d11', last_name: 'Bowskill', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs', first_name: 'John', jersey_number: 62, …}
+SquadStats.jsx:280 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player beac8901-6653-4e0c-bbae-c71146161b44
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
  
-=== Processing goal event 6/7: goal_against at 2025-09-27T11:25:45.302Z ===
- Goal event ID: a76993ef-a072-4456-a223-7d3964563bb7
- Calculating players on rink at 2025-09-27T11:25:45.302Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:46:06.253Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:46:08.204Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:46:10.615Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:46:16.227Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.142Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.143Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.916Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.917Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.627Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.628Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:25.827Z - isOnRink: false
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.697Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.698Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:47:34.372Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:47:35.986Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:47:37.634Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:39.269Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.523Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.526Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.390Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.391Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.169Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.171Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:49:11.592Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:39.764Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.966Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.967Z - isOnRink: true
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:49:47.376Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:49:59.530Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:50:02.221Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:50:04.219Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.627Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.628Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.826Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.827Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:13.846Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:51:23.744Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.811Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.812Z - isOnRink: true
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:51:35.000Z - isOnRink: false
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:51:35.403Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.917Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.918Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:14.803Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:29.209Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:52:31.920Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.479Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.481Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:52:35.506Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.815Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.817Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:52:39.918Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.500Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.502Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:54:00.485Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:54:01.908Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:54:03.471Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:54:05.196Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.122Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.124Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.562Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.563Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.222Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.225Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.910Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.911Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.739Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.742Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:57:01.298Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.205Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.206Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:57:15.757Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:57:24.891Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:57:29.870Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.803Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.805Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.084Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.087Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:58:36.055Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:58:38.162Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:58:42.042Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.305Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.309Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.727Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.729Z - isOnRink: true
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:58:53.197Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:58:56.575Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.137Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.138Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:00:17.155Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:00:34.977Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:00:36.818Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:00:51.186Z - isOnRink: false
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:00:52.000Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:00:52.663Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:00:57.777Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.741Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.743Z - isOnRink: true
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:01:37.880Z - isOnRink: false
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:01:43.000Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.008Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.009Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.736Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.737Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.635Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.636Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:02:46.000Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.447Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.448Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.768Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.771Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:03:28.097Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:03:36.062Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:03:43.112Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:03:45.326Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.644Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.646Z - isOnRink: true
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:03:53.808Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:04:14.127Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:04:15.830Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:04:17.874Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:04:20.234Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.582Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.583Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.054Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.056Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.366Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.368Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:17:48.000Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:17:59.196Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:18:08.304Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:18:12.611Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.427Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.430Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.588Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.590Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.899Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.902Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:19:35.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:19:55.016Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:19:57.508Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:20:00.637Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:20:00.638Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:20:02.524Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:20:07.660Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:20:07.661Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:20:10.775Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:20:10.780Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:20:13.364Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:20:13.365Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:21:15.499Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:21:17.273Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:21:19.021Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:21:20.729Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:21:25.790Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:21:25.790Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:21:28.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:21:28.239Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:21:33.774Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:22:39.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:22:39.750Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:22:41.385Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:22:43.675Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:22:46.165Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:22:46.168Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:22:55.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:22:55.507Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:22:55.509Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:23:09.424Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:23:09.425Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:23:55.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:23:55.979Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:24:11.556Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:24:11.556Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:24:21.480Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:24:21.482Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:24:24.074Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:24:25.947Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:24:25.948Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:24:32.818Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:24:32.819Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:24:35.424Z - isOnRink: false
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) was on rink at goal time
-GameStats.jsx:508 Player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) was on rink at goal time
-GameStats.jsx:508 Player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) was on rink at goal time
-GameStats.jsx:508 Player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 5
-GameStats.jsx:513 Players on rink: (5) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', '275954a5-c144-49ca-bd4d-4086d1a0bc08', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', '0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2', 'beac8901-6653-4e0c-bbae-c71146161b44']
-GameStats.jsx:311 
-=== Goal Event a76993ef-a072-4456-a223-7d3964563bb7 Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T11:25:45.302Z
-GameStats.jsx:313 Players on rink at goal time: 5
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08)
-GameStats.jsx:317   - Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e)
-GameStats.jsx:317   - Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2)
-GameStats.jsx:317   - Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44)
-GameStats.jsx:328 Updating goal event a76993ef-a072-4456-a223-7d3964563bb7 with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "275954a5-c144-49ca-bd4d-4086d1a0bc08",
-    "8cdeac25-6589-4a4d-9c22-3b2d28508e0e",
-    "0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2",
-    "beac8901-6653-4e0c-bbae-c71146161b44"
-  ],
-  "calculated_at": "2025-09-28T02:15:35.209Z",
-  "goal_time": "2025-09-27T11:25:45.302Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event a76993ef-a072-4456-a223-7d3964563bb7
-GameStats.jsx:332 DEBUG: Checking current state of goal event a76993ef-a072-4456-a223-7d3964563bb7 before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: 'a76993ef-a072-4456-a223-7d3964563bb7', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for a76993ef-a072-4456-a223-7d3964563bb7
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for a76993ef-a072-4456-a223-7d3964563bb7
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for a76993ef-a072-4456-a223-7d3964563bb7:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event a76993ef-a072-4456-a223-7d3964563bb7 after update
-GameStats.jsx:383 DEBUG: After update - current record: {id: 'a76993ef-a072-4456-a223-7d3964563bb7', metadata: {…}}
-GameStats.jsx:384 DEBUG: After update - error: null
-GameStats.jsx:394 ❌ Error processing goal event: ReferenceError: updateError is not defined
-    at recalculateGoalEventMetadata (GameStats.jsx:386:11)
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx:394
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx:1470
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
-GameStats.jsx:395 Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx:395
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx:1470
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
-GameStats.jsx:304 
-=== Processing goal event 7/7: goal_for at 2025-09-27T11:27:15.893Z ===
- Goal event ID: 8dbb4b98-a6a7-4a77-a844-c695f68d376d
- Calculating players on rink at 2025-09-27T11:27:15.893Z
- Processing 326 player events
- Event: player_on for player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) at 2025-09-26T23:32:29.711Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-26T23:35:12.992Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-26T23:39:41.899Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T09:12:46.540Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T09:12:57.292Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:34:34.405Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:34:40.002Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:34:42.686Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:34:44.859Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.121Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:34:55.123Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:34:57.133Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:35:01.737Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:36:01.041Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:36:03.525Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:36:05.908Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:09.945Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.036Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:14.037Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.239Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:36:21.242Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:25.883Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:36:54.000Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:36:57.102Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:36:58.978Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:37:00.630Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.702Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:37:03.703Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.096Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:37:10.099Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.210Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:37:26.211Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.895Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:37:38.899Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.372Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:38:05.373Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:38:09.750Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:38:17.534Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:38:21.821Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:46.999Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:38:47.000Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:38:52.917Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:39:18.103Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.211Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:39:20.212Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:39:26.150Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.841Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:39:28.843Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:39:32.579Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:39:46.140Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:40:23.144Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:40:24.990Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:40:27.256Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:40:29.294Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:40:31.573Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.262Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:40:36.263Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.827Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:40:39.828Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:40:48.354Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:41:14.681Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:41:21.273Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:41:23.279Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:41:25.327Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.121Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:41:30.122Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.949Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:41:35.953Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:41:46.053Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:42:36.802Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:42:38.531Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:42:40.728Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.828Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:42:42.829Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.825Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:42:44.827Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.192Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:42:48.193Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.373Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:45.375Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:43:50.098Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:43:51.856Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:43:55.876Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.766Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:43:58.768Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:44:00.651Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:02.344Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.317Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:04.319Z - isOnRink: true
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:44:09.111Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:44:48.621Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:44:54.164Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:44:59.458Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:01.380Z - isOnRink: false
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.261Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:45:05.262Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.520Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:45:12.523Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:45:16.215Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.622Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:45:22.623Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.812Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:45:40.813Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:46:06.253Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:46:08.204Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:46:10.615Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:46:14.439Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:46:16.227Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.142Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:46:18.143Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.916Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:46:19.917Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.627Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:46:24.628Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:25.827Z - isOnRink: false
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.697Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:28.698Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:47:34.372Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:47:35.986Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:47:37.634Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:47:39.269Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:47:46.375Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.523Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:47:56.526Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.390Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:48:05.391Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:48:09.390Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.169Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:08.171Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:49:11.592Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:49:39.764Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.966Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:49:43.967Z - isOnRink: true
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:49:47.376Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:49:59.530Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:50:02.221Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:50:04.219Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.627Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:50:19.628Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.826Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:51:08.827Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:13.846Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:51:23.744Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.811Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:51:26.812Z - isOnRink: true
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T10:51:35.000Z - isOnRink: false
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T10:51:35.403Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.917Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:51:37.918Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:51:56.589Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:14.803Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:29.209Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:52:31.920Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.479Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:52:33.481Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:52:35.506Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.815Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:52:37.817Z - isOnRink: true
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:52:39.918Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.500Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:52:42.502Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:52:46.853Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:54:00.485Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:54:01.908Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:54:03.471Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:54:05.196Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.122Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:55:08.124Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.562Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:55:10.563Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.222Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:55:15.225Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.910Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:55:17.911Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.739Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:56:58.742Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:57:01.298Z - isOnRink: false
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.205Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:57:10.206Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:57:15.757Z - isOnRink: false
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T10:57:24.891Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T10:57:29.870Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.803Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:57:32.805Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.084Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:57:37.087Z - isOnRink: true
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T10:58:36.055Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T10:58:38.162Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T10:58:42.042Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.305Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T10:58:45.309Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.727Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T10:58:47.729Z - isOnRink: true
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T10:58:53.197Z - isOnRink: false
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T10:58:56.575Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.137Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T10:58:59.138Z - isOnRink: true
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:00:17.155Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:00:34.977Z - isOnRink: false
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:00:36.818Z - isOnRink: true
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:00:51.186Z - isOnRink: false
- Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:00:52.000Z - isOnRink: true
- Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:00:52.663Z - isOnRink: true
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:00:57.777Z - isOnRink: false
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.741Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:01:08.743Z - isOnRink: true
- Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:01:37.880Z - isOnRink: false
- Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:01:43.000Z - isOnRink: false
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.008Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:01:45.009Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.736Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:02:16.737Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:02:34.455Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.635Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:02:43.636Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:02:46.000Z - isOnRink: false
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.447Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:03:20.448Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.768Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:03:25.771Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:03:28.097Z - isOnRink: false
- Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:03:36.062Z - isOnRink: false
- Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:03:43.112Z - isOnRink: true
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:03:45.326Z - isOnRink: false
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.644Z - isOnRink: true
- Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:03:50.646Z - isOnRink: true
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:03:53.808Z - isOnRink: false
- Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:04:14.127Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:04:15.830Z - isOnRink: false
- Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:04:17.874Z - isOnRink: false
- Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:04:20.234Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.582Z - isOnRink: true
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:16:40.583Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.054Z - isOnRink: true
- Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:16:43.056Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.366Z - isOnRink: true
- Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:16:45.368Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
- Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:16:48.785Z - isOnRink: true
- Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:17:48.000Z - isOnRink: true
- Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:17:59.196Z - isOnRink: false
- Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:18:08.304Z - isOnRink: false
- Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:18:12.611Z - isOnRink: false
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.427Z - isOnRink: true
- Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:18:16.430Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.588Z - isOnRink: true
- Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:18:20.590Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.899Z - isOnRink: true
- Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:18:36.902Z - isOnRink: true
- Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:19:35.000Z - isOnRink: false
- Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:19:55.016Z - isOnRink: false
- Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:19:57.508Z - isOnRink: false
- Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:20:00.637Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:20:00.638Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:20:02.524Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:20:07.660Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:20:07.661Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:20:10.775Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:20:10.780Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:20:13.364Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:20:13.365Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:21:15.499Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:21:17.273Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:21:19.021Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:21:20.729Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:21:25.790Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:21:25.790Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:21:28.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:21:28.239Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:21:33.774Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Cam Devine (69e0d777-888b-4f6c-88e1-33ab3cb82397) at 2025-09-27T11:22:39.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Matias Mellafe (e34916a4-124a-4c67-ad70-d33c089f8acb) at 2025-09-27T11:22:39.750Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Mitchell Shaw (0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95) at 2025-09-27T11:22:41.385Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Andrew Schofield (3115849d-1ec3-4585-95e3-ba4674c79687) at 2025-09-27T11:22:43.675Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:22:46.165Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:22:46.168Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:22:55.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:22:55.507Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:22:55.509Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:23:09.424Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:23:09.425Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:23:55.000Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:23:55.979Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:24:11.556Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) at 2025-09-27T11:24:11.556Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:24:21.480Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:24:21.482Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:24:24.074Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:24:25.947Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:24:25.948Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:24:32.818Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:24:32.819Z - isOnRink: true
-GameStats.jsx:496 Event: player_off for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:24:35.424Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Kael Telfer (8cdeac25-6589-4a4d-9c22-3b2d28508e0e) at 2025-09-27T11:25:51.666Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Corey Desimone (0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2) at 2025-09-27T11:25:55.054Z - isOnRink: false
-GameStats.jsx:496 Event: player_off for player Jesse Mulligan Hopper (275954a5-c144-49ca-bd4d-4086d1a0bc08) at 2025-09-27T11:25:58.399Z - isOnRink: false
-GameStats.jsx:496 Event: player_on for player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) at 2025-09-27T11:26:00.000Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) at 2025-09-27T11:26:00.291Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:26:04.086Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) at 2025-09-27T11:26:04.088Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:26:09.748Z - isOnRink: true
-GameStats.jsx:496 Event: player_on for player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) at 2025-09-27T11:26:09.749Z - isOnRink: true
-GameStats.jsx:508 Player Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16) was on rink at goal time
-GameStats.jsx:508 Player Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a) was on rink at goal time
-GameStats.jsx:508 Player Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4) was on rink at goal time
-GameStats.jsx:508 Player Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d) was on rink at goal time
-GameStats.jsx:508 Player Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b) was on rink at goal time
-GameStats.jsx:508 Player Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44) was on rink at goal time
-GameStats.jsx:512 Total players on rink at goal time: 6
-GameStats.jsx:513 Players on rink: (6) ['f3985202-b9f5-48cc-aced-dec41d9eeb16', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', '80efba0a-3659-49e2-9d51-2ef0386e1be4', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b', 'beac8901-6653-4e0c-bbae-c71146161b44']
-GameStats.jsx:311 
-=== Goal Event 8dbb4b98-a6a7-4a77-a844-c695f68d376d Metadata Update ===
-GameStats.jsx:312 Goal time: 2025-09-27T11:27:15.893Z
-GameStats.jsx:313 Players on rink at goal time: 6
-GameStats.jsx:317   - Cory Domican (f3985202-b9f5-48cc-aced-dec41d9eeb16)
-GameStats.jsx:317   - Joel Maher (d98ecf9f-e725-41ac-b0e0-5e119bce744a)
-GameStats.jsx:317   - Oliver Delaney (80efba0a-3659-49e2-9d51-2ef0386e1be4)
-GameStats.jsx:317   - Declan Lynne (5bfa19c5-5ca2-427f-bab6-b40e4a04955d)
-GameStats.jsx:317   - Hayden Fixter (adbfffc3-b8e1-4890-b3be-4ceac0009e3b)
-GameStats.jsx:317   - Tyler Colev (beac8901-6653-4e0c-bbae-c71146161b44)
-GameStats.jsx:328 Updating goal event 8dbb4b98-a6a7-4a77-a844-c695f68d376d with metadata: {
-  "rink_players": [
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16",
-    "d98ecf9f-e725-41ac-b0e0-5e119bce744a",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "adbfffc3-b8e1-4890-b3be-4ceac0009e3b",
-    "beac8901-6653-4e0c-bbae-c71146161b44"
-  ],
-  "calculated_at": "2025-09-28T02:15:35.582Z",
-  "goal_time": "2025-09-27T11:27:15.893Z"
-}
-GameStats.jsx:329 DEBUG: About to execute Supabase update for goal event 8dbb4b98-a6a7-4a77-a844-c695f68d376d
-GameStats.jsx:332 DEBUG: Checking current state of goal event 8dbb4b98-a6a7-4a77-a844-c695f68d376d before update
-GameStats.jsx:339 DEBUG: Before update - current record: {id: '8dbb4b98-a6a7-4a77-a844-c695f68d376d', metadata: {…}}
-GameStats.jsx:340 DEBUG: Before update - error: null
-GameStats.jsx:343 DEBUG: Attempting upsert for 8dbb4b98-a6a7-4a77-a844-c695f68d376d
-@supabase_supabase-js.js?v=8228aaed:3885  POST https://iktybklkggzmcynibhbl.supabase.co/rest/v1/game_events?select=id%2Cmetadata 403 (Forbidden)
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3885
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3906
-fulfilled @ @supabase_supabase-js.js?v=8228aaed:3858
-Promise.then
-step @ @supabase_supabase-js.js?v=8228aaed:3871
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3873
-__awaiter6 @ @supabase_supabase-js.js?v=8228aaed:3855
-(anonymous) @ @supabase_supabase-js.js?v=8228aaed:3896
-then @ @supabase_supabase-js.js?v=8228aaed:90
-GameStats.jsx:358 DEBUG: Upsert result: {upsertData: null, upsertError: {…}}
-GameStats.jsx:362 DEBUG: Upsert failed, trying regular update for 8dbb4b98-a6a7-4a77-a844-c695f68d376d
-GameStats.jsx:368 DEBUG: Update result: {updateData: null, updateError: null}
-GameStats.jsx:371 DEBUG: Final operation result for 8dbb4b98-a6a7-4a77-a844-c695f68d376d:
-GameStats.jsx:372   - upsertData: null
-GameStats.jsx:373   - upsertError: {code: '42501', details: null, hint: null, message: 'new row violates row-level security policy (USING expression) for table "game_events"'}
-GameStats.jsx:376 DEBUG: Checking state of goal event 8dbb4b98-a6a7-4a77-a844-c695f68d376d after update
-GameStats.jsx:383 DEBUG: After update - current record: {id: '8dbb4b98-a6a7-4a77-a844-c695f68d376d', metadata: {…}}
-GameStats.jsx:384 DEBUG: After update - error: null
-GameStats.jsx:394 ❌ Error processing goal event: ReferenceError: updateError is not defined
-    at recalculateGoalEventMetadata (GameStats.jsx:386:11)
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx:394
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx:1470
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
-GameStats.jsx:395 Error details: updateError is not defined
-console.error @ react-konva.js?v=8228aaed:27396
-recalculateGoalEventMetadata @ GameStats.jsx:395
-await in recalculateGoalEventMetadata
-onClick @ GameStats.jsx:1470
-callCallback2 @ chunk-RB4WIW2M.js?v=8228aaed:3215
-invokeGuardedCallbackDev @ chunk-RB4WIW2M.js?v=8228aaed:3240
-invokeGuardedCallback @ chunk-RB4WIW2M.js?v=8228aaed:3274
-invokeGuardedCallbackAndCatchFirstError @ chunk-RB4WIW2M.js?v=8228aaed:3277
-executeDispatch @ chunk-RB4WIW2M.js?v=8228aaed:6555
-processDispatchQueueItemsInOrder @ chunk-RB4WIW2M.js?v=8228aaed:6575
-processDispatchQueue @ chunk-RB4WIW2M.js?v=8228aaed:6584
-dispatchEventsForPlugins @ chunk-RB4WIW2M.js?v=8228aaed:6592
-(anonymous) @ chunk-RB4WIW2M.js?v=8228aaed:6715
-batchedUpdates$1 @ chunk-RB4WIW2M.js?v=8228aaed:18454
-batchedUpdates @ chunk-RB4WIW2M.js?v=8228aaed:3120
-dispatchEventForPluginEventSystem @ chunk-RB4WIW2M.js?v=8228aaed:6714
-dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RB4WIW2M.js?v=8228aaed:5019
-dispatchEvent @ chunk-RB4WIW2M.js?v=8228aaed:5013
-dispatchDiscreteEvent @ chunk-RB4WIW2M.js?v=8228aaed:4990
-GameStats.jsx:403 Refreshing events from database after recalculation...
-GameStats.jsx:417 🔍 DEBUG: Retrieved goal event 3ae16f5f-3783-491b-95fe-1542ebc88eff from database:
-GameStats.jsx:418 Metadata: {
-  "rink_players": [
-    "d98ecf9f-e725-41ac-b0e0-5e119bce744a",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16"
-  ]
-}
-GameStats.jsx:419 Rink players count: 4
-GameStats.jsx:426 Current selectedEventForDetails ID: 3ae16f5f-3783-491b-95fe-1542ebc88eff
-GameStats.jsx:427 Available updated events: (600) ['b8b66d27-e12b-4447-a5e7-2664f8727664', 'ae9697a7-c835-43b6-8b18-dd0c06700bc1', 'd38c68bd-56b6-4a8d-ae7f-4ebae4436488', '71760fd7-d1a2-42a6-ae75-a953382c5b06', '5ad3fa63-0294-496b-9c91-da57e63be6b4', 'be2f296a-6cc2-4810-a660-f9f14b8ad6ef', '71984ebb-2a82-42cb-b323-28bf02726537', '5567c23f-be1c-487f-88c8-21d624a79998', 'c76c03f9-ec4e-4677-9fc6-541016941d71', '96cc7a62-9c24-4d7a-b6c9-73e7cbbfa7e4', '31823bb8-3f23-46ef-850c-b525fd79dff3', '5e8c187e-1a6b-45a6-928d-b132c82aa4d4', '4fd9d593-ef4c-412c-8d56-d63698e025a2', '8c6272cd-9441-4d99-a3a4-87014183bf09', 'd5ed2a4b-7641-4a4e-91a6-43ee9dc13c5b', 'ba6429c0-2b1a-428a-bef3-5c580ec631f3', 'a4991ff7-24fc-4a5e-9901-19d27eb00283', 'c3336a0d-16ce-4902-a121-7ddbecf69ad4', '70145e81-104a-4e90-803b-1a54be7d09f6', '1a886894-0ad8-4235-bc2f-3f36a4928d8c', 'df0a4fe0-7b72-48e6-8a7b-a4031d2cbcca', 'ca3001e9-6a61-422d-8a6d-7f1c70a615fb', 'abd4f461-788e-4038-ad03-6890309942b7', '2d8d715e-525c-42c4-8aed-bc5d27d3b258', 'affdf799-315c-4570-a3ad-0954d8ae10fd', '8e6592da-0a85-4c72-9e14-658df6d5824c', '4ecfa9ae-18bc-46d0-98d3-e0f4303d1736', '112b1f06-6411-4fa8-9c4a-ad3b696e7ea8', '4a0c0b7c-3ad9-4842-8ed3-af9e41e4e04f', '8903f323-dd93-4f02-b7d0-d6d75e215fd4', 'c6c07c35-7594-4b27-a2d8-c6047c87b7ae', 'f400ec89-85db-4157-81b3-678afbeb6b66', '77cfe66a-4d79-4541-a92f-d479bdb3b3b2', '39382d88-61f7-4991-9703-7786b1779f0c', '0e49d5f5-f78f-43b0-b656-9026f1f920b6', '87a2955e-bfac-4868-967b-e6881a3f92a5', '9df6f1e2-61d2-4832-b7ac-9a8392511fcd', '93ea630d-a3f2-4ab0-8bef-cf50cceec28f', 'a4da91e6-16cc-4499-ae88-1d03db43804a', '7b1c4cd9-d6ca-4de9-ac29-4a0c97700fa4', 'a1090878-bc7f-4ea1-ad1f-23372e248cf5', '76c28842-1eca-4c43-9211-90fd9385a2f3', 'a95494cf-a5d5-4532-829c-cec9c5d9e063', '98984de8-763a-40e9-baba-95599b5a4c73', 'c0247476-1296-430b-b041-392ca7a391dc', '15d62a71-9f97-4897-a16a-b592722f3959', 'c3931b42-f1c2-425e-8f2e-8e5a4ba7f6c5', 'f5157c92-cd62-4fb2-a712-fd8a04898f2a', '4f4ed9c7-83b7-4d8a-87cb-e66a87c06368', 'd97d3847-23a2-4a84-a868-562b9803bef7', 'a5ab121c-9aa2-4984-881e-420c6deab475', '1827eee1-ca04-4311-a049-11358d7a991d', '099574ba-f065-4e9b-be51-46fe8e8e6818', 'fefbbc66-d9c3-46db-8959-faeff66d777d', 'd2037a8c-a1c3-4d1d-8f3c-813174dddb47', 'c827eb7d-8d21-4926-9fb9-bcc3cb48d6eb', '451e3536-ca74-44a1-a9cc-97ca45bfb928', 'de38ff47-bca7-41dc-8803-4777d2933013', 'd4eee051-e51f-457b-87fd-542f6e8bbb02', 'a8904f4f-9a6e-49f5-be99-b2ab3856ce9f', 'f644078d-d14a-4a53-b9bf-85e938cdad24', '26781337-5e04-417a-9513-e46d116dc5d2', '14d9ed81-5bc0-4077-91bb-0698506f210d', '16b84e2e-934e-4aac-941d-2a639a5b31cd', '2553e147-ef9f-4c69-9616-c6c873cb78da', 'c4ce30e1-31b4-4b7c-9848-eeb35e12d8cf', 'b1ef4176-357f-4fdc-8a51-1b7b7e33f5fb', 'a8db33d3-772f-443d-b101-ba98577170fa', '2f905343-6922-42ae-a372-25743dae276f', 'a00f4f26-d298-4be5-851b-c9bffff03628', 'bdb02560-9ab6-491b-bce7-09d0cd44f5c6', '2502ec5e-a09c-442b-92c8-cfcd1264e190', '82bb3b71-80aa-484e-a270-d5fe52784c62', '6907fd6e-1e18-4d6a-bbba-1cb064ab4675', '6ca5043e-764e-4e68-b0a9-43b3b8c49edc', '0648ab73-2e67-4cef-8508-a861e8454cd9', 'e66cbd87-e42c-49df-80c2-27f1063c8b24', 'd32f13b5-206c-4fa7-aa34-1625bf9395bf', '47e366f7-8a16-4e71-8e50-384a1dd8518a', 'fbe3e6c2-add5-4bfd-ba90-996b6e4fa333', '4aff632b-09c6-4d0d-8a83-d46188180dfe', '18e5af72-45bd-4f9b-8274-9d92fb7eebdd', '3ecfa657-08fc-48c8-9a6c-b4c153e0d79e', 'c2dd426b-9fb3-4448-a307-1642a438a1c2', '8dd59c38-c7bb-4cfa-8c4f-05aae3ee72ca', 'b7f3316b-5799-49db-a702-d2fc210763ff', 'dde6a34a-f9f5-4d9e-90ab-ce4853c13d14', 'cdf5f482-21de-4501-ba9c-5a815a0ad5c5', '0ab3e15e-c6d1-4af9-9ee8-7f99dd801012', 'ee80eed6-e824-4de7-ba04-8e236a34aeb1', '2ce46c23-d741-4b1a-aa82-a849c55d9556', '40f3a266-aedc-4091-84e7-59c7443f649b', '965f19be-a5a4-4d02-a1d0-552f9e5c4ee1', '2b5c8779-eb45-4ae8-8cc0-1b123b041fc6', 'ca138ed9-0f3e-4d38-9481-1b7fe5df888f', '924508cc-74d2-4371-bcdd-b578199d9af8', 'd1b4c462-14d2-4b01-a4df-e559d8f7a0a8', '01acbe10-aa14-4284-a3a2-752aae69370d', '3f8a8c93-3416-4003-b1c8-882fbb840d73', '0d8ca408-2ffd-4635-bef3-4bbfe09bd076', …]
-GameStats.jsx:429 DEBUG: Looking for updated event with ID: 3ae16f5f-3783-491b-95fe-1542ebc88eff
-GameStats.jsx:431 Found updated event, metadata: {
-  "rink_players": [
-    "d98ecf9f-e725-41ac-b0e0-5e119bce744a",
-    "5bfa19c5-5ca2-427f-bab6-b40e4a04955d",
-    "80efba0a-3659-49e2-9d51-2ef0386e1be4",
-    "f3985202-b9f5-48cc-aced-dec41d9eeb16"
-  ]
-}
-GameStats.jsx:433 ✅ Updated selectedEventForDetails with fresh metadata for event 3ae16f5f-3783-491b-95fe-1542ebc88eff
-GameStats.jsx:452 DEBUG: Loading players for allPlayerIds: (14) ['6b09e6bb-dc69-4865-814b-16a657895d11', 'f3985202-b9f5-48cc-aced-dec41d9eeb16', '275954a5-c144-49ca-bd4d-4086d1a0bc08', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', '0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2', '80efba0a-3659-49e2-9d51-2ef0386e1be4', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95', '3115849d-1ec3-4585-95e3-ba4674c79687', 'beac8901-6653-4e0c-bbae-c71146161b44', '69e0d777-888b-4f6c-88e1-33ab3cb82397', 'e34916a4-124a-4c67-ad70-d33c089f8acb']
-GameStats.jsx:1576 DEBUG: allPlayers state: (14) ['0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2: Corey Desimone', '6b09e6bb-dc69-4865-814b-16a657895d11: John Bowskill', '275954a5-c144-49ca-bd4d-4086d1a0bc08: Jesse Mulligan Hopper', 'beac8901-6653-4e0c-bbae-c71146161b44: Tyler Colev', '80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney', '69e0d777-888b-4f6c-88e1-33ab3cb82397: Cam Devine', 'f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher', 'e34916a4-124a-4c67-ad70-d33c089f8acb: Matias Mellafe', '3115849d-1ec3-4585-95e3-ba4674c79687: Andrew Schofield', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b: Hayden Fixter', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e: Kael Telfer', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95: Mitchell Shaw']
-GameStats.jsx:1577 DEBUG: rink_players from metadata: (4) ['d98ecf9f-e725-41ac-b0e0-5e119bce744a', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', '80efba0a-3659-49e2-9d51-2ef0386e1be4', 'f3985202-b9f5-48cc-aced-dec41d9eeb16']
-GameStats.jsx:1580 Rendering player d98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher
-GameStats.jsx:1580 Rendering player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne
-GameStats.jsx:1580 Rendering player 80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney
-GameStats.jsx:1580 Rendering player f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican
-GameStats.jsx:1576 DEBUG: allPlayers state: (14) ['0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2: Corey Desimone', '6b09e6bb-dc69-4865-814b-16a657895d11: John Bowskill', '275954a5-c144-49ca-bd4d-4086d1a0bc08: Jesse Mulligan Hopper', 'beac8901-6653-4e0c-bbae-c71146161b44: Tyler Colev', '80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney', '69e0d777-888b-4f6c-88e1-33ab3cb82397: Cam Devine', 'f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher', 'e34916a4-124a-4c67-ad70-d33c089f8acb: Matias Mellafe', '3115849d-1ec3-4585-95e3-ba4674c79687: Andrew Schofield', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b: Hayden Fixter', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e: Kael Telfer', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95: Mitchell Shaw']
-GameStats.jsx:1577 DEBUG: rink_players from metadata: (4) ['d98ecf9f-e725-41ac-b0e0-5e119bce744a', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', '80efba0a-3659-49e2-9d51-2ef0386e1be4', 'f3985202-b9f5-48cc-aced-dec41d9eeb16']
-GameStats.jsx:1580 Rendering player d98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher
-GameStats.jsx:1580 Rendering player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne
-GameStats.jsx:1580 Rendering player 80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney
-GameStats.jsx:1580 Rendering player f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican
-GameStats.jsx:459 DEBUG: Loaded players data: (14) ['0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2: Corey Desimone', '6b09e6bb-dc69-4865-814b-16a657895d11: John Bowskill', '275954a5-c144-49ca-bd4d-4086d1a0bc08: Jesse Mulligan Hopper', 'beac8901-6653-4e0c-bbae-c71146161b44: Tyler Colev', '80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney', '69e0d777-888b-4f6c-88e1-33ab3cb82397: Cam Devine', 'f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher', 'e34916a4-124a-4c67-ad70-d33c089f8acb: Matias Mellafe', '3115849d-1ec3-4585-95e3-ba4674c79687: Andrew Schofield', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b: Hayden Fixter', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e: Kael Telfer', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95: Mitchell Shaw']
-GameStats.jsx:461 Refreshed allPlayers with 14 players after goal recalculation
-GameStats.jsx:1576 DEBUG: allPlayers state: (14) ['0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2: Corey Desimone', '6b09e6bb-dc69-4865-814b-16a657895d11: John Bowskill', '275954a5-c144-49ca-bd4d-4086d1a0bc08: Jesse Mulligan Hopper', 'beac8901-6653-4e0c-bbae-c71146161b44: Tyler Colev', '80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney', '69e0d777-888b-4f6c-88e1-33ab3cb82397: Cam Devine', 'f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher', 'e34916a4-124a-4c67-ad70-d33c089f8acb: Matias Mellafe', '3115849d-1ec3-4585-95e3-ba4674c79687: Andrew Schofield', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b: Hayden Fixter', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e: Kael Telfer', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95: Mitchell Shaw']
-GameStats.jsx:1577 DEBUG: rink_players from metadata: (4) ['d98ecf9f-e725-41ac-b0e0-5e119bce744a', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', '80efba0a-3659-49e2-9d51-2ef0386e1be4', 'f3985202-b9f5-48cc-aced-dec41d9eeb16']
-GameStats.jsx:1580 Rendering player d98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher
-GameStats.jsx:1580 Rendering player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne
-GameStats.jsx:1580 Rendering player 80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney
-GameStats.jsx:1580 Rendering player f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican
-GameStats.jsx:1576 DEBUG: allPlayers state: (14) ['0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2: Corey Desimone', '6b09e6bb-dc69-4865-814b-16a657895d11: John Bowskill', '275954a5-c144-49ca-bd4d-4086d1a0bc08: Jesse Mulligan Hopper', 'beac8901-6653-4e0c-bbae-c71146161b44: Tyler Colev', '80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney', '69e0d777-888b-4f6c-88e1-33ab3cb82397: Cam Devine', 'f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican', 'd98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher', 'e34916a4-124a-4c67-ad70-d33c089f8acb: Matias Mellafe', '3115849d-1ec3-4585-95e3-ba4674c79687: Andrew Schofield', 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b: Hayden Fixter', '8cdeac25-6589-4a4d-9c22-3b2d28508e0e: Kael Telfer', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne', '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95: Mitchell Shaw']
-GameStats.jsx:1577 DEBUG: rink_players from metadata: (4) ['d98ecf9f-e725-41ac-b0e0-5e119bce744a', '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', '80efba0a-3659-49e2-9d51-2ef0386e1be4', 'f3985202-b9f5-48cc-aced-dec41d9eeb16']
-GameStats.jsx:1580 Rendering player d98ecf9f-e725-41ac-b0e0-5e119bce744a: Joel Maher
-GameStats.jsx:1580 Rendering player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d: Declan Lynne
-GameStats.jsx:1580 Rendering player 80efba0a-3659-49e2-9d51-2ef0386e1be4: Oliver Delaney
-GameStats.jsx:1580 Rendering player f3985202-b9f5-48cc-aced-dec41d9eeb16: Cory Domican
+=== Calculating stats for Player Name ===
+ Player events (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (27): (27) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:45:22.622Z
+ Player went off rink during active play: 47s (2025-09-27T10:45:22.622Z to 2025-09-27T10:46:10.615Z)
+ Player came on rink during active play at 2025-09-27T10:47:46.375Z
+ Player went off rink during active play: 137s (2025-09-27T10:47:46.375Z to 2025-09-27T10:50:04.219Z)
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Player came on rink during stopped play at 2025-09-27T10:55:10.562Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 99s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:29.870Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:01:08.741Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 181s (2025-09-27T11:01:08.741Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T11:16:36.411Z to 2025-09-27T11:18:08.304Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:20:13.364Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-27T11:20:13.364Z to 2025-09-27T11:21:17.273Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:11.556Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 218s (2025-09-27T11:24:11.556Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 836s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 47s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 218s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:24:11.556Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 119s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 836, shiftCount: 7, averageShiftTime: 119, shortestShift: 47, longestShift: 218, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player beac8901-6653-4e0c-bbae-c71146161b44
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 44s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:31.273Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:33.578Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 151s (2025-09-29T10:59:33.578Z to 2025-09-29T11:02:05.102Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:06:19.084Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:06:19.084Z to 2025-09-29T11:07:22.411Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:54.130Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 20s (2025-09-29T11:11:54.130Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:14.297Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:27.094Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:44.180Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 41s (2025-09-29T11:15:44.180Z to 2025-09-29T11:16:26.090Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:44.444Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 98s (2025-09-29T11:18:44.444Z to 2025-09-29T11:20:23.327Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:39.431Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 53s (2025-09-29T11:26:39.431Z to 2025-09-29T11:27:33.266Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:17.924Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T11:31:17.924Z to 2025-09-29T11:32:03.696Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:03.523Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 163s (2025-09-29T11:33:03.523Z to 2025-09-29T11:35:47.261Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:54.712Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128140s (2025-09-29T11:36:54.712Z to 2025-09-30T23:12:35.109Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128887s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 20s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128140s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:54.712Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 11717s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128887, shiftCount: 11, averageShiftTime: 11717, shortestShift: 20, longestShift: 128140, …}
+SquadStats.jsx:190 Final player data for Tyler: {id: 'beac8901-6653-4e0c-bbae-c71146161b44', last_name: 'Colev', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8', first_name: 'Tyler', jersey_number: 16, …}
+SquadStats.jsx:280 Player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 3115849d-1ec3-4585-95e3-ba4674c79687
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (14): (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:36:25.883Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 28s (2025-09-27T10:36:25.883Z to 2025-09-27T10:36:54.000Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:39:46.140Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 38s (2025-09-27T10:39:46.140Z to 2025-09-27T10:40:24.990Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:44:09.111Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 67s (2025-09-27T10:44:09.111Z to 2025-09-27T10:45:16.215Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:42.042Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 129s (2025-09-27T10:58:42.042Z to 2025-09-27T11:00:51.186Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:43.112Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 26s (2025-09-27T11:03:43.112Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:33.774Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-27T11:21:33.774Z to 2025-09-27T11:22:43.675Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:40.233Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 10s (2025-09-27T11:27:40.233Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 367s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 10s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 129s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:58:42.042Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 52s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 367, shiftCount: 7, averageShiftTime: 52, shortestShift: 10, longestShift: 129, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 3115849d-1ec3-4585-95e3-ba4674c79687
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (17): (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:58.969Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:01:58.969Z to 2025-09-29T11:03:41.059Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:42.373Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-29T11:07:42.373Z to 2025-09-29T11:08:51.875Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:36.992Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 50s (2025-09-29T11:14:36.992Z to 2025-09-29T11:15:27.945Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:51.529Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:24:51.529Z to 2025-09-29T11:26:34.475Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:37.378Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-29T11:29:37.378Z to 2025-09-29T11:31:03.863Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:26.180Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 38s (2025-09-29T11:35:26.180Z to 2025-09-29T11:36:04.436Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 447s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 6
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 38s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 102s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:01:58.969Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 75s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 447, shiftCount: 6, averageShiftTime: 75, shortestShift: 38, longestShift: 102, …}
+SquadStats.jsx:190 Final player data for Andrew: {id: '3115849d-1ec3-4585-95e3-ba4674c79687', last_name: 'Schofield', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU', first_name: 'Andrew', jersey_number: 12, …}
+SquadStats.jsx:243 Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 6b09e6bb-dc69-4865-814b-16a657895d11 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 80efba0a-3659-49e2-9d51-2ef0386e1be4
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (35): (35) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (41): (41) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:34:55.121Z
+ Player went off rink during active play: 68s (2025-09-27T10:34:55.121Z to 2025-09-27T10:36:03.525Z)
+ Player came on rink during active play at 2025-09-27T10:37:10.096Z
+ Player went off rink during active play: 142s (2025-09-27T10:37:10.096Z to 2025-09-27T10:39:32.579Z)
+ Player came on rink during active play at 2025-09-27T10:40:36.262Z
+ Player went off rink during active play: 38s (2025-09-27T10:40:36.262Z to 2025-09-27T10:41:14.681Z)
+ Player came on rink during active play at 2025-09-27T10:42:48.192Z
+ Player went off rink during active play: 72s (2025-09-27T10:42:48.192Z to 2025-09-27T10:44:00.651Z)
+ Player came on rink during active play at 2025-09-27T10:46:18.142Z
+ Player went off rink during active play: 77s (2025-09-27T10:46:18.142Z to 2025-09-27T10:47:35.986Z)
+ Player came on rink during active play at 2025-09-27T10:49:43.966Z
+ Player went off rink during active play: 89s (2025-09-27T10:49:43.966Z to 2025-09-27T10:51:13.846Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:51:26.811Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 65s (2025-09-27T10:51:26.811Z to 2025-09-27T10:52:31.920Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:10.205Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T10:57:10.205Z to 2025-09-27T10:58:36.055Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:25.768Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 44s (2025-09-27T11:03:25.768Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:36.899Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T11:18:36.899Z to 2025-09-27T11:20:02.524Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:23:09.424Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 74s (2025-09-27T11:23:09.424Z to 2025-09-27T11:24:24.074Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:04.086Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-27T11:26:04.086Z to 2025-09-27T11:27:30.398Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 925s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 12
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 38s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 142s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:37:10.096Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 77s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 925, shiftCount: 12, averageShiftTime: 77, shortestShift: 38, longestShift: 142, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 80efba0a-3659-49e2-9d51-2ef0386e1be4
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (25): (25) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:32.997Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 54s (2025-09-29T10:58:32.997Z to 2025-09-29T10:59:27.750Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:02:01.708Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 110s (2025-09-29T11:02:01.708Z to 2025-09-29T11:03:52.179Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:46.365Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:05:46.365Z to 2025-09-29T11:07:28.862Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:58.656Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 152s (2025-09-29T11:08:58.656Z to 2025-09-29T11:11:31.082Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:29.682Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:14:29.682Z to 2025-09-29T11:15:33.490Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:43.843Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 108s (2025-09-29T11:16:43.843Z to 2025-09-29T11:18:32.734Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:45.971Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 90s (2025-09-29T11:24:45.971Z to 2025-09-29T11:26:16.841Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:28:33.055Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:28:33.055Z to 2025-09-29T11:29:51.758Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:15.360Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:31:15.360Z to 2025-09-29T11:32:18.499Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:34:37.440Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 83s (2025-09-29T11:34:37.440Z to 2025-09-29T11:36:01.061Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 903s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 10
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 54s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 152s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:58.656Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 90s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 903, shiftCount: 10, averageShiftTime: 90, shortestShift: 54, longestShift: 152, …}
+SquadStats.jsx:190 Final player data for Oliver: {id: '80efba0a-3659-49e2-9d51-2ef0386e1be4', last_name: 'Delaney', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA', first_name: 'Oliver', jersey_number: 91, …}
+ SquadStats - Kael - Final session IDs: (2) ['84ed1e8f-3dea-4116-884a-96051382bb3d', '64716e76-751e-410b-adc8-005cb25c8294']
+ SquadStats - Kael - Total events fetched: 1000
+ SquadStats - Kael - Session 84ed1e8f-3dea-4116-884a-96051382bb3d: 585 total events, 7 goal events
+ SquadStats - Kael - Session 84ed1e8f-3dea-4116-884a-96051382bb3d goal events: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ SquadStats - Kael - Session 64716e76-751e-410b-adc8-005cb25c8294: 415 total events, 5 goal events
+ SquadStats - Kael - Session 64716e76-751e-410b-adc8-005cb25c8294 goal events: (5) [{…}, {…}, {…}, {…}, {…}]
+ Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Player 275954a5-c144-49ca-bd4d-4086d1a0bc08 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player d98ecf9f-e725-41ac-b0e0-5e119bce744a
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (29): (29) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (35): (35) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 51s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:40.002Z)
+ Player came on rink during active play at 2025-09-27T10:37:38.895Z
+ Player went off rink during active play: 74s (2025-09-27T10:37:38.895Z to 2025-09-27T10:38:52.917Z)
+ Player came on rink during active play at 2025-09-27T10:40:48.354Z
+ Player went off rink during active play: 34s (2025-09-27T10:40:48.354Z to 2025-09-27T10:41:23.279Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:43:45.373Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 4s (2025-09-27T10:43:45.373Z to 2025-09-27T10:43:50.098Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:46:24.627Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T10:46:24.627Z to 2025-09-27T10:47:25.827Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:47:28.697Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 10s (2025-09-27T10:47:28.697Z to 2025-09-27T10:47:39.269Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:37.084Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T10:57:37.084Z to 2025-09-27T10:58:38.162Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:02:43.635Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T11:02:43.635Z to 2025-09-27T11:03:45.326Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:16.427Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 98s (2025-09-27T11:18:16.427Z to 2025-09-27T11:19:55.016Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:22:55.507Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 60s (2025-09-27T11:22:55.507Z to 2025-09-27T11:23:55.979Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:00.291Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T11:26:00.291Z to 2025-09-27T11:27:32.210Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 605s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 4s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 98s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:18:16.427Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 55s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 605, shiftCount: 11, averageShiftTime: 55, shortestShift: 4, longestShift: 98, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player d98ecf9f-e725-41ac-b0e0-5e119bce744a
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (13): (13) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (18): (18) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 48s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:35.703Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:04:59.495Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 84s (2025-09-29T11:04:59.495Z to 2025-09-29T11:06:24.010Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:16.276Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 58s (2025-09-29T11:11:16.276Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:10.811Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 76s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:34.602Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:19:43.053Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 113s (2025-09-29T11:19:43.053Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:43.268Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 107s (2025-09-29T11:26:43.268Z to 2025-09-29T11:28:30.922Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:37:02.752Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128132s (2025-09-29T11:37:02.752Z to 2025-09-30T23:12:35.454Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128618s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 48s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128132s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:37:02.752Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 18374s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128618, shiftCount: 7, averageShiftTime: 18374, shortestShift: 48, longestShift: 128132, …}
+SquadStats.jsx:190 Final player data for Joel: {id: 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', last_name: 'Maher', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…jcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68', first_name: 'Joel', jersey_number: 61, …}
+SquadStats.jsx:280 Player adbfffc3-b8e1-4890-b3be-4ceac0009e3b - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (41): (41) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (47): (47) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 56s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:44.859Z)
+ Player came on rink during active play at 2025-09-27T10:36:14.036Z
+ Player went off rink during active play: 43s (2025-09-27T10:36:14.036Z to 2025-09-27T10:36:57.102Z)
+ Player came on rink during active play at 2025-09-27T10:38:46.999Z
+ Player went off rink during active play: 104s (2025-09-27T10:38:46.999Z to 2025-09-27T10:40:31.573Z)
+ Player came on rink during active play at 2025-09-27T10:41:35.949Z
+ Player went off rink during active play: 64s (2025-09-27T10:41:35.949Z to 2025-09-27T10:42:40.728Z)
+ Player came on rink during active play at 2025-09-27T10:43:58.766Z
+ Player went off rink during active play: 62s (2025-09-27T10:43:58.766Z to 2025-09-27T10:45:01.380Z)
+ Player came on rink during active play at 2025-09-27T10:45:05.261Z
+ Player went off rink during active play: 70s (2025-09-27T10:45:05.261Z to 2025-09-27T10:46:16.227Z)
+ Player came on rink during active play at 2025-09-27T10:47:56.523Z
+ Player went off rink during active play: 125s (2025-09-27T10:47:56.523Z to 2025-09-27T10:50:02.221Z)
+ Player came on rink during active play at 2025-09-27T10:51:56.589Z
+ Player went off rink during active play: 32s (2025-09-27T10:51:56.589Z to 2025-09-27T10:52:29.209Z)
+ Player came on rink during active play at 2025-09-27T10:52:46.853Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 63s (2025-09-27T10:52:46.853Z to 2025-09-27T10:53:50.352Z)
+ Player came on rink during stopped play at 2025-09-27T10:55:15.222Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+ Player went off rink during active play: 85s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:15.757Z)
+ Player came on rink during active play at 2025-09-27T10:58:47.727Z
+ Player went off rink during active play: 130s (2025-09-27T10:58:47.727Z to 2025-09-27T11:00:57.777Z)
+ Player came on rink during active play at 2025-09-27T11:02:34.455Z
+ Player went off rink during active play: 61s (2025-09-27T11:02:34.455Z to 2025-09-27T11:03:36.062Z)
+ Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:16:48.785Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 270s (2025-09-27T11:16:48.785Z to 2025-09-27T11:21:19.021Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:25.947Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T11:24:25.947Z to 2025-09-27T11:25:51.666Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 1250s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 14
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 32s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 270s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:16:48.785Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 89s
+calculatePlayerGameStatsExact.js:165 GameStats - Kael - Goal events found: 7 events
+calculatePlayerGameStatsExact.js:167 GameStats - Kael - Goal events details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 1250, shiftCount: 14, averageShiftTime: 89, shortestShift: 32, longestShift: 270, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (23): (23) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (28): (28) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:42.949Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 41s (2025-09-29T10:58:42.949Z to 2025-09-29T10:59:24.079Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:15.720Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 218s (2025-09-29T11:01:15.720Z to 2025-09-29T11:04:54.444Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:39.763Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 106s (2025-09-29T11:05:39.763Z to 2025-09-29T11:07:26.739Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:09:01.945Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 137s (2025-09-29T11:09:01.945Z to 2025-09-29T11:11:19.431Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:56.256Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-29T11:14:56.256Z to 2025-09-29T11:16:22.181Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:35.532Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:16:35.532Z to 2025-09-29T11:18:27.396Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:21:06.290Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 29s (2025-09-29T11:21:06.290Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:39.393Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 112s (2025-09-29T11:24:39.393Z to 2025-09-29T11:26:32.172Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:31.504Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:27:31.504Z to 2025-09-29T11:29:23.448Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:20.081Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 52s (2025-09-29T11:31:20.081Z to 2025-09-29T11:32:12.938Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:16.884Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 143s (2025-09-29T11:32:16.884Z to 2025-09-29T11:34:39.928Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:38:25.326Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128050s (2025-09-29T11:38:25.326Z to 2025-09-30T23:12:35.584Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 129195s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 12
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 29s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128050s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:38:25.326Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 10766s
+calculatePlayerGameStatsExact.js:165 GameStats - Kael - Goal events found: 5 events
+calculatePlayerGameStatsExact.js:167 GameStats - Kael - Goal events details: (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 129195, shiftCount: 12, averageShiftTime: 10766, shortestShift: 29, longestShift: 128050, …}
+SquadStats.jsx:190 Final player data for Kael: {id: '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', last_name: 'Telfer', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU', first_name: 'Kael', jersey_number: 8, …}
+SquadStats.jsx:243 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player e34916a4-124a-4c67-ad70-d33c089f8acb - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player f3985202-b9f5-48cc-aced-dec41d9eeb16 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Daniel: {id: '227b6926-3f7e-4dd7-9c84-8ea9faeb290b', last_name: 'Shaw', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ', first_name: 'Daniel', jersey_number: 21, …}
+ Player 3115849d-1ec3-4585-95e3-ba4674c79687 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+ Player beac8901-6653-4e0c-bbae-c71146161b44 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player beac8901-6653-4e0c-bbae-c71146161b44 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (32): (32) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:36:21.239Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-27T10:36:21.239Z to 2025-09-27T10:37:00.630Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:39:28.841Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 54s (2025-09-27T10:39:28.841Z to 2025-09-27T10:40:23.144Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:44:04.317Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 49s (2025-09-27T10:44:04.317Z to 2025-09-27T10:44:54.164Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:45:12.520Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 55s (2025-09-27T10:45:12.520Z to 2025-09-27T10:46:08.204Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:51:37.917Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 62s (2025-09-27T10:51:37.917Z to 2025-09-27T10:52:39.918Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:59.137Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 95s (2025-09-27T10:58:59.137Z to 2025-09-27T11:00:34.977Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:50.644Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 19s (2025-09-27T11:03:50.644Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:25.790Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 75s (2025-09-27T11:21:25.790Z to 2025-09-27T11:22:41.385Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:38.359Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 11s (2025-09-27T11:27:38.359Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 459s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 9
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 11s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 95s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:58:59.137Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 51s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 459, shiftCount: 9, averageShiftTime: 51, shortestShift: 11, longestShift: 95, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (17): (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:56.665Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 106s (2025-09-29T11:01:56.665Z to 2025-09-29T11:03:42.823Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:36.878Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-29T11:07:36.878Z to 2025-09-29T11:09:03.717Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:07.446Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 72s (2025-09-29T11:14:07.446Z to 2025-09-29T11:15:20.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:35.348Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:24:35.348Z to 2025-09-29T11:26:27.010Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:55.647Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-29T11:29:55.647Z to 2025-09-29T11:31:07.567Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:36.638Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 25s (2025-09-29T11:35:36.638Z to 2025-09-29T11:36:02.612Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 471s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 6
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 25s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 111s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:24:35.348Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 79s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 471, shiftCount: 6, averageShiftTime: 79, shortestShift: 25, longestShift: 111, …}
+SquadStats.jsx:190 Final player data for Mitchell: {id: '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95', last_name: 'Shaw', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI', first_name: 'Mitchell', jersey_number: 92, …}
+SquadStats.jsx:243 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player beac8901-6653-4e0c-bbae-c71146161b44 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 69e0d777-888b-4f6c-88e1-33ab3cb82397
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:49:47.376Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 107s (2025-09-27T10:49:47.376Z to 2025-09-27T10:51:35.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:00:52.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 51s (2025-09-27T11:00:52.000Z to 2025-09-27T11:01:43.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:28.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:21:28.000Z to 2025-09-27T11:22:39.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 229s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 51s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 107s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:49:47.376Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 76s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 229, shiftCount: 3, averageShiftTime: 76, shortestShift: 51, longestShift: 107, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 69e0d777-888b-4f6c-88e1-33ab3cb82397
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (2): (2) [{…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:27.650Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 68s (2025-09-29T11:20:27.650Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 68s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 1
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 68s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 68s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:20:27.650Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 68s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 68, shiftCount: 1, averageShiftTime: 68, shortestShift: 68, longestShift: 68, …}
+SquadStats.jsx:190 Final player data for Cam: {id: '69e0d777-888b-4f6c-88e1-33ab3cb82397', last_name: 'Devine', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…Dk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k', first_name: 'Cam', jersey_number: 13, …}
+SquadStats.jsx:280 Player d98ecf9f-e725-41ac-b0e0-5e119bce744a - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (40): (40) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (46): (46) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:34:57.133Z
+ Player went off rink during active play: 63s (2025-09-27T10:34:57.133Z to 2025-09-27T10:36:01.041Z)
+ Player came on rink during active play at 2025-09-27T10:37:03.702Z
+ Player went off rink during active play: 78s (2025-09-27T10:37:03.702Z to 2025-09-27T10:38:21.821Z)
+ Player came on rink during active play at 2025-09-27T10:39:20.211Z
+ Player went off rink during active play: 67s (2025-09-27T10:39:20.211Z to 2025-09-27T10:40:27.256Z)
+ Player came on rink during active play at 2025-09-27T10:41:30.121Z
+ Player went off rink during active play: 68s (2025-09-27T10:41:30.121Z to 2025-09-27T10:42:38.531Z)
+ Player came on rink during active play at 2025-09-27T10:44:02.344Z
+ Player went off rink during active play: 46s (2025-09-27T10:44:02.344Z to 2025-09-27T10:44:48.621Z)
+ Player came on rink during active play at 2025-09-27T10:45:40.812Z
+ Player went off rink during active play: 25s (2025-09-27T10:45:40.812Z to 2025-09-27T10:46:06.253Z)
+ Player came on rink during active play at 2025-09-27T10:48:05.390Z
+ Player went off rink during active play: 66s (2025-09-27T10:48:05.390Z to 2025-09-27T10:49:11.592Z)
+ Player came on rink during active play at 2025-09-27T10:51:08.826Z
+ Player went off rink during active play: 86s (2025-09-27T10:51:08.826Z to 2025-09-27T10:52:35.506Z)
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Player came on rink during stopped play at 2025-09-27T10:55:08.122Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:01.298Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:45.305Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T10:58:45.305Z to 2025-09-27T11:00:17.155Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:20.447Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 49s (2025-09-27T11:03:20.447Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:20.588Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 96s (2025-09-27T11:18:20.588Z to 2025-09-27T11:19:57.508Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:22:46.165Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 109s (2025-09-27T11:22:46.165Z to 2025-09-27T11:24:35.424Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:09.748Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 84s (2025-09-27T11:26:09.748Z to 2025-09-27T11:27:34.299Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 999s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 14
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 25s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 109s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:22:46.165Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 71s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 999, shiftCount: 14, averageShiftTime: 71, shortestShift: 25, longestShift: 109, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 5bfa19c5-5ca2-427f-bab6-b40e4a04955d
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (18): (18) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (23): (23) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:31.889Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 135s (2025-09-29T10:59:31.889Z to 2025-09-29T11:01:47.807Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:02.666Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T11:05:02.666Z to 2025-09-29T11:05:48.508Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:50.017Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 158s (2025-09-29T11:08:50.017Z to 2025-09-29T11:11:28.469Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:05.226Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:15:05.226Z to 2025-09-29T11:16:23.871Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:46.918Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 92s (2025-09-29T11:16:46.918Z to 2025-09-29T11:18:19.553Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:25.934Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 15s (2025-09-29T11:20:25.934Z to 2025-09-29T11:20:41.907Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:02.991Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 94s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:49.370Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:24.569Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 103s (2025-09-29T11:27:24.569Z to 2025-09-29T11:29:08.392Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:45.110Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:33:45.110Z to 2025-09-29T11:35:27.953Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 822s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 9
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 15s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 158s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:50.017Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 91s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 822, shiftCount: 9, averageShiftTime: 91, shortestShift: 15, longestShift: 158, …}
+SquadStats.jsx:190 Final player data for Declan: {id: '5bfa19c5-5ca2-427f-bab6-b40e4a04955d', last_name: 'Lynne', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DgxfQ.V2plMtjLj1ODLFY5pPeynJJkDm8EhAiPxUB-tbhEgtY', first_name: 'Declan', jersey_number: 74, …}
+SquadStats.jsx:280 Player 80efba0a-3659-49e2-9d51-2ef0386e1be4 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+ Player events (42): (42) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (48): (48) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 54s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:42.686Z)
+ Player came on rink during active play at 2025-09-27T10:36:09.945Z
+ Player went off rink during active play: 49s (2025-09-27T10:36:09.945Z to 2025-09-27T10:36:58.978Z)
+ Player came on rink during active play at 2025-09-27T10:38:05.372Z
+ Player went off rink during active play: 72s (2025-09-27T10:38:05.372Z to 2025-09-27T10:39:18.103Z)
+ Player came on rink during active play at 2025-09-27T10:40:39.827Z
+ Player went off rink during active play: 41s (2025-09-27T10:40:39.827Z to 2025-09-27T10:41:21.273Z)
+ Player came on rink during active play at 2025-09-27T10:42:42.828Z
+ Player went off rink during active play: 73s (2025-09-27T10:42:42.828Z to 2025-09-27T10:43:55.876Z)
+ Player came on rink during active play at 2025-09-27T10:46:14.439Z
+ Player went off rink during active play: 83s (2025-09-27T10:46:14.439Z to 2025-09-27T10:47:37.634Z)
+ Player came on rink during active play at 2025-09-27T10:49:08.169Z
+ Player went off rink during active play: 31s (2025-09-27T10:49:08.169Z to 2025-09-27T10:49:39.764Z)
+ Player came on rink during active play at 2025-09-27T10:50:19.627Z
+ Player went off rink during active play: 64s (2025-09-27T10:50:19.627Z to 2025-09-27T10:51:23.744Z)
+ Player came on rink during active play at 2025-09-27T10:52:42.500Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 67s (2025-09-27T10:52:42.500Z to 2025-09-27T10:53:50.352Z)
+ Play started at 2025-09-27T10:55:50.000Z
+ Player came on rink during active play at 2025-09-27T10:56:58.739Z
+ Player went off rink during active play: 114s (2025-09-27T10:56:58.739Z to 2025-09-27T10:58:53.197Z)
+ Player came on rink during active play at 2025-09-27T11:01:45.008Z
+ Player went off rink during active play: 128s (2025-09-27T11:01:45.008Z to 2025-09-27T11:03:53.808Z)
+ Play stopped at 2025-09-27T11:04:10.000Z
+ Play started at 2025-09-27T11:16:36.411Z
+ Player came on rink during active play at 2025-09-27T11:16:45.366Z
+ Player went off rink during active play: 87s (2025-09-27T11:16:45.366Z to 2025-09-27T11:18:12.611Z)
+ Player came on rink during active play at 2025-09-27T11:20:07.660Z
+ Player went off rink during active play: 73s (2025-09-27T11:20:07.660Z to 2025-09-27T11:21:20.729Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:32.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 82s (2025-09-27T11:24:32.818Z to 2025-09-27T11:25:55.054Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:46.244Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 4s (2025-09-27T11:27:46.244Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 1022s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 15
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 4s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:01:45.008Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 68s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 1022, shiftCount: 15, averageShiftTime: 68, shortestShift: 4, longestShift: 128, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (25): (25) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (30): (30) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:26.811Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:00:49.531Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 24s (2025-09-29T11:00:49.531Z to 2025-09-29T11:01:13.578Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:54.352Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 56s (2025-09-29T11:03:54.352Z to 2025-09-29T11:04:50.393Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:06:25.907Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 150s (2025-09-29T11:06:25.907Z to 2025-09-29T11:08:56.433Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:21.827Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 52s (2025-09-29T11:11:21.827Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:12.590Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 62s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:20.223Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:41.482Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 55s (2025-09-29T11:18:41.482Z to 2025-09-29T11:19:36.493Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:22:58.712Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 87s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:42.343Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:36.710Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 52s (2025-09-29T11:26:36.710Z to 2025-09-29T11:27:29.278Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:33.639Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 88s (2025-09-29T11:29:33.639Z to 2025-09-29T11:31:02.051Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:51.523Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-29T11:33:51.523Z to 2025-09-29T11:34:30.833Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:56.850Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 11s (2025-09-29T11:35:56.850Z to 2025-09-29T11:36:08.443Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:58.676Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128137s (2025-09-29T11:36:58.676Z to 2025-09-30T23:12:36.182Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128852s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 13
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 11s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128137s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:58.676Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 9912s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128852, shiftCount: 13, averageShiftTime: 9912, shortestShift: 11, longestShift: 128137, …}
+SquadStats.jsx:190 Final player data for Corey: {id: '0c7ed55e-6add-4ddc-8b6e-eca83bf8f8a2', last_name: 'Desimone', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DcyfQ.DExhZ2oPasC0JpqpwVTSybW0hMXysw15JN7S2RJC5fA', first_name: 'Corey', jersey_number: 17, …}
+SquadStats.jsx:243 Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:280 Player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:243 Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Raw game sessions data for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+SquadStats.jsx:249 Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Found 4 valid game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (4) [{…}, {…}, {…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 6b09e6bb-dc69-4865-814b-16a657895d11
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 6b09e6bb-dc69-4865-814b-16a657895d11
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for John: {id: '6b09e6bb-dc69-4865-814b-16a657895d11', last_name: 'Bowskill', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zcwfQ.sQrFjc0y9QwKqBv0l4unaR3MFLQovTsptN887BspMHs', first_name: 'John', jersey_number: 62, …}
+SquadStats.jsx:280 Player 69e0d777-888b-4f6c-88e1-33ab3cb82397 - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:280 Player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b - Found 2 attended game sessions for squad e9df9cc3-4d99-4612-8cef-b8378b7717bb: (2) [{…}, {…}]
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 275954a5-c144-49ca-bd4d-4086d1a0bc08
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+ Player events (30): (30) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (36): (36) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 46s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:34.405Z)
+ Player came on rink during active play at 2025-09-27T10:37:26.210Z
+ Player went off rink during active play: 51s (2025-09-27T10:37:26.210Z to 2025-09-27T10:38:17.534Z)
+ Player came on rink during active play at 2025-09-27T10:40:29.294Z
+ Player went off rink during active play: 56s (2025-09-27T10:40:29.294Z to 2025-09-27T10:41:25.327Z)
+ Player came on rink during active play at 2025-09-27T10:42:44.825Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 67s (2025-09-27T10:42:44.825Z to 2025-09-27T10:43:51.856Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:46:19.916Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 74s (2025-09-27T10:46:19.916Z to 2025-09-27T10:47:34.372Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:52:37.815Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 72s (2025-09-27T10:52:37.815Z to 2025-09-27T10:53:50.352Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:32.803Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 83s (2025-09-27T10:57:32.803Z to 2025-09-27T10:58:56.575Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:02:16.736Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:02:16.736Z to 2025-09-27T11:03:28.097Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:16:40.582Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-27T11:16:40.582Z to 2025-09-27T11:17:59.196Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:20:00.637Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 74s (2025-09-27T11:20:00.637Z to 2025-09-27T11:21:15.499Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:21.480Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 96s (2025-09-27T11:24:21.480Z to 2025-09-27T11:25:58.399Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 768s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 46s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 96s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:24:21.480Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 70s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 768, shiftCount: 11, averageShiftTime: 70, shortestShift: 46, longestShift: 96, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 275954a5-c144-49ca-bd4d-4086d1a0bc08
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (16): (16) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:40.166Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T10:58:40.166Z to 2025-09-29T10:59:26.035Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:49.406Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 108s (2025-09-29T11:03:49.406Z to 2025-09-29T11:05:37.823Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:54.053Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 121s (2025-09-29T11:08:54.053Z to 2025-09-29T11:10:55.485Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:31.329Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 114s (2025-09-29T11:16:31.329Z to 2025-09-29T11:18:25.732Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:44.069Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 52s (2025-09-29T11:20:44.069Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:05.117Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:32.684Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:27.033Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 119s (2025-09-29T11:27:27.033Z to 2025-09-29T11:29:26.171Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:11.145Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 89s (2025-09-29T11:32:11.145Z to 2025-09-29T11:33:41.124Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 726s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 8
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 45s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 121s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:54.053Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 91s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 726, shiftCount: 8, averageShiftTime: 91, shortestShift: 45, longestShift: 121, …}
+SquadStats.jsx:190 Final player data for Jesse: {id: '275954a5-c144-49ca-bd4d-4086d1a0bc08', last_name: 'Mulligan Hopper', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DYwfQ.bi4-KxvTyvgEV6z06nRc4v8YeEw-EX4mv-tjXf9Ep-M', first_name: 'Jesse', jersey_number: 11, …}
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player adbfffc3-b8e1-4890-b3be-4ceac0009e3b
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:35:01.737Z
+ Player went off rink during active play: 64s (2025-09-27T10:35:01.737Z to 2025-09-27T10:36:05.908Z)
+ Player came on rink during active play at 2025-09-27T10:38:09.750Z
+ Player went off rink during active play: 76s (2025-09-27T10:38:09.750Z to 2025-09-27T10:39:26.150Z)
+ Player came on rink during active play at 2025-09-27T10:41:46.053Z
+ Player went off rink during active play: 50s (2025-09-27T10:41:46.053Z to 2025-09-27T10:42:36.802Z)
+ Player came on rink during active play at 2025-09-27T10:48:09.390Z
+ Player went off rink during active play: 245s (2025-09-27T10:48:09.390Z to 2025-09-27T10:52:14.803Z)
+ Player came on rink during active play at 2025-09-27T10:52:33.479Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 76s (2025-09-27T10:52:33.479Z to 2025-09-27T10:53:50.352Z)
+ Player came on rink during stopped play at 2025-09-27T10:55:17.910Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+ Player went off rink during active play: 94s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:24.891Z)
+ Player came on rink during active play at 2025-09-27T11:00:36.818Z
+ Player went off rink during active play: 129s (2025-09-27T11:00:36.818Z to 2025-09-27T11:02:46.000Z)
+ Play stopped at 2025-09-27T11:04:10.000Z
+ Play started at 2025-09-27T11:16:36.411Z
+ Player came on rink during active play at 2025-09-27T11:17:48.000Z
+ Player went off rink during active play: 107s (2025-09-27T11:17:48.000Z to 2025-09-27T11:19:35.000Z)
+ Player came on rink during active play at 2025-09-27T11:22:55.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 60s (2025-09-27T11:22:55.000Z to 2025-09-27T11:23:55.000Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:00.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 92s (2025-09-27T11:26:00.000Z to 2025-09-27T11:27:32.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 993s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 10
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 50s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 245s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:48:09.390Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 99s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 993, shiftCount: 10, averageShiftTime: 99, shortestShift: 50, longestShift: 245, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player adbfffc3-b8e1-4890-b3be-4ceac0009e3b
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (29): (29) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (34): (34) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 37s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:24.693Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:36.491Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 146s (2025-09-29T10:59:36.491Z to 2025-09-29T11:02:03.464Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:03:45.539Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 148s (2025-09-29T11:03:45.539Z to 2025-09-29T11:06:13.733Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:46.085Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 179s (2025-09-29T11:07:46.085Z to 2025-09-29T11:10:45.199Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:10:52.120Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 82s (2025-09-29T11:10:52.120Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:16.118Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:59.824Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:35.698Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 44s (2025-09-29T11:15:35.698Z to 2025-09-29T11:16:20.369Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:17.678Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 12s (2025-09-29T11:18:17.678Z to 2025-09-29T11:18:30.553Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:50.998Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 90s (2025-09-29T11:18:50.998Z to 2025-09-29T11:20:21.507Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:23:01.056Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 82s (2025-09-29T11:23:14.590Z to 2025-09-29T11:24:37.434Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:13.822Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 68s (2025-09-29T11:26:13.822Z to 2025-09-29T11:27:22.749Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:11.973Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 113s (2025-09-29T11:29:11.973Z to 2025-09-29T11:31:05.627Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:14.853Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 46s (2025-09-29T11:32:14.853Z to 2025-09-29T11:33:01.628Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:34:33.629Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-29T11:34:33.629Z to 2025-09-29T11:35:58.703Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:56.395Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128140s (2025-09-29T11:36:56.395Z to 2025-09-30T23:12:36.569Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 129374s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 15
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 12s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128140s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:56.395Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 8625s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 129374, shiftCount: 15, averageShiftTime: 8625, shortestShift: 12, longestShift: 128140, …}
+SquadStats.jsx:190 Final player data for Hayden: {id: 'adbfffc3-b8e1-4890-b3be-4ceac0009e3b', last_name: 'Fixter', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…TU4fQ.z-4-vOf8dgwvT4F84JmqI_PtU-JcIoZrTmUltEaVOzg', first_name: 'Hayden', jersey_number: 14, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player e34916a4-124a-4c67-ad70-d33c089f8acb
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:49:59.530Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 95s (2025-09-27T10:49:59.530Z to 2025-09-27T10:51:35.403Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:00:52.663Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-27T11:00:52.663Z to 2025-09-27T11:01:37.880Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:28.239Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:21:28.239Z to 2025-09-27T11:22:39.750Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 211s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 45s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 95s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:49:59.530Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 70s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 211, shiftCount: 3, averageShiftTime: 70, shortestShift: 45, longestShift: 95, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player e34916a4-124a-4c67-ad70-d33c089f8acb
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Matias: {id: 'e34916a4-124a-4c67-ad70-d33c089f8acb', last_name: 'Mellafe', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…jkyfQ.eaZetPIUM06qdGo1H9fPvgE_JXqEbAjWc1gYr_6QjFA', first_name: 'Matias', jersey_number: 31, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player f3985202-b9f5-48cc-aced-dec41d9eeb16
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (1): [{…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 1202s (2025-09-27T10:33:48.141Z to 2025-09-27T10:53:50.352Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 500s (2025-09-27T10:55:50.000Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 673s (2025-09-27T11:16:36.411Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 2375s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 500s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 1202s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 792s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -5
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 2375, shiftCount: 3, averageShiftTime: 792, shortestShift: 500, longestShift: 1202, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player f3985202-b9f5-48cc-aced-dec41d9eeb16
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (2): (2) [{…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Cory: {id: 'f3985202-b9f5-48cc-aced-dec41d9eeb16', last_name: 'Domican', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…TE3fQ.ftUlnA5J5746m00rZS3s-lxpP_vrRUln_XJespePNyg', first_name: 'Cory', jersey_number: 33, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 3115849d-1ec3-4585-95e3-ba4674c79687
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (14): (14) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:36:25.883Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 28s (2025-09-27T10:36:25.883Z to 2025-09-27T10:36:54.000Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:39:46.140Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 38s (2025-09-27T10:39:46.140Z to 2025-09-27T10:40:24.990Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:44:09.111Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 67s (2025-09-27T10:44:09.111Z to 2025-09-27T10:45:16.215Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:42.042Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 129s (2025-09-27T10:58:42.042Z to 2025-09-27T11:00:51.186Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:43.112Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 26s (2025-09-27T11:03:43.112Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:33.774Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-27T11:21:33.774Z to 2025-09-27T11:22:43.675Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:40.233Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 10s (2025-09-27T11:27:40.233Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 367s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 10s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 129s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:58:42.042Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 52s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 367, shiftCount: 7, averageShiftTime: 52, shortestShift: 10, longestShift: 129, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 3115849d-1ec3-4585-95e3-ba4674c79687
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (17): (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:58.969Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:01:58.969Z to 2025-09-29T11:03:41.059Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:42.373Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-29T11:07:42.373Z to 2025-09-29T11:08:51.875Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:36.992Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 50s (2025-09-29T11:14:36.992Z to 2025-09-29T11:15:27.945Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:51.529Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:24:51.529Z to 2025-09-29T11:26:34.475Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:37.378Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-29T11:29:37.378Z to 2025-09-29T11:31:03.863Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:26.180Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 38s (2025-09-29T11:35:26.180Z to 2025-09-29T11:36:04.436Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 447s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 6
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 38s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 102s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:01:58.969Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 75s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 447, shiftCount: 6, averageShiftTime: 75, shortestShift: 38, longestShift: 102, …}
+SquadStats.jsx:190 Final player data for Andrew: {id: '3115849d-1ec3-4585-95e3-ba4674c79687', last_name: 'Schofield', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zU5fQ.hnuWhh3PNtq7NB0_NokDZTxbiij77Pqs4GZv-OeNIUU', first_name: 'Andrew', jersey_number: 12, …}
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player beac8901-6653-4e0c-bbae-c71146161b44
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (27): (27) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:45:22.622Z
+ Player went off rink during active play: 47s (2025-09-27T10:45:22.622Z to 2025-09-27T10:46:10.615Z)
+ Player came on rink during active play at 2025-09-27T10:47:46.375Z
+ Player went off rink during active play: 137s (2025-09-27T10:47:46.375Z to 2025-09-27T10:50:04.219Z)
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Player came on rink during stopped play at 2025-09-27T10:55:10.562Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 99s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:29.870Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:01:08.741Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 181s (2025-09-27T11:01:08.741Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T11:16:36.411Z to 2025-09-27T11:18:08.304Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:20:13.364Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-27T11:20:13.364Z to 2025-09-27T11:21:17.273Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:11.556Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 218s (2025-09-27T11:24:11.556Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 836s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 47s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 218s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:24:11.556Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 119s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 836, shiftCount: 7, averageShiftTime: 119, shortestShift: 47, longestShift: 218, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player beac8901-6653-4e0c-bbae-c71146161b44
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (21): (21) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 44s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:31.273Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:59:33.578Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 151s (2025-09-29T10:59:33.578Z to 2025-09-29T11:02:05.102Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:06:19.084Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:06:19.084Z to 2025-09-29T11:07:22.411Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:54.130Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 20s (2025-09-29T11:11:54.130Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:14.297Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 69s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:27.094Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:15:44.180Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 41s (2025-09-29T11:15:44.180Z to 2025-09-29T11:16:26.090Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:18:44.444Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 98s (2025-09-29T11:18:44.444Z to 2025-09-29T11:20:23.327Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:39.431Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 53s (2025-09-29T11:26:39.431Z to 2025-09-29T11:27:33.266Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:17.924Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 45s (2025-09-29T11:31:17.924Z to 2025-09-29T11:32:03.696Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:33:03.523Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 163s (2025-09-29T11:33:03.523Z to 2025-09-29T11:35:47.261Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:36:54.712Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128142s (2025-09-29T11:36:54.712Z to 2025-09-30T23:12:36.984Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128889s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 20s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128142s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:36:54.712Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 11717s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128889, shiftCount: 11, averageShiftTime: 11717, shortestShift: 20, longestShift: 128142, …}
+SquadStats.jsx:190 Final player data for Tyler: {id: 'beac8901-6653-4e0c-bbae-c71146161b44', last_name: 'Colev', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DIxfQ.2YoFx0_8Svu1WfqQtQRf6AfHS6mKEWxJ_bvOKm-DFq8', first_name: 'Tyler', jersey_number: 16, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player d98ecf9f-e725-41ac-b0e0-5e119bce744a
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (29): (29) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (35): (35) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 51s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:40.002Z)
+ Player came on rink during active play at 2025-09-27T10:37:38.895Z
+ Player went off rink during active play: 74s (2025-09-27T10:37:38.895Z to 2025-09-27T10:38:52.917Z)
+ Player came on rink during active play at 2025-09-27T10:40:48.354Z
+ Player went off rink during active play: 34s (2025-09-27T10:40:48.354Z to 2025-09-27T10:41:23.279Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:43:45.373Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 4s (2025-09-27T10:43:45.373Z to 2025-09-27T10:43:50.098Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:46:24.627Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T10:46:24.627Z to 2025-09-27T10:47:25.827Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:47:28.697Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 10s (2025-09-27T10:47:28.697Z to 2025-09-27T10:47:39.269Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:37.084Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T10:57:37.084Z to 2025-09-27T10:58:38.162Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:02:43.635Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T11:02:43.635Z to 2025-09-27T11:03:45.326Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:16.427Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 98s (2025-09-27T11:18:16.427Z to 2025-09-27T11:19:55.016Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:22:55.507Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 60s (2025-09-27T11:22:55.507Z to 2025-09-27T11:23:55.979Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:00.291Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 91s (2025-09-27T11:26:00.291Z to 2025-09-27T11:27:32.210Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 605s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 11
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 4s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 98s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:18:16.427Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 55s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -1
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 605, shiftCount: 11, averageShiftTime: 55, shortestShift: 4, longestShift: 98, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player d98ecf9f-e725-41ac-b0e0-5e119bce744a
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (13): (13) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (18): (18) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:61 Player Player was on rink at game start (before first play_start)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 48s (2025-09-29T10:57:46.944Z to 2025-09-29T10:58:35.703Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:04:59.495Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 84s (2025-09-29T11:04:59.495Z to 2025-09-29T11:06:24.010Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:11:16.276Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 58s (2025-09-29T11:11:16.276Z to 2025-09-29T11:12:14.575Z)
+calculatePlayerGameStatsExact.js:104 Player came on rink during stopped play at 2025-09-29T11:13:10.811Z - will start tracking when play begins
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:75 Player was already on rink when play started - beginning shift tracking at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 76s (2025-09-29T11:13:17.818Z to 2025-09-29T11:14:34.602Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:19:43.053Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 113s (2025-09-29T11:19:43.053Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:26:43.268Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 107s (2025-09-29T11:26:43.268Z to 2025-09-29T11:28:30.922Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:37:02.752Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128134s (2025-09-29T11:37:02.752Z to 2025-09-30T23:12:37.117Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 128620s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 7
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 48s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128134s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:37:02.752Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 18374s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 128620, shiftCount: 7, averageShiftTime: 18374, shortestShift: 48, longestShift: 128134, …}
+SquadStats.jsx:190 Final player data for Joel: {id: 'd98ecf9f-e725-41ac-b0e0-5e119bce744a', last_name: 'Maher', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…jcxfQ.arHRc4oDya4TRUfM24k2uP6AWzntnbve525OfM23g68', first_name: 'Joel', jersey_number: 61, …}
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (26): (26) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (32): (32) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:36:21.239Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 39s (2025-09-27T10:36:21.239Z to 2025-09-27T10:37:00.630Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:39:28.841Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 54s (2025-09-27T10:39:28.841Z to 2025-09-27T10:40:23.144Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:44:04.317Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 49s (2025-09-27T10:44:04.317Z to 2025-09-27T10:44:54.164Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:45:12.520Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 55s (2025-09-27T10:45:12.520Z to 2025-09-27T10:46:08.204Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:51:37.917Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 62s (2025-09-27T10:51:37.917Z to 2025-09-27T10:52:39.918Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:58:59.137Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 95s (2025-09-27T10:58:59.137Z to 2025-09-27T11:00:34.977Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:50.644Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 19s (2025-09-27T11:03:50.644Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:25.790Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 75s (2025-09-27T11:21:25.790Z to 2025-09-27T11:22:41.385Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:27:38.359Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 11s (2025-09-27T11:27:38.359Z to 2025-09-27T11:27:50.310Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 459s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 9
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 11s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 95s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:58:59.137Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 51s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 459, shiftCount: 9, averageShiftTime: 51, shortestShift: 11, longestShift: 95, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (17): (17) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:56.665Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 106s (2025-09-29T11:01:56.665Z to 2025-09-29T11:03:42.823Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:07:36.878Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-29T11:07:36.878Z to 2025-09-29T11:09:03.717Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:07.446Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 72s (2025-09-29T11:14:07.446Z to 2025-09-29T11:15:20.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:35.348Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:24:35.348Z to 2025-09-29T11:26:27.010Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:29:55.647Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-29T11:29:55.647Z to 2025-09-29T11:31:07.567Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:35:36.638Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 25s (2025-09-29T11:35:36.638Z to 2025-09-29T11:36:02.612Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 471s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 6
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 25s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 111s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:24:35.348Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 79s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 471, shiftCount: 6, averageShiftTime: 79, shortestShift: 25, longestShift: 111, …}
+SquadStats.jsx:190 Final player data for Mitchell: {id: '0850d586-2d1d-4bdf-9d0b-ffeb4dd56a95', last_name: 'Shaw', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DEzfQ.p2rIvhUr5K4nqFrnnfPXtPEtZnoVyTLeHzgpCU-exmI', first_name: 'Mitchell', jersey_number: 92, …}
+ SquadStats - Kael - Final session IDs: (2) ['84ed1e8f-3dea-4116-884a-96051382bb3d', '64716e76-751e-410b-adc8-005cb25c8294']
+ SquadStats - Kael - Total events fetched: 1000
+ SquadStats - Kael - Session 84ed1e8f-3dea-4116-884a-96051382bb3d: 585 total events, 7 goal events
+ SquadStats - Kael - Session 84ed1e8f-3dea-4116-884a-96051382bb3d goal events: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ SquadStats - Kael - Session 64716e76-751e-410b-adc8-005cb25c8294: 415 total events, 5 goal events
+ SquadStats - Kael - Session 64716e76-751e-410b-adc8-005cb25c8294 goal events: (5) [{…}, {…}, {…}, {…}, {…}]
+ Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 80efba0a-3659-49e2-9d51-2ef0386e1be4
+ Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+ 
+=== Calculating stats for Player Name ===
+ Player events (35): (35) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (41): (41) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play started at 2025-09-27T10:33:48.141Z
+ Player came on rink during active play at 2025-09-27T10:34:55.121Z
+ Player went off rink during active play: 68s (2025-09-27T10:34:55.121Z to 2025-09-27T10:36:03.525Z)
+ Player came on rink during active play at 2025-09-27T10:37:10.096Z
+ Player went off rink during active play: 142s (2025-09-27T10:37:10.096Z to 2025-09-27T10:39:32.579Z)
+ Player came on rink during active play at 2025-09-27T10:40:36.262Z
+ Player went off rink during active play: 38s (2025-09-27T10:40:36.262Z to 2025-09-27T10:41:14.681Z)
+ Player came on rink during active play at 2025-09-27T10:42:48.192Z
+ Player went off rink during active play: 72s (2025-09-27T10:42:48.192Z to 2025-09-27T10:44:00.651Z)
+ Player came on rink during active play at 2025-09-27T10:46:18.142Z
+ Player went off rink during active play: 77s (2025-09-27T10:46:18.142Z to 2025-09-27T10:47:35.986Z)
+ Player came on rink during active play at 2025-09-27T10:49:43.966Z
+ Player went off rink during active play: 89s (2025-09-27T10:49:43.966Z to 2025-09-27T10:51:13.846Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:51:26.811Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 65s (2025-09-27T10:51:26.811Z to 2025-09-27T10:52:31.920Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:57:10.205Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T10:57:10.205Z to 2025-09-27T10:58:36.055Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:03:25.768Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 44s (2025-09-27T11:03:25.768Z to 2025-09-27T11:04:10.000Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:18:36.899Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T11:18:36.899Z to 2025-09-27T11:20:02.524Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:23:09.424Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 74s (2025-09-27T11:23:09.424Z to 2025-09-27T11:24:24.074Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:26:04.086Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 86s (2025-09-27T11:26:04.086Z to 2025-09-27T11:27:30.398Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 925s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 12
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 38s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 142s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:37:10.096Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 77s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 925, shiftCount: 12, averageShiftTime: 77, shortestShift: 38, longestShift: 142, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 80efba0a-3659-49e2-9d51-2ef0386e1be4
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (20): (20) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (25): (25) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:32.997Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 54s (2025-09-29T10:58:32.997Z to 2025-09-29T10:59:27.750Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:02:01.708Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 110s (2025-09-29T11:02:01.708Z to 2025-09-29T11:03:52.179Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:46.365Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 102s (2025-09-29T11:05:46.365Z to 2025-09-29T11:07:28.862Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:08:58.656Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 152s (2025-09-29T11:08:58.656Z to 2025-09-29T11:11:31.082Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:29.682Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:14:29.682Z to 2025-09-29T11:15:33.490Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:43.843Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 108s (2025-09-29T11:16:43.843Z to 2025-09-29T11:18:32.734Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:45.971Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 90s (2025-09-29T11:24:45.971Z to 2025-09-29T11:26:16.841Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:28:33.055Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 78s (2025-09-29T11:28:33.055Z to 2025-09-29T11:29:51.758Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:15.360Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 63s (2025-09-29T11:31:15.360Z to 2025-09-29T11:32:18.499Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:34:37.440Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 83s (2025-09-29T11:34:37.440Z to 2025-09-29T11:36:01.061Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 903s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 10
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 54s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 152s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:08:58.656Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 90s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 903, shiftCount: 10, averageShiftTime: 90, shortestShift: 54, longestShift: 152, …}
+SquadStats.jsx:190 Final player data for Oliver: {id: '80efba0a-3659-49e2-9d51-2ef0386e1be4', last_name: 'Delaney', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DQzfQ.ePczg6rv5N-Q6adkxufdBRMk6bvgYtSKrlWgvexHoAA', first_name: 'Oliver', jersey_number: 91, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+ Player events (41): (41) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+ All events for Player (47): (47) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+ Player Player was on rink at game start (before first play_start)
+ Play started at 2025-09-27T10:33:48.141Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:33:48.141Z
+ Player went off rink during active play: 56s (2025-09-27T10:33:48.141Z to 2025-09-27T10:34:44.859Z)
+ Player came on rink during active play at 2025-09-27T10:36:14.036Z
+ Player went off rink during active play: 43s (2025-09-27T10:36:14.036Z to 2025-09-27T10:36:57.102Z)
+ Player came on rink during active play at 2025-09-27T10:38:46.999Z
+ Player went off rink during active play: 104s (2025-09-27T10:38:46.999Z to 2025-09-27T10:40:31.573Z)
+ Player came on rink during active play at 2025-09-27T10:41:35.949Z
+ Player went off rink during active play: 64s (2025-09-27T10:41:35.949Z to 2025-09-27T10:42:40.728Z)
+ Player came on rink during active play at 2025-09-27T10:43:58.766Z
+ Player went off rink during active play: 62s (2025-09-27T10:43:58.766Z to 2025-09-27T10:45:01.380Z)
+ Player came on rink during active play at 2025-09-27T10:45:05.261Z
+ Player went off rink during active play: 70s (2025-09-27T10:45:05.261Z to 2025-09-27T10:46:16.227Z)
+ Player came on rink during active play at 2025-09-27T10:47:56.523Z
+ Player went off rink during active play: 125s (2025-09-27T10:47:56.523Z to 2025-09-27T10:50:02.221Z)
+ Player came on rink during active play at 2025-09-27T10:51:56.589Z
+ Player went off rink during active play: 32s (2025-09-27T10:51:56.589Z to 2025-09-27T10:52:29.209Z)
+ Player came on rink during active play at 2025-09-27T10:52:46.853Z
+ Play stopped at 2025-09-27T10:53:50.352Z
+ Ending shift due to play stop: 63s (2025-09-27T10:52:46.853Z to 2025-09-27T10:53:50.352Z)
+ Player came on rink during stopped play at 2025-09-27T10:55:15.222Z - will start tracking when play begins
+ Play started at 2025-09-27T10:55:50.000Z
+ Player was already on rink when play started - beginning shift tracking at 2025-09-27T10:55:50.000Z
+ Player went off rink during active play: 85s (2025-09-27T10:55:50.000Z to 2025-09-27T10:57:15.757Z)
+ Player came on rink during active play at 2025-09-27T10:58:47.727Z
+ Player went off rink during active play: 130s (2025-09-27T10:58:47.727Z to 2025-09-27T11:00:57.777Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:02:34.455Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 61s (2025-09-27T11:02:34.455Z to 2025-09-27T11:03:36.062Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:16:48.785Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 270s (2025-09-27T11:16:48.785Z to 2025-09-27T11:21:19.021Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:24:25.947Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-27T11:24:25.947Z to 2025-09-27T11:25:51.666Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 1250s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 14
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 32s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 270s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T11:16:48.785Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 89s
+calculatePlayerGameStatsExact.js:165 GameStats - Kael - Goal events found: 7 events
+calculatePlayerGameStatsExact.js:167 GameStats - Kael - Goal events details: (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: -3
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 1250, shiftCount: 14, averageShiftTime: 89, shortestShift: 32, longestShift: 270, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 8cdeac25-6589-4a4d-9c22-3b2d28508e0e
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (23): (23) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (28): (28) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T10:58:42.949Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 41s (2025-09-29T10:58:42.949Z to 2025-09-29T10:59:24.079Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:01:15.720Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 218s (2025-09-29T11:01:15.720Z to 2025-09-29T11:04:54.444Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:05:39.763Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 106s (2025-09-29T11:05:39.763Z to 2025-09-29T11:07:26.739Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:09:01.945Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 137s (2025-09-29T11:09:01.945Z to 2025-09-29T11:11:19.431Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:14:56.256Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 85s (2025-09-29T11:14:56.256Z to 2025-09-29T11:16:22.181Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:16:35.532Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:16:35.532Z to 2025-09-29T11:18:27.396Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:21:06.290Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 29s (2025-09-29T11:21:06.290Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:24:39.393Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 112s (2025-09-29T11:24:39.393Z to 2025-09-29T11:26:32.172Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:27:31.504Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 111s (2025-09-29T11:27:31.504Z to 2025-09-29T11:29:23.448Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:31:20.081Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 52s (2025-09-29T11:31:20.081Z to 2025-09-29T11:32:12.938Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:32:16.884Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 143s (2025-09-29T11:32:16.884Z to 2025-09-29T11:34:39.928Z)
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:38:25.326Z
+calculatePlayerGameStatsExact.js:132 Player still on rink at game end: 128052s (2025-09-29T11:38:25.326Z to 2025-09-30T23:12:37.419Z)
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 129197s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 12
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 29s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 128052s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:38:25.326Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 10766s
+calculatePlayerGameStatsExact.js:165 GameStats - Kael - Goal events found: 5 events
+calculatePlayerGameStatsExact.js:167 GameStats - Kael - Goal events details: (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 2
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 129197, shiftCount: 12, averageShiftTime: 10766, shortestShift: 29, longestShift: 128052, …}
+SquadStats.jsx:190 Final player data for Kael: {id: '8cdeac25-6589-4a4d-9c22-3b2d28508e0e', last_name: 'Telfer', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…zg3fQ.AeSrGPqgAbPV1GQBSgnC7CIqo_4zaQRfycuCV5x7eBU', first_name: 'Kael', jersey_number: 8, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 69e0d777-888b-4f6c-88e1-33ab3cb82397
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (12): (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T10:49:47.376Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 107s (2025-09-27T10:49:47.376Z to 2025-09-27T10:51:35.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:00:52.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 51s (2025-09-27T11:00:52.000Z to 2025-09-27T11:01:43.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-27T11:21:28.000Z
+calculatePlayerGameStatsExact.js:110 Player went off rink during active play: 71s (2025-09-27T11:21:28.000Z to 2025-09-27T11:22:39.000Z)
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 229s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 3
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 51s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 107s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-27T10:49:47.376Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 76s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 229, shiftCount: 3, averageShiftTime: 76, shortestShift: 51, longestShift: 107, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 69e0d777-888b-4f6c-88e1-33ab3cb82397
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (2): (2) [{…}, {…}]
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (7): (7) [{…}, {…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:102 Player came on rink during active play at 2025-09-29T11:20:27.650Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:84 Ending shift due to play stop: 68s (2025-09-29T11:20:27.650Z to 2025-09-29T11:21:36.185Z)
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 68s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 1
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 68s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 68s
+calculatePlayerGameStatsExact.js:148 Longest shift start time for Player: 2025-09-29T11:20:27.650Z
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 68s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 68, shiftCount: 1, averageShiftTime: 68, shortestShift: 68, longestShift: 68, …}
+SquadStats.jsx:190 Final player data for Cam: {id: '69e0d777-888b-4f6c-88e1-33ab3cb82397', last_name: 'Devine', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…Dk4fQ.wAp741vJBlKcBBzpgE8wcKeBzS_E8l1SILHKBzFLH9k', first_name: 'Cam', jersey_number: 13, …}
+SquadStats.jsx:378 Processing session 84ed1e8f-3dea-4116-884a-96051382bb3d for player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b
+SquadStats.jsx:389 Session 84ed1e8f-3dea-4116-884a-96051382bb3d has 585 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (6): (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:33:48.141Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T10:53:50.352Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T10:55:50.000Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:04:10.000Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-27T11:16:36.411Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-27T11:27:50.310Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 84ed1e8f-3dea-4116-884a-96051382bb3d stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:378 Processing session 64716e76-751e-410b-adc8-005cb25c8294 for player 227b6926-3f7e-4dd7-9c84-8ea9faeb290b
+SquadStats.jsx:389 Session 64716e76-751e-410b-adc8-005cb25c8294 has 415 events
+calculatePlayerGameStatsExact.js:6 
+=== Calculating stats for Player Name ===
+calculatePlayerGameStatsExact.js:13 Player events (0): []
+calculatePlayerGameStatsExact.js:24 Play events (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:43 All events for Player (5): (5) [{…}, {…}, {…}, {…}, {…}]
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T10:57:46.944Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:12:14.575Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:13:17.818Z
+calculatePlayerGameStatsExact.js:79 Play stopped at 2025-09-29T11:21:36.185Z
+calculatePlayerGameStatsExact.js:70 Play started at 2025-09-29T11:23:14.590Z
+calculatePlayerGameStatsExact.js:143 Total rink time for Player: 0s
+calculatePlayerGameStatsExact.js:144 Shift count for Player: 0
+calculatePlayerGameStatsExact.js:145 Shortest shift for Player: 0s
+calculatePlayerGameStatsExact.js:146 Longest shift for Player: 0s
+calculatePlayerGameStatsExact.js:153 Average shift time for Player: 0s
+calculatePlayerGameStatsExact.js:212 Plus/minus for Player: 0
+calculatePlayerGameStatsExact.js:213 === End calculation for Player ===
+
+SquadStats.jsx:400 Session 64716e76-751e-410b-adc8-005cb25c8294 stats: {totalRinkTime: 0, shiftCount: 0, averageShiftTime: 0, shortestShift: 0, longestShift: 0, …}
+SquadStats.jsx:190 Final player data for Daniel: {id: '227b6926-3f7e-4dd7-9c84-8ea9faeb290b', last_name: 'Shaw', photo_url: 'https://iktybklkggzmcynibhbl.supabase.co/storage/v…DA3fQ.3UEH8Y888tIL3DrgH1vxbb8SxpIxbQyPvEejB-dCtcQ', first_name: 'Daniel', jersey_number: 21, …}
