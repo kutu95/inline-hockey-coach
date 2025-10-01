@@ -555,6 +555,16 @@ const Sessions = () => {
     })
   }
 
+  // Check if a session is in the past
+  const isSessionInPast = (session) => {
+    const sessionDate = new Date(session.date)
+    const sessionTime = new Date(`${session.date}T${session.start_time}`)
+    const now = new Date()
+    
+    // Compare the full datetime (date + time)
+    return sessionTime < now
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -926,8 +936,15 @@ const Sessions = () => {
               ) : (
                 <div className="space-y-4">
                   {getFilteredSessions().map((session) => (
-                    <div key={session.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="p-6">
+                    <div 
+                      key={session.id} 
+                      className={`border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${
+                        isSessionInPast(session) 
+                          ? 'bg-gray-50' 
+                          : 'bg-white'
+                      }`}
+                    >
+                      <div className={`p-6 ${isSessionInPast(session) ? 'opacity-75' : ''}`}>
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                           <div className="flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-2">
@@ -937,9 +954,16 @@ const Sessions = () => {
                               >
                                 {session.title}
                               </Link>
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 self-start sm:self-auto">
-                                {session.event_type === 'game' ? 'Game' : 'Practice'} · {formatDate(session.date)}
-                              </span>
+                              <div className="flex flex-wrap gap-2 self-start sm:self-auto">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  {session.event_type === 'game' ? 'Game' : 'Practice'} · {formatDate(session.date)}
+                                </span>
+                                {isSessionInPast(session) && (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">
+                                    Past
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
