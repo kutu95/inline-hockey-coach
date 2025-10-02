@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
+import { useDataLogger, usePageLogger } from '../src/hooks/useEventLogger'
+import PlayerDetailsModal from './PlayerDetailsModal'
 
 // Cache buster: v2 - Fixed Supabase query structure
 
 const GameStats = () => {
   const { user, loading: authLoading, hasRole } = useAuth()
+  const { logUpdate, logCreate, logDelete } = useDataLogger()
+  
+  // Log page access
+  usePageLogger('Game Stats')
   const [session, setSession] = useState(null)
   const [gameSession, setGameSession] = useState(null)
   const [playerStats, setPlayerStats] = useState([])
@@ -19,14 +25,24 @@ const GameStats = () => {
   const [selectedEventIds, setSelectedEventIds] = useState([])
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showAddEventDialog, setShowAddEventDialog] = useState(false)
+  const [showEditEventDialog, setShowEditEventDialog] = useState(false)
   const [showDetailsDialog, setShowDetailsDialog] = useState(false)
   const [selectedEventForDetails, setSelectedEventForDetails] = useState(null)
+  const [selectedEventForEdit, setSelectedEventForEdit] = useState(null)
   const [showPlayerStatsDialog, setShowPlayerStatsDialog] = useState(false)
   const [selectedPlayerForStats, setSelectedPlayerForStats] = useState(null)
+  const [showPlayerDetailsModal, setShowPlayerDetailsModal] = useState(false)
+  const [selectedPlayerForDetails, setSelectedPlayerForDetails] = useState(null)
   const [newEvent, setNewEvent] = useState({
     event_type: 'player_on',
     player_id: '',
     event_time: new Date().toISOString().slice(0, 19), // YYYY-MM-DDTHH:MM:SS format
+    metadata: ''
+  })
+  const [editEvent, setEditEvent] = useState({
+    event_type: '',
+    player_id: '',
+    event_time: '',
     metadata: ''
   })
   
@@ -174,22 +190,26 @@ const GameStats = () => {
         return
       }
 
-      // Fix timezone conversion issue
-      // datetime-local returns YYYY-MM-DDTHH:MM:SS in local time
-      // We need to treat this as local time and convert to match existing data
+      // Handle timezone conversion - datetime-local gives us local time
+      // We need to treat this as local time and store it consistently
       const localDateTime = new Date(newEvent.event_time)
       
-      // The existing data appears to have been stored with a timezone offset
-      // To maintain consistency, we'll store new events in the same timezone format
-      // This ensures new manually created events align with existing events
-      const eventTimeISO = localDateTime.toISOString()
-
-      // Debug logging to help understand timezone conversion
-      console.log('Event creation debug:')
-      console.log('Input datetime-local:', newEvent.event_time)
-      console.log('Parsed local date:', localDateTime.toString())
-      console.log('ISO string for database:', eventTimeISO)
-      console.log('Game start time:', gameSession.game_start_time)
+      // Create ISO string with explicit timezone offset to prevent UTC conversion
+      const year = localDateTime.getFullYear()
+      const month = String(localDateTime.getMonth() + 1).padStart(2, '0')
+      const day = String(localDateTime.getDate()).padStart(2, '0')
+      const hours = String(localDateTime.getHours()).padStart(2, '0')
+      const minutes = String(localDateTime.getMinutes()).padStart(2, '0')
+      const seconds = String(localDateTime.getSeconds()).padStart(2, '0')
+      
+      // Get timezone offset in format +/-HH:MM
+      const timezoneOffset = localDateTime.getTimezoneOffset()
+      const offsetHours = Math.floor(Math.abs(timezoneOffset) / 60)
+      const offsetMinutes = Math.abs(timezoneOffset) % 60
+      const offsetSign = timezoneOffset <= 0 ? '+' : '-'
+      const timezoneString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`
+      
+      const eventTimeISO = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000${timezoneString}`
 
       // Calculate game_time_seconds based on game start time
       // Both times should be in the same timezone for proper calculation
@@ -237,6 +257,128 @@ const GameStats = () => {
 
   const handleAddEventClick = () => {
     setShowAddEventDialog(true)
+  }
+
+  const handleEditEventClick = (event) => {
+    setSelectedEventForEdit(event)
+    
+    // Convert stored UTC time to local time for datetime-local input
+    const eventDate = new Date(event.event_time)
+    
+    // Create local time string in the format expected by datetime-local input
+    const year = eventDate.getFullYear()
+    const month = String(eventDate.getMonth() + 1).padStart(2, '0')
+    const day = String(eventDate.getDate()).padStart(2, '0')
+    const hours = String(eventDate.getHours()).padStart(2, '0')
+    const minutes = String(eventDate.getMinutes()).padStart(2, '0')
+    const seconds = String(eventDate.getSeconds()).padStart(2, '0')
+    
+    const localTimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
+    
+    setEditEvent({
+      event_type: event.event_type,
+      player_id: event.player_id || '',
+      event_time: localTimeString,
+      metadata: event.metadata ? JSON.stringify(event.metadata) : ''
+    })
+    setShowEditEventDialog(true)
+  }
+
+  const handlePlayerNameClick = (playerId) => {
+    setSelectedPlayerForDetails(playerId)
+    setShowPlayerDetailsModal(true)
+  }
+
+  const handleClosePlayerDetailsModal = () => {
+    setShowPlayerDetailsModal(false)
+    setSelectedPlayerForDetails(null)
+  }
+
+  const handleEditEvent = async () => {
+    try {
+      if (!selectedEventForEdit) return
+
+      // Validate that we have a game session
+      if (!gameSession || !gameSession.game_start_time) {
+        alert('Cannot edit event: No game session found.')
+        return
+      }
+
+      // Handle timezone conversion - datetime-local gives us local time
+      // We need to treat this as local time and store it consistently
+      const localDateTime = new Date(editEvent.event_time)
+      
+      // Create ISO string with explicit timezone offset to prevent UTC conversion
+      const year = localDateTime.getFullYear()
+      const month = String(localDateTime.getMonth() + 1).padStart(2, '0')
+      const day = String(localDateTime.getDate()).padStart(2, '0')
+      const hours = String(localDateTime.getHours()).padStart(2, '0')
+      const minutes = String(localDateTime.getMinutes()).padStart(2, '0')
+      const seconds = String(localDateTime.getSeconds()).padStart(2, '0')
+      
+      // Get timezone offset in format +/-HH:MM
+      const timezoneOffset = localDateTime.getTimezoneOffset()
+      const offsetHours = Math.floor(Math.abs(timezoneOffset) / 60)
+      const offsetMinutes = Math.abs(timezoneOffset) % 60
+      const offsetSign = timezoneOffset <= 0 ? '+' : '-'
+      const timezoneString = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`
+      
+      const eventTimeISO = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000${timezoneString}`
+      
+
+      // Calculate game_time_seconds based on game start time
+      const gameStart = new Date(gameSession.game_start_time)
+      const gameTimeSeconds = Math.max(0, Math.floor((localDateTime - gameStart) / 1000))
+
+      // Calculate play_time_seconds (simplified - could be enhanced later)
+      const playTimeSeconds = 0 // For now, default to 0 as this requires complex calculation
+
+      const eventData = {
+        event_type: editEvent.event_type,
+        player_id: editEvent.player_id || null,
+        event_time: eventTimeISO,
+        game_time_seconds: gameTimeSeconds,
+        play_time_seconds: playTimeSeconds,
+        metadata: editEvent.metadata ? JSON.parse(editEvent.metadata) : null
+      }
+
+      
+      const { data, error } = await supabase
+        .from('game_events')
+        .update(eventData)
+        .eq('id', selectedEventForEdit.id)
+        .select()
+
+      if (error) {
+        console.error('Error updating event:', error)
+        throw error
+      }
+
+      // Log the event update
+      logUpdate('game_events', selectedEventForEdit.id, {
+        session_id: sessionId,
+        event_type: editEvent.event_type,
+        player_id: editEvent.player_id,
+        old_event_time: selectedEventForEdit.event_time,
+        new_event_time: eventTimeISO
+      })
+
+      // Refresh game events from database to ensure proper sorting
+      await refreshGameEvents()
+      
+      // Close dialog and reset form
+      setShowEditEventDialog(false)
+      setSelectedEventForEdit(null)
+      setEditEvent({
+        event_type: '',
+        player_id: '',
+        event_time: '',
+        metadata: ''
+      })
+    } catch (error) {
+      console.error('Error updating event:', error)
+      alert('Failed to update event: ' + error.message)
+    }
   }
 
   const handleShowDetails = (event) => {
@@ -584,29 +726,18 @@ const GameStats = () => {
 
       // Calculate player stats using event-driven approach
       const stats = players.map((player) => {
-        console.log(`\n=== Calculating stats for ${player.first_name} ${player.last_name} ===`)
         
         // Get all events for this player, ordered by time
         const playerEvents = gameEvents
           .filter(event => event.player_id === player.id)
           .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
         
-        console.log(`Player events (${playerEvents.length}):`, playerEvents.map(e => ({
-          type: e.event_type,
-          time: e.event_time,
-          gameTime: e.game_time_seconds
-        })))
         
         // Get all play start/stop events for the entire game
         const playEvents = gameEvents
           .filter(event => event.event_type === 'play_start' || event.event_type === 'play_stop')
           .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
         
-        console.log(`Play events (${playEvents.length}):`, playEvents.map(e => ({
-          type: e.event_type,
-          time: e.event_time,
-          gameTime: e.game_time_seconds
-        })))
         
         // Calculate total rink time during active play periods
         let totalRinkTime = 0
@@ -678,11 +809,13 @@ const GameStats = () => {
             if (event.event_type === 'player_on') {
               if (!isOnRink) {
                 isOnRink = true
-                if (isPlayActive) {
+                if (isPlayActive && !currentShiftStart) {
                   currentShiftStart = eventTime
                   console.log(`Player came on rink during active play at ${eventTime.toISOString()}`)
-                } else {
+                } else if (!isPlayActive) {
                   console.log(`Player came on rink during stopped play at ${eventTime.toISOString()} - will start tracking when play begins`)
+                } else if (currentShiftStart) {
+                  console.log(`Player came on rink during active play at ${eventTime.toISOString()} but shift already started at ${currentShiftStart.toISOString()}`)
                 }
               }
             } else if (event.event_type === 'player_off') {
@@ -708,7 +841,18 @@ const GameStats = () => {
         
         // Handle case where player is still on rink at game end
         if (isOnRink && currentShiftStart && isPlayActive) {
-          const gameEndTime = gameSession?.game_end_time ? new Date(gameSession.game_end_time) : new Date()
+          // Find the game_end event to get the actual game end time
+          const gameEndEvent = gameEvents.find(event => event.event_type === 'game_end')
+          let gameEndTime
+          
+          if (gameEndEvent) {
+            gameEndTime = new Date(gameEndEvent.event_time)
+          } else {
+            // Fallback: use the time of the last event in the game
+            const lastEvent = gameEvents.length > 0 ? gameEvents[gameEvents.length - 1] : null
+            gameEndTime = lastEvent ? new Date(lastEvent.event_time) : new Date()
+          }
+          
           const finalShiftDuration = Math.floor((gameEndTime - currentShiftStart) / 1000)
           console.log(`Player still on rink at game end: ${finalShiftDuration}s (${currentShiftStart.toISOString()} to ${gameEndTime.toISOString()})`)
           totalRinkTime += finalShiftDuration
@@ -807,7 +951,8 @@ const GameStats = () => {
           formattedTime: formatTime(totalRinkTime),
           formattedAverageShiftTime: formatTime(averageShiftTime),
           formattedShortestShift: formatTime(shortestShift),
-          formattedLongestShift: formatTime(longestShift)
+          formattedLongestShift: formatTime(longestShift),
+          formattedLongestShiftStartTime: longestShiftStartTime ? calculateElapsedTime(longestShiftStartTime) : 'N/A'
         }
       })
 
@@ -912,7 +1057,12 @@ const GameStats = () => {
                   {playerStats.map((player) => (
                     <tr key={player.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {player.name}
+                        <button
+                          onClick={() => handlePlayerNameClick(player.id)}
+                          className="text-blue-600 hover:text-blue-900 hover:underline focus:outline-none focus:underline transition-colors duration-200"
+                        >
+                          {player.name}
+                        </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         #{player.jerseyNumber}
@@ -1002,10 +1152,13 @@ const GameStats = () => {
                   }
                   
                   // If game ended while play was active, add time until game end
-                  if (playStartTime && gameSession?.game_end_time) {
-                    const gameEndTime = new Date(gameSession.game_end_time)
-                    const finalPlayDuration = Math.floor((gameEndTime - playStartTime) / 1000)
-                    totalPlayTime += finalPlayDuration
+                  if (playStartTime) {
+                    const gameEndEvent = gameEvents.find(event => event.event_type === 'game_end')
+                    if (gameEndEvent) {
+                      const gameEndTime = new Date(gameEndEvent.event_time)
+                      const finalPlayDuration = Math.floor((gameEndTime - playStartTime) / 1000)
+                      totalPlayTime += finalPlayDuration
+                    }
                   }
                   
                   const minutes = Math.floor(totalPlayTime / 60)
@@ -1031,24 +1184,27 @@ const GameStats = () => {
                     minute: '2-digit'
                   })}
                 </div>
-                {gameSession.game_end_time && (
-                  <div>
-                    <span className="font-medium">Game Ended:</span>{' '}
-                    {new Date(gameSession.game_end_time).toLocaleString('en-AU', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </div>
-                )}
+                {(() => {
+                  const gameEndEvent = gameEvents.find(event => event.event_type === 'game_end')
+                  return gameEndEvent && (
+                    <div>
+                      <span className="font-medium">Game Ended:</span>{' '}
+                      {new Date(gameEndEvent.event_time).toLocaleString('en-AU', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  )
+                })()}
                 <div>
                   <span className="font-medium">Game Status:</span>{' '}
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    gameSession.game_end_time ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'
+                    gameEvents.find(event => event.event_type === 'game_end') ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'
                   }`}>
-                    {gameSession.game_end_time ? 'Completed' : 'In Progress'}
+                    {gameEvents.find(event => event.event_type === 'game_end') ? 'Completed' : 'In Progress'}
                   </span>
                 </div>
                 {gameSession.total_play_time_seconds && (
@@ -1062,10 +1218,10 @@ const GameStats = () => {
           )}
         </div>
 
-        {/* Debug: Game Events Table */}
+        {/* Game Events Table */}
         <div className="bg-white rounded-lg shadow-md p-6 mt-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
-            <h3 className="text-lg font-semibold text-gray-800">Debug: Game Events</h3>
+            <h3 className="text-lg font-semibold text-gray-800">Game Events</h3>
             
             {/* Filters and Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
@@ -1114,6 +1270,12 @@ const GameStats = () => {
               
               {/* Action Buttons */}
               <div className="flex gap-2">
+                <Link
+                  to={orgId ? `/organisations/${orgId}/sessions/${sessionId}/timeline-editor` : `/sessions/${sessionId}/timeline-editor`}
+                  className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  Timeline Editor
+                </Link>
                 <button
                   onClick={handleAddEventClick}
                   className="px-3 py-1 text-sm rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -1259,13 +1421,22 @@ const GameStats = () => {
                           {event.metadata ? JSON.stringify(event.metadata) : ''}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <button
-                            onClick={() => handleShowDetails(event)}
-                            className="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline"
-                            title="View full details"
-                          >
-                            View Details
-                          </button>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditEventClick(event)}
+                              className="text-blue-600 hover:text-blue-900 focus:outline-none focus:underline"
+                              title="Edit event"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleShowDetails(event)}
+                              className="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline"
+                              title="View full details"
+                            >
+                              View Details
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -1279,29 +1450,6 @@ const GameStats = () => {
             </div>
           )}
           
-          <div className="mt-4 text-xs text-gray-400">
-            <p>This debug table shows relevant game events (excluding player_positions) to help troubleshoot calculation issues.</p>
-            <p>Total events: {gameEvents?.length || 0}</p>
-            <p>Filtered events (excluding player_positions): {gameEvents?.filter(e => e.event_type !== 'player_positions').length || 0}</p>
-            <p>Currently displayed events: {gameEvents
-              ?.filter(e => e.event_type !== 'player_positions')
-              ?.filter(e => selectedPlayerFilter === 'all' ? true : e.player_id === selectedPlayerFilter)
-              ?.filter(e => selectedEventTypeFilter === 'all' ? true : e.event_type === selectedEventTypeFilter).length || 0}</p>
-            <p>Unique players in events: {allPlayers?.length || 0}</p>
-            <p>Player IDs in events: {[...new Set(gameEvents?.map(e => e.player_id).filter(Boolean) || [])].join(', ')}</p>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedPlayerFilter !== 'all' && (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  Player: {allPlayers.find(p => p.id === selectedPlayerFilter)?.first_name} {allPlayers.find(p => p.id === selectedPlayerFilter)?.last_name}
-                </span>
-              )}
-              {selectedEventTypeFilter !== 'all' && (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Event Type: {selectedEventTypeFilter === 'play_events' ? 'Play Events (Start & Stop)' : selectedEventTypeFilter.replace('_', ' ')}
-                </span>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1445,6 +1593,122 @@ const GameStats = () => {
                       event_type: 'player_on',
                       player_id: '',
                       event_time: new Date().toISOString().slice(0, 19),
+                      metadata: ''
+                    })
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Event Dialog */}
+      {showEditEventDialog && selectedEventForEdit && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-10 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Game Event</h3>
+              
+              <div className="space-y-4">
+                {/* Event Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Event Type
+                  </label>
+                  <select
+                    value={editEvent.event_type}
+                    onChange={(e) => setEditEvent({...editEvent, event_type: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="player_on">Player On</option>
+                    <option value="player_off">Player Off</option>
+                    <option value="goal_for">Goal For</option>
+                    <option value="goal_against">Goal Against</option>
+                    <option value="play_start">Play Start</option>
+                    <option value="play_stop">Play Stop</option>
+                    <option value="player_deleted">Player Deleted</option>
+                  </select>
+                </div>
+
+                {/* Player Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Player {['goal_for', 'goal_against', 'play_start', 'play_stop'].includes(editEvent.event_type) && '(Optional)'}
+                  </label>
+                  <select
+                    value={editEvent.player_id}
+                    onChange={(e) => setEditEvent({...editEvent, player_id: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">No Player</option>
+                    {allPlayers.map((player) => (
+                      <option key={player.id} value={player.id}>
+                        {player.first_name} {player.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Event Time */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Event Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    step="1"
+                    value={editEvent.event_time}
+                    onChange={(e) => setEditEvent({...editEvent, event_time: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                  {gameSession && gameSession.game_start_time && editEvent.event_time && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Game time: {(() => {
+                        const gameStart = new Date(gameSession.game_start_time)
+                        const eventTime = new Date(editEvent.event_time) // This is local time from datetime-local input
+                        const gameTimeSeconds = Math.floor((eventTime - gameStart) / 1000)
+                        const minutes = Math.floor(gameTimeSeconds / 60)
+                        const seconds = gameTimeSeconds % 60
+                        return `${minutes}:${seconds.toString().padStart(2, '0')}`
+                      })()}
+                    </p>
+                  )}
+                </div>
+
+                {/* Metadata */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Metadata (JSON, Optional)
+                  </label>
+                  <textarea
+                    value={editEvent.metadata}
+                    onChange={(e) => setEditEvent({...editEvent, metadata: e.target.value})}
+                    placeholder='{"rink_players": [1, 2, 3]}'
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-20"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={handleEditEvent}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Update Event
+                </button>
+                <button
+                  onClick={() => {
+                    setShowEditEventDialog(false)
+                    setSelectedEventForEdit(null)
+                    setEditEvent({
+                      event_type: '',
+                      player_id: '',
+                      event_time: '',
                       metadata: ''
                     })
                   }}
@@ -1679,6 +1943,7 @@ const GameStats = () => {
                   <div className="bg-red-50 p-4 rounded-lg">
                     <h4 className="text-sm font-medium text-red-800 mb-2">Longest Shift</h4>
                     <p className="text-xl font-bold text-red-900">{selectedPlayerForStats.formattedLongestShift}</p>
+                    <p className="text-xs text-red-700 mt-1">Started: {selectedPlayerForStats.formattedLongestShiftStartTime}</p>
                   </div>
                 </div>
 
@@ -1737,8 +2002,8 @@ const GameStats = () => {
                       <span className="ml-2 font-medium">{selectedPlayerForStats.jerseyNumber || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Total Rink Time (seconds):</span>
-                      <span className="ml-2 font-medium">{selectedPlayerForStats.totalRinkTime}s</span>
+                      <span className="text-gray-600">Total Rink Time:</span>
+                      <span className="ml-2 font-medium">{selectedPlayerForStats.formattedTime}</span>
                     </div>
                   </div>
                 </div>
@@ -1757,6 +2022,14 @@ const GameStats = () => {
           </div>
         </div>
       )}
+
+      {/* Player Details Modal */}
+      <PlayerDetailsModal
+        isOpen={showPlayerDetailsModal}
+        onClose={handleClosePlayerDetailsModal}
+        playerId={selectedPlayerForDetails}
+        orgId={orgId}
+      />
     </div>
   )
 }

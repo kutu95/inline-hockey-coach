@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../src/lib/supabase'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import './GameManagement.css'
 
 const GameManagement = () => {
@@ -718,17 +718,18 @@ const GameManagement = () => {
     try {
       const now = new Date()
       
-      // Update game session
+      // Record game end event first to get the exact time
+      await recordGameEvent('game_end', null, now, currentGameTime, totalPlayTime)
+      
+      // Update game session with the same time as the game_end event
       await supabase
         .from('game_sessions')
         .update({
           is_active: false,
-          current_play_start_time: null
+          current_play_start_time: null,
+          game_end_time: now.toISOString()
         })
         .eq('session_id', sessionId)
-      
-      // Record game end event
-      await recordGameEvent('game_end', null, now, currentGameTime, totalPlayTime)
       
       // Set game as ended
       setGameHasEnded(true)
@@ -2056,7 +2057,15 @@ const GameManagement = () => {
       {/* Game Clock Controls */}
       <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="w-10"></div> {/* Spacer for centering */}
+          <Link
+            to={orgId ? `/organisations/${orgId}/sessions/${sessionId}` : `/sessions/${sessionId}`}
+            className="text-gray-600 hover:text-gray-800 font-medium flex items-center space-x-1"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Session</span>
+          </Link>
           <h1 className="text-2xl font-bold text-gray-800 text-center">
             Game Management
             {session && (

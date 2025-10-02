@@ -65,7 +65,22 @@ import CleanSliderTest from '../components/animator/CleanSliderTest'
 import GameManagement from '../components/GameManagement'
 import GameStats from '../components/GameStats'
 import GameViewer from '../components/GameViewer'
+import TimelineEventEditor from '../components/TimelineEventEditor'
+import EventLogs from '../components/EventLogs'
 import './App.css'
+import { useEventLogger } from './hooks/useEventLogger'
+
+// Main App Component with Event Logging
+const AppWithLogging = () => {
+  // Initialize event logging for the entire app
+  useEventLogger()
+
+  return (
+    <Router>
+      <AppRoutes />
+    </Router>
+  )
+}
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -155,10 +170,18 @@ function App() {
   return (
     <AuthProvider>
       <AuthErrorBoundary>
-        <Router>
-          <div className="App">
-            <AuthErrorHandler />
-            <Routes>
+        <AppWithLogging />
+      </AuthErrorBoundary>
+    </AuthProvider>
+  )
+}
+
+// Main App Routes Component
+const AppRoutes = () => {
+  return (
+    <div className="App">
+      <AuthErrorHandler />
+      <Routes>
             <Route 
               path="/login" 
               element={
@@ -837,7 +860,7 @@ function App() {
                 <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
                   <GameStats />
                 </RoleProtectedRoute>
-              } 
+              }
             />
             
             {/* Organization-scoped Game Stats */}
@@ -848,6 +871,46 @@ function App() {
                   <GameStats />
                 </RoleProtectedRoute>
               }
+            />
+
+            {/* Timeline Event Editor */}
+            <Route 
+              path="/sessions/:sessionId/timeline-editor" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <TimelineEventEditor />
+                </RoleProtectedRoute>
+              }
+            />
+            
+            {/* Organization-scoped Timeline Event Editor */}
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/timeline-editor" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <TimelineEventEditor />
+                </RoleProtectedRoute>
+              } 
+            />
+
+            {/* Event Logs - Superadmin Only */}
+            <Route 
+              path="/event-logs" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <EventLogs />
+                </RoleProtectedRoute>
+              } 
+            />
+
+            {/* Organization-scoped Event Logs */}
+            <Route 
+              path="/organisations/:orgId/event-logs" 
+              element={
+                <RoleProtectedRoute requiredRoles={['superadmin']}>
+                  <EventLogs orgId={true} />
+                </RoleProtectedRoute>
+              } 
             />
             
             {/* Game Viewer - Public Access */}
@@ -866,9 +929,6 @@ function App() {
             <Route path="/" element={<RoleBasedRedirect />} />
           </Routes>
         </div>
-      </Router>
-        </AuthErrorBoundary>
-    </AuthProvider>
   )
 }
 
