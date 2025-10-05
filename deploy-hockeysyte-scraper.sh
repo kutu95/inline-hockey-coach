@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo "🚀 Deploying HockeySyte Scraping Edge Function"
+echo ""
+
+echo "📋 Prerequisites:"
+echo "1. Make sure you're logged into Supabase CLI"
+echo "2. Docker Desktop is installed and running (for CLI deployment)"
+echo "3. Or use the Supabase Dashboard method (recommended)"
+echo ""
+
+echo "🔧 Current Setup:"
+echo "- Project: iktybklkggzmcynibhbl"
+echo "- Function: scrape-hockeysyte"
+echo "- File: supabase/functions/scrape-hockeysyte/index.ts"
+echo ""
+
+echo "📝 Deployment Options:"
+echo ""
+echo "Option 1: Deploy via Supabase Dashboard (Recommended - 2 minutes)"
+echo "1. Go to: https://supabase.com/dashboard/project/iktybklkggzmcynibhbl"
+echo "2. Navigate to Edge Functions"
+echo "3. Click 'Create a new function'"
+echo "4. Name: scrape-hockeysyte"
+echo "5. Copy the code from supabase/functions/scrape-hockeysyte/index.ts"
+echo "6. Click Deploy"
+echo ""
+
+echo "Option 2: Install Docker and Deploy via CLI"
+echo "1. Install Docker Desktop: https://docs.docker.com/desktop/"
+echo "2. Start Docker Desktop"
+echo "3. Run: supabase functions deploy scrape-hockeysyte"
+echo ""
+
+echo "Option 3: Manual Deployment"
+echo "1. Go to Supabase Dashboard > Edge Functions"
+echo "2. Create new function with the code provided in DEPLOY_HOCKEYSYTE_SCRAPER.md"
+echo ""
+
+echo "🧪 Test after deployment:"
+echo "1. Go to Dashboard → 'Import from HockeySyte'"
+echo "2. Enter URL: https://ilha.hockeysyte.com/team/936"
+echo "3. Click 'Scrape Team'"
+echo "4. Should see real players (not mock data)"
+echo ""
+
+echo "✅ Expected Results:"
+echo "- Real player names and jersey numbers"
+echo "- Different teams will have different players"
+echo "- Team sizes will vary (8-20+ players)"
+echo "- No more mock data fallback"
+echo ""
+
+echo "📖 Full instructions: DEPLOY_HOCKEYSYTE_SCRAPER.md"
+echo ""
+echo "🎯 Quick Start: Just copy the code from the index.ts file and deploy via dashboard!"

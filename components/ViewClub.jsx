@@ -78,7 +78,7 @@ const ViewClub = () => {
     try {
       const { data: playersData, error: playersError } = await supabase
         .from('players')
-        .select('id, first_name, last_name, birthdate, email, phone, accreditations, status, user_id')
+        .select('id, first_name, last_name, birthdate, email, phone, accreditations, user_id')
         .eq('club_id', clubId)
         .order('first_name')
         .order('last_name');
@@ -472,13 +472,6 @@ const ViewClub = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        player.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {player.status || 'active'}
-                      </span>
                       {(canViewPlayers || player.user_id === user?.id) ? (
                         <Link
                           to={orgId ? `/organisations/${orgId}/players/${player.id}` : `/players/${player.id}`}

@@ -67,6 +67,10 @@ import GameStats from '../components/GameStats'
 import GameViewer from '../components/GameViewer'
 import TimelineEventEditor from '../components/TimelineEventEditor'
 import EventLogs from '../components/EventLogs'
+import CreateMatch from '../components/CreateMatch'
+import MatchManagement from '../components/MatchManagement'
+import MatchStats from '../components/MatchStats'
+import MatchList from '../components/MatchList'
 import './App.css'
 import { useEventLogger } from './hooks/useEventLogger'
 
@@ -889,6 +893,90 @@ const AppRoutes = () => {
               element={
                 <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
                   <TimelineEventEditor />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            {/* Match Management Routes */}
+            <Route 
+              path="/matches" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchList />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/matches" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchList />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/create-match" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <CreateMatch />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/create-match" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <CreateMatch />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sessions/:sessionId/match" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchManagement />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/sessions/:sessionId/match" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchManagement />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/matches/:matchId/management" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchManagement />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/matches/:matchId/management" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin']}>
+                  <MatchManagement />
+                </RoleProtectedRoute>
+              } 
+            />
+
+            {/* Match Stats */}
+            <Route 
+              path="/matches/:matchId/stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
+                  <MatchStats />
+                </RoleProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/organisations/:orgId/matches/:matchId/stats" 
+              element={
+                <RoleProtectedRoute requiredRoles={['coach', 'admin', 'superadmin', 'player']}>
+                  <MatchStats />
                 </RoleProtectedRoute>
               } 
             />

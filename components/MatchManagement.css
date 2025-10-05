@@ -1,0 +1,832 @@
+/* Match Management Styles */
+
+.match-management {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding: 1rem;
+}
+
+/* Header */
+.match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.back-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.back-link:hover {
+  background-color: #f1f5f9;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-stats-button {
+  color: #059669;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.view-stats-button:hover {
+  background-color: #d1fae5;
+  border-color: #a7f3d0;
+}
+
+.match-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.match-info .teams {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.home-team {
+  color: #dc2626;
+}
+
+.vs {
+  color: #6b7280;
+}
+
+.away-team {
+  color: #2563eb;
+}
+
+/* Game Controls */
+.game-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.team-score {
+  min-width: 3rem;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.team-score.home {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+}
+
+.team-score.away {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+}
+
+.score-separator {
+  color: #6b7280;
+}
+
+.timers {
+  display: flex;
+  gap: 2rem;
+}
+
+.timer {
+  text-align: center;
+}
+
+.timer label {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.time-display {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: 'Courier New', monospace;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.start-button,
+.play-button,
+.end-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.start-button {
+  background-color: #10b981;
+  color: white;
+}
+
+.start-button:hover {
+  background-color: #059669;
+}
+
+.play-button {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.play-button:hover {
+  background-color: #2563eb;
+}
+
+.play-button.stopped {
+  background-color: #ef4444;
+}
+
+.play-button.stopped:hover {
+  background-color: #dc2626;
+}
+
+.end-button {
+  background-color: #6b7280;
+  color: white;
+}
+
+.end-button:hover {
+  background-color: #4b5563;
+}
+
+.clear-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #dc2626;
+  color: white;
+}
+
+.clear-button:hover {
+  background-color: #b91c1c;
+}
+
+.goal-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.goal-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.goal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.goal-button.home {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+}
+
+.goal-button.home:hover:not(:disabled) {
+  background-color: #dc2626;
+  color: white;
+}
+
+.goal-button.away {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+}
+
+.goal-button.away:hover:not(:disabled) {
+  background-color: #2563eb;
+  color: white;
+}
+
+.match-ended-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.match-ended {
+  padding: 0.75rem 1.5rem;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border-radius: 0.375rem;
+  font-weight: 600;
+}
+
+/* Player Management */
+.player-management {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.teams-container {
+  display: flex;
+  min-height: 600px;
+}
+
+.team-section {
+  flex: 1;
+  border-right: 2px solid #e5e7eb;
+}
+
+.team-section.away {
+  border-right: none;
+}
+
+.team-header {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.team-section.home .team-header {
+  background-color: #fef2f2;
+  border-bottom-color: #dc2626;
+}
+
+.team-section.away .team-header {
+  background-color: #eff6ff;
+  border-bottom-color: #2563eb;
+}
+
+.team-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.team-section.home .team-header h2 {
+  color: #dc2626;
+}
+
+.team-section.away .team-header h2 {
+  color: #2563eb;
+}
+
+.team-zones {
+  display: flex;
+  height: calc(100% - 80px);
+}
+
+.drop-zone {
+  flex: 1;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+}
+
+.drop-zone.rink {
+  border-right: none;
+}
+
+.zone-header {
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.skaters-section,
+.goalies-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.goalies-section {
+  border-bottom: none;
+  flex: 0 0 120px; /* Fixed height for goalies */
+}
+
+.section-label {
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.players-container {
+  flex: 1;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Player Cards */
+.player-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  cursor: grab;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 60px;
+}
+
+.player-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+.player-card:active {
+  cursor: grabbing;
+}
+
+.player-card.bench {
+  border-color: #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.player-card.rink {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.875rem;
+}
+
+.player-jersey {
+  font-size: 1rem;
+  color: #374151;
+  font-weight: 700;
+}
+
+.player-time {
+  font-size: 0.75rem;
+  color: #10b981;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.modal p {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.cancel-button:hover {
+  background-color: #e5e7eb;
+}
+
+.confirm-button {
+  background-color: #ef4444;
+  color: white;
+}
+
+.confirm-button:hover {
+  background-color: #dc2626;
+}
+
+/* Loading and Error States */
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.125rem;
+}
+
+.loading {
+  color: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .match-management {
+    padding: 0.5rem;
+  }
+  
+  .match-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .game-controls {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .teams-container {
+    flex-direction: column;
+  }
+  
+  .team-section {
+    border-right: none;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .team-section.away {
+    border-bottom: none;
+  }
+  
+  .team-zones {
+    flex-direction: column;
+  }
+  
+  .drop-zone {
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    min-height: 200px;
+  }
+  
+  .goalies-section {
+    flex: 0 0 100px;
+  }
+  
+  .score {
+    font-size: 2rem;
+  }
+  
+  .timers {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .control-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .goal-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .goal-button {
+    flex: 1;
+  }
+}
+
+/* Touch Support */
+@media (hover: none) and (pointer: coarse) {
+  .player-card {
+    min-height: 44px;
+    padding: 1rem;
+  }
+  
+  .control-buttons button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .goal-button {
+    min-height: 44px;
+  }
+}
+
+/* Match Events Section */
+.match-events-section {
+  margin-top: 2rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.events-summary {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.events-table-container {
+  overflow-x: auto;
+}
+
+.events-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.events-table th,
+.events-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.events-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.events-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.event-type-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.team-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.player-info {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+}
+
+.edit-button:hover {
+  background-color: #f3f4f6;
+}
+
+.delete-button:hover {
+  background-color: #fef2f2;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.pagination-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Edit Event Modal */
+.edit-event-modal {
+  max-width: 600px;
+  width: 95%;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile Responsiveness for Events Table */
+@media (max-width: 768px) {
+  .match-events-section {
+    margin-top: 1rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .events-table {
+    font-size: 0.75rem;
+  }
+  
+  .events-table th,
+  .events-table td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .event-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .edit-event-modal {
+    width: 98%;
+    padding: 1rem;
+  }
+}
