@@ -18,8 +18,8 @@ const getEnvVar = (varName, fallback = 'unknown') => {
 
 export const BUILD_INFO = {
   buildTime: '2025-07-24T03:12:12.424Z',
-  buildDate: '10/5/2025',
-  version: '1.1.71',
+  buildDate: '10/15/2025',
+  version: '1.1.72',
   environment: getEnvVar('NODE_ENV', 'development'),
   commitHash: getEnvVar('VERCEL_GIT_COMMIT_SHA') || 
               getEnvVar('NETLIFY_COMMIT_REF') || 

@@ -71,6 +71,8 @@ import CreateMatch from '../components/CreateMatch'
 import MatchManagement from '../components/MatchManagement'
 import MatchStats from '../components/MatchStats'
 import MatchList from '../components/MatchList'
+import PlayerIconDemo from '../components/PlayerIconDemo'
+import MatchManagementEnhanced from '../components/MatchManagementEnhanced'
 import './App.css'
 import { useEventLogger } from './hooks/useEventLogger'
 
@@ -803,6 +805,26 @@ const AppRoutes = () => {
               element={
                 <ProtectedRoute>
                   <KeyframeSoccerAnimatorFixed />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Player Icon Demo */}
+            <Route 
+              path="/player-icon-demo" 
+              element={
+                <ProtectedRoute>
+                  <PlayerIconDemo />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Enhanced Match Management Demo */}
+            <Route 
+              path="/match-management-enhanced" 
+              element={
+                <ProtectedRoute>
+                  <MatchManagementEnhanced />
                 </ProtectedRoute>
               } 
             />

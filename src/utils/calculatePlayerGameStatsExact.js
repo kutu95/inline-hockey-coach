@@ -36,6 +36,15 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
   let longestShift = 0
   let longestShiftStartTime = null
   
+  // Calculate bench time tracking
+  let totalBenchTime = 0
+  let benchShiftCount = 0
+  let currentBenchStart = null
+  let isOnBench = false
+  let shortestBenchTime = 0
+  let longestBenchTime = 0
+  let longestBenchStartTime = null
+  
   // Process all events in chronological order
   const allEvents = [...playerEvents, ...playEvents]
     .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
@@ -48,7 +57,7 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
   
   let isPlayActive = false
   
-  // Determine initial player state - check if player was on rink before any events
+  // Determine initial player state - check if player was on rink or bench before any events
   if (playerEvents.length > 0) {
     const firstPlayerEvent = playerEvents[0]
     const firstPlayEvent = playEvents[0]
@@ -60,6 +69,17 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
       isOnRink = true
       console.log(`Player ${player.first_name} was on rink at game start (before first play_start)`)
     }
+    // If first player event is player_off and it's before first play_start, player was on bench at game start
+    else if (firstPlayerEvent.event_type === 'player_off' && 
+             firstPlayEvent && 
+             new Date(firstPlayerEvent.event_time) < new Date(firstPlayEvent.event_time)) {
+      isOnBench = true
+      console.log(`Player ${player.first_name} was on bench at game start (before first play_start)`)
+    }
+  } else {
+    // No player events - assume player was on bench at game start
+    isOnBench = true
+    console.log(`Player ${player.first_name} had no events - assuming on bench at game start`)
   }
   
   for (const event of allEvents) {
@@ -73,6 +93,12 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
       if (isOnRink && !currentShiftStart) {
         currentShiftStart = eventTime
         console.log(`Player was already on rink when play started - beginning shift tracking at ${eventTime.toISOString()}`)
+      }
+      
+      // If player was on bench when play started, begin tracking bench time
+      if (isOnBench && !currentBenchStart) {
+        currentBenchStart = eventTime
+        console.log(`Player was already on bench when play started - beginning bench tracking at ${eventTime.toISOString()}`)
       }
     } else if (event.event_type === 'play_stop') {
       isPlayActive = false
@@ -92,11 +118,46 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
         }
         currentShiftStart = null // Don't reset isOnRink, player might still be on rink
       }
+      
+      // If player was on bench when play stopped, end bench time
+      if (isOnBench && currentBenchStart) {
+        const benchDuration = Math.floor((eventTime - currentBenchStart) / 1000)
+        console.log(`Ending bench time due to play stop: ${benchDuration}s (${currentBenchStart.toISOString()} to ${eventTime.toISOString()})`)
+        totalBenchTime += benchDuration
+        benchShiftCount++
+        // Track shortest and longest bench times
+        if (benchShiftCount === 1 || benchDuration < shortestBenchTime) shortestBenchTime = benchDuration
+        if (benchDuration > longestBenchTime) {
+          longestBenchTime = benchDuration
+          longestBenchStartTime = currentBenchStart
+        }
+        currentBenchStart = null // Don't reset isOnBench, player might still be on bench
+      }
     } else if (event.player_id === player.id) {
       // This is a player-specific event
       if (event.event_type === 'player_on') {
         if (!isOnRink) {
           isOnRink = true
+          
+          // End bench time when player comes on rink
+          if (isOnBench && currentBenchStart && isPlayActive) {
+            const benchDuration = Math.floor((eventTime - currentBenchStart) / 1000)
+            console.log(`Player went from bench to rink during active play: ${benchDuration}s (${currentBenchStart.toISOString()} to ${eventTime.toISOString()})`)
+            totalBenchTime += benchDuration
+            benchShiftCount++
+            // Track shortest and longest bench times
+            if (benchShiftCount === 1 || benchDuration < shortestBenchTime) shortestBenchTime = benchDuration
+            if (benchDuration > longestBenchTime) {
+              longestBenchTime = benchDuration
+              longestBenchStartTime = currentBenchStart
+            }
+          } else if (isOnBench && currentBenchStart && !isPlayActive) {
+            console.log(`Player went from bench to rink during stopped play at ${eventTime.toISOString()} - not counting bench time`)
+          }
+          
+          isOnBench = false
+          currentBenchStart = null
+          
           if (isPlayActive) {
             currentShiftStart = eventTime
             console.log(`Player came on rink during active play at ${eventTime.toISOString()}`)
@@ -105,6 +166,7 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
           }
         }
       } else if (event.event_type === 'player_off') {
+        // End rink time when player goes off rink
         if (isOnRink && currentShiftStart && isPlayActive) {
           const shiftDuration = Math.floor((eventTime - currentShiftStart) / 1000)
           console.log(`Player went off rink during active play: ${shiftDuration}s (${currentShiftStart.toISOString()} to ${eventTime.toISOString()})`)
@@ -121,6 +183,17 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
         }
         isOnRink = false
         currentShiftStart = null
+        
+        // Start bench time when player goes off rink
+        if (!isOnBench) {
+          isOnBench = true
+          if (isPlayActive) {
+            currentBenchStart = eventTime
+            console.log(`Player went to bench during active play at ${eventTime.toISOString()}`)
+          } else {
+            console.log(`Player went to bench during stopped play at ${eventTime.toISOString()} - will start tracking when play begins`)
+          }
+        }
       }
     }
   }
@@ -140,6 +213,21 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
     }
   }
   
+  // Handle case where player is still on bench at game end
+  if (isOnBench && currentBenchStart && isPlayActive) {
+    const gameEndTime = gameSession?.game_end_time ? new Date(gameSession.game_end_time) : new Date()
+    const finalBenchDuration = Math.floor((gameEndTime - currentBenchStart) / 1000)
+    console.log(`Player still on bench at game end: ${finalBenchDuration}s (${currentBenchStart.toISOString()} to ${gameEndTime.toISOString()})`)
+    totalBenchTime += finalBenchDuration
+    benchShiftCount++
+    // Track shortest and longest bench times
+    if (benchShiftCount === 1 || finalBenchDuration < shortestBenchTime) shortestBenchTime = finalBenchDuration
+    if (finalBenchDuration > longestBenchTime) {
+      longestBenchTime = finalBenchDuration
+      longestBenchStartTime = currentBenchStart
+    }
+  }
+  
   console.log(`Total rink time for ${player.first_name}: ${totalRinkTime}s`)
   console.log(`Shift count for ${player.first_name}: ${shiftCount}`)
   console.log(`Shortest shift for ${player.first_name}: ${shortestShift}s`)
@@ -148,9 +236,21 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
     console.log(`Longest shift start time for ${player.first_name}: ${longestShiftStartTime.toISOString()}`)
   }
   
+  console.log(`Total bench time for ${player.first_name}: ${totalBenchTime}s`)
+  console.log(`Bench shift count for ${player.first_name}: ${benchShiftCount}`)
+  console.log(`Shortest bench time for ${player.first_name}: ${shortestBenchTime}s`)
+  console.log(`Longest bench time for ${player.first_name}: ${longestBenchTime}s`)
+  if (longestBenchStartTime) {
+    console.log(`Longest bench start time for ${player.first_name}: ${longestBenchStartTime.toISOString()}`)
+  }
+  
   // Calculate average shift time
   const averageShiftTime = shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0
   console.log(`Average shift time for ${player.first_name}: ${averageShiftTime}s`)
+  
+  // Calculate average bench time
+  const averageBenchTime = benchShiftCount > 0 ? Math.round(totalBenchTime / benchShiftCount) : 0
+  console.log(`Average bench time for ${player.first_name}: ${averageBenchTime}s`)
   
   // Calculate plus/minus
   let plusMinus = 0
@@ -205,6 +305,12 @@ export function calculatePlayerGameStatsExact(player, gameEvents, gameSession) {
     shortestShift,
     longestShift,
     longestShiftStartTime,
+    totalBenchTime,
+    benchShiftCount,
+    averageBenchTime,
+    shortestBenchTime,
+    longestBenchTime,
+    longestBenchStartTime,
     plusMinus
   }
 }

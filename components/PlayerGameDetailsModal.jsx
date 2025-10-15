@@ -28,6 +28,46 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
     return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
+  // Function to format longest shift start time (using same logic as GameStats)
+  const formatLongestShiftStartTime = (startTime, gameEvents) => {
+    if (!startTime || !gameEvents) {
+      return 'N/A'
+    }
+    
+    try {
+      // Find the first play start event (same logic as GameStats)
+      const firstPlayStart = gameEvents
+        .filter(event => event.event_type === 'play_start')
+        .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))[0]
+      
+      if (!firstPlayStart) {
+        return 'N/A'
+      }
+      
+      const shiftStart = new Date(startTime)
+      const playStart = new Date(firstPlayStart.event_time)
+      
+      if (isNaN(shiftStart.getTime()) || isNaN(playStart.getTime())) {
+        return 'N/A'
+      }
+      
+      // Calculate the elapsed time since first play start
+      const elapsedSeconds = Math.floor((shiftStart - playStart) / 1000)
+      
+      if (elapsedSeconds < 0) {
+        return 'N/A'
+      }
+      
+      const minutes = Math.floor(elapsedSeconds / 60)
+      const seconds = elapsedSeconds % 60
+      
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`
+    } catch (error) {
+      console.error('Error formatting longest shift start time:', error)
+      return 'N/A'
+    }
+  }
+
   useEffect(() => {
     if (isOpen && player && squadId) {
       fetchPlayerGameDetails()
@@ -80,6 +120,15 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
       }
       
       const gameEvents = allGameEvents
+      
+      console.log('Modal loaded events:', {
+        totalEvents: gameEvents.length,
+        sessionIds: sessionIds,
+        eventsBySession: sessionIds.map(sessionId => {
+          const sessionEvents = gameEvents.filter(e => e.session_id === sessionId)
+          return { sessionId, eventCount: sessionEvents.length }
+        })
+      })
 
 
       // Get game end events to determine which games have actually ended
@@ -120,6 +169,13 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
         // Get events for this specific session
         const sessionEvents = (gameEvents || []).filter(event => event.session_id === session.id)
         
+        console.log(`Session ${session.id} events:`, {
+          sessionId: session.id,
+          eventCount: sessionEvents.length,
+          eventTypes: [...new Set(sessionEvents.map(e => e.event_type))],
+          playerEvents: sessionEvents.filter(e => e.player_id === player.id).length
+        })
+        
         // Check if player participated in this game
         const playerEvents = sessionEvents.filter(event => event.player_id === player.id)
         if (playerEvents.length === 0) {
@@ -130,6 +186,13 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
           // Calculate stats for this game
           const gameStats = calculatePlayerGameStatsExact(player, sessionEvents, sessionGameSession)
           
+          console.log(`Modal calculation result for ${player.first_name} in session ${session.id}:`, {
+            longestShift: gameStats.longestShift,
+            longestShiftStartTime: gameStats.longestShiftStartTime,
+            longestShiftStartTimeType: typeof gameStats.longestShiftStartTime,
+            sessionEvents: sessionEvents?.length
+          })
+          
           gameDetailsList.push({
             sessionId: session.id,
             title: session.title,
@@ -138,7 +201,10 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
             shifts: gameStats.shiftCount,
             averageShiftTime: gameStats.averageShiftTime,
             plusMinus: gameStats.plusMinus,
-            totalGameTime: gameStats.totalRinkTime
+            totalGameTime: gameStats.totalRinkTime,
+            longestShift: gameStats.longestShift,
+            longestShiftStartTime: gameStats.longestShiftStartTime,
+            sessionEvents: sessionEvents // Include events for formatting function
           })
         } catch (gameError) {
           console.error(`Error calculating stats for game ${session.id}:`, gameError)
@@ -233,6 +299,18 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Plus/Minus
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Bench Time
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Avg Bench Time
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Longest Shift
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Shift Start Time
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -265,6 +343,25 @@ const PlayerGameDetailsModal = ({ isOpen, onClose, player, squadId }) => {
                         }`}>
                           {game.plusMinus > 0 ? '+' : ''}{game.plusMinus}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatShiftTime(game.totalBenchTime)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatShiftTime(game.averageBenchTime)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatShiftTime(game.longestShift)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {(() => {
+                          console.log(`Modal formatting for ${player.first_name}:`, {
+                            longestShiftStartTime: game.longestShiftStartTime,
+                            sessionEvents: game.sessionEvents?.length,
+                            longestShiftStartTimeType: typeof game.longestShiftStartTime
+                          })
+                          return formatLongestShiftStartTime(game.longestShiftStartTime, game.sessionEvents)
+                        })()}
                       </td>
                     </tr>
                   ))}

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { supabase } from '../../src/lib/supabase'
+import JerseySelector from './JerseySelector'
 
 const KeyframeSoccerAnimatorFixed = () => {
   // Core state
@@ -19,7 +20,7 @@ const KeyframeSoccerAnimatorFixed = () => {
   const [fieldHeight, setFieldHeight] = useState(64) // meters
   const [fieldBackground, setFieldBackground] = useState('#4ade80') // green
   const [showFieldLines, setShowFieldLines] = useState(true)
-  const [selectedPlayerColor, setSelectedPlayerColor] = useState('#3b82f6') // default blue
+  const [selectedJersey, setSelectedJersey] = useState('blue') // default blue jersey
   
   // Object manipulation state
   const [selectedElement, setSelectedElement] = useState(null)
@@ -29,6 +30,16 @@ const KeyframeSoccerAnimatorFixed = () => {
   const [isDraggingControlPoint, setIsDraggingControlPoint] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmData, setDeleteConfirmData] = useState(null)
+  
+  // Path drawing state
+  const [isDrawingPath, setIsDrawingPath] = useState(false)
+  const [currentPath, setCurrentPath] = useState(null)
+  const [pathPoints, setPathPoints] = useState([])
+  const [selectedPath, setSelectedPath] = useState(null)
+  const [showPathControls, setShowPathControls] = useState(false)
+  
+  // Path length cache for performance
+  const pathLengthCache = useRef(new Map())
   
   // Database state
   const [savedAnimations, setSavedAnimations] = useState([])
@@ -49,6 +60,7 @@ const KeyframeSoccerAnimatorFixed = () => {
     { id: 'ball', name: 'Soccer Ball', icon: '⚽', color: '#ffffff' },
     { id: 'cone', name: 'Cone', icon: '🔺', color: '#f59e0b' },
     { id: 'goal', name: 'Goal', icon: '🥅', color: '#ffffff' },
+    { id: 'path', name: 'Path', icon: '📈', color: '#8b5cf6' },
   ]
 
   // Keyframe dragging functions
@@ -186,13 +198,37 @@ const KeyframeSoccerAnimatorFixed = () => {
       const tool = availableTools.find(t => t.id === obj.type)
       if (!tool) return
       
+      // Skip rendering paths themselves in this loop
+      if (obj.type === 'path') return
+      
       ctx.save()
+      
+      // Calculate position - either static or along a path
+      let renderX = obj.x
+      let renderY = obj.y
+      
+      if (obj.pathId && isPlaying) {
+        // Find the path object
+        const pathObj = objects.find(o => o.id === obj.pathId)
+        if (pathObj && pathObj.type === 'path') {
+          // Calculate progress along path based on current time
+          const pathStartTime = obj.pathStartTime || 0
+          const pathDuration = obj.pathDuration || 10
+          const pathProgress = Math.min(1, Math.max(0, (currentTime - pathStartTime) / pathDuration))
+          
+          const pathPosition = calculatePositionAlongPath(pathObj, pathProgress)
+          if (pathPosition) {
+            renderX = pathPosition.x
+            renderY = pathPosition.y
+          }
+        }
+      }
       
       // Apply rotation if object has rotation
       if (obj.rotation) {
-        ctx.translate(obj.x, obj.y)
+        ctx.translate(renderX, renderY)
         ctx.rotate((obj.rotation * Math.PI) / 180)
-        ctx.translate(-obj.x, -obj.y)
+        ctx.translate(-renderX, -renderY)
       }
       
       // Draw selection indicator
@@ -200,7 +236,7 @@ const KeyframeSoccerAnimatorFixed = () => {
         ctx.strokeStyle = '#00ff00'
         ctx.lineWidth = 3
         ctx.beginPath()
-        ctx.arc(obj.x, obj.y, 25, 0, 2 * Math.PI)
+        ctx.arc(renderX, renderY, 25, 0, 2 * Math.PI)
         ctx.stroke()
         
         // Draw Bezier control point if it exists
@@ -211,7 +247,7 @@ const KeyframeSoccerAnimatorFixed = () => {
           
           // Draw line from object to control point
           ctx.beginPath()
-          ctx.moveTo(obj.x, obj.y)
+          ctx.moveTo(renderX, renderY)
           ctx.lineTo(obj.controlPoint.x, obj.controlPoint.y)
           ctx.stroke()
           
@@ -229,23 +265,45 @@ const KeyframeSoccerAnimatorFixed = () => {
       
       // Draw object
       if (obj.type === 'player') {
-        // Draw clean solid color circle for players
-        const playerColor = obj.color || '#3b82f6' // Default blue
-        ctx.fillStyle = playerColor
-        ctx.beginPath()
-        ctx.arc(obj.x, obj.y, 15, 0, 2 * Math.PI)
-        ctx.fill()
+        // Draw jersey-based player icon using actual jersey images
+        const jerseyType = obj.jersey || 'blue'
+        const size = 30
         
-        // Draw white border
-        ctx.strokeStyle = '#ffffff'
-        ctx.lineWidth = 2
-        ctx.stroke()
+        // Create image element for the jersey
+        const img = new Image()
+        img.src = `/jerseys/${jerseyType}-jersey.png`
+        
+        // Draw the jersey image
+        ctx.save()
+        ctx.translate(renderX, renderY)
+        
+        // Try to draw the image directly without placeholder or border
+        img.onload = () => {
+          // Redraw the canvas when image loads
+          renderFrame()
+        }
+        
+        if (img.complete) {
+          // Draw the jersey image with transparent background
+          ctx.globalCompositeOperation = 'source-over'
+          ctx.drawImage(img, -size/2, -size/2, size, size)
+        } else {
+          // Only show a subtle placeholder if image hasn't loaded yet
+          ctx.fillStyle = '#f0f0f0'
+          ctx.globalAlpha = 0.3
+          ctx.beginPath()
+          ctx.roundRect(-size/2, -size/2, size, size, 4)
+          ctx.fill()
+          ctx.globalAlpha = 1
+        }
+        
+        ctx.restore()
       } else {
         // Draw other objects with their icons
         ctx.font = '24px Arial'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillText(tool.icon, obj.x, obj.y)
+        ctx.fillText(tool.icon, renderX, renderY)
       }
       
       ctx.restore()
@@ -280,8 +338,8 @@ const KeyframeSoccerAnimatorFixed = () => {
   }
 
   const isPointInElement = (point, element) => {
-    // Circular hit detection for all objects
-    const radius = 20
+    // Circular hit detection for all objects - use larger radius for better selection
+    const radius = element.type === 'player' ? 20 : 20 // Players are 30px, so 20px radius should work well
     const dx = point.x - element.x
     const dy = point.y - element.y
     return dx * dx + dy * dy <= radius * radius
@@ -300,12 +358,12 @@ const KeyframeSoccerAnimatorFixed = () => {
     
     const { x: canvasX, y: canvasY } = getCanvasCoordinates(e)
     
-    // console.log('Canvas click:', {
-    //   mousePos: { x: canvasX, y: canvasY },
-    //   selectedTool,
-    //   isDragging,
-    //   selectedKeyframe
-    // })
+    console.log('Canvas click:', {
+      mousePos: { x: canvasX, y: canvasY },
+      selectedTool,
+      isDragging,
+      selectedKeyframe
+    })
     
     // Check if clicking on existing object
     const currentKeyframe = keyframes.find(kf => kf.id === selectedKeyframe)
@@ -325,6 +383,19 @@ const KeyframeSoccerAnimatorFixed = () => {
         isPointInElement({ x: canvasX, y: canvasY }, obj)
       )
       
+      console.log('Object detection:', {
+        currentKeyframeId: currentKeyframe.id,
+        objectCount: currentKeyframe.objects.length,
+        clickPos: { x: canvasX, y: canvasY },
+        objects: currentKeyframe.objects.map(obj => ({
+          id: obj.id,
+          type: obj.type,
+          pos: { x: obj.x, y: obj.y },
+          distance: Math.sqrt(Math.pow(canvasX - obj.x, 2) + Math.pow(canvasY - obj.y, 2))
+        })),
+        clickedElement: clickedElement ? { id: clickedElement.id, type: clickedElement.type } : null
+      })
+      
       if (clickedElement) {
         console.log('Object clicked:', {
           elementId: clickedElement.id,
@@ -337,8 +408,25 @@ const KeyframeSoccerAnimatorFixed = () => {
       }
     }
     
+    // Handle path drawing
+    if (selectedTool === 'path') {
+      if (!selectedKeyframe) {
+        console.log('Cannot draw path - no keyframe selected')
+        return
+      }
+      
+      if (!isDrawingPath) {
+        // Start path drawing
+        startPathDrawing()
+      }
+      
+      // Add point to current path
+      addPathPoint(canvasX, canvasY)
+      return
+    }
+    
     // If no object clicked and we have a tool selected, add new object
-    if (selectedTool) {
+    if (selectedTool && selectedTool !== 'path') {
       if (!selectedKeyframe) {
         console.log('Cannot add object - no keyframe selected')
         return
@@ -350,8 +438,8 @@ const KeyframeSoccerAnimatorFixed = () => {
         x: canvasX,
         y: canvasY,
         rotation: 0,
-        // Add selected color for players
-        ...(selectedTool === 'player' && { color: selectedPlayerColor })
+        // Add selected jersey for players
+        ...(selectedTool === 'player' && { jersey: selectedJersey })
       }
       
       console.log('Adding new object:', newObject, 'to keyframe:', selectedKeyframe)
@@ -527,6 +615,204 @@ const KeyframeSoccerAnimatorFixed = () => {
     setSelectedElement(null)
   }
 
+  // Path drawing functions
+  const startPathDrawing = () => {
+    setIsDrawingPath(true)
+    setPathPoints([])
+    setCurrentPath(null)
+    setSelectedElement(null)
+    console.log('Started path drawing mode')
+  }
+
+  const addPathPoint = (x, y) => {
+    if (!isDrawingPath) return
+    
+    const newPoint = { 
+      x, 
+      y, 
+      time: pathPoints.length * 2, // 2 seconds per point
+      // Add control points for Bezier curves (initially at the same position)
+      controlInX: x,
+      controlInY: y,
+      controlOutX: x,
+      controlOutY: y
+    }
+    setPathPoints(prev => [...prev, newPoint])
+    console.log('Added path point:', newPoint, 'Total points:', pathPoints.length + 1)
+  }
+
+  const finishPathDrawing = () => {
+    if (pathPoints.length < 2) {
+      console.log('Need at least 2 points for a path')
+      return
+    }
+
+    const newPath = {
+      id: `path_${Date.now()}`,
+      type: 'path',
+      points: [...pathPoints],
+      duration: pathPoints.length * 2, // 2 seconds per point
+      color: '#8b5cf6',
+      visible: true
+    }
+
+    // Add path to current keyframe
+    setKeyframes(prev => prev.map(kf => 
+      kf.id === selectedKeyframe 
+        ? { ...kf, objects: [...kf.objects, newPath] }
+        : kf
+    ))
+
+    // Clear path length cache since we added a new path
+    pathLengthCache.current.clear()
+
+    setIsDrawingPath(false)
+    setPathPoints([])
+    setCurrentPath(null)
+    setSelectedPath(newPath)
+    console.log('Finished path drawing:', newPath)
+  }
+
+  const cancelPathDrawing = () => {
+    setIsDrawingPath(false)
+    setPathPoints([])
+    setCurrentPath(null)
+    console.log('Cancelled path drawing')
+  }
+
+  // Path following functions
+  const calculatePathLength = (path) => {
+    if (!path.points || path.points.length < 2) return 0
+    
+    // Create a cache key based on path structure
+    const cacheKey = path.points.map(p => `${p.x},${p.y},${p.controlOutX || p.x},${p.controlOutY || p.y}`).join('|')
+    
+    // Check cache first
+    if (pathLengthCache.current.has(cacheKey)) {
+      return pathLengthCache.current.get(cacheKey)
+    }
+    
+    let totalLength = 0
+    for (let i = 0; i < path.points.length - 1; i++) {
+      const startPoint = path.points[i]
+      const endPoint = path.points[i + 1]
+      
+      // Calculate approximate length of Bezier curve using multiple sample points
+      const samples = 10 // Number of samples to approximate curve length
+      let segmentLength = 0
+      let prevX = startPoint.x
+      let prevY = startPoint.y
+      
+      for (let j = 1; j <= samples; j++) {
+        const t = j / samples
+        const x = Math.pow(1 - t, 2) * startPoint.x + 
+                  2 * (1 - t) * t * (startPoint.controlOutX || startPoint.x) + 
+                  Math.pow(t, 2) * endPoint.x
+        const y = Math.pow(1 - t, 2) * startPoint.y + 
+                  2 * (1 - t) * t * (startPoint.controlOutY || startPoint.y) + 
+                  Math.pow(t, 2) * endPoint.y
+        
+        const dx = x - prevX
+        const dy = y - prevY
+        segmentLength += Math.sqrt(dx * dx + dy * dy)
+        
+        prevX = x
+        prevY = y
+      }
+      
+      totalLength += segmentLength
+    }
+    
+    // Cache the result
+    pathLengthCache.current.set(cacheKey, totalLength)
+    
+    return totalLength
+  }
+
+  const calculatePositionAlongPath = (path, progress) => {
+    // progress is a value between 0 and 1
+    if (!path.points || path.points.length < 2) return null
+    
+    const totalPathLength = calculatePathLength(path)
+    if (totalPathLength === 0) return { x: path.points[0].x, y: path.points[0].y }
+    
+    const targetDistance = progress * totalPathLength
+    let currentDistance = 0
+    
+    for (let i = 0; i < path.points.length - 1; i++) {
+      const startPoint = path.points[i]
+      const endPoint = path.points[i + 1]
+      
+      // Calculate length of this segment
+      const samples = 20 // More samples for better accuracy
+      let segmentLength = 0
+      let segmentPoints = []
+      
+      for (let j = 0; j <= samples; j++) {
+        const t = j / samples
+        const x = Math.pow(1 - t, 2) * startPoint.x + 
+                  2 * (1 - t) * t * (startPoint.controlOutX || startPoint.x) + 
+                  Math.pow(t, 2) * endPoint.x
+        const y = Math.pow(1 - t, 2) * startPoint.y + 
+                  2 * (1 - t) * t * (startPoint.controlOutY || startPoint.y) + 
+                  Math.pow(t, 2) * endPoint.y
+        
+        segmentPoints.push({ x, y })
+        
+        if (j > 0) {
+          const dx = x - segmentPoints[j - 1].x
+          const dy = y - segmentPoints[j - 1].y
+          segmentLength += Math.sqrt(dx * dx + dy * dy)
+        }
+      }
+      
+      // Check if target distance falls within this segment
+      if (currentDistance + segmentLength >= targetDistance) {
+        // Find the exact position within this segment
+        const remainingDistance = targetDistance - currentDistance
+        let accumulatedDistance = 0
+        
+        for (let j = 1; j < segmentPoints.length; j++) {
+          const dx = segmentPoints[j].x - segmentPoints[j - 1].x
+          const dy = segmentPoints[j].y - segmentPoints[j - 1].y
+          const segmentStep = Math.sqrt(dx * dx + dy * dy)
+          
+          if (accumulatedDistance + segmentStep >= remainingDistance) {
+            // Interpolate between these two points
+            const ratio = (remainingDistance - accumulatedDistance) / segmentStep
+            return {
+              x: segmentPoints[j - 1].x + ratio * dx,
+              y: segmentPoints[j - 1].y + ratio * dy
+            }
+          }
+          
+          accumulatedDistance += segmentStep
+        }
+      }
+      
+      currentDistance += segmentLength
+    }
+    
+    // If we've reached the end, return the last point
+    return { x: path.points[path.points.length - 1].x, y: path.points[path.points.length - 1].y }
+  }
+
+  const assignObjectToPath = (objectId, pathId) => {
+    setKeyframes(prev => prev.map(kf => 
+      kf.id === selectedKeyframe 
+        ? {
+            ...kf,
+            objects: kf.objects.map(obj => 
+              obj.id === objectId
+                ? { ...obj, pathId, pathStartTime: 0, pathDuration: 10 }
+                : obj
+            )
+          }
+        : kf
+    ))
+    console.log('Assigned object', objectId, 'to path', pathId)
+  }
+
   // Animation playback functions
   const playAnimation = () => {
     setIsPlaying(true)
@@ -670,7 +956,7 @@ const KeyframeSoccerAnimatorFixed = () => {
         fieldHeight,
         fieldBackground,
         showFieldLines,
-        selectedPlayerColor
+        selectedJersey
       }
 
       const fieldSettings = {
@@ -740,7 +1026,7 @@ const KeyframeSoccerAnimatorFixed = () => {
       setFieldHeight(fieldData.height || 600)
       setFieldBackground(fieldData.background || '#4ade80')
       setShowFieldLines(fieldData.showFieldLines !== false)
-      setSelectedPlayerColor(animData.selectedPlayerColor || '#3b82f6')
+      setSelectedJersey(animData.selectedJersey || 'blue')
 
       // Reset to first keyframe
       setSelectedKeyframe('kf_0')
@@ -982,7 +1268,132 @@ const KeyframeSoccerAnimatorFixed = () => {
     }
     
     renderObjects(ctx, objectsToRender)
-  }, [keyframes, selectedKeyframe, fieldBackground, selectedElement, isPlaying, currentTime, showFieldLines, fieldWidth, fieldHeight])
+    
+    // Render paths separately (after objects so they appear behind)
+    // Hide paths during playback for cleaner animation
+    if (!isPlaying) {
+      const pathObjects = objectsToRender.filter(obj => obj.type === 'path')
+      pathObjects.forEach(obj => {
+      const tool = availableTools.find(t => t.id === obj.type)
+      if (!tool) return
+      
+      ctx.save()
+      
+      // Draw path
+      ctx.strokeStyle = obj.color || '#8b5cf6'
+      ctx.lineWidth = 3
+      ctx.setLineDash([10, 5]) // Dashed line for paths
+      
+      if (obj.points && obj.points.length >= 2) {
+        ctx.beginPath()
+        ctx.moveTo(obj.points[0].x, obj.points[0].y)
+        
+        // Draw Bezier curves between points
+        for (let i = 0; i < obj.points.length - 1; i++) {
+          const currentPoint = obj.points[i]
+          const nextPoint = obj.points[i + 1]
+          
+          // Use quadratic curves for now (can be upgraded to cubic later)
+          const cp1x = currentPoint.controlOutX || currentPoint.x
+          const cp1y = currentPoint.controlOutY || currentPoint.y
+          const cp2x = nextPoint.controlInX || nextPoint.x
+          const cp2y = nextPoint.controlInY || nextPoint.y
+          
+          ctx.quadraticCurveTo(cp1x, cp1y, nextPoint.x, nextPoint.y)
+        }
+        ctx.stroke()
+      }
+      
+      // Draw path points and control points
+      ctx.setLineDash([])
+      ctx.fillStyle = obj.color || '#8b5cf6'
+      if (obj.points) {
+        obj.points.forEach((point, index) => {
+          // Draw main path point
+          ctx.beginPath()
+          ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+          ctx.fill()
+          
+          // Draw point numbers
+          ctx.fillStyle = '#ffffff'
+          ctx.font = '12px Arial'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(index.toString(), point.x, point.y)
+          ctx.fillStyle = obj.color || '#8b5cf6'
+          
+          // Draw control points if they're different from the main point
+          if (point.controlOutX !== point.x || point.controlOutY !== point.y) {
+            // Draw control point
+            ctx.fillStyle = '#ff6b35'
+            ctx.beginPath()
+            ctx.arc(point.controlOutX, point.controlOutY, 3, 0, 2 * Math.PI)
+            ctx.fill()
+            
+            // Draw line from main point to control point
+            ctx.strokeStyle = '#ff6b35'
+            ctx.lineWidth = 1
+            ctx.setLineDash([2, 2])
+            ctx.beginPath()
+            ctx.moveTo(point.x, point.y)
+            ctx.lineTo(point.controlOutX, point.controlOutY)
+            ctx.stroke()
+            ctx.setLineDash([])
+            
+            ctx.fillStyle = obj.color || '#8b5cf6'
+          }
+        })
+      }
+      
+      ctx.restore()
+      })
+    }
+    
+    // Render current path being drawn
+    if (isDrawingPath && pathPoints.length > 0) {
+      ctx.strokeStyle = '#8b5cf6'
+      ctx.lineWidth = 3
+      ctx.setLineDash([10, 5])
+      ctx.globalAlpha = 0.7
+      
+      ctx.beginPath()
+      ctx.moveTo(pathPoints[0].x, pathPoints[0].y)
+      
+      // Draw Bezier curves between points
+      for (let i = 0; i < pathPoints.length - 1; i++) {
+        const currentPoint = pathPoints[i]
+        const nextPoint = pathPoints[i + 1]
+        
+        // Use quadratic curves for smooth paths
+        const cp1x = currentPoint.controlOutX || currentPoint.x
+        const cp1y = currentPoint.controlOutY || currentPoint.y
+        const cp2x = nextPoint.controlInX || nextPoint.x
+        const cp2y = nextPoint.controlInY || nextPoint.y
+        
+        ctx.quadraticCurveTo(cp1x, cp1y, nextPoint.x, nextPoint.y)
+      }
+      ctx.stroke()
+      
+      // Draw path points
+      ctx.setLineDash([])
+      ctx.fillStyle = '#8b5cf6'
+      ctx.globalAlpha = 1
+      
+      pathPoints.forEach((point, index) => {
+        ctx.beginPath()
+        ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI)
+        ctx.fill()
+        
+        // Draw point numbers
+        ctx.fillStyle = '#ffffff'
+        ctx.font = '12px Arial'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(index.toString(), point.x, point.y)
+        ctx.fillStyle = '#8b5cf6'
+      })
+    }
+  }, [keyframes, selectedKeyframe, fieldBackground, selectedElement, isPlaying, currentTime, showFieldLines, fieldWidth, fieldHeight, isDrawingPath, pathPoints])
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -1069,31 +1480,49 @@ const KeyframeSoccerAnimatorFixed = () => {
               </button>
             ))}
             
-            {/* Player Color Selector - moved to toolbar */}
-            <div className="flex gap-2 items-center ml-4 pl-4 border-l border-gray-200">
-              <span className="text-sm font-medium text-gray-600">Player Color:</span>
-              {[
-                { name: 'Blue', color: '#3b82f6' },
-                { name: 'Red', color: '#ef4444' },
-                { name: 'Yellow', color: '#eab308' },
-                { name: 'White', color: '#ffffff' }
-              ].map(colorOption => (
-                <button
-                  key={colorOption.color}
-                  onClick={() => setSelectedPlayerColor(colorOption.color)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    selectedPlayerColor === colorOption.color
-                      ? 'border-blue-500 shadow-md'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  style={{ backgroundColor: colorOption.color }}
-                  title={`Select ${colorOption.name} for next player`}
-                >
-                </button>
-              ))}
+            {/* Jersey Selector */}
+            <div className="ml-4 pl-4 border-l border-gray-200">
+              <JerseySelector
+                selectedJersey={selectedJersey}
+                onJerseyChange={setSelectedJersey}
+              />
             </div>
           </div>
         </div>
+        
+        {/* Path Drawing Controls */}
+        {isDrawingPath && (
+          <div className="mb-4 bg-purple-50 rounded-lg shadow p-4 border border-purple-200">
+            <h3 className="text-lg font-semibold mb-3 text-purple-800">Drawing Path</h3>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-purple-700">
+                  Click on the field to add points to your path. 
+                  Current points: {pathPoints.length}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={finishPathDrawing}
+                  disabled={pathPoints.length < 2}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    pathPoints.length >= 2
+                      ? 'bg-green-600 text-white hover:bg-green-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  ✅ Finish Path ({pathPoints.length} points)
+                </button>
+                <button
+                  onClick={cancelPathDrawing}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all"
+                >
+                  ❌ Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Timeline Controls */}
         <div className="mb-2 bg-gray-50 p-2 rounded">
@@ -1452,15 +1881,17 @@ const KeyframeSoccerAnimatorFixed = () => {
               onMouseUp={handleCanvasMouseUp}
               onMouseLeave={handleCanvasMouseUp}
               className={`border-2 border-gray-300 rounded-lg ${
-                selectedTool === 'select' ? 'cursor-default' : 'cursor-crosshair'
+                !selectedTool ? 'cursor-default' : 'cursor-crosshair'
               }`}
               style={{ maxWidth: '100%', height: 'auto' }}
             />
           </div>
           <p className="text-sm text-gray-600 mt-2 text-center">
-            {selectedTool === 'select' 
+            {!selectedTool 
               ? 'Click objects to select them, then drag to move or use controls below'
-              : `Click on the field to place ${selectedTool === 'player' ? 'players' : selectedTool === 'ball' ? 'soccer balls' : selectedTool + 's'}`
+              : selectedTool === 'path'
+                ? 'Click on the field to add points to your path. Use the controls above to finish or cancel.'
+                : `Click on the field to place ${selectedTool === 'player' ? 'players' : selectedTool === 'ball' ? 'soccer balls' : selectedTool + 's'}`
             }
           </p>
         </div>
@@ -1712,6 +2143,114 @@ const KeyframeSoccerAnimatorFixed = () => {
                       </div>
                     </div>
                   )}
+                </div>
+                
+                {/* Path Assignment Controls */}
+                <div className="border-t pt-4">
+                  <h4 className="text-md font-medium mb-3">Path Following</h4>
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Assign to Path:
+                    </label>
+                    <div className="flex gap-2 items-center">
+                      <select
+                        value={selectedElement.pathId || ''}
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            assignObjectToPath(selectedElement.id, e.target.value)
+                          } else {
+                            // Remove path assignment
+                            setKeyframes(prev => prev.map(kf => 
+                              kf.id === selectedKeyframe 
+                                ? {
+                                    ...kf,
+                                    objects: kf.objects.map(obj => 
+                                      obj.id === selectedElement.id
+                                        ? { ...obj, pathId: undefined, pathStartTime: undefined, pathDuration: undefined }
+                                        : obj
+                                    )
+                                  }
+                                : kf
+                            ))
+                          }
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="">No Path (Static Position)</option>
+                        {(() => {
+                          const currentKeyframe = keyframes.find(kf => kf.id === selectedKeyframe)
+                          if (!currentKeyframe) return []
+                          return currentKeyframe.objects.filter(obj => obj.type === 'path').map(path => (
+                            <option key={path.id} value={path.id}>
+                              Path ({path.points?.length || 0} points, {path.duration || 10}s)
+                            </option>
+                          ))
+                        })()}
+                      </select>
+                    </div>
+                    
+                    {/* Path timing controls */}
+                    {selectedElement.pathId && (
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Start Time (s):</label>
+                          <input
+                            type="number"
+                            value={selectedElement.pathStartTime || 0}
+                            onChange={(e) => {
+                              const currentKeyframe = keyframes.find(kf => kf.id === selectedKeyframe)
+                              if (currentKeyframe) {
+                                setKeyframes(prev => prev.map(kf => 
+                                  kf.id === selectedKeyframe 
+                                    ? {
+                                        ...kf,
+                                        objects: kf.objects.map(obj => 
+                                          obj.id === selectedElement.id
+                                            ? { ...obj, pathStartTime: parseFloat(e.target.value) || 0 }
+                                            : obj
+                                        )
+                                      }
+                                    : kf
+                                ))
+                                setSelectedElement(prev => ({ ...prev, pathStartTime: parseFloat(e.target.value) || 0 }))
+                              }
+                            }}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            min="0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Duration (s):</label>
+                          <input
+                            type="number"
+                            value={selectedElement.pathDuration || 10}
+                            onChange={(e) => {
+                              const currentKeyframe = keyframes.find(kf => kf.id === selectedKeyframe)
+                              if (currentKeyframe) {
+                                setKeyframes(prev => prev.map(kf => 
+                                  kf.id === selectedKeyframe 
+                                    ? {
+                                        ...kf,
+                                        objects: kf.objects.map(obj => 
+                                          obj.id === selectedElement.id
+                                            ? { ...obj, pathDuration: parseFloat(e.target.value) || 10 }
+                                            : obj
+                                        )
+                                      }
+                                    : kf
+                                ))
+                                setSelectedElement(prev => ({ ...prev, pathDuration: parseFloat(e.target.value) || 10 }))
+                              }
+                            }}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                            min="0.1"
+                            step="0.1"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

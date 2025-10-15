@@ -1,0 +1,200 @@
+/* Player Icon Styles */
+
+.player-icon {
+  transition: all 0.2s ease-in-out;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.player-icon:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.player-icon:active {
+  transform: scale(0.95);
+}
+
+/* Enhanced player card with icon */
+.player-card-enhanced {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  transition: all 0.2s ease-in-out;
+  cursor: grab;
+}
+
+.player-card-enhanced:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.player-card-enhanced:active {
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+
+.player-card-enhanced.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+/* Player info styling */
+.player-info-enhanced {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name-enhanced {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-jersey-enhanced {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.player-time-enhanced {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Status-specific styling */
+.player-card-enhanced.status-bench {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.player-card-enhanced.status-rink {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.player-card-enhanced.status-bench .player-time-enhanced {
+  display: none;
+}
+
+/* Team-specific accent colors */
+.player-card-enhanced.team-home {
+  border-left: 4px solid #006600;
+}
+
+.player-card-enhanced.team-away {
+  border-left: 4px solid #0066cc;
+}
+
+/* Size variations */
+.player-icon.size-small {
+  width: 30px;
+  height: 30px;
+}
+
+.player-icon.size-medium {
+  width: 40px;
+  height: 40px;
+}
+
+.player-icon.size-large {
+  width: 60px;
+  height: 60px;
+}
+
+.player-icon.size-extra-large {
+  width: 80px;
+  height: 80px;
+}
+
+/* Animation for status changes */
+@keyframes statusChange {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.player-card-enhanced.status-changing {
+  animation: statusChange 0.3s ease-in-out;
+}
+
+/* Loading state */
+.player-icon.loading {
+  opacity: 0.6;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Accessibility */
+.player-icon:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .player-card-enhanced {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .player-card-enhanced:hover {
+    border-color: #60a5fa;
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.15);
+  }
+  
+  .player-name-enhanced {
+    color: #f9fafb;
+  }
+  
+  .player-jersey-enhanced {
+    color: #9ca3af;
+  }
+  
+  .player-card-enhanced.status-bench {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  .player-card-enhanced.status-rink {
+    background: #064e3b;
+    border-color: #10b981;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .player-card-enhanced {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+  
+  .player-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .player-name-enhanced {
+    font-size: 0.8rem;
+  }
+  
+  .player-jersey-enhanced {
+    font-size: 0.7rem;
+  }
+}

@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import { supabase } from '../src/lib/supabase'
 import { useAuth } from '../src/contexts/AuthContext'
 import { useDataLogger, usePageLogger } from '../src/hooks/useEventLogger'
-import PlayerDetailsModal from './PlayerDetailsModal'
+import PlayerGameDetailsModal from './PlayerGameDetailsModal'
 
 // Cache buster: v2 - Fixed Supabase query structure
 
@@ -18,6 +18,7 @@ const GameStats = () => {
   const [playerStats, setPlayerStats] = useState([])
   const [gameEvents, setGameEvents] = useState([])
   const [allPlayers, setAllPlayers] = useState([])
+  const [squadId, setSquadId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedPlayerFilter, setSelectedPlayerFilter] = useState('all')
@@ -115,10 +116,99 @@ const GameStats = () => {
     }
   }, [sessionId])
 
+  // Update formattedLongestShiftStartTime after both gameEvents and playerStats are loaded
+  useEffect(() => {
+    console.log('🔄 useEffect triggered:', {
+      gameEventsLength: gameEvents?.length,
+      playerStatsLength: playerStats?.length,
+      hasGameEvents: !!gameEvents,
+      hasPlayerStats: !!playerStats
+    })
+    
+    if (gameEvents && gameEvents.length > 0 && playerStats.length > 0) {
+      console.log('✅ Updating formattedLongestShiftStartTime for all players')
+      setPlayerStats(prevStats => {
+        // Check if we already have formatted times to avoid infinite loop
+        const needsUpdate = prevStats.some(player => player.formattedLongestShiftStartTime === 'N/A' && player.longestShiftStartTime)
+        if (!needsUpdate) {
+          console.log('⏭️ No update needed - already formatted')
+          return prevStats
+        }
+        
+        return prevStats.map(player => {
+          const newFormattedTime = player.longestShiftStartTime ? calculateElapsedTime(player.longestShiftStartTime) : 'N/A'
+          console.log(`📊 ${player.name}: ${player.longestShiftStartTime} → ${newFormattedTime}`)
+          return {
+            ...player,
+            formattedLongestShiftStartTime: newFormattedTime
+          }
+        })
+      })
+    }
+  }, [gameEvents, playerStats.length])
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+
+  const exportToCSV = () => {
+    if (!playerStats || playerStats.length === 0) {
+      alert('No data to export')
+      return
+    }
+
+    // Define CSV headers
+    const headers = [
+      'Name',
+      'Jersey Number',
+      'Total Time',
+      '% On Rink',
+      'Shifts',
+      'Avg Shift Time',
+      'Total Bench Time',
+      'Avg Bench Time',
+      'Longest Shift',
+      'Longest Bench',
+      'Plus/Minus'
+    ]
+
+    // Convert player stats to CSV rows
+    const csvRows = playerStats.map(player => [
+      `${player.first_name} ${player.last_name}`,
+      player.jersey_number || '',
+      player.formattedTime,
+      `${player.percentageOnRink}%`,
+      player.shiftCount,
+      player.formattedAverageShiftTime,
+      player.formattedTotalBenchTime,
+      player.formattedAverageBenchTime,
+      player.formattedLongestShift,
+      player.formattedLongestBenchTime,
+      player.plusMinus
+    ])
+
+    // Combine headers and data
+    const csvContent = [headers, ...csvRows]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n')
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    
+    // Generate filename with session info
+    const sessionName = session?.name || 'game-session'
+    const date = new Date().toISOString().split('T')[0]
+    link.setAttribute('download', `${sessionName}-stats-${date}.csv`)
+    
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   const getFirstPlayStartTime = () => {
@@ -284,8 +374,16 @@ const GameStats = () => {
     setShowEditEventDialog(true)
   }
 
-  const handlePlayerNameClick = (playerId) => {
-    setSelectedPlayerForDetails(playerId)
+  const handlePlayerNameClick = (player) => {
+    console.log('🎯 Player clicked in GameStats:', player)
+    console.log('🎯 Player data structure:', {
+      id: player.id,
+      name: player.name,
+      longestShift: player.longestShift,
+      longestShiftStartTime: player.longestShiftStartTime,
+      longestShiftStartTimeType: typeof player.longestShiftStartTime
+    })
+    setSelectedPlayerForDetails(player)
     setShowPlayerDetailsModal(true)
   }
 
@@ -392,7 +490,28 @@ const GameStats = () => {
   }
 
   const handleShowPlayerStats = (player) => {
-    setSelectedPlayerForStats(player)
+    // Find the most up-to-date player data from the current playerStats array
+    const currentPlayerData = playerStats.find(p => p.id === player.id) || player
+    
+    // If the formattedLongestShiftStartTime is still 'N/A', calculate it on the fly
+    let finalPlayerData = currentPlayerData
+    if (currentPlayerData.formattedLongestShiftStartTime === 'N/A' && currentPlayerData.longestShiftStartTime && gameEvents.length > 0) {
+      const calculatedTime = calculateElapsedTime(currentPlayerData.longestShiftStartTime)
+      finalPlayerData = {
+        ...currentPlayerData,
+        formattedLongestShiftStartTime: calculatedTime
+      }
+      console.log('🔄 Calculated on-the-fly:', calculatedTime)
+    }
+    
+    console.log('🔍 Opening modal for player:', {
+      originalPlayer: player,
+      currentPlayerData: currentPlayerData,
+      finalPlayerData: finalPlayerData,
+      formattedLongestShiftStartTime: finalPlayerData.formattedLongestShiftStartTime,
+      longestShiftStartTime: finalPlayerData.longestShiftStartTime
+    })
+    setSelectedPlayerForStats(finalPlayerData)
     setShowPlayerStatsDialog(true)
   }
 
@@ -547,8 +666,17 @@ const GameStats = () => {
           
           if (!playersError && playersData) {
             console.log(`DEBUG: Loaded players data:`, playersData.map(p => `${p.id}: ${p.first_name} ${p.last_name}`))
-            setAllPlayers(playersData)
-            console.log(`Refreshed allPlayers with ${playersData.length} players after goal recalculation`)
+            
+            // Filter out players who have player_deleted events
+            const deletedPlayerIds = new Set(
+              gameEvents
+                .filter(event => event.event_type === 'player_deleted')
+                .map(event => event.player_id)
+            )
+            
+            const filteredPlayers = playersData.filter(player => !deletedPlayerIds.has(player.id))
+            setAllPlayers(filteredPlayers)
+            console.log(`Refreshed allPlayers with ${filteredPlayers.length} players after goal recalculation (filtered out ${playersData.length - filteredPlayers.length} deleted players)`)
           } else if (playersError) {
             console.error(`DEBUG: Error loading players:`, playersError)
           }
@@ -637,6 +765,9 @@ const GameStats = () => {
         throw sessionSquadError
       }
 
+      // Set the squad ID for the modal
+      setSquadId(sessionSquadData.squad_id)
+
       // Then get player IDs from that squad
       const { data: playerSquadData, error: playerSquadError } = await supabase
         .from('player_squads')
@@ -695,6 +826,19 @@ const GameStats = () => {
 
       if (eventsError) throw eventsError
       setGameEvents(gameEvents || [])
+      
+      // Filter out players who have player_deleted events
+      if (gameEvents && gameEvents.length > 0) {
+        const deletedPlayerIds = new Set(
+          gameEvents
+            .filter(event => event.event_type === 'player_deleted')
+            .map(event => event.player_id)
+        )
+        
+        players = players.filter(player => !deletedPlayerIds.has(player.id))
+        console.log('Players after filtering out deleted:', players.length, 'players')
+        console.log('Deleted player IDs:', Array.from(deletedPlayerIds))
+      }
 
       // Load all players that appear in game events for debug table
       const eventPlayerIds = [...new Set(gameEvents?.map(event => event.player_id).filter(Boolean) || [])]
@@ -719,8 +863,16 @@ const GameStats = () => {
         if (playersError) {
           console.error('Error loading players for debug table:', playersError)
         } else {
-          setAllPlayers(playersData || [])
-          console.log(`Loaded ${playersData?.length || 0} players for display (including metadata players)`)
+          // Filter out players who have player_deleted events
+          const deletedPlayerIds = new Set(
+            gameEvents
+              .filter(event => event.event_type === 'player_deleted')
+              .map(event => event.player_id)
+          )
+          
+          const filteredPlayers = (playersData || []).filter(player => !deletedPlayerIds.has(player.id))
+          setAllPlayers(filteredPlayers)
+          console.log(`Loaded ${filteredPlayers.length} players for display (filtered out ${(playersData?.length || 0) - filteredPlayers.length} deleted players)`)
         }
       }
 
@@ -748,6 +900,15 @@ const GameStats = () => {
         let longestShift = 0
         let longestShiftStartTime = null
         
+        // Calculate bench time tracking
+        let totalBenchTime = 0
+        let benchShiftCount = 0
+        let currentBenchStart = null
+        let isOnBench = false
+        let shortestBenchTime = 0
+        let longestBenchTime = 0
+        let longestBenchStartTime = null
+        
         // Process all events in chronological order
         const allEvents = [...playerEvents, ...playEvents]
           .sort((a, b) => new Date(a.event_time) - new Date(b.event_time))
@@ -760,7 +921,7 @@ const GameStats = () => {
         
         let isPlayActive = false
         
-        // Determine initial player state - check if player was on rink before any events
+        // Determine initial player state - check if player was on rink or bench before any events
         if (playerEvents.length > 0) {
           const firstPlayerEvent = playerEvents[0]
           const firstPlayEvent = playEvents[0]
@@ -772,6 +933,17 @@ const GameStats = () => {
             isOnRink = true
             console.log(`Player ${player.first_name} was on rink at game start (before first play_start)`)
           }
+          // If first player event is player_off and it's before first play_start, player was on bench at game start
+          else if (firstPlayerEvent.event_type === 'player_off' && 
+                   firstPlayEvent && 
+                   new Date(firstPlayerEvent.event_time) < new Date(firstPlayEvent.event_time)) {
+            isOnBench = true
+            console.log(`Player ${player.first_name} was on bench at game start (before first play_start)`)
+          }
+        } else {
+          // No player events - assume player was on bench at game start
+          isOnBench = true
+          console.log(`Player ${player.first_name} had no events - assuming on bench at game start`)
         }
         
         for (const event of allEvents) {
@@ -785,6 +957,12 @@ const GameStats = () => {
             if (isOnRink && !currentShiftStart) {
               currentShiftStart = eventTime
               console.log(`Player was already on rink when play started - beginning shift tracking at ${eventTime.toISOString()}`)
+            }
+            
+            // If player was on bench when play started, begin tracking bench time
+            if (isOnBench && !currentBenchStart) {
+              currentBenchStart = eventTime
+              console.log(`Player was already on bench when play started - beginning bench tracking at ${eventTime.toISOString()}`)
             }
           } else if (event.event_type === 'play_stop') {
             isPlayActive = false
@@ -804,11 +982,46 @@ const GameStats = () => {
               }
               currentShiftStart = null // Don't reset isOnRink, player might still be on rink
             }
+            
+            // If player was on bench when play stopped, end bench time
+            if (isOnBench && currentBenchStart) {
+              const benchDuration = Math.floor((eventTime - currentBenchStart) / 1000)
+              console.log(`Ending bench time due to play stop: ${benchDuration}s (${currentBenchStart.toISOString()} to ${eventTime.toISOString()})`)
+              totalBenchTime += benchDuration
+              benchShiftCount++
+              // Track shortest and longest bench times
+              if (benchShiftCount === 1 || benchDuration < shortestBenchTime) shortestBenchTime = benchDuration
+              if (benchDuration > longestBenchTime) {
+                longestBenchTime = benchDuration
+                longestBenchStartTime = currentBenchStart
+              }
+              currentBenchStart = null // Don't reset isOnBench, player might still be on bench
+            }
           } else if (event.player_id === player.id) {
             // This is a player-specific event
             if (event.event_type === 'player_on') {
               if (!isOnRink) {
                 isOnRink = true
+                
+                // End bench time when player comes on rink
+                if (isOnBench && currentBenchStart && isPlayActive) {
+                  const benchDuration = Math.floor((eventTime - currentBenchStart) / 1000)
+                  console.log(`Player went from bench to rink during active play: ${benchDuration}s (${currentBenchStart.toISOString()} to ${eventTime.toISOString()})`)
+                  totalBenchTime += benchDuration
+                  benchShiftCount++
+                  // Track shortest and longest bench times
+                  if (benchShiftCount === 1 || benchDuration < shortestBenchTime) shortestBenchTime = benchDuration
+                  if (benchDuration > longestBenchTime) {
+                    longestBenchTime = benchDuration
+                    longestBenchStartTime = currentBenchStart
+                  }
+                } else if (isOnBench && currentBenchStart && !isPlayActive) {
+                  console.log(`Player went from bench to rink during stopped play at ${eventTime.toISOString()} - not counting bench time`)
+                }
+                
+                isOnBench = false
+                currentBenchStart = null
+                
                 if (isPlayActive && !currentShiftStart) {
                   currentShiftStart = eventTime
                   console.log(`Player came on rink during active play at ${eventTime.toISOString()}`)
@@ -819,6 +1032,7 @@ const GameStats = () => {
                 }
               }
             } else if (event.event_type === 'player_off') {
+              // End rink time when player goes off rink
               if (isOnRink && currentShiftStart && isPlayActive) {
                 const shiftDuration = Math.floor((eventTime - currentShiftStart) / 1000)
                 console.log(`Player went off rink during active play: ${shiftDuration}s (${currentShiftStart.toISOString()} to ${eventTime.toISOString()})`)
@@ -835,6 +1049,17 @@ const GameStats = () => {
               }
               isOnRink = false
               currentShiftStart = null
+              
+              // Start bench time when player goes off rink
+              if (!isOnBench) {
+                isOnBench = true
+                if (isPlayActive && !currentBenchStart) {
+                  currentBenchStart = eventTime
+                  console.log(`Player went to bench during active play at ${eventTime.toISOString()}`)
+                } else if (!isPlayActive) {
+                  console.log(`Player went to bench during stopped play at ${eventTime.toISOString()} - will start tracking when play begins`)
+                }
+              }
             }
           }
         }
@@ -865,6 +1090,32 @@ const GameStats = () => {
           }
         }
         
+        // Handle case where player is still on bench at game end
+        if (isOnBench && currentBenchStart && isPlayActive) {
+          // Find the game_end event to get the actual game end time
+          const gameEndEvent = gameEvents.find(event => event.event_type === 'game_end')
+          let gameEndTime
+          
+          if (gameEndEvent) {
+            gameEndTime = new Date(gameEndEvent.event_time)
+          } else {
+            // Fallback: use the time of the last event in the game
+            const lastEvent = gameEvents.length > 0 ? gameEvents[gameEvents.length - 1] : null
+            gameEndTime = lastEvent ? new Date(lastEvent.event_time) : new Date()
+          }
+          
+          const finalBenchDuration = Math.floor((gameEndTime - currentBenchStart) / 1000)
+          console.log(`Player still on bench at game end: ${finalBenchDuration}s (${currentBenchStart.toISOString()} to ${gameEndTime.toISOString()})`)
+          totalBenchTime += finalBenchDuration
+          benchShiftCount++
+          // Track shortest and longest bench times
+          if (benchShiftCount === 1 || finalBenchDuration < shortestBenchTime) shortestBenchTime = finalBenchDuration
+          if (finalBenchDuration > longestBenchTime) {
+            longestBenchTime = finalBenchDuration
+            longestBenchStartTime = currentBenchStart
+          }
+        }
+        
         console.log(`Total rink time for ${player.first_name}: ${totalRinkTime}s`)
         console.log(`Shift count for ${player.first_name}: ${shiftCount}`)
         console.log(`Shortest shift for ${player.first_name}: ${shortestShift}s`)
@@ -873,9 +1124,38 @@ const GameStats = () => {
           console.log(`Longest shift start time for ${player.first_name}: ${longestShiftStartTime.toISOString()}`)
         }
         
+        console.log(`Total bench time for ${player.first_name}: ${totalBenchTime}s`)
+        console.log(`Bench shift count for ${player.first_name}: ${benchShiftCount}`)
+        console.log(`Shortest bench time for ${player.first_name}: ${shortestBenchTime}s`)
+        console.log(`Longest bench time for ${player.first_name}: ${longestBenchTime}s`)
+        if (longestBenchStartTime) {
+          console.log(`Longest bench start time for ${player.first_name}: ${longestBenchStartTime.toISOString()}`)
+        }
+        
         // Calculate average shift time
         const averageShiftTime = shiftCount > 0 ? Math.round(totalRinkTime / shiftCount) : 0
         console.log(`Average shift time for ${player.first_name}: ${averageShiftTime}s`)
+        
+        // Calculate average bench time
+        const averageBenchTime = benchShiftCount > 0 ? Math.round(totalBenchTime / benchShiftCount) : 0
+        console.log(`Average bench time for ${player.first_name}: ${averageBenchTime}s`)
+        
+        // Calculate total game time (time between first play_start and game_end)
+        let totalGameTime = 0
+        if (playEvents.length > 0) {
+          const firstPlayStart = playEvents.find(e => e.event_type === 'play_start')
+          const gameEndEvent = gameEvents.find(e => e.event_type === 'game_end')
+          
+          if (firstPlayStart && gameEndEvent) {
+            const gameStartTime = new Date(firstPlayStart.event_time)
+            const gameEndTime = new Date(gameEndEvent.event_time)
+            totalGameTime = Math.floor((gameEndTime - gameStartTime) / 1000)
+          }
+        }
+        
+        // Calculate percentage of time on rink
+        const percentageOnRink = totalGameTime > 0 ? Math.round((totalRinkTime / totalGameTime) * 100) : 0
+        console.log(`Total game time: ${totalGameTime}s, Percentage on rink: ${percentageOnRink}%`)
         
         // Calculate plus/minus
         let plusMinus = 0
@@ -939,7 +1219,10 @@ const GameStats = () => {
         
         return {
           id: player.id,
+          first_name: player.first_name,
+          last_name: player.last_name,
           name: `${player.first_name} ${player.last_name}`,
+          jersey_number: player.jersey_number,
           jerseyNumber: player.jersey_number,
           totalRinkTime,
           shiftCount,
@@ -947,12 +1230,24 @@ const GameStats = () => {
           shortestShift,
           longestShift,
           longestShiftStartTime,
+          totalBenchTime,
+          benchShiftCount,
+          averageBenchTime,
+          shortestBenchTime,
+          longestBenchTime,
+          longestBenchStartTime,
+          totalGameTime,
+          percentageOnRink,
           plusMinus,
           formattedTime: formatTime(totalRinkTime),
           formattedAverageShiftTime: formatTime(averageShiftTime),
           formattedShortestShift: formatTime(shortestShift),
           formattedLongestShift: formatTime(longestShift),
-          formattedLongestShiftStartTime: longestShiftStartTime ? calculateElapsedTime(longestShiftStartTime) : 'N/A'
+          formattedLongestShiftStartTime: 'N/A', // Will be calculated after gameEvents are loaded
+          formattedTotalBenchTime: formatTime(totalBenchTime),
+          formattedAverageBenchTime: formatTime(averageBenchTime),
+          formattedShortestBenchTime: formatTime(shortestBenchTime),
+          formattedLongestBenchTime: formatTime(longestBenchTime)
         }
       })
 
@@ -1023,7 +1318,18 @@ const GameStats = () => {
 
         {/* Game Stats Table */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Player Statistics</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Player Statistics</h2>
+            <button
+              onClick={exportToCSV}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export CSV
+            </button>
+          </div>
           
           {playerStats.length > 0 ? (
             <div className="overflow-x-auto">
@@ -1040,10 +1346,25 @@ const GameStats = () => {
                   Total Rink Time
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  % On Rink
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Shifts
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Avg Shift Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total Bench Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Avg Bench Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Longest Shift
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Longest Bench
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Plus/Minus
@@ -1058,7 +1379,7 @@ const GameStats = () => {
                     <tr key={player.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         <button
-                          onClick={() => handlePlayerNameClick(player.id)}
+                          onClick={() => handlePlayerNameClick(player)}
                           className="text-blue-600 hover:text-blue-900 hover:underline focus:outline-none focus:underline transition-colors duration-200"
                         >
                           {player.name}
@@ -1071,10 +1392,25 @@ const GameStats = () => {
                         {player.formattedTime}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {player.percentageOnRink}%
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {player.shiftCount}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {player.formattedAverageShiftTime}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {player.formattedTotalBenchTime}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {player.formattedAverageBenchTime}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {player.formattedLongestShift}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {player.formattedLongestBenchTime}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -1947,6 +2283,22 @@ const GameStats = () => {
                   </div>
                 </div>
 
+                {/* Bench Time Statistics */}
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-purple-800 mb-2">Total Bench Time</h4>
+                    <p className="text-xl font-bold text-purple-900">{selectedPlayerForStats.formattedTotalBenchTime}</p>
+                  </div>
+                  <div className="bg-indigo-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-indigo-800 mb-2">Average Bench Time</h4>
+                    <p className="text-xl font-bold text-indigo-900">{selectedPlayerForStats.formattedAverageBenchTime}</p>
+                  </div>
+                  <div className="bg-violet-50 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-violet-800 mb-2">Longest Bench Time</h4>
+                    <p className="text-xl font-bold text-violet-900">{selectedPlayerForStats.formattedLongestBenchTime}</p>
+                  </div>
+                </div>
+
                 {/* Goal Statistics */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-emerald-50 p-4 rounded-lg">
@@ -2023,12 +2375,12 @@ const GameStats = () => {
         </div>
       )}
 
-      {/* Player Details Modal */}
-      <PlayerDetailsModal
+      {/* Player Game Details Modal */}
+      <PlayerGameDetailsModal
         isOpen={showPlayerDetailsModal}
         onClose={handleClosePlayerDetailsModal}
-        playerId={selectedPlayerForDetails}
-        orgId={orgId}
+        player={selectedPlayerForDetails}
+        squadId={squadId}
       />
     </div>
   )
